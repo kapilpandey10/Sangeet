@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
-import GoogleAd from './GoogleAd';  // Import the GoogleAd component
 import '../style/HomePage.css';
 
 const HomePage = () => {
@@ -76,12 +75,18 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Google AdSense Ad */}
-      <GoogleAd 
-        client="ca-pub-9887409333966239"   // Pass the client ID
-        slot="6720877169"                   // Pass the slot ID
-        style={{ marginTop: '20px', textAlign: 'center' }} 
-      />
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239"
+     crossorigin="anonymous"></script>
+
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-9887409333966239"
+     data-ad-slot="4756859110"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
     </div>
   );

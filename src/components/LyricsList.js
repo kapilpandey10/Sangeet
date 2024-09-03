@@ -36,11 +36,29 @@ const LyricsList = () => {
     };
 
     fetchLyrics();
+
+    // Initialize Google Ads after the component has rendered
+    if (window.adsbygoogle) {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }
   }, []);
 
   return (
     <div className="lyrics-list-container">
       <h1>Music Library</h1>
+
+      {/* Google AdSense Ad */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <ins 
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"  // Replace with your actual AdSense client ID
+          data-ad-slot="6720877169"                // Replace with your actual AdSense ad slot ID
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+      </div>
+
       {Object.keys(lyricsByArtist).length > 0 ? (
         Object.keys(lyricsByArtist).map((artist) => (
           <div key={artist} className="artist-section">

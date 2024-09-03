@@ -10,8 +10,8 @@ import AdminDashboard from './components/AdminDashboard';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsAndService from './components/TermsAndService';
 import ContactUs from './components/ContactUs';
-import AdminLogin from './components/AdminL';
 import SearchResults from './components/SearchResults';
+import AdminLogin from './components/AdminLogin';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,6 +38,8 @@ function App() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsAndService />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="*" element={<Navigate to="/" />} /> {/* Catch-all route */}
       </Routes>
       <Footer />
     </Router>

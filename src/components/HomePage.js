@@ -79,7 +79,7 @@ const HomePage = () => {
      crossorigin="anonymous"></script>
 
 <ins class="adsbygoogle"
-     style="display:block"
+      style={{ display: 'block' }}  
      data-ad-client="ca-pub-9887409333966239"
      data-ad-slot="4756859110"
      data-ad-format="auto"

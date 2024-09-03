@@ -10,7 +10,8 @@ import AdminDashboard from './components/AdminDashboard';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsAndService from './components/TermsAndService';
 import ContactUs from './components/ContactUs';
-import AdminLogin from './components/AdminLogin';
+import AdminLogin from './components/AdminL';
+import SearchResults from './components/SearchResults';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

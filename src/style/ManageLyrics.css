@@ -1,0 +1,110 @@
+.manage-lyrics-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .manage-lyrics-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .manage-lyrics-container ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .manage-lyrics-container ul li {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .manage-lyrics-container ul li h3 {
+    margin: 0;
+  }
+  
+  .manage-lyrics-container ul li button {
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .manage-lyrics-container ul li button:first-of-type {
+    background-color: #ffc107; /* Update button color */
+  }
+  
+  .manage-lyrics-container ul li button:first-of-type:hover {
+    background-color: #e0a800;
+  }
+  
+  .manage-lyrics-container ul li button:last-of-type {
+    background-color: #dc3545; /* Delete button color */
+  }
+  
+  .manage-lyrics-container ul li button:last-of-type:hover {
+    background-color: #c82333;
+  }
+  
+  .edit-lyric-form {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .edit-lyric-form h2 {
+    margin-bottom: 20px;
+  }
+  
+  .edit-lyric-form form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-lyric-form label {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  
+  .edit-lyric-form input,
+  .edit-lyric-form textarea {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+  }
+  
+  .edit-lyric-form button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-lyric-form button:hover {
+    background-color: #218838;
+  }
+  
+  .edit-lyric-form button[type="button"] {
+    background-color: #6c757d;
+  }
+  
+  .edit-lyric-form button[type="button"]:hover {
+    background-color: #5a6268;
+  }
+  

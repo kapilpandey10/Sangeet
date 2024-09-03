@@ -1,0 +1,82 @@
+.lyrics-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: left;
+  }
+  
+  .lyrics-list-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: center;
+    font-family: 'Arial Black', Gadget, sans-serif;
+    letter-spacing: 2px;
+  }
+  
+  .artist-section {
+    margin-bottom: 50px;
+  }
+  
+  .artist-section h2 {
+    font-size: 2.2em;
+    margin-bottom: 25px;
+    color: #007bff;
+    border-bottom: 4px solid #007bff;
+    padding-bottom: 10px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    letter-spacing: 1.5px;
+  }
+  
+  .lyrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+  }
+  
+  .lyric-card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .lyric-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .lyric-card-content {
+    margin-top: 15px;
+  }
+  
+  .lyric-card h3 {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    color: #333;
+    font-family: 'Georgia', serif;
+  }
+  
+  .lyric-card p {
+    font-size: 1em;
+    color: #666;
+  }
+  
+  .view-lyrics-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-family: 'Verdana', Geneva, sans-serif;
+  }
+  
+  .view-lyrics-button:hover {
+    background-color: #0056b3;
+  }
+  

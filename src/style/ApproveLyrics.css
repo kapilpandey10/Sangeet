@@ -1,0 +1,44 @@
+.approve-lyrics-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .approve-lyrics-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .approve-lyrics-container ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .approve-lyrics-container ul li {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .approve-lyrics-container ul li h3 {
+    margin: 0;
+  }
+  
+  .approve-lyrics-container ul li button {
+    padding: 8px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .approve-lyrics-container ul li button:hover {
+    background-color: #218838;
+  }
+  

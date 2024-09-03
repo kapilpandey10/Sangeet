@@ -1,0 +1,66 @@
+.navbar-logo {
+    height: 50px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  
+  .navbar-text {
+    font-family: 'Cursive', sans-serif; /* Use a cursive or stylish font */
+    font-size: 1.5em;
+    color: #fff;
+    margin-left: 10px;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+  }
+  
+  .logo a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .links a {
+    margin-left: 20px;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .search-bar {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .search-bar input {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+  }
+  
+  .search-bar button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .search-bar button:hover {
+    background-color: #0056b3;
+  }
+  

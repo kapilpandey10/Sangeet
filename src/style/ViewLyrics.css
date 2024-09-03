@@ -1,0 +1,86 @@
+.view-lyrics-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: left;
+  }
+  
+  .view-lyrics-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .view-lyrics-container p {
+    font-size: 1.2em;
+    color: #555;
+  }
+  
+  .view-lyrics-container pre {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+  }
+  
+  .music-video {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .music-video iframe {
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  
+  .related-lyrics {
+    margin-top: 40px;
+  }
+  
+  .related-lyrics h3 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    color: #007bff;
+    text-align: center;
+  }
+  
+  .related-lyrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+  }
+  
+  .related-lyric-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #333;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .related-lyric-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-lyric-icon {
+    margin-bottom: 10px;
+    color: #007bff;
+  }
+  
+  .related-lyric-info h4 {
+    font-size: 1.2em;
+    margin: 0;
+    color: #007bff;
+  }
+  
+  .related-lyric-info p {
+    font-size: 0.9em;
+    color: #555;
+  }
+  

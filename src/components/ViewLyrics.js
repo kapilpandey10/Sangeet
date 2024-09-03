@@ -65,6 +65,11 @@ const ViewLyrics = () => {
     };
 
     fetchLyric();
+
+    // Initialize Google Ads
+    if (window.adsbygoogle) {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }
   }, [id]);
 
   const renderYouTubeEmbed = (url) => {
@@ -98,6 +103,18 @@ const ViewLyrics = () => {
           <p><strong>Published Date:</strong> {lyric.published_date}</p>
           <pre>{lyric.lyrics}</pre>
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
+
+          {/* Google AdSense Ad */}
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <ins 
+              className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="6720877169"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            ></ins>
+          </div>
 
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">

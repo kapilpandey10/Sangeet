@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
+import GoogleAd from './GoogleAd';  // Ensure this is correctly imported
 import '../style/HomePage.css';
 
 const HomePage = () => {
@@ -74,6 +75,18 @@ const HomePage = () => {
           <Link to="/lyrics">View All Lyrics</Link>
         </div>
       </section>
+
+      {/* Google AdSense Ad */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <ins 
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+        data-ad-slot="6720877169"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+        ></ins>
+      </div>
     </div>
   );
 };

@@ -42,7 +42,7 @@ const Navbar = () => {
           <span className="bar"></span>
         </button>
         <div className={`links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
-          <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>Add Lyrics</Link>
+          <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>Submit Lyrics</Link>
           <Link to="/lyrics" className={isActive('/lyrics')} onClick={toggleMobileMenu}>View Lyrics</Link>
           <form onSubmit={handleSearch} className="search-bar">
             <input

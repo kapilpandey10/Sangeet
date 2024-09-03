@@ -5,6 +5,7 @@ import logo from '../logo/logo.png'; // Import the logo
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
@@ -12,6 +13,10 @@ const Navbar = () => {
     if (searchQuery.trim()) {
       navigate(`/search?query=${searchQuery}`);
     }
+  };
+
+  const toggleNavbar = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -22,21 +27,27 @@ const Navbar = () => {
           <span className="navbar-text">Sangeet</span>
         </Link>
       </div>
-      <div className="search-bar">
-        <form onSubmit={handleSearch}>
-          <input
-            type="text"
-            placeholder="Search lyrics..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button type="submit">Search</button>
-        </form>
+      <div className="navbar-toggle" onClick={toggleNavbar}>
+        <span className="bar"></span>
+        <span className="bar"></span>
+        <span className="bar"></span>
       </div>
-      <div className="links">
-      
-        <Link to="/lyrics">View Lyrics</Link>
-        <Link to="/add">Add Lyrics</Link>
+      <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
+        <div className="search-bar">
+          <form onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Search lyrics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit">Search</button>
+          </form>
+        </div>
+        <div className="links">
+          <Link to="/lyrics">View Lyrics</Link>
+          <Link to="/add">Add Lyrics</Link>
+        </div>
       </div>
     </nav>
   );

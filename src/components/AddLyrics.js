@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../style/AddLyrics.css';
 
@@ -14,6 +14,51 @@ const AddLyrics = () => {
   const [releaseYear, setReleaseYear] = useState('');
   const [videoId, setVideoId] = useState('');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
+
+    // Add meta tags for SEO
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = "description";
+    metaDescription.content = "Contribute to Sangeet Lyrics Central by adding new song lyrics. Fill in details such as title, artist, release year, and an optional YouTube video ID. Join our community of music lovers and share your favorite lyrics today.";
+    document.head.appendChild(metaDescription);
+
+    const metaKeywords = document.createElement('meta');
+    metaKeywords.name = "keywords";
+    metaKeywords.content = "add lyrics, submit lyrics, song lyrics, Sangeet Lyrics Central, music lyrics, contribute lyrics, add new song, YouTube lyrics";
+    document.head.appendChild(metaKeywords);
+
+    const metaOgTitle = document.createElement('meta');
+    metaOgTitle.setAttribute("property", "og:title");
+    metaOgTitle.content = "Add Song Lyrics | Sangeet Lyrics Central";
+    document.head.appendChild(metaOgTitle);
+
+    const metaOgDescription = document.createElement('meta');
+    metaOgDescription.setAttribute("property", "og:description");
+    metaOgDescription.content = "Contribute to our growing collection of song lyrics by submitting your favorites. Easily add details like the song title, artist, release year, and YouTube video ID.";
+    document.head.appendChild(metaOgDescription);
+
+    const metaOgUrl = document.createElement('meta');
+    metaOgUrl.setAttribute("property", "og:url");
+    metaOgUrl.content = "https://yourwebsite.com/add-lyrics";
+    document.head.appendChild(metaOgUrl);
+
+    const metaOgImage = document.createElement('meta');
+    metaOgImage.setAttribute("property", "og:image");
+    metaOgImage.content = "https://yourwebsite.com/images/add-lyrics-og-image.jpg";
+    document.head.appendChild(metaOgImage);
+
+    return () => {
+      // Clean up meta tags when component unmounts
+      document.head.removeChild(metaDescription);
+      document.head.removeChild(metaKeywords);
+      document.head.removeChild(metaOgTitle);
+      document.head.removeChild(metaOgDescription);
+      document.head.removeChild(metaOgUrl);
+      document.head.removeChild(metaOgImage);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -38,20 +38,21 @@ const ViewLyrics = () => {
         .select('*')
         .eq('artist', artist)
         .neq('id', id)
-        .limit(5);
+        .limit(3); // Limit to 3 lyrics
 
       if (error) {
         console.error('Error fetching related lyrics by artist:', error);
         artistLyrics = [];
       }
 
-      if (artistLyrics.length < 5) {
+      if (artistLyrics.length < 3) {
         const { data: otherLyrics, error: otherError } = await supabase
           .from('lyrics')
           .select('*')
           .neq('id', id)
           .neq('artist', artist)
-          .limit(5 - artistLyrics.length);
+          .order('published_date', { ascending: false }) // Sort by latest
+          .limit(3 - artistLyrics.length);
 
         if (otherError) {
           console.error('Error fetching random lyrics:', otherError);
@@ -100,7 +101,7 @@ const ViewLyrics = () => {
 
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">
-              <h3>Explore More Songs</h3>
+              <h3>You May Also Like</h3>
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (
                   <Link to={`/lyrics/${relatedLyric.id}`} key={relatedLyric.id} className="related-lyric-item">

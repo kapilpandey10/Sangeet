@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../style/AddLyrics.css';
+
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
 
 const AddLyrics = () => {
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [lyrics, setLyrics] = useState('');
   const [releaseYear, setReleaseYear] = useState('');
-  const [musicUrl, setMusicUrl] = useState('');
+  const [videoId, setVideoId] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +27,7 @@ const AddLyrics = () => {
             artist,
             lyrics,
             published_date: `${releaseYear}-01-01`, // Store the year with a default month and day
-            music_url: musicUrl,
+            music_url: videoId ? `https://www.youtube.com/embed/${videoId}` : null, // Construct full URL or null if empty
             status: 'pending' // Set the status to pending
           }
         ]);
@@ -35,23 +35,32 @@ const AddLyrics = () => {
       if (error) throw error;
 
       console.log('Lyrics added successfully:', data);
-      alert('Lyrics added successfully!');
+      setMessage('Lyrics submitted successfully! It will be reviewed by the admin and listed soon.');
 
       // Reset the form
       setTitle('');
       setArtist('');
       setLyrics('');
       setReleaseYear('');
-      setMusicUrl('');
+      setVideoId('');
+
+      // Clear the message after 5 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 5000);
     } catch (error) {
       console.error('Error adding lyrics:', error);
-      alert('An error occurred while adding lyrics: ' + error.message);
+      setMessage('An error occurred while adding lyrics: ' + error.message);
+      setTimeout(() => {
+        setMessage('');
+      }, 5000);
     }
   };
 
   return (
     <div className="add-lyrics-container">
       <h1>Add New Lyrics</h1>
+      {message && <p className="submission-message">{message}</p>}
       <form onSubmit={handleSubmit} className="add-lyrics-form">
         <div className="form-group">
           <label htmlFor="title">Title</label>
@@ -95,15 +104,17 @@ const AddLyrics = () => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="musicUrl">Music URL</label>
+          <label htmlFor="videoId">YT Video ID (Optional)</label>
           <input
-            type="url"
-            id="musicUrl"
-            value={musicUrl}
-            onChange={(e) => setMusicUrl(e.target.value)}
+            type="text"
+            id="videoId"
+            value={videoId}
+            onChange={(e) => setVideoId(e.target.value)}
+            placeholder="VIDEO-ID-HERE"
           />
+          <small>Example: https://www.youtube.com/embed/{videoId || 'VIDEO-ID-HERE'}</small>
         </div>
-        <button type="submit">Add Lyrics</button>
+        <button type="submit">Submit Lyrics</button>
       </form>
     </div>
   );

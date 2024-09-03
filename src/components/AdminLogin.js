@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+<title>Admin Login Pin</title>
 const AdminLogin = ({ setIsAuthenticated }) => {
   const [pin, setPin] = useState('');
   const navigate = useNavigate();

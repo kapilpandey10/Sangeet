@@ -1,53 +1,57 @@
 .add-lyrics-container {
-    margin: 50px auto;
-    padding: 20px;
     max-width: 600px;
-    font-family: Arial, sans-serif;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .add-lyrics-container h1 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-  }
-  
-  .add-lyrics-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group {
+  .add-lyrics-form .form-group {
     margin-bottom: 15px;
   }
   
-  .form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
+  .add-lyrics-form label {
     display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
   }
   
-  .form-group input,
-  .form-group textarea {
+  .add-lyrics-form input,
+  .add-lyrics-form textarea {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
+    border-radius: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    font-size: 16px;
   }
   
-  .form-group textarea {
-    height: 150px;
-    resize: none;
-  }
-  
-  button {
+  .add-lyrics-form button {
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
   }
   
-  button:hover {
+  .add-lyrics-form button:hover {
     background-color: #0056b3;
+  }
+  
+  .submission-message {
+    color: green;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  /* Add this to your AddLyrics.css if you want to style the sample URL text */
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.9em;
   }
   

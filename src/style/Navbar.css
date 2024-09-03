@@ -34,10 +34,19 @@
   }
   
   /* Navbar Links */
+  .navbar-links {
+    display: flex;
+    align-items: center;
+  }
+  
   .links a {
     margin-left: 20px;
     color: white;
     text-decoration: none;
+  }
+  
+  .links a:hover {
+    text-decoration: underline;
   }
   
   /* Search Bar */
@@ -131,6 +140,29 @@
   
     .navbar-toggle {
       display: flex;
+    }
+  }
+  
+  /* Desktop-specific styles */
+  @media (min-width: 769px) {
+    .navbar-links {
+      display: flex;
+    }
+  
+    .links {
+      display: flex;
+      flex-direction: row;
+    }
+  
+    .search-bar {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+    }
+  
+    .navbar-toggle {
+      display: none;
     }
   }
   

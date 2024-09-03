@@ -8,27 +8,54 @@ const HomePage = () => {
   const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
   const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
   useEffect(() => {
+    document.title = "Sangeet Lyrics Central | Latest Lyrics";
+
     const fetchApprovedLyrics = async () => {
       const { data, error } = await supabase
         .from('lyrics')
         .select('*')
-        .eq('status', 'approved'); // Only fetch approved lyrics
-  
+        .eq('status', 'approved')
+        .order('published_date', { ascending: false })
+        .limit(4);
+
       if (error) {
         console.error('Error fetching approved lyrics:', error);
       } else {
         setLyrics(data);
       }
     };
-  
+
     fetchApprovedLyrics();
+
+    // Floating Emoji Setup
+    const emojis = document.querySelectorAll('.floating-emoji');
+    const handleMouseMove = (e) => {
+      const { clientX: x, clientY: y } = e;
+      emojis.forEach((emoji, index) => {
+        const speed = 10 + index * 5;
+        const xPos = (window.innerWidth / 2 - x) / speed;
+        const yPos = (window.innerHeight / 2 - y) / speed;
+        emoji.style.transform = `translate(${xPos}px, ${yPos}px)`;
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   return (
     <div className="homepage-container">
+      {/* Floating Emojis */}
+      <div className="floating-emoji emoji-1">🎶</div>
+      <div className="floating-emoji emoji-2">🎵</div>
+      <div className="floating-emoji emoji-3">♭</div>
+      <div className="floating-emoji emoji-4">🎼</div>
+
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
+      
       <section className="lyrics-bar">
         {lyrics.length > 0 ? (
           <div className="lyrics-horizontal-bar">

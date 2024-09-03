@@ -12,17 +12,21 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLyrics = async () => {
-      const { data, error } = await supabase
-        .from('lyrics')
-        .select('*')
-        .order('artist', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('lyrics')
+          .select('*')
+          .order('artist', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching lyrics:', error);
-      } else {
+        if (error) {
+          throw error;
+        }
+
         const groupedByArtist = data.reduce((result, lyric) => {
           const { artist } = lyric;
           if (!result[artist]) {
@@ -31,34 +35,30 @@ const LyricsList = () => {
           result[artist].push(lyric);
           return result;
         }, {});
+
         setLyricsByArtist(groupedByArtist);
+      } catch (error) {
+        console.error('Error fetching lyrics:', error);
+        setError('Failed to load lyrics.');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchLyrics();
-
-    // Initialize Google Ads after the component has rendered
-    if (window.adsbygoogle) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    }
   }, []);
+
+  if (loading) {
+    return <p>Loading lyrics...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className="lyrics-list-container">
       <h1>Music Library</h1>
-
-      {/* Google AdSense Ad */}
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <ins 
-          className="adsbygoogle"
-          style={{ display: 'block' }}  // Ensure this is correct
-          data-ad-client="ca-pub-9887409333966239"
-          data-ad-slot="6720877169"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        ></ins>
-      </div>
-
       {Object.keys(lyricsByArtist).length > 0 ? (
         Object.keys(lyricsByArtist).map((artist) => (
           <div key={artist} className="artist-section">

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import { FaMusic } from 'react-icons/fa'; // Import music icon
+import { FaMusic } from 'react-icons/fa';
 import '../style/ViewLyrics.css';
 
 // Access environment variables
@@ -15,84 +15,109 @@ const ViewLyrics = () => {
   const { id } = useParams();
   const [lyric, setLyric] = useState(null);
   const [relatedLyrics, setRelatedLyrics] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const adRef = useRef(null);  // Reference to track ad initialization
 
   useEffect(() => {
-    const fetchLyric = async () => {
-      const { data, error } = await supabase
-        .from('lyrics')
-        .select('*')
-        .eq('id', id)
-        .single();
+    if (!id) {
+      setError("No ID provided for fetching lyrics.");
+      setLoading(false);
+      return;
+    }
 
-      if (error) {
-        console.error('Error fetching lyric:', error);
-      } else {
+    const fetchLyric = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('lyrics')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
         setLyric(data);
         fetchRelatedLyrics(data.artist);
+      } catch (error) {
+        console.error('Error fetching lyric:', error);
+        setError("Failed to fetch lyric.");
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchRelatedLyrics = async (artist) => {
-      let { data: artistLyrics, error } = await supabase
-        .from('lyrics')
-        .select('*')
-        .eq('artist', artist)
-        .neq('id', id)
-        .limit(3); // Limit to 3 lyrics
-
-      if (error) {
-        console.error('Error fetching related lyrics by artist:', error);
-        artistLyrics = [];
-      }
-
-      if (artistLyrics.length < 3) {
-        const { data: otherLyrics, error: otherError } = await supabase
+      try {
+        let { data: artistLyrics, error } = await supabase
           .from('lyrics')
           .select('*')
+          .eq('artist', artist)
           .neq('id', id)
-          .neq('artist', artist)
-          .order('published_date', { ascending: false }) // Sort by latest
-          .limit(3 - artistLyrics.length);
+          .limit(3);
 
-        if (otherError) {
-          console.error('Error fetching random lyrics:', otherError);
+        if (error) {
+          throw error;
         }
 
-        setRelatedLyrics([...artistLyrics, ...otherLyrics]);
-      } else {
-        setRelatedLyrics(artistLyrics);
+        if (artistLyrics.length < 3) {
+          const { data: otherLyrics, error: otherError } = await supabase
+            .from('lyrics')
+            .select('*')
+            .neq('id', id)
+            .neq('artist', artist)
+            .order('published_date', { ascending: false })
+            .limit(3 - artistLyrics.length);
+
+          if (otherError) {
+            throw otherError;
+          }
+
+          setRelatedLyrics([...artistLyrics, ...otherLyrics]);
+        } else {
+          setRelatedLyrics(artistLyrics);
+        }
+      } catch (error) {
+        console.error('Error fetching related lyrics:', error);
+        setRelatedLyrics([]);
       }
     };
 
     fetchLyric();
 
-    // Initialize Google Ads
-    if (window.adsbygoogle) {
+    if (adRef.current && !adRef.current.classList.contains('adsbygoogle-initialized')) {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
+      adRef.current.classList.add('adsbygoogle-initialized'); // Mark the ad as initialized
     }
   }, [id]);
 
   const renderYouTubeEmbed = (url) => {
-    const embedUrl = url.includes('youtube.com/embed') ? url : null;
+    if (!url) return null;
 
-    if (embedUrl) {
-      return (
-        <div className="music-video">
-          <iframe
-            width="560"
-            height="315"
-            src={embedUrl}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-      );
-    }
-
-    return null;
+    const embedUrl = url.replace("watch?v=", "embed/");
+    return (
+      <div className="music-video">
+        <iframe
+          width="560"
+          height="315"
+          src={embedUrl}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
   };
+
+  if (loading) {
+    return <p>Loading lyrics...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className="view-lyrics-container">
@@ -113,6 +138,7 @@ const ViewLyrics = () => {
               data-ad-slot="6720877169"
               data-ad-format="auto"
               data-full-width-responsive="true"
+              ref={adRef} // Attach ref to the ad element
             ></ins>
           </div>
 
@@ -136,7 +162,7 @@ const ViewLyrics = () => {
           )}
         </>
       ) : (
-        <p>Loading...</p>
+        <p>Lyrics not found.</p>
       )}
     </div>
   );

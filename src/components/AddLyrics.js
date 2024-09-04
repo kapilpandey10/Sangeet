@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../style/AddLyrics.css';
+import { FaTrash, FaPlus } from 'react-icons/fa'; // Import icons for adding/removing
 
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -9,7 +10,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const AddLyrics = () => {
   const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('');
+  const [artists, setArtists] = useState([{ name: '' }]); // For multiple artists
+  const [writer, setWriter] = useState(''); // Lyrics writer
   const [lyrics, setLyrics] = useState('');
   const [releaseYear, setReleaseYear] = useState('');
   const [videoId, setVideoId] = useState('');
@@ -60,6 +62,25 @@ const AddLyrics = () => {
     };
   }, []);
 
+  // Function to handle adding a new artist input field
+  const addArtist = () => {
+    setArtists([...artists, { name: '' }]);
+  };
+
+  // Function to handle removing an artist input field
+  const removeArtist = (index) => {
+    const updatedArtists = [...artists];
+    updatedArtists.splice(index, 1);
+    setArtists(updatedArtists);
+  };
+
+  // Function to handle changes in the artist input fields
+  const handleArtistChange = (index, event) => {
+    const updatedArtists = [...artists];
+    updatedArtists[index].name = event.target.value;
+    setArtists(updatedArtists);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -69,7 +90,8 @@ const AddLyrics = () => {
         .insert([
           {
             title,
-            artist,
+            artist: artists.map(artist => artist.name).join(', '), // Store artists as a comma-separated string
+            lyrics_writer: writer, // Add lyrics writer
             lyrics,
             published_date: `${releaseYear}-01-01`, // Store the year with a default month and day
             music_url: videoId ? `https://www.youtube.com/embed/${videoId}` : null, // Construct full URL or null if empty
@@ -84,7 +106,8 @@ const AddLyrics = () => {
 
       // Reset the form
       setTitle('');
-      setArtist('');
+      setArtists([{ name: '' }]);
+      setWriter('');
       setLyrics('');
       setReleaseYear('');
       setVideoId('');
@@ -117,25 +140,52 @@ const AddLyrics = () => {
             required
           />
         </div>
+
         <div className="form-group">
-          <label htmlFor="artist">Artist</label>
+          <label htmlFor="artists">Artists</label>
+          {artists.map((artist, index) => (
+            <div key={index} className="artist-input">
+              <input
+                type="text"
+                value={artist.name}
+                onChange={(e) => handleArtistChange(index, e)}
+                required
+                placeholder="Enter artist name"
+              />
+              {index > 0 && (
+                <button type="button" onClick={() => removeArtist(index)}>
+                  <FaTrash />
+                </button>
+              )}
+            </div>
+          ))}
+          <button type="button" onClick={addArtist} className="add-artist-button">
+            <FaPlus /> Add another artist
+          </button>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="writer">Lyrics Writer</label>
           <input
             type="text"
-            id="artist"
-            value={artist}
-            onChange={(e) => setArtist(e.target.value)}
+            id="writer"
+            value={writer}
+            onChange={(e) => setWriter(e.target.value)}
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="lyrics">Lyrics</label>
           <textarea
             id="lyrics"
             value={lyrics}
             onChange={(e) => setLyrics(e.target.value)}
-            required
+            
+            rows={10} // Make the text box larger
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="releaseYear">Release Year</label>
           <input
@@ -143,11 +193,12 @@ const AddLyrics = () => {
             id="releaseYear"
             value={releaseYear}
             onChange={(e) => setReleaseYear(e.target.value)}
-            required
-            min="1900"
+            
+            min="1800"
             max={new Date().getFullYear()}
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="videoId">YT Video ID (Optional)</label>
           <input
@@ -159,6 +210,7 @@ const AddLyrics = () => {
           />
           <small>Example: https://www.youtube.com/embed/{videoId || 'VIDEO-ID-HERE'}</small>
         </div>
+
         <button type="submit">Submit Lyrics</button>
       </form>
     </div>

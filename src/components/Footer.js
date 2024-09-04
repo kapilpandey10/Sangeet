@@ -13,7 +13,7 @@ const Footer = () => {
           <a href="/contact">Contact Us</a>
         </div>
         <div className="social-links">
-          <a href="https://www.facebook.com/Burn2VLOG" target="_blank" rel="noopener noreferrer">
+          <a  class="facebook" href="https://www.facebook.com/Burn2VLOG" target="_blank" rel="noopener noreferrer">
             <FaFacebook />
           </a>
           

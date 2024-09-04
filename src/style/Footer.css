@@ -46,6 +46,9 @@
   .social-links a:hover {
     color: #ff0000; /* You can change this hover color to match your theme */
   }
+  .social-links a.facebook:hover {
+    color: #3b5998; /* Facebook blue color on hover */
+  }
   
   @media (max-width: 768px) {
     .footer-container {

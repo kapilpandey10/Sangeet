@@ -32,17 +32,18 @@ const ViewLyrics = () => {
           .from('lyrics')
           .select('*')
           .eq('id', id)
+          .eq('status', 'approved')  // Ensure only approved lyrics are fetched
           .single();
 
-        if (error) {
-          throw error;
+        if (error || !data) {
+          throw new Error('Lyrics not found or not approved.');
         }
 
         setLyric(data);
         fetchRelatedLyrics(data.artist);
       } catch (error) {
         console.error('Error fetching lyric:', error);
-        setError("Failed to fetch lyric.");
+        setError("Failed to fetch lyric or lyric not approved.");
       } finally {
         setLoading(false);
       }
@@ -55,6 +56,7 @@ const ViewLyrics = () => {
           .select('*')
           .eq('artist', artist)
           .neq('id', id)
+          .eq('status', 'approved')  // Ensure only approved related lyrics are fetched
           .limit(3);
 
         if (error) {
@@ -67,6 +69,7 @@ const ViewLyrics = () => {
             .select('*')
             .neq('id', id)
             .neq('artist', artist)
+            .eq('status', 'approved')  // Ensure only approved lyrics are fetched
             .order('published_date', { ascending: false })
             .limit(3 - artistLyrics.length);
 

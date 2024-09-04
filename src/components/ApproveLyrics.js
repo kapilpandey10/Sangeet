@@ -16,17 +16,18 @@ const ApproveLyrics = () => {
 
   useEffect(() => {
     const fetchPendingLyrics = async () => {
-      const { data, error } = await supabase
-        .from('lyrics')
-        .select('*')
-        .eq('status', 'pending');
-
-      if (error) {
-        console.error('Error fetching pending lyrics:', error);
-      } else {
-        setPendingLyrics(data);
-      }
-    };
+        const { data, error } = await supabase
+          .from('lyrics')
+          .select('*')
+          .eq('status', 'pending');  // Fetch only pending lyrics
+      
+        if (error) {
+          console.error('Error fetching pending lyrics:', error);
+        } else {
+          setPendingLyrics(data); // Assume setPendingLyrics is a state setter for your admin page
+        }
+      };
+      
 
     fetchPendingLyrics();
   }, []);

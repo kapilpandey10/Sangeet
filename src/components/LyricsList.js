@@ -18,6 +18,46 @@ const LyricsList = () => {
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
 
   useEffect(() => {
+    // Set the page title
+    document.title = "Nepali Song Lyrics Library | Sangeet Lyrics Central";
+
+    // Add meta tags for SEO
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = "description";
+    metaDescription.content = "Explore a vast collection of Nepali song lyrics from various artists. Find lyrics from popular Nepali songs and artists, including the latest hits.";
+    document.head.appendChild(metaDescription);
+
+    const metaKeywords = document.createElement('meta');
+    metaKeywords.name = "keywords";
+    metaKeywords.content = "Nepali song lyrics, Nepali artists, Nepali music, Nepali songs, popular Nepali lyrics, Sangeet Lyrics Central";
+    document.head.appendChild(metaKeywords);
+
+    const metaOgTitle = document.createElement('meta');
+    metaOgTitle.setAttribute("property", "og:title");
+    metaOgTitle.content = "Nepali Song Lyrics Library | Sangeet Lyrics Central";
+    document.head.appendChild(metaOgTitle);
+
+    const metaOgDescription = document.createElement('meta');
+    metaOgDescription.setAttribute("property", "og:description");
+    metaOgDescription.content = "Explore the Nepali music library with lyrics from various Nepali artists. Discover the beauty of Nepali songs and lyrics.";
+    document.head.appendChild(metaOgDescription);
+
+    const metaOgUrl = document.createElement('meta');
+    metaOgUrl.setAttribute("property", "og:url");
+    metaOgUrl.content = window.location.href; // Use current URL
+    document.head.appendChild(metaOgUrl);
+
+    return () => {
+      // Cleanup meta tags when component unmounts
+      document.head.removeChild(metaDescription);
+      document.head.removeChild(metaKeywords);
+      document.head.removeChild(metaOgTitle);
+      document.head.removeChild(metaOgDescription);
+      document.head.removeChild(metaOgUrl);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchLyrics = async () => {
       try {
         const { data, error } = await supabase

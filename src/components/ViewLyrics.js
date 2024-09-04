@@ -104,6 +104,9 @@ const ViewLyrics = () => {
     return <p>{error}</p>;
   }
 
+  // Extract only the year from the published_date
+  const releaseYear = new Date(lyric.published_date).getFullYear();
+
   return (
     <div className="view-lyrics-container">
       {lyric ? (
@@ -112,12 +115,13 @@ const ViewLyrics = () => {
           <p><strong>Artist:</strong> {lyric.artist}</p>
           <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p>
           <p>
-            <strong>Published Date:</strong> {lyric.published_date}
+            <strong>Release Year:</strong> {releaseYear}
             {lyric.status === 'approved' && <Verified />}
           </p>
-          <pre className="lyrics-text">{lyric.lyrics}</pre>
+          <p><strong>Added by:</strong> {lyric.added_by}</p> {/* Display who added the lyrics */}
+          <pre className="lyrics-text">{lyric.lyrics}</pre> {/* Lyrics are now larger */}
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
-
+  
           {/* Google AdSense Ad */}
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <ins 
@@ -130,7 +134,7 @@ const ViewLyrics = () => {
               ref={adRef}
             ></ins>
           </div>
-
+  
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">
               <h3>You May Also Like</h3>
@@ -155,6 +159,6 @@ const ViewLyrics = () => {
       )}
     </div>
   );
-};
+}
 
 export default ViewLyrics;

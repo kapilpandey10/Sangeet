@@ -17,6 +17,7 @@ const AddLyrics = () => {
   const [releaseYear, setReleaseYear] = useState('');
   const [videoId, setVideoId] = useState('');
   const [message, setMessage] = useState('');
+  const [addedBy, setAddedBy] = useState(''); // State for "Your Name"
 
   useEffect(() => {
     document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
@@ -112,7 +113,8 @@ const AddLyrics = () => {
             lyrics,
             published_date: `${releaseYear}-01-01`, // Store the year with a default month and day
             music_url: videoId ? `https://www.youtube.com/embed/${videoId}` : null, // Construct full URL or null if empty
-            status: 'pending' // Set the status to pending
+            status: 'pending', // Set the status to pending
+            added_by: addedBy, // Store the user's name
           }
         ]);
 
@@ -127,7 +129,7 @@ const AddLyrics = () => {
       setLyrics('');
       setReleaseYear('');
       setVideoId('');
-
+      setAddedBy(''); // Reset the added_by field
       setTimeout(() => {
         setMessage('');
       }, 5000);
@@ -219,7 +221,7 @@ const AddLyrics = () => {
             id="lyrics"
             value={lyrics}
             onChange={(e) => setLyrics(e.target.value)}
-            rows={10} // Make the text box larger
+            rows={10}
             required
           />
         </div>
@@ -247,6 +249,17 @@ const AddLyrics = () => {
             placeholder="VIDEO-ID-HERE"
           />
           <small>Example: https://www.youtube.com/embed/{videoId || 'VIDEO-ID-HERE'}</small>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="addedBy">Your Name</label> {/* New field */}
+          <input
+            type="text"
+            id="addedBy"
+            value={addedBy}
+            onChange={(e) => setAddedBy(e.target.value)}
+            required
+          />
         </div>
 
         <button type="submit">Submit Lyrics</button>

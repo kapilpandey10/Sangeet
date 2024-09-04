@@ -4,96 +4,71 @@
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  h1 {
-    font-size: 2.2em;
-    margin-bottom: 20px;
+  .view-lyrics-container h1 {
+    font-size: 2.4rem;
     color: #333;
+    margin-bottom: 15px;
   }
   
-  p {
-    font-size: 1.1em;
+  .view-lyrics-container p {
+    font-size: 1.2rem;
     color: #555;
+    line-height: 1.6;
   }
   
-  pre {
-    background-color: #f5f5f5;
+  .view-lyrics-container .lyrics-text {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    color: #444;
+    white-space: pre-wrap;
+    background-color: #ffffff;
     padding: 15px;
     border-radius: 5px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-size: 1em;
-    color: #333;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .music-video {
-    margin-top: 20px;
+    margin: 20px 0;
   }
   
   .related-lyrics {
     margin-top: 40px;
   }
   
+  .related-lyrics-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
   .related-lyrics h3 {
-    font-size: 1.8em;
-    color: #333;
     margin-bottom: 20px;
   }
   
-  .related-lyrics-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
   .related-lyric-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
+    text-align: center;
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 10px;
+    padding: 15px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    text-decoration: none;
-    color: #333;
-    transition: background-color 0.3s ease;
-    width: calc(33.333% - 20px); /* Three items per row */
+    width: 30%;
   }
   
-  .related-lyric-item:hover {
-    background-color: #f1f1f1;
+  .related-lyric-item h4 {
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .related-lyric-item p {
+    font-size: 1rem;
+    color: #777;
   }
   
   .related-lyric-icon {
-    margin-right: 10px;
-  }
-  
-  .related-lyric-info h4 {
-    margin: 0;
-    font-size: 1.2em;
-    color: #007bff;
-  }
-  
-  .related-lyric-info p {
-    margin: 0;
-    font-size: 1em;
-    color: #555;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .related-lyrics-grid {
-      flex-direction: column;
-    }
-  
-    .related-lyric-item {
-      width: 100%;
-    }
-  
-    .music-video iframe {
-      width: 100%;
-      height: auto;
-    }
+    margin-bottom: 10px;
   }
   

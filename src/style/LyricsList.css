@@ -1,99 +1,141 @@
+/* Main container */
 .lyrics-list-container {
-    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #f7f9fc;
   }
   
+  /* Heading */
   h1 {
     text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #2d3748;
+    letter-spacing: 1.5px;
   }
   
+  /* Search bar */
   .search-bar {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
   
   .search-input {
-    width: 80%;
-    max-width: 400px;
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
+    width: 60%;
+    max-width: 500px;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 30px;
     border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
   }
   
+  .search-input:focus {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    outline: none;
+  }
+  
+  /* Artist Section */
   .artist-section {
-    margin-bottom: 20px;
+    margin-bottom: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
   }
   
   h2 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .lyrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-gap: 15px;
-  }
-  
-  .lyric-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 5px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 20px;
     text-align: center;
   }
   
+  /* Lyrics Grid */
+  .lyrics-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Lyric card */
+  .lyric-card {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .lyric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Lyric content */
   .lyric-card-content h3 {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 5px;
+    font-size: 18px;
+    color: #2d3748;
+    margin-bottom: 10px;
   }
   
   .lyric-card-content p {
-    margin-bottom: 10px;
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 15px;
   }
   
   .small-text {
     font-size: 12px;
-    color: #777;
+    color: #a0aec0;
   }
   
+  /* View lyrics button */
   .view-lyrics-button {
+    display: inline-block;
     font-size: 14px;
-    background-color: #007BFF;
+    background-color: #3182ce;
     color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 3px;
+    padding: 8px 15px;
+    border-radius: 20px;
     text-decoration: none;
+    transition: background-color 0.3s ease;
   }
   
   .view-lyrics-button:hover {
-    background-color: #0056b3;
+    background-color: #2b6cb0;
     cursor: pointer;
   }
   
+  /* View More button */
   .view-more-container {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 30px;
   }
   
   .view-more-button {
-    background-color: #007BFF;
+    background-color: #3182ce;
     color: white;
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: 12px 30px;
+    font-size: 16px;
     border: none;
-    border-radius: 3px;
+    border-radius: 25px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
   }
   
   .view-more-button:hover {
-    background-color: #0056b3;
+    background-color: #2b6cb0;
   }
+  
+
+
+
   

@@ -12,12 +12,15 @@ import TermsAndService from './components/TermsAndService';
 import ContactUs from './components/ContactUs';
 import SearchResults from './components/SearchResults';
 import AdminLogin from './components/AdminLogin';
+import PageLoaderWrapper from './components/PageLoaderWrapper';
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
     <Router>
+      <PageLoaderWrapper>
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -31,7 +34,7 @@ function App() {
             isAuthenticated ? (
               <AdminDashboard />
             ) : (
-              <Navigate to="/admin/login" />
+              <Navigate to="/admin-entrypoint" />
             )
           } 
         />
@@ -41,7 +44,9 @@ function App() {
         <Route path="/search" element={<SearchResults />} />
         <Route path="*" element={<Navigate to="/" />} /> {/* Catch-all route */}
       </Routes>
+      
       <Footer />
+      </PageLoaderWrapper>
     </Router>
   );
 }

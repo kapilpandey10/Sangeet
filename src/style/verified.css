@@ -1,0 +1,18 @@
+.verified-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .verified-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .verified-text {
+    color: #1DA1F2; /* Blue color */
+    font-size: 14px;
+    font-weight: bold;
+  }
+  

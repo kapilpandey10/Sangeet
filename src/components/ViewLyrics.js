@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { FaMusic } from 'react-icons/fa';
+import Verified from './verified';  // Correct import for Verified component
 import '../style/ViewLyrics.css';
 
 // Access environment variables
@@ -35,14 +36,14 @@ const ViewLyrics = () => {
           .single();
 
         if (error || !data) {
-          throw new Error('Lyrics not found.');
+          throw new Error('Lyrics not found or not approved.');
         }
 
         setLyric(data);
         fetchRelatedLyrics(data.artist);
       } catch (error) {
         console.error('Error fetching lyric:', error);
-        setError("Failed to fetch lyric.");
+        setError("Failed to fetch lyric or lyric not approved.");
       } finally {
         setLoading(false);
       }
@@ -61,23 +62,7 @@ const ViewLyrics = () => {
           throw error;
         }
 
-        if (artistLyrics.length < 3) {
-          const { data: otherLyrics, error: otherError } = await supabase
-            .from('lyrics')
-            .select('*')
-            .neq('id', id)
-            .neq('artist', artist)
-            .order('published_date', { ascending: false })
-            .limit(3 - artistLyrics.length);
-
-          if (otherError) {
-            throw otherError;
-          }
-
-          setRelatedLyrics([...artistLyrics, ...otherLyrics]);
-        } else {
-          setRelatedLyrics(artistLyrics);
-        }
+        setRelatedLyrics(artistLyrics);
       } catch (error) {
         console.error('Error fetching related lyrics:', error);
         setRelatedLyrics([]);
@@ -88,7 +73,7 @@ const ViewLyrics = () => {
 
     if (adRef.current && !adRef.current.classList.contains('adsbygoogle-initialized')) {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-      adRef.current.classList.add('adsbygoogle-initialized'); // Mark the ad as initialized
+      adRef.current.classList.add('adsbygoogle-initialized');
     }
   }, [id]);
 
@@ -125,9 +110,12 @@ const ViewLyrics = () => {
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
-          <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p> {/* Display the lyrics writer */}
-          <p><strong>Published Date:</strong> {lyric.published_date}</p>
-          <pre className="lyrics-text">{lyric.lyrics}</pre> {/* Larger text size */}
+          <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p>
+          <p>
+            <strong>Published Date:</strong> {lyric.published_date}
+            {lyric.status === 'approved' && <Verified />}
+          </p>
+          <pre className="lyrics-text">{lyric.lyrics}</pre>
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
 
           {/* Google AdSense Ad */}
@@ -139,7 +127,7 @@ const ViewLyrics = () => {
               data-ad-slot="6720877169"
               data-ad-format="auto"
               data-full-width-responsive="true"
-              ref={adRef} // Attach ref to the ad element
+              ref={adRef}
             ></ins>
           </div>
 
@@ -170,4 +158,3 @@ const ViewLyrics = () => {
 };
 
 export default ViewLyrics;
-

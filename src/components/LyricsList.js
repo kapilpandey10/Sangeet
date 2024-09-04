@@ -23,6 +23,7 @@ const LyricsList = () => {
         const { data, error } = await supabase
           .from('lyrics')
           .select('*')
+          .eq('status', 'approved') // Only fetch approved lyrics
           .order('artist', { ascending: true });
 
         if (error) {
@@ -109,7 +110,6 @@ const LyricsList = () => {
               <div key={lyric.id} className="lyric-card">
                 <div className="lyric-card-content">
                   <h3>{lyric.title}</h3>
-                  {/* Display only the year */}
                   <p className="small-text">Published: {new Date(lyric.published_date).getFullYear()}</p>
                   <Link to={`/lyrics/${lyric.id}`} className="view-lyrics-button">View Lyrics</Link>
                 </div>

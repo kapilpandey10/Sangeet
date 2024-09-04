@@ -52,6 +52,22 @@ const Messages = () => {
     }
   };
 
+  // Function to delete the selected message
+  const handleDeleteMessage = async (messageId) => {
+    const { error } = await supabase
+      .from('message')
+      .delete()
+      .eq('id', messageId);
+
+    if (error) {
+      console.error('Error deleting message:', error);
+    } else {
+      // Update the state to remove the deleted message
+      setMessages(messages.filter((msg) => msg.id !== messageId));
+      setSelectedMessage(null);
+    }
+  };
+
   return (
     <div className="messages-container">
       <h2>Messages</h2>
@@ -68,6 +84,13 @@ const Messages = () => {
                 <p><strong>Email:</strong> {message.email}</p>
               </div>
               {!message.viewed && <span className="new-badge">New</span>}
+              {/* Delete button */}
+              <button
+                className="delete-button"
+                onClick={() => handleDeleteMessage(message.id)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>

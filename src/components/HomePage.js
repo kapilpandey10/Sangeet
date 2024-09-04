@@ -82,7 +82,7 @@ const HomePage = () => {
 
     return (
       <div className="youtube-video-section">
-        <h3>Check out our latest video</h3>
+        <h3>Check out old Nepali music video</h3>
         <iframe
           width="560"
           height="315"

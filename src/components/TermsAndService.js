@@ -5,7 +5,7 @@ const TermsAndService = () => {
     <div className="terms-container">
       <h1>Terms and Conditions</h1>
       <p>
-        Welcome to [Your Website Name]. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions.
+        Welcome to Sangit. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions.
       </p>
       <h2>Use of the Website</h2>
       <p>
@@ -13,11 +13,11 @@ const TermsAndService = () => {
       </p>
       <h2>Intellectual Property</h2>
       <p>
-        The content, logos, and other materials on this website are owned by [Your Website Name] and are protected by intellectual property laws. You may not reproduce, distribute, or otherwise use any content without our express permission.
+        The content, logos, and other materials on this website are owned by Sangit and are protected by intellectual property laws. You may not reproduce, distribute, or otherwise use any content without our express permission.
       </p>
       <h2>Limitation of Liability</h2>
       <p>
-        [Your Website Name] is not liable for any damages that may arise from the use of this website or the information contained within it.
+        Sangit is not liable for any damages that may arise from the use of this website or the information contained within it.
       </p>
       <h2>Changes to the Terms</h2>
       <p>

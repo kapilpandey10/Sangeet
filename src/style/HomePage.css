@@ -5,7 +5,7 @@
     padding: 20px;
     text-align: center;
     position: relative;
-    background-color: #f0f0f0;
+    background-color: #f8f9fa;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -14,9 +14,9 @@
   /* Floating Emojis */
   .floating-emoji {
     position: absolute;
-    font-size: 50px;
+    font-size: 40px; /* Adjusted for mobile responsiveness */
     opacity: 0.5;
-    pointer-events: none; /* Prevent emojis from interfering with clicks */
+    pointer-events: none;
     transition: transform 0.1s ease-out;
   }
   
@@ -42,7 +42,7 @@
   
   /* Heading */
   h1 {
-    font-size: 2.2em;
+    font-size: 2.5rem;
     margin-bottom: 20px;
     color: #333;
     font-weight: bold;
@@ -50,7 +50,7 @@
   
   /* Paragraph */
   p {
-    font-size: 1.1em;
+    font-size: 1.1rem;
     color: #555;
     margin-bottom: 30px;
   }
@@ -81,6 +81,31 @@
   .lyric-item:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Mobile Responsive Adjustments */
+  @media (max-width: 768px) {
+    .lyric-item {
+      width: 48%;
+    }
+  
+    h1 {
+      font-size: 2rem;
+    }
+  
+    p {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .lyric-item {
+      width: 100%;
+    }
+  
+    .floating-emoji {
+      font-size: 30px;
+    }
   }
   
   /* Color Themes */

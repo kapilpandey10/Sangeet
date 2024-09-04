@@ -23,8 +23,8 @@ const HomePage = () => {
         .from('lyrics')
         .select('*')
         .eq('status', 'approved')
-        .order('published_date', { ascending: false })
-        .limit(4);
+        .order('created_at', { ascending: false }) // Order by 'created_at' for the latest added
+        .limit(4);  // Limit to the latest 4 lyrics
 
       if (error) {
         console.error('Error fetching approved lyrics:', error);
@@ -81,6 +81,7 @@ const HomePage = () => {
                 <div className={`lyric-item color-${index % 4}`} key={lyric.id}>
                   <h3>{lyric.title}</h3>
                   <p>{lyric.artist}</p>
+                  <p>{new Date(lyric.published_date).getFullYear()}</p> {/* Display year */}
                   <Link to={`/lyrics/${lyric.id}`}>Read Lyrics</Link>
                 </div>
               ))}

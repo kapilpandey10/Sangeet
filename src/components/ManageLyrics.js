@@ -12,49 +12,61 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const ManageLyrics = () => {
   const [lyrics, setLyrics] = useState([]);
   const [editLyric, setEditLyric] = useState(null);
+  const [message, setMessage] = useState(''); // New state for success/error messages
+  const [messageType, setMessageType] = useState(''); // To distinguish between success and error
 
   useEffect(() => {
     const fetchLyrics = async () => {
-      const { data, error } = await supabase
-        .from('lyrics')
-        .select('*');
-
-      if (error) {
+      try {
+        const { data, error } = await supabase.from('lyrics').select('*');
+        if (error) throw error;
+        setLyrics(data || []); // Ensure data is an array
+      } catch (error) {
         console.error('Error fetching lyrics:', error);
-      } else {
-        setLyrics(data);
+        setLyrics([]); // Set to empty array on error
       }
     };
-
     fetchLyrics();
   }, []);
 
   const handleDelete = async (id) => {
-    const { error } = await supabase
-      .from('lyrics')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabase.from('lyrics').delete().eq('id', id);
+      if (error) throw error;
 
-    if (error) {
-      console.error('Error deleting lyric:', error);
-    } else {
-      setLyrics(lyrics.filter((lyric) => lyric.id !== id));
+      // Filter out deleted lyric
+      setLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
+      setMessageType('success');
+      setMessage('Lyrics deleted successfully.');
+    } catch (error) {
+      setMessageType('error');
+      setMessage('Failed to delete the lyrics. Please try again.');
     }
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const { id, title, artist, lyrics, published_date, music_url } = editLyric;
-    const { error } = await supabase
-      .from('lyrics')
-      .update({ title, artist, lyrics, published_date, music_url })
-      .eq('id', id);
+    try {
+      const { id, title, artist, lyrics, lyrics_writer, published_date, music_url } = editLyric;
+      const { error } = await supabase
+        .from('lyrics')
+        .update({ title, artist, lyrics, lyrics_writer, published_date, music_url })
+        .eq('id', id);
 
-    if (error) {
-      console.error('Error updating lyric:', error);
-    } else {
-      setLyrics(lyrics.map((lyric) => (lyric.id === id ? editLyric : lyric)));
+      if (error) throw error;
+
+      setLyrics((prevLyrics) =>
+        Array.isArray(prevLyrics)
+          ? prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
+          : []
+      );
       setEditLyric(null); // Close the edit form after update
+
+      setMessageType('success');
+      setMessage('Lyrics updated successfully!');
+    } catch (error) {
+      setMessageType('error');
+      setMessage('Failed to update the lyrics. Please try again.');
     }
   };
 
@@ -70,77 +82,98 @@ const ManageLyrics = () => {
   return (
     <div className="manage-lyrics-container">
       <h2>Manage Lyrics</h2>
+
+      {/* Display success/error messages */}
+      {message && (
+        <div className={`message ${messageType}`}>
+          {message}
+        </div>
+      )}
+
       {lyrics.length > 0 ? (
-        <ul>
+        <ul className="lyrics-list">
           {lyrics.map((lyric) => (
-            <li key={lyric.id}>
+            <li key={lyric.id} className="lyrics-item">
               <h3>{lyric.title}</h3>
               <p><strong>Artist:</strong> {lyric.artist}</p>
+              <p><strong>Writer:</strong> {lyric.lyrics_writer || 'N/A'}</p> {/* Show the writer */}
               <button onClick={() => handleEditClick(lyric)}>Update</button>
-              <button onClick={() => handleDelete(lyric.id)}>Delete</button>
+              <button onClick={() => handleDelete(lyric.id)} className="delete-button">Delete</button>
+
+              {editLyric && editLyric.id === lyric.id && (
+                <div className="edit-lyric-form">
+                  <h2>Edit Lyric</h2>
+                  <form onSubmit={handleUpdate}>
+                    <label>
+                      Title:
+                      <input
+                        type="text"
+                        name="title"
+                        value={editLyric.title}
+                        onChange={handleChange}
+                        required
+                      />
+                    </label>
+                    <label>
+                      Artist:
+                      <input
+                        type="text"
+                        name="artist"
+                        value={editLyric.artist}
+                        onChange={handleChange}
+                        required
+                      />
+                    </label>
+                    <label>
+                      Lyrics Writer:
+                      <input
+                        type="text"
+                        name="lyrics_writer"
+                        value={editLyric.lyrics_writer || ''}
+                        onChange={handleChange}
+                      />
+                    </label>
+                    <label>
+                      Lyrics:
+                      <textarea
+                        name="lyrics"
+                        value={editLyric.lyrics}
+                        onChange={handleChange}
+                        required
+                        rows={5}
+                      />
+                    </label>
+                    <label>
+                      Published Date:
+                      <input
+                        type="date"
+                        name="published_date"
+                        value={editLyric.published_date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </label>
+                    <label>
+                      Music URL:
+                      <input
+                        type="text"
+                        name="music_url"
+                        value={editLyric.music_url || ''}
+                        onChange={handleChange}
+                      />
+                    </label>
+                    <div className="form-actions">
+                      <button type="submit" className="save-button">Save Changes</button>
+                      <button type="button" onClick={() => setEditLyric(null)} className="cancel-button">Cancel</button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </li>
           ))}
         </ul>
       ) : (
         <p>No lyrics available.</p>
-      )}
-
-      {editLyric && (
-        <div className="edit-lyric-form">
-          <h2>Edit Lyric</h2>
-          <form onSubmit={handleUpdate}>
-            <label>
-              Title:
-              <input
-                type="text"
-                name="title"
-                value={editLyric.title}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label>
-              Artist:
-              <input
-                type="text"
-                name="artist"
-                value={editLyric.artist}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label>
-              Lyrics:
-              <textarea
-                name="lyrics"
-                value={editLyric.lyrics}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label>
-              Published Date:
-              <input
-                type="date"
-                name="published_date"
-                value={editLyric.published_date}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label>
-              Music URL:
-              <input
-                type="text"
-                name="music_url"
-                value={editLyric.music_url}
-                onChange={handleChange}
-              />
-            </label>
-            <button type="submit">Save Changes</button>
-            <button type="button" onClick={() => setEditLyric(null)}>Cancel</button>
-          </form>
-        </div>
       )}
     </div>
   );

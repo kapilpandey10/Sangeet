@@ -125,8 +125,9 @@ const ViewLyrics = () => {
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
+          <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p> {/* Display the lyrics writer */}
           <p><strong>Published Date:</strong> {lyric.published_date}</p>
-          <pre>{lyric.lyrics}</pre>
+          <pre className="lyrics-text">{lyric.lyrics}</pre> {/* Larger text size */}
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
 
           {/* Google AdSense Ad */}

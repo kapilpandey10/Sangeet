@@ -31,34 +31,9 @@ const AddLyrics = () => {
     metaKeywords.content = "add lyrics, submit lyrics, song lyrics, Sangeet Lyrics Central, music lyrics, contribute lyrics, add new song, YouTube lyrics";
     document.head.appendChild(metaKeywords);
 
-    const metaOgTitle = document.createElement('meta');
-    metaOgTitle.setAttribute("property", "og:title");
-    metaOgTitle.content = "Add Song Lyrics | Sangeet Lyrics Central";
-    document.head.appendChild(metaOgTitle);
-
-    const metaOgDescription = document.createElement('meta');
-    metaOgDescription.setAttribute("property", "og:description");
-    metaOgDescription.content = "Contribute to our growing collection of song lyrics by submitting your favorites. Easily add details like the song title, artist, release year, and YouTube video ID.";
-    document.head.appendChild(metaOgDescription);
-
-    const metaOgUrl = document.createElement('meta');
-    metaOgUrl.setAttribute("property", "og:url");
-    metaOgUrl.content = "https://yourwebsite.com/add-lyrics";
-    document.head.appendChild(metaOgUrl);
-
-    const metaOgImage = document.createElement('meta');
-    metaOgImage.setAttribute("property", "og:image");
-    metaOgImage.content = "https://yourwebsite.com/images/add-lyrics-og-image.jpg";
-    document.head.appendChild(metaOgImage);
-
     return () => {
-      // Clean up meta tags when component unmounts
       document.head.removeChild(metaDescription);
       document.head.removeChild(metaKeywords);
-      document.head.removeChild(metaOgTitle);
-      document.head.removeChild(metaOgDescription);
-      document.head.removeChild(metaOgUrl);
-      document.head.removeChild(metaOgImage);
     };
   }, []);
 
@@ -181,8 +156,8 @@ const AddLyrics = () => {
             id="lyrics"
             value={lyrics}
             onChange={(e) => setLyrics(e.target.value)}
-            
             rows={10} // Make the text box larger
+            required
           />
         </div>
 
@@ -193,9 +168,9 @@ const AddLyrics = () => {
             id="releaseYear"
             value={releaseYear}
             onChange={(e) => setReleaseYear(e.target.value)}
-            
             min="1800"
             max={new Date().getFullYear()}
+            required
           />
         </div>
 

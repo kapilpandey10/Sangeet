@@ -7,6 +7,8 @@
   
   .manage-lyrics-container h2 {
     margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #333;
   }
   
   .manage-lyrics-container ul {
@@ -15,17 +17,29 @@
   }
   
   .manage-lyrics-container ul li {
-    background-color: #f9f9f9;
+    background-color: #f3f4f6;
     padding: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .manage-lyrics-container ul li:hover {
+    background-color: #e9ecef;
   }
   
   .manage-lyrics-container ul li h3 {
     margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+  }
+  
+  .manage-lyrics-container ul li p {
+    margin: 0;
+    color: #6c757d;
   }
   
   .manage-lyrics-container ul li button {
@@ -39,11 +53,11 @@
   }
   
   .manage-lyrics-container ul li button:first-of-type {
-    background-color: #ffc107; /* Update button color */
+    background-color: #007bff; /* Update button color */
   }
   
   .manage-lyrics-container ul li button:first-of-type:hover {
-    background-color: #e0a800;
+    background-color: #0056b3;
   }
   
   .manage-lyrics-container ul li button:last-of-type {
@@ -57,13 +71,15 @@
   .edit-lyric-form {
     margin-top: 30px;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #f3f4f6;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
   .edit-lyric-form h2 {
     margin-bottom: 20px;
+    font-size: 1.6rem;
+    color: #333;
   }
   
   .edit-lyric-form form {
@@ -72,17 +88,23 @@
   }
   
   .edit-lyric-form label {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-weight: bold;
+    color: #495057;
   }
   
   .edit-lyric-form input,
   .edit-lyric-form textarea {
-    padding: 10px;
+    padding: 12px;
     margin-top: 5px;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #ced4da;
     width: 100%;
+    font-size: 1rem;
+  }
+  
+  .edit-lyric-form textarea {
+    resize: vertical;
   }
   
   .edit-lyric-form button {
@@ -94,6 +116,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 1rem;
   }
   
   .edit-lyric-form button:hover {
@@ -106,5 +129,30 @@
   
   .edit-lyric-form button[type="button"]:hover {
     background-color: #5a6268;
+  }
+  
+  .edit-lyric-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
   }
   

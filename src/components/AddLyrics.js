@@ -10,8 +10,9 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const AddLyrics = () => {
   const [title, setTitle] = useState('');
-  const [artists, setArtists] = useState([{ name: '' }]); // For multiple artists
+  const [artists, setArtists] = useState([{ name: '', suggestions: [] }]); // For multiple artists
   const [writer, setWriter] = useState(''); // Lyrics writer
+  const [writerSuggestions, setWriterSuggestions] = useState([]);
   const [lyrics, setLyrics] = useState('');
   const [releaseYear, setReleaseYear] = useState('');
   const [videoId, setVideoId] = useState('');
@@ -20,7 +21,6 @@ const AddLyrics = () => {
   useEffect(() => {
     document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
 
-    // Add meta tags for SEO
     const metaDescription = document.createElement('meta');
     metaDescription.name = "description";
     metaDescription.content = "Contribute to Sangeet Lyrics Central by adding new song lyrics. Fill in details such as title, artist, release year, and an optional YouTube video ID. Join our community of music lovers and share your favorite lyrics today.";
@@ -39,7 +39,7 @@ const AddLyrics = () => {
 
   // Function to handle adding a new artist input field
   const addArtist = () => {
-    setArtists([...artists, { name: '' }]);
+    setArtists([...artists, { name: '', suggestions: [] }]);
   };
 
   // Function to handle removing an artist input field
@@ -49,11 +49,53 @@ const AddLyrics = () => {
     setArtists(updatedArtists);
   };
 
-  // Function to handle changes in the artist input fields
-  const handleArtistChange = (index, event) => {
+  // Fetch artist suggestions from the lyrics table
+  const handleArtistChange = async (index, event) => {
     const updatedArtists = [...artists];
     updatedArtists[index].name = event.target.value;
     setArtists(updatedArtists);
+
+    // Query the `lyrics` table for unique artist names
+    const { data, error } = await supabase
+      .from('lyrics')
+      .select('artist')
+      .ilike('artist', `%${event.target.value}%`)
+      .limit(5);
+
+    if (!error) {
+      const uniqueArtists = [...new Set(data.map(lyric => lyric.artist))];
+      updatedArtists[index].suggestions = uniqueArtists;
+      setArtists(updatedArtists);
+    }
+  };
+
+  const selectArtistSuggestion = (index, suggestion) => {
+    const updatedArtists = [...artists];
+    updatedArtists[index].name = suggestion;
+    updatedArtists[index].suggestions = []; // Clear suggestions after selecting
+    setArtists(updatedArtists);
+  };
+
+  // Fetch lyrics writer suggestions from the lyrics table
+  const handleWriterChange = async (event) => {
+    setWriter(event.target.value);
+
+    // Query the `lyrics` table for unique lyrics writer names
+    const { data, error } = await supabase
+      .from('lyrics')
+      .select('lyrics_writer')
+      .ilike('lyrics_writer', `%${event.target.value}%`)
+      .limit(5);
+
+    if (!error) {
+      const uniqueWriters = [...new Set(data.map(lyric => lyric.lyrics_writer))];
+      setWriterSuggestions(uniqueWriters);
+    }
+  };
+
+  const selectWriterSuggestion = (suggestion) => {
+    setWriter(suggestion);
+    setWriterSuggestions([]); // Clear suggestions after selecting
   };
 
   const handleSubmit = async (e) => {
@@ -76,23 +118,20 @@ const AddLyrics = () => {
 
       if (error) throw error;
 
-      console.log('Lyrics added successfully:', data);
       setMessage('Lyrics submitted successfully! It will be reviewed by the admin and listed soon.');
 
       // Reset the form
       setTitle('');
-      setArtists([{ name: '' }]);
+      setArtists([{ name: '', suggestions: [] }]);
       setWriter('');
       setLyrics('');
       setReleaseYear('');
       setVideoId('');
 
-      // Clear the message after 5 seconds
       setTimeout(() => {
         setMessage('');
       }, 5000);
     } catch (error) {
-      console.error('Error adding lyrics:', error);
       setMessage('An error occurred while adding lyrics: ' + error.message);
       setTimeout(() => {
         setMessage('');
@@ -132,6 +171,20 @@ const AddLyrics = () => {
                   <FaTrash />
                 </button>
               )}
+
+              {/* Show artist suggestions */}
+              {artist.suggestions.length > 0 && (
+                <ul className="suggestions-list">
+                  {artist.suggestions.map((suggestion, i) => (
+                    <li
+                      key={i}
+                      onClick={() => selectArtistSuggestion(index, suggestion)}
+                    >
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
           <button type="button" onClick={addArtist} className="add-artist-button">
@@ -145,9 +198,19 @@ const AddLyrics = () => {
             type="text"
             id="writer"
             value={writer}
-            onChange={(e) => setWriter(e.target.value)}
+            onChange={handleWriterChange}
             required
           />
+          {/* Show writer suggestions */}
+          {writerSuggestions.length > 0 && (
+            <ul className="suggestions-list">
+              {writerSuggestions.map((suggestion, i) => (
+                <li key={i} onClick={() => selectWriterSuggestion(suggestion)}>
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="form-group">

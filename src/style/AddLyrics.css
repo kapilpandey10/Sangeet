@@ -54,4 +54,21 @@
     color: #666;
     font-size: 0.9em;
   }
+  .suggestions-list {
+    border: 1px solid #ccc;
+    max-height: 100px;
+    overflow-y: auto;
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0;
+  }
+  
+  .suggestions-list li {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .suggestions-list li:hover {
+    background-color: #f0f0f0;
+  }
   

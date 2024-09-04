@@ -30,8 +30,26 @@ const Messages = () => {
     fetchMessages();
   }, []);
 
-  const handleSelectMessage = (message) => {
+  const handleSelectMessage = async (message) => {
     setSelectedMessage(message);
+
+    // If the message hasn't been viewed, mark it as viewed in the database
+    if (!message.viewed) {
+      const { error } = await supabase
+        .from('message')
+        .update({ viewed: true })
+        .eq('id', message.id);
+
+      if (error) {
+        console.error('Error updating message status:', error);
+      } else {
+        // Update the state to reflect the message as viewed
+        const updatedMessages = messages.map((msg) =>
+          msg.id === message.id ? { ...msg, viewed: true } : msg
+        );
+        setMessages(updatedMessages);
+      }
+    }
   };
 
   return (
@@ -40,11 +58,16 @@ const Messages = () => {
       <div className="message-list">
         <ul>
           {messages.map((message) => (
-            <li key={message.id} onClick={() => handleSelectMessage(message)}>
+            <li
+              key={message.id}
+              className={`message-item ${message.viewed ? '' : 'new-message'}`}
+              onClick={() => handleSelectMessage(message)}
+            >
               <div className="message-profile">
                 <p><strong>Name:</strong> {message.name}</p>
                 <p><strong>Email:</strong> {message.email}</p>
               </div>
+              {!message.viewed && <span className="new-badge">New</span>}
             </li>
           ))}
         </ul>

@@ -16,18 +16,17 @@ const ApproveLyrics = () => {
 
   useEffect(() => {
     const fetchPendingLyrics = async () => {
-        const { data, error } = await supabase
-          .from('lyrics')
-          .select('*')
-          .eq('status', 'pending');  // Fetch only pending lyrics
-      
-        if (error) {
-          console.error('Error fetching pending lyrics:', error);
-        } else {
-          setPendingLyrics(data); // Assume setPendingLyrics is a state setter for your admin page
-        }
-      };
-      
+      const { data, error } = await supabase
+        .from('lyrics')
+        .select('*')
+        .eq('status', 'pending');
+
+      if (error) {
+        console.error('Error fetching pending lyrics:', error);
+      } else {
+        setPendingLyrics(data);
+      }
+    };
 
     fetchPendingLyrics();
   }, []);
@@ -68,6 +67,33 @@ const ApproveLyrics = () => {
     setSelectedLyric(lyric);
   };
 
+  const extractYouTubeId = (url) => {
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const matches = url.match(regex);
+    return matches ? matches[1] : null;
+  };
+
+  const renderYouTubeEmbed = (url) => {
+    const videoId = extractYouTubeId(url);
+    if (!videoId) return null;
+
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&controls=1`;
+
+    return (
+      <div className="youtube-video-section">
+        <iframe
+          width="100%"
+          height="315"
+          src={embedUrl}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  };
+
   return (
     <div className="approve-lyrics-container">
       <h2>Approve or Reject Pending Lyrics</h2>
@@ -90,20 +116,9 @@ const ApproveLyrics = () => {
               <p><strong>Release Year:</strong> {selectedLyric.published_date.split('-')[0]}</p>
               <p><strong>Lyrics:</strong></p>
               <pre>{selectedLyric.lyrics}</pre>
-              {selectedLyric.music_url && (
-                <div>
-                  <strong>Music Video:</strong>
-                  <iframe
-                    width="100%"
-                    height="315"
-                    src={selectedLyric.music_url}
-                    title={selectedLyric.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              )}
+
+              {selectedLyric.music_url && renderYouTubeEmbed(selectedLyric.music_url)}
+
               <div className="action-buttons">
                 <button onClick={() => handleApprove(selectedLyric.id)} className="approve-btn">Approve</button>
                 <button onClick={() => handleReject(selectedLyric.id)} className="reject-btn">Reject</button>

@@ -12,11 +12,10 @@ const AddLyrics = () => {
   const [title, setTitle] = useState('');
   const [artists, setArtists] = useState([{ name: '', suggestions: [] }]);
   const [writer, setWriter] = useState('');
-  const [writerSuggestions, setWriterSuggestions] = useState([]);
   const [lyrics, setLyrics] = useState('');
   const [releaseYear, setReleaseYear] = useState('');
-  const [videoId, setVideoId] = useState('');
-  const [videoError, setVideoError] = useState(''); // Error message for invalid YouTube IDs
+  const [videoUrl, setVideoUrl] = useState(''); // Changed from videoId to videoUrl
+  const [videoError, setVideoError] = useState(''); // Error message for invalid YouTube URLs or IDs
   const [message, setMessage] = useState('');
   const [addedBy, setAddedBy] = useState('');
 
@@ -30,16 +29,27 @@ const AddLyrics = () => {
     return () => document.head.removeChild(metaDescription);
   }, []);
 
-  // Function to validate the video ID
-  const validateYouTubeID = (url) => {
-    const regex = /^[a-zA-Z0-9_-]{11}$/;
-    if (regex.test(url)) {
-      setVideoError('');
-      return url;
+  // Function to validate the YouTube URL or video ID
+  const validateYouTubeURL = (url) => {
+    const urlRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const idRegex = /^[a-zA-Z0-9_-]{11}$/;
+
+    let videoId = null;
+
+    if (urlRegex.test(url)) {
+      // Extract video ID from full URL
+      const match = url.match(urlRegex);
+      videoId = match ? match[1] : null;
+    } else if (idRegex.test(url)) {
+      // Direct video ID entered
+      videoId = url;
     } else {
-      setVideoError('Please enter a valid YouTube Video ID (11 characters).');
+      setVideoError('Please enter a valid YouTube Video URL or ID.');
       return null;
     }
+
+    setVideoError('');
+    return videoId;
   };
 
   // Function to handle adding a new artist input field
@@ -62,7 +72,6 @@ const AddLyrics = () => {
     setArtists(updatedArtists);
 
     if (artistName.length > 1) {
-      // Query the `lyrics` table for unique artist names
       const { data, error } = await supabase
         .from('lyrics')
         .select('artist')
@@ -92,7 +101,7 @@ const AddLyrics = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const finalVideoId = validateYouTubeID(videoId);
+    const finalVideoId = validateYouTubeURL(videoUrl);
     if (!finalVideoId) return; // Stop submission if video ID is invalid
 
     try {
@@ -105,7 +114,7 @@ const AddLyrics = () => {
             lyrics_writer: writer,
             lyrics,
             published_date: `${releaseYear}-01-01`,
-            music_url: finalVideoId,
+            music_url: `https://www.youtube.com/watch?v=${finalVideoId}`,
             status: 'pending',
             added_by: addedBy,
           }
@@ -114,13 +123,12 @@ const AddLyrics = () => {
       if (error) throw error;
 
       setMessage('Lyrics submitted successfully! It will be reviewed by the admin and listed soon.');
-      // Reset the form
       setTitle('');
       setArtists([{ name: '', suggestions: [] }]);
       setWriter('');
       setLyrics('');
       setReleaseYear('');
-      setVideoId('');
+      setVideoUrl('');
       setAddedBy('');
       setTimeout(() => setMessage(''), 5000);
     } catch (error) {
@@ -213,17 +221,17 @@ const AddLyrics = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="videoId">YouTube Video ID</label>
+          <label htmlFor="videoUrl">YouTube Video URL or ID</label>
           <input
             type="text"
-            id="videoId"
-            value={videoId}
-            onChange={(e) => setVideoId(e.target.value)}
+            id="videoUrl"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
             required
-            placeholder="Enter YouTube Video ID"
+            placeholder="Enter YouTube Video URL or ID"
           />
           {videoError && <p className="error-message">{videoError}</p>}
-          <small>Example: MqFycWPbwmQ. Do not write whole URL.</small>
+          <small>Example: https://www.youtube.com/watch?v=MqFycWPbwmQ or MqFycWPbwmQ</small>
         </div>
 
         <div className="form-group">

@@ -18,6 +18,7 @@ const AddLyrics = () => {
   const [videoError, setVideoError] = useState(''); // Error message for invalid YouTube URLs or IDs
   const [message, setMessage] = useState('');
   const [addedBy, setAddedBy] = useState('');
+  const [language, setlangugae] = useState('');
 
   useEffect(() => {
     document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
@@ -117,6 +118,7 @@ const AddLyrics = () => {
             music_url: `https://www.youtube.com/watch?v=${finalVideoId}`,
             status: 'pending',
             added_by: addedBy,
+            language:language
           }
         ]);
 
@@ -206,6 +208,16 @@ const AddLyrics = () => {
             required
           />
         </div>
+        <div className="form-group">
+          <label htmlFor="language">Language</label>
+          <input
+            type="text"
+            id="language"
+            value={language}
+            onChange={(e) => setlangugae(e.target.value)}
+            required
+          />
+        </div>
 
         <div className="form-group">
           <label htmlFor="releaseYear">Release Year</label>
@@ -245,6 +257,7 @@ const AddLyrics = () => {
           />
         </div>
 
+        
         <button type="submit">Submit Lyrics</button>
       </form>
     </div>

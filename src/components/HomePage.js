@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
+import HomeYTVideo from './homeytvideo'; // Import the HomeYTVideo component
 
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -13,46 +14,44 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [latestVideoId, setLatestVideoId] = useState(''); // Store latest video ID
 
   useEffect(() => {
     document.title = "Sangeet Lyrics Central | Latest Lyrics";
 
-    const fetchApprovedLyrics = async () => {
+    const fetchAllLyrics = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('lyrics')
-        .select('*')
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false })
-        .limit(4);  // Limit to the latest 4 lyrics
 
-      if (error) {
-        console.error('Error fetching approved lyrics:', error);
-        setLyrics([]); // Set to an empty array on error
-      } else {
-        setLyrics(data);
+      try {
+        // Fetch all lyrics
+        const { data: allLyrics, error: lyricsError } = await supabase
+          .from('lyrics')
+          .select('id, title, artist, published_date')
+          .eq('status', 'approved');
+
+        if (lyricsError) {
+          console.error('Error fetching lyrics:', lyricsError.message);
+          setLyrics([]);
+          setLoading(false);
+          return;
+        }
+
+        if (allLyrics && allLyrics.length > 0) {
+          // Randomly select 4 lyrics
+          const randomLyrics = getRandomLyrics(allLyrics, 4);
+          setLyrics(randomLyrics);
+        } else {
+          setLyrics([]); // No lyrics found
+        }
+
+        setLoading(false);
+
+      } catch (error) {
+        console.error('Error fetching lyrics:', error);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    const fetchLatestYouTubeVideo = async () => {
-      const { data, error } = await supabase
-        .from('youtube_videos')
-        .select('video_id')
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (error) {
-        console.error('Error fetching latest YouTube video:', error);
-        setLatestVideoId(''); // Reset if there's an error
-      } else if (data.length > 0) {
-        setLatestVideoId(data[0].video_id); // Set the latest video ID
-      }
-    };
-
-    fetchApprovedLyrics();
-    fetchLatestYouTubeVideo(); // Fetch the latest YouTube video
+    fetchAllLyrics();
 
     // Initialize Google Ads
     const adElement = document.querySelector('.adsbygoogle');
@@ -77,23 +76,10 @@ const HomePage = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const renderYouTubeVideo = () => {
-    if (!latestVideoId) return null;
-
-    return (
-      <div className="youtube-video-section">
-        <h3>Check out old Nepali music video</h3>
-        <iframe
-          width="560"
-          height="315"
-          src={`https://www.youtube.com/embed/${latestVideoId}`}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    );
+  // Function to get random lyrics from the full list
+  const getRandomLyrics = (allLyrics, limit) => {
+    const shuffled = allLyrics.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, limit);
   };
 
   return (
@@ -103,36 +89,38 @@ const HomePage = () => {
       <div className="floating-emoji emoji-2">🎵</div>
       <div className="floating-emoji emoji-3">♭</div>
       <div className="floating-emoji emoji-55">4</div>
-     
+
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
       
       {loading ? (
-        <p>Loading latest lyrics...</p>
+        <p>Loading random lyrics...</p>
       ) : (
-        <section className="lyrics-bar">
-          {lyrics.length > 0 ? (
-            <div className="lyrics-horizontal-bar">
-              {lyrics.map((lyric, index) => (
-                <div className={`lyric-item color-${index % 4}`} key={lyric.id}>
-                  <h3>{lyric.title}</h3>
-                  <p>{lyric.artist}</p>
-                  <p>{new Date(lyric.published_date).getFullYear()}</p>
-                  <Link to={`/lyrics/${lyric.id}`}>Read Lyrics</Link>
-                </div>
-              ))}
+        <>
+          <section className="lyrics-bar">
+            {lyrics.length > 0 ? (
+              <div className="lyrics-horizontal-bar">
+                {lyrics.map((lyric, index) => (
+                  <div className={`lyric-item color-${index % 4}`} key={lyric.id}>
+                    <h3>{lyric.title}</h3>
+                    <p>{lyric.artist}</p>
+                    <p>{new Date(lyric.published_date).getFullYear()}</p>
+                    <Link to={`/lyrics/${lyric.id}`}>Read Lyrics</Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No lyrics available at the moment.</p>
+            )}
+            <div className="view-all">
+              <Link to="/lyrics">View All Lyrics</Link>
             </div>
-          ) : (
-            <p>No lyrics available at the moment.</p>
-          )}
-          <div className="view-all">
-            <Link to="/lyrics">View All Lyrics</Link>
-          </div>
-        </section>
-      )}
+          </section>
 
-      {/* Display the latest YouTube video */}
-      {renderYouTubeVideo()}
+          {/* Render the HomeYTVideo component after the lyrics */}
+          <HomeYTVideo /> 
+        </>
+      )}
 
       {/* Google AdSense Ad */}
       <div style={{ marginTop: '20px', textAlign: 'center' }}>

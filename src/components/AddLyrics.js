@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../style/AddLyrics.css';
-import { FaTrash, FaPlus } from 'react-icons/fa'; // Import icons for adding/removing
+import { FaTrash, FaPlus } from 'react-icons/fa'; // Icons for adding/removing
 
 // Initialize Supabase client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -10,33 +10,37 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const AddLyrics = () => {
   const [title, setTitle] = useState('');
-  const [artists, setArtists] = useState([{ name: '', suggestions: [] }]); // For multiple artists
-  const [writer, setWriter] = useState(''); // Lyrics writer
+  const [artists, setArtists] = useState([{ name: '', suggestions: [] }]);
+  const [writer, setWriter] = useState('');
   const [writerSuggestions, setWriterSuggestions] = useState([]);
   const [lyrics, setLyrics] = useState('');
   const [releaseYear, setReleaseYear] = useState('');
   const [videoId, setVideoId] = useState('');
+  const [videoError, setVideoError] = useState(''); // Error message for invalid YouTube IDs
   const [message, setMessage] = useState('');
-  const [addedBy, setAddedBy] = useState(''); // State for "Your Name"
+  const [addedBy, setAddedBy] = useState('');
 
   useEffect(() => {
     document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
-
     const metaDescription = document.createElement('meta');
     metaDescription.name = "description";
-    metaDescription.content = "Contribute to Sangeet Lyrics Central by adding new song lyrics. Fill in details such as title, artist, release year, and an optional YouTube video ID. Join our community of music lovers and share your favorite lyrics today.";
+    metaDescription.content = "Contribute to Sangeet Lyrics Central by adding new song lyrics. Join our community of music lovers.";
     document.head.appendChild(metaDescription);
 
-    const metaKeywords = document.createElement('meta');
-    metaKeywords.name = "keywords";
-    metaKeywords.content = "add lyrics, submit lyrics, song lyrics, Sangeet Lyrics Central, music lyrics, contribute lyrics, add new song, YouTube lyrics";
-    document.head.appendChild(metaKeywords);
-
-    return () => {
-      document.head.removeChild(metaDescription);
-      document.head.removeChild(metaKeywords);
-    };
+    return () => document.head.removeChild(metaDescription);
   }, []);
+
+  // Function to validate the video ID
+  const validateYouTubeID = (url) => {
+    const regex = /^[a-zA-Z0-9_-]{11}$/;
+    if (regex.test(url)) {
+      setVideoError('');
+      return url;
+    } else {
+      setVideoError('Please enter a valid YouTube Video ID (11 characters).');
+      return null;
+    }
+  };
 
   // Function to handle adding a new artist input field
   const addArtist = () => {
@@ -53,19 +57,27 @@ const AddLyrics = () => {
   // Fetch artist suggestions from the lyrics table
   const handleArtistChange = async (index, event) => {
     const updatedArtists = [...artists];
-    updatedArtists[index].name = event.target.value;
+    const artistName = event.target.value;
+    updatedArtists[index].name = artistName;
     setArtists(updatedArtists);
 
-    // Query the `lyrics` table for unique artist names
-    const { data, error } = await supabase
-      .from('lyrics')
-      .select('artist')
-      .ilike('artist', `%${event.target.value}%`)
-      .limit(5);
+    if (artistName.length > 1) {
+      // Query the `lyrics` table for unique artist names
+      const { data, error } = await supabase
+        .from('lyrics')
+        .select('artist')
+        .ilike('artist', `%${artistName}%`)
+        .limit(5);
 
-    if (!error) {
-      const uniqueArtists = [...new Set(data.map(lyric => lyric.artist))];
-      updatedArtists[index].suggestions = uniqueArtists;
+      if (!error && data.length) {
+        const uniqueArtists = [...new Set(data.map(lyric => lyric.artist))];
+        updatedArtists[index].suggestions = uniqueArtists;
+      } else {
+        updatedArtists[index].suggestions = [];
+      }
+      setArtists(updatedArtists);
+    } else {
+      updatedArtists[index].suggestions = []; // Clear suggestions if input is too short
       setArtists(updatedArtists);
     }
   };
@@ -77,30 +89,11 @@ const AddLyrics = () => {
     setArtists(updatedArtists);
   };
 
-  // Fetch lyrics writer suggestions from the lyrics table
-  const handleWriterChange = async (event) => {
-    setWriter(event.target.value);
-
-    // Query the `lyrics` table for unique lyrics writer names
-    const { data, error } = await supabase
-      .from('lyrics')
-      .select('lyrics_writer')
-      .ilike('lyrics_writer', `%${event.target.value}%`)
-      .limit(5);
-
-    if (!error) {
-      const uniqueWriters = [...new Set(data.map(lyric => lyric.lyrics_writer))];
-      setWriterSuggestions(uniqueWriters);
-    }
-  };
-
-  const selectWriterSuggestion = (suggestion) => {
-    setWriter(suggestion);
-    setWriterSuggestions([]); // Clear suggestions after selecting
-  };
-
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const finalVideoId = validateYouTubeID(videoId);
+    if (!finalVideoId) return; // Stop submission if video ID is invalid
 
     try {
       const { data, error } = await supabase
@@ -108,20 +101,19 @@ const AddLyrics = () => {
         .insert([
           {
             title,
-            artist: artists.map(artist => artist.name).join(', '), // Store artists as a comma-separated string
-            lyrics_writer: writer, // Add lyrics writer
+            artist: artists.map(artist => artist.name).join(', '),
+            lyrics_writer: writer,
             lyrics,
-            published_date: `${releaseYear}-01-01`, // Store the year with a default month and day
-            music_url: videoId ? `https://www.youtube.com/embed/${videoId}` : null, // Construct full URL or null if empty
-            status: 'pending', // Set the status to pending
-            added_by: addedBy, // Store the user's name
+            published_date: `${releaseYear}-01-01`,
+            music_url: finalVideoId,
+            status: 'pending',
+            added_by: addedBy,
           }
         ]);
 
       if (error) throw error;
 
       setMessage('Lyrics submitted successfully! It will be reviewed by the admin and listed soon.');
-
       // Reset the form
       setTitle('');
       setArtists([{ name: '', suggestions: [] }]);
@@ -129,15 +121,11 @@ const AddLyrics = () => {
       setLyrics('');
       setReleaseYear('');
       setVideoId('');
-      setAddedBy(''); // Reset the added_by field
-      setTimeout(() => {
-        setMessage('');
-      }, 5000);
+      setAddedBy('');
+      setTimeout(() => setMessage(''), 5000);
     } catch (error) {
       setMessage('An error occurred while adding lyrics: ' + error.message);
-      setTimeout(() => {
-        setMessage('');
-      }, 5000);
+      setTimeout(() => setMessage(''), 5000);
     }
   };
 
@@ -158,7 +146,7 @@ const AddLyrics = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="artists">Artists</label>
+          <label htmlFor="artists">Singer</label>
           {artists.map((artist, index) => (
             <div key={index} className="artist-input">
               <input
@@ -166,22 +154,17 @@ const AddLyrics = () => {
                 value={artist.name}
                 onChange={(e) => handleArtistChange(index, e)}
                 required
-                placeholder="Enter artist name"
+                placeholder="Enter Singer name"
               />
               {index > 0 && (
                 <button type="button" onClick={() => removeArtist(index)}>
                   <FaTrash />
                 </button>
               )}
-
-              {/* Show artist suggestions */}
               {artist.suggestions.length > 0 && (
                 <ul className="suggestions-list">
                   {artist.suggestions.map((suggestion, i) => (
-                    <li
-                      key={i}
-                      onClick={() => selectArtistSuggestion(index, suggestion)}
-                    >
+                    <li key={i} onClick={() => selectArtistSuggestion(index, suggestion)}>
                       {suggestion}
                     </li>
                   ))}
@@ -190,8 +173,8 @@ const AddLyrics = () => {
             </div>
           ))}
           <button type="button" onClick={addArtist} className="add-artist-button">
-            <FaPlus /> Add another artist
-          </button>
+            <FaPlus /> Add Artist</button>
+          
         </div>
 
         <div className="form-group">
@@ -200,19 +183,9 @@ const AddLyrics = () => {
             type="text"
             id="writer"
             value={writer}
-            onChange={handleWriterChange}
+            onChange={(e) => setWriter(e.target.value)}
             required
           />
-          {/* Show writer suggestions */}
-          {writerSuggestions.length > 0 && (
-            <ul className="suggestions-list">
-              {writerSuggestions.map((suggestion, i) => (
-                <li key={i} onClick={() => selectWriterSuggestion(suggestion)}>
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
         <div className="form-group">
@@ -240,19 +213,21 @@ const AddLyrics = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="videoId">YT Video ID (Optional)</label>
+          <label htmlFor="videoId">YouTube Video ID</label>
           <input
             type="text"
             id="videoId"
             value={videoId}
             onChange={(e) => setVideoId(e.target.value)}
-            placeholder="VIDEO-ID-HERE"
+            required
+            placeholder="Enter YouTube Video ID"
           />
-          <small>Example: https://www.youtube.com/embed/{videoId || 'VIDEO-ID-HERE'}</small>
+          {videoError && <p className="error-message">{videoError}</p>}
+          <small>Example: MqFycWPbwmQ. Do not write whole URL.</small>
         </div>
 
         <div className="form-group">
-          <label htmlFor="addedBy">Your Name</label> {/* New field */}
+          <label htmlFor="addedBy">Your Name</label>
           <input
             type="text"
             id="addedBy"

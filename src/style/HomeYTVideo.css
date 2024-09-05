@@ -49,9 +49,45 @@
       font-size: 1.2rem; /* Further reduce heading size for small devices */
     }
   }
+  @media (max-width: 768px) {
+    .digital-clock {
+      font-size: 2.5rem;
+      padding: 15px;
+    }
   
+    .youtube-video-section iframe {
+      height: 300px;
+    }
+  }
+
+
+/* Simple and colorful digital clock */
+.digital-clock {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 3.5rem;
+    text-align: center;
+    color: #ff6f61; /* Vibrant coral color for the digits */
+    background-color: #f0f0f0; /* Light background to make digits stand out */
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+    width: fit-content;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 3px;
+  }
   
+  .digital-clock span {
+    display: inline-block;
+    min-width: 50px;
+  }
   
+
   
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .digital-clock {
+      font-size: 2.5rem;
+      padding: 15px;
+    }
+  }
   
- 

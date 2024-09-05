@@ -3,16 +3,6 @@
     text-align: center;
   }
   
-  .youtube-video-section iframe {
-    max-width: 100%;
-    height: 400px;
-    border-radius: 10px;
-  }
-  .homeytvideo-container {
-    margin: 20px 0;
-    text-align: center;
-  }
-  
   .homeytvideo-container h2 {
     font-size: 1.8rem;
     margin-bottom: 10px;
@@ -21,7 +11,42 @@
   
   .youtube-video-section iframe {
     max-width: 100%;
-    height: 400px;
+    height: 700px;
     border-radius: 10px;
+  }
+ 
+
+  
+  /* Responsive design for tablets and smaller screens */
+  @media (max-width: 1024px) {
+    .youtube-video-section iframe {
+      height: 650px; /* Adjust height for tablet */
+      width: 100%;
+    }
+  
+    .homeytvideo-container h2 {
+      font-size: 1.6rem; /* Slightly reduce heading size */
+    }
+  }
+  
+  /* Responsive design for mobile devices */
+  @media (max-width: 768px) {
+    .youtube-video-section iframe {
+      height: 400px; /* Adjust height for mobile */
+    }
+  
+    .homeytvideo-container h2 {
+      font-size: 1.4rem; /* Further reduce heading size */
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .youtube-video-section iframe {
+      height: 300px; /* Adjust height for smaller mobile devices */
+    }
+  
+    .homeytvideo-container h2 {
+      font-size: 1.2rem; /* Further reduce heading size for small devices */
+    }
   }
   

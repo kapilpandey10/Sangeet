@@ -78,13 +78,13 @@ const HomeYTVideo = () => {
     if (!videoId) return null;
   
     // Customize the YouTube player parameters here
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=0&rel=0&controls=0&showinfo=1&autoplay=0&fs=0&mute=0`;
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=0&rel=0&controls=1&showinfo=1&autoplay=0&fs=0&mute=0`;
   
     return (
       <div className="youtube-video-section">
         <iframe
           width="100%"
-          height="400"
+          height="600"
           src={embedUrl}
           title="YouTube video player"
           frameBorder="0"

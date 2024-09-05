@@ -4,6 +4,7 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    gap: 20px;
   }
   
   .message-list {
@@ -19,21 +20,18 @@
   }
   
   .message-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background-color: #fff;
     padding: 15px;
     margin-bottom: 15px;
-    background-color: #fff;
     border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
+    transition: background-color 0.3s ease;
   }
   
   .message-item:hover {
-    background-color: #f1f1f1;
+    background-color: #e6f7ff;
   }
   
   .new-message {
@@ -48,28 +46,61 @@
   .new-badge {
     background-color: #28a745;
     color: white;
-    font-size: 0.9em;
-    padding: 4px 8px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 10px;
+  }
+  
+  .delete-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
     border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+  
+  .delete-button:hover {
+    background-color: #ff1a1a;
   }
   
   .message-content {
     width: 70%;
-    padding-left: 20px;
   }
   
-  .message-content h3 {
-    margin-top: 0;
+  .message-bubble {
+    background-color: #e6f7ff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .message-header h3 {
+    margin: 0;
     color: #007bff;
+  }
+  
+  .message-timestamp {
+    font-size: 0.9em;
+    color: #777;
   }
   
   .message-content p {
     font-size: 1.2em;
-    line-height: 1.5;
-    color: #555;
+    color: #333;
   }
   
-  /* Add a responsive layout */
   @media (max-width: 768px) {
     .messages-container {
       flex-direction: column;
@@ -84,37 +115,6 @@
   
     .message-content {
       width: 100%;
-      padding-left: 0;
     }
-  }
-  .new-badge {
-    background-color: #dc3545; /* A bright red color for the new badge */
-    color: white;
-    font-size: 0.9em;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-weight: bold;
-  }
-  .delete-button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  
-  .delete-button:hover {
-    background-color: #ff1a1a;
-  }
-  
-  .new-badge {
-    background-color: #28a745;
-    color: white;
-    padding: 3px 6px;
-    border-radius: 3px;
-    font-size: 12px;
-    margin-left: 10px;
   }
   

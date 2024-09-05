@@ -92,9 +92,9 @@ const HomePage = () => {
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
-      
+
       {loading ? (
-        <p>Loading random lyrics...</p>
+        <p>Loading lyrics... Hold On</p>
       ) : (
         <>
           <section className="lyrics-bar">

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import ConfirmMsg from './ConfirmMsg'; // Importing the confirmation modal
 import '../style/Messages.css';
 
 // Access environment variables
@@ -12,6 +13,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false); // Control confirmation modal visibility
+  const [messageToDelete, setMessageToDelete] = useState(null); // Hold the message to delete
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -66,11 +69,27 @@ const Messages = () => {
       setMessages(messages.filter((msg) => msg.id !== messageId));
       setSelectedMessage(null);
     }
+    setShowConfirm(false); // Close the confirmation modal
+  };
+
+  const handleDeleteClick = (message) => {
+    setMessageToDelete(message); // Set the message to delete
+    setShowConfirm(true); // Show the confirmation modal
+  };
+
+  const handleConfirmDelete = () => {
+    if (messageToDelete) {
+      handleDeleteMessage(messageToDelete.id); // Proceed with deletion
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirm(false); // Close modal without deleting
+    setMessageToDelete(null); // Reset message to delete
   };
 
   return (
     <div className="messages-container">
-      <h2>Messages</h2>
       <div className="message-list">
         <ul>
           {messages.map((message) => (
@@ -80,14 +99,14 @@ const Messages = () => {
               onClick={() => handleSelectMessage(message)}
             >
               <div className="message-profile">
-                <p><strong>Name:</strong> {message.name}</p>
-                <p><strong>Email:</strong> {message.email}</p>
+                <p><strong>{message.name}</strong></p>
+                <p>{message.email}</p>
               </div>
               {!message.viewed && <span className="new-badge">New</span>}
               {/* Delete button */}
               <button
                 className="delete-button"
-                onClick={() => handleDeleteMessage(message.id)}
+                onClick={() => handleDeleteClick(message)}
               >
                 Delete
               </button>
@@ -97,14 +116,25 @@ const Messages = () => {
       </div>
       <div className="message-content">
         {selectedMessage ? (
-          <div>
-            <h3>Message from {selectedMessage.name}</h3>
+          <div className="message-bubble">
+            <div className="message-header">
+              <h3>Message from {selectedMessage.name}</h3>
+              <span className="message-timestamp">{new Date(selectedMessage.created_at).toLocaleString()}</span>
+            </div>
             <p>{selectedMessage.message}</p>
           </div>
         ) : (
           <p>Select a message to view its content</p>
         )}
       </div>
+
+      {/* ConfirmMsg modal */}
+      <ConfirmMsg
+        show={showConfirm}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        message="Are you sure you want to delete this message?"
+      />
     </div>
   );
 };

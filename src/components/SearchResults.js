@@ -51,7 +51,7 @@ const SearchResults = () => {
           ))}
         </ul>
       ) : (
-        <p>No results found for "{query}".</p>
+        <p>No results found for "{query}".Please type different Keywords.</p>
       )}
     </div>
   );

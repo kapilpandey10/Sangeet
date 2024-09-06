@@ -1,77 +1,122 @@
-/* Admin Dashboard Layout */
+/* AdminDashboard.css */
+
+/* General Layout */
 .admin-dashboard {
-    display: flex;
-    height: 100vh; /* Full height */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+}
+
+/* Top Navigation Menu */
+.top-nav {
+  background-color: #2c3e50;
+  padding: 10px 0;
+  width: 100%; /* Ensure the width is 100% of the viewport */
+ width: 100vw; /* Prevent it from exceeding the viewport width */
+  position: relative;
+  top: 5px; /* Adjust this to match the height of your main navbar */
+  left: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  overflow: hidden; /* Ensure nothing overflows */
+}
+
+.top-nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center; /* Center the entire menu */
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  flex-wrap: nowrap; /* Ensure future items stay on the same line */
+}
+
+.top-nav ul li {
+  color: #ecf0f1;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the content within each item */
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+  flex: 1; /* Make each item take equal width */
+  text-align: center; /* Ensure the text is centered */
+}
+
+.top-nav ul li.active {
+  background-color: #1abc9c;
+}
+
+.top-nav ul li:hover {
+  background-color: #34495e;
+}
+
+.icon {
+  margin-right: 5px;
+  font-size: 1rem;
+}
+
+/* Main Content Styles */
+.main-content {
+  margin-top: 120px; /* Adjust this to match the combined height of the main navbar and the top navigation menu */
+  padding: 20px;
+  flex-grow: 1;
+}
+
+/* Mobile Device: 430x932px */
+@media (max-width: 430px) {
+  .top-nav ul {
+    justify-content: space-between;
+    max-width: 100%; /* Ensure it doesn't overflow the screen width */
   }
-  
-  .sidebar {
-    width: 250px;
-    background-color: #343a40; /* Darker color for sidebar */
-    padding: 20px;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+
+  .top-nav ul li {
+    font-size: 0.9rem;
+    padding: 8px 5px;
   }
-  
-  .sidebar h2 {
-    margin-bottom: 30px;
-    color: #ffffff;
+
+  .icon {
+    margin-right: 5px;
+    font-size: 1rem;
   }
-  
-  .sidebar ul {
-    list-style-type: none;
-    padding: 0;
-    width: 100%;
+}
+
+/* Tablet Device: 932x430px */
+@media (min-width: 431px) and (max-width: 932px) {
+  .top-nav ul {
+    justify-content: space-around;
+    max-width: 100%; /* Ensure it fits in the screen */
   }
-  
-  .sidebar ul li {
-    width: 100%;
-    padding: 15px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    color: white;
-    border-radius: 5px;
+
+  .top-nav ul li {
+    font-size: 1rem;
+    padding: 10px;
   }
-  
-  .sidebar ul li:hover {
-    background-color: #007bff;
+
+  .icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
   }
-  
-  .sidebar ul li.active {
-    background-color: #007bff;
-    font-weight: bold;
+}
+
+/* Desktop: Above Tablet Breakpoint */
+@media (min-width: 933px) {
+  .top-nav ul {
+    justify-content: center; /* Center the menu items */
   }
-  
-  .main-content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto; /* Enable scrolling for main content if necessary */
+
+  .top-nav ul li {
+    font-size: 1.1rem;
+    padding: 10px 20px;
   }
-  
-  /* Responsive Layout */
-  @media (max-width: 768px) {
-    .admin-dashboard {
-      flex-direction: column;
-    }
-  
-    .sidebar {
-      width: 100%;
-      padding: 10px;
-    }
-  
-    .main-content {
-      padding: 10px;
-    }
+
+  .icon {
+    margin-right: 8px;
+    font-size: 1.3rem;
   }
-  
-  @media (max-width: 576px) {
-    .sidebar ul li {
-      padding: 10px;
-    }
-  
-    .main-content {
-      padding: 5px;
-    }
-  }
-  
+}

@@ -1,25 +1,20 @@
 import React from 'react';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; 
-import '../style/ConfirmMsg.css'; // Import the CSS for styling
+import '../style/ConfirmMsg.css';
 
 const ConfirmMsg = ({ show, onConfirm, onCancel, message }) => {
   if (!show) return null;
 
   return (
-    <div className="confirm-overlay">
-      <div className="confirm-modal animate">
-        <div className="confirm-header">
-          <h2>Confirmation</h2>
-        </div>
-        <div className="confirm-body">
-          <p>{message || "Are you sure you want to proceed?"}</p>
-        </div>
-        <div className="confirm-actions">
-          <button onClick={onConfirm} className="confirm-btn yes-btn">
-            <FaCheckCircle className="icon" /> Yes
+    <div className="confirm-modal">
+      <div className="confirm-modal-content">
+        <h2>Confirm Delete</h2>
+        <p>{message}</p>
+        <div className="confirm-modal-actions">
+          <button className="confirm-modal-button confirm" onClick={onConfirm}>
+            Yes, Delete
           </button>
-          <button onClick={onCancel} className="confirm-btn cancel-btn">
-            <FaTimesCircle className="icon" /> Cancel
+          <button className="confirm-modal-button cancel" onClick={onCancel}>
+            Cancel
           </button>
         </div>
       </div>

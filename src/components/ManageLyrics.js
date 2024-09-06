@@ -18,9 +18,10 @@ const ManageLyrics = () => {
   const [editLyric, setEditLyric] = useState(null);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [showConfirm, setShowConfirm] = useState(false); // Control confirmation modal visibility
-  const [lyricToDelete, setLyricToDelete] = useState(null); // Hold the lyric to delete
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [lyricToDelete, setLyricToDelete] = useState(null);
 
+  // Fetch lyrics from Supabase
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
@@ -37,11 +38,13 @@ const ManageLyrics = () => {
     fetchLyrics();
   }, []);
 
+  // Handle delete functionality
   const handleDelete = async (id) => {
     try {
       const { error } = await supabase.from('lyrics').delete().eq('id', id);
       if (error) throw error;
 
+      // Update the lyrics state
       setLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
       setFilteredLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
       setMessageType('success');
@@ -54,6 +57,7 @@ const ManageLyrics = () => {
     }
   };
 
+  // Handle update functionality
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -65,18 +69,14 @@ const ManageLyrics = () => {
 
       if (error) throw error;
 
+      // Update lyrics list
       setLyrics((prevLyrics) =>
-        Array.isArray(prevLyrics)
-          ? prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
-          : []
+        prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
       );
       setFilteredLyrics((prevLyrics) =>
-        Array.isArray(prevLyrics)
-          ? prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
-          : []
+        prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
       );
-      setEditLyric(null);
-
+      setEditLyric(null); // Close the editing form
       setMessageType('success');
       setMessage('Lyrics updated successfully!');
     } catch (error) {
@@ -85,47 +85,50 @@ const ManageLyrics = () => {
     }
   };
 
+  // Handle edit button click
   const handleEditClick = (lyric) => {
     setEditLyric(lyric);
   };
 
+  // Handle delete button click
   const handleDeleteClick = (lyric) => {
     setLyricToDelete(lyric); // Set the lyric to delete
     setShowConfirm(true); // Show the confirmation modal
   };
 
+  // Confirm delete
   const handleConfirmDelete = () => {
     if (lyricToDelete) {
       handleDelete(lyricToDelete.id); // Proceed with deletion
     }
   };
 
+  // Cancel delete
   const handleCancelDelete = () => {
     setShowConfirm(false); // Close modal without deleting
     setLyricToDelete(null); // Reset lyric to delete
   };
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditLyric({ ...editLyric, [name]: value });
   };
 
+  // Handle search input
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
-    if (query === '') {
-      setFilteredLyrics(lyrics);
-    } else {
-      const filtered = lyrics.filter((lyric) => {
-        return (
-          lyric.title.toLowerCase().includes(query) ||
-          lyric.artist.toLowerCase().includes(query) ||
-          lyric.lyrics.toLowerCase().includes(query)
-        );
-      });
-      setFilteredLyrics(filtered);
-    }
+    const filtered = lyrics.filter((lyric) => {
+      return (
+        lyric.title.toLowerCase().includes(query) ||
+        lyric.artist.toLowerCase().includes(query) ||
+        lyric.lyrics.toLowerCase().includes(query) ||
+        (lyric.added_by && lyric.added_by.toLowerCase().includes(query))
+      );
+    });
+    setFilteredLyrics(filtered);
   };
 
   return (
@@ -135,7 +138,7 @@ const ManageLyrics = () => {
       {/* Search Box */}
       <input
         type="text"
-        placeholder="Search by title, artist, or lyrics..."
+        placeholder="Search by title, artist, lyrics, or added by..."
         value={searchQuery}
         onChange={handleSearch}
         className="search-box"
@@ -148,20 +151,27 @@ const ManageLyrics = () => {
         </div>
       )}
 
+      {/* Display Lyrics List */}
       {filteredLyrics.length > 0 ? (
         <ul className="lyrics-list">
           {filteredLyrics.map((lyric) => (
             <li key={lyric.id} className="lyrics-item">
-              <h3>{lyric.title}</h3>
-              <p><strong>Artist:</strong> {lyric.artist}</p>
-              <p><strong>Writer:</strong> {lyric.lyrics_writer || 'N/A'}</p>
-              <button onClick={() => handleEditClick(lyric)} className="icon-button">
-                <FaEdit />
-              </button>
-              <button onClick={() => handleDeleteClick(lyric)} className="icon-button delete-button">
-                <FaTrashAlt />
-              </button>
+              <div className="lyrics-item-content">
+                <h3>{lyric.title}</h3>
+                <p><strong>Artist:</strong> {lyric.artist}</p>
+                <p><strong>Writer:</strong> {lyric.lyrics_writer || 'N/A'}</p>
+                <p><strong>Added By:</strong> {lyric.added_by || 'N/A'}</p>
+              </div>
+              <div className="icon-buttons">
+                <button onClick={() => handleEditClick(lyric)} className="icon-button">
+                  <FaEdit />
+                </button>
+                <button onClick={() => handleDeleteClick(lyric)} className="icon-button delete-button">
+                  <FaTrashAlt />
+                </button>
+              </div>
 
+              {/* Display Edit Form */}
               {editLyric && editLyric.id === lyric.id && (
                 <div className="edit-lyric-form">
                   <h2>Edit Lyric</h2>
@@ -251,13 +261,15 @@ const ManageLyrics = () => {
         <p>No lyrics available.</p>
       )}
 
-      {/* ConfirmMsg modal */}
-      <ConfirmMsg
-        show={showConfirm}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        message="Are you sure you want to delete this lyric?" // Custom message
-      />
+      {/* ConfirmMsg modal, shown only when showConfirm is true */}
+      {showConfirm && (
+        <ConfirmMsg
+          show={showConfirm}  // Determines whether to show the modal
+          onConfirm={handleConfirmDelete}  // Function to execute if the user confirms deletion
+          onCancel={handleCancelDelete}  // Function to execute if the user cancels deletion
+          message="Are you sure you want to delete this lyric?"  // Custom message in the modal
+        />
+      )}
     </div>
   );
 };

@@ -12,6 +12,8 @@ import TermsAndService from './components/TermsAndService';
 import ContactUs from './components/ContactUs';
 import SearchResults from './components/SearchResults';
 import AdminLogin from './components/AdminLogin';
+import BhajanHP from './components/Bhajan/bhajanHP'; // Import the BhajanHP component
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,14 +23,7 @@ function App() {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/lyrics/:id" element={<ViewLyrics />} />
-        <Route path="/lyrics" element={<LyricsList />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsAndService />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/search" element={<SearchResults />} />
-        <Route path="/add" element={<AddLyrics />} />
+        {/* Admin login and dashboard */}
         <Route path="/admin/login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
         <Route 
           path="/admin/*" 
@@ -40,7 +35,19 @@ function App() {
             )
           } 
         />
-        <Route path="*" element={<Navigate to="/" />} /> {/* Catch-all route */}
+        {/* Catch-all route to redirect to homepage */}
+        <Route path="*" element={<Navigate to="/" />} />
+
+        {/* Public routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/lyrics/:id" element={<ViewLyrics />} />
+        <Route path="/lyrics" element={<LyricsList />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsAndService />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="/add" element={<AddLyrics />} />
+        <Route path="/bhajan" component={BhajanHP} />
       </Routes>
 
       <Footer />

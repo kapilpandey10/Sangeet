@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../style/AdminDashboard.css';
+import { FaCheckCircle, FaEdit, FaEnvelope } from 'react-icons/fa';
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
@@ -15,7 +16,6 @@ const AdminDashboard = () => {
         return <ManageLyrics />;
       case 'messages':
         return <Messages />;
-     
       default:
         return <ApproveLyrics />;
     }
@@ -23,21 +23,19 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      <aside className="sidebar">
-        <h2>Admin Dashboard</h2>
+      <nav className="top-nav">
         <ul>
           <li className={activeTab === 'approve' ? 'active' : ''} onClick={() => setActiveTab('approve')}>
-            Approve Lyrics
+            <FaCheckCircle className="icon" /> Approve
           </li>
           <li className={activeTab === 'manage' ? 'active' : ''} onClick={() => setActiveTab('manage')}>
-            Manage Lyrics
+            <FaEdit className="icon" /> Manage
           </li>
           <li className={activeTab === 'messages' ? 'active' : ''} onClick={() => setActiveTab('messages')}>
-            Messages
+            <FaEnvelope className="icon" /> Messages
           </li>
-          
         </ul>
-      </aside>
+      </nav>
       <main className="main-content">
         {renderContent()}
       </main>

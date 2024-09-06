@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../style/Navbar.css';
-import logo from '../logo/logo.png'; // Import the logo
+import logo from '../logo/logo.png'; // Update the logo path accordingly
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -9,29 +9,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    // Add meta tags for SEO
-    const metaDescription = document.createElement('meta');
-    metaDescription.name = 'description';
-    metaDescription.content = 'Sangit Lyrics Central - Your go-to site for submitting and discovering song lyrics, from artists and writers alike.';
-    document.head.appendChild(metaDescription);
-
-    const metaKeywords = document.createElement('meta');
-    metaKeywords.name = 'keywords';
-    metaKeywords.content = 'lyrics, song lyrics, music, artists, songwriters, submit lyrics';
-    document.head.appendChild(metaKeywords);
-
-    return () => {
-      // Cleanup meta tags on unmount
-      document.head.removeChild(metaDescription);
-      document.head.removeChild(metaKeywords);
-    };
-  }, []);
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?query=${searchQuery}`);
+      setIsMobileMenuOpen(false); // Close the menu after search
     }
   };
 
@@ -46,31 +28,46 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="logo">
+        {/* Logo and Brand Name */}
+        <div className="logo-container">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-            <img src={logo} alt="Logo" className="navbar-logo" />
-            <span className="navbar-text">Sangit</span>
+            <img src={logo} alt="Sangeet Logo" className="navbar-logo" />
+            <span className="navbar-title">Sangeet</span>
           </Link>
         </div>
+
+        {/* Hamburger Menu Icon */}
         <button
           className={`mobile-menu-icon ${isMobileMenuOpen ? 'open' : ''}`}
           onClick={toggleMobileMenu}
-          aria-label="Toggle mobile menu"
+          aria-label="Toggle navigation"
         >
           <span className="bar"></span>
           <span className="bar"></span>
           <span className="bar"></span>
         </button>
-        <div className={`links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
-          <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>Submit Lyrics</Link>
-          <Link to="/lyrics" className={isActive('/lyrics')} onClick={toggleMobileMenu}>View Lyrics</Link>
-          <form onSubmit={handleSearch} className="search-bar">
+
+        {/* Navbar Links and Search wrapped inside mobile menu */}
+        <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
+          <div className="nav-links">
+            <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>
+              Submit Lyrics
+            </Link>
+            <Link to="/lyrics" className={isActive('/lyrics')} onClick={toggleMobileMenu}>
+              View Lyrics
+            </Link>
+            <Link to="/bhajan" className={isActive('/bhajan')} onClick={toggleMobileMenu}>
+              Bhajan
+            </Link>
+          </div>
+
+          {/* Search Bar */}
+          <form className="search-bar" onSubmit={handleSearch}>
             <input
               type="text"
-              placeholder="Search Lyrics, Artists, Writer..."
+              placeholder="Search Lyrics, Artists, Writers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search"
             />
             <button type="submit">Search</button>
           </form>

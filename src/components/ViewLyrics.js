@@ -5,11 +5,8 @@ import { FaMusic } from 'react-icons/fa';
 import Verified from './verified';
 import '../style/ViewLyrics.css';
 
-// Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Initialize Supabase client
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ViewLyrics = () => {
@@ -86,7 +83,7 @@ const ViewLyrics = () => {
   const renderYouTubeEmbed = (videoUrl) => {
     const videoId = extractYouTubeId(videoUrl);
     if (!videoId) {
-      return null; // Ensure only a valid YouTube video URL is used
+      return null;
     }
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
     return (
@@ -98,7 +95,7 @@ const ViewLyrics = () => {
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+          
         ></iframe>
       </div>
     );
@@ -118,19 +115,16 @@ const ViewLyrics = () => {
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
-          <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p>      
-          <p>
-          <strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}     
-          </p>
-          <p><strong>Added By:</strong> {lyric.added_by}</p> {/* Display added_by */}
+          <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p>
+          <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p>
+          <p><strong>Added By:</strong> {lyric.added_by}</p>
           {lyric.status === 'approved' && <Verified />}
-          <pre className="lyrics-text">{lyric.lyrics}</pre><br></br>
+          <pre className="lyrics-text">{lyric.lyrics}</pre><br />
           <p><strong>Listen to this Music on YouTube</strong></p>
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
 
-          {/* Google AdSense Ad */}
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
-            <ins 
+            <ins
               className="adsbygoogle"
               style={{ display: 'block' }}
               data-ad-client="ca-pub-9887409333966239"

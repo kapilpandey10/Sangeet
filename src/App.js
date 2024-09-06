@@ -13,6 +13,7 @@ import ContactUs from './components/ContactUs';
 import SearchResults from './components/SearchResults';
 import AdminLogin from './components/AdminLogin';
 import BhajanHP from './components/Bhajan/bhajanHP'; // Import the BhajanHP component
+import ArtistBio from './components/ArtistBio'; // Import ArtistBio component
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
 
         {/* Public routes */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/artistbio/:name" element={<ArtistBio />} /> {/* Route for ArtistBio */}
         <Route path="/lyrics/:id" element={<ViewLyrics />} />
         <Route path="/lyrics" element={<LyricsList />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />

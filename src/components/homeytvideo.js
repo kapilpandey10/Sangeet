@@ -102,7 +102,7 @@ const HomeYTVideo = () => {
       <div className="digital-clock">
         <span className="digit">{hours}</span>:
         <span className="digit">{minutes}</span>:
-        <span className="digit">{seconds}</span> UTC
+        <span className="digit">{seconds}</span> 
       </div>
     );
   };

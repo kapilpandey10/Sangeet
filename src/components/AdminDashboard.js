@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import '../style/AdminDashboard.css';
-import { FaCheckCircle, FaEdit, FaEnvelope } from 'react-icons/fa';
+import { FaCheckCircle, FaEdit, FaEnvelope, FaUserPlus } from 'react-icons/fa'; // Add FaUserPlus icon
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
+import AddArtist from './addArtist'; // Import AddArtist component
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
@@ -16,8 +17,10 @@ const AdminDashboard = () => {
         return <ManageLyrics />;
       case 'messages':
         return <Messages />;
+      case 'add-artist':
+        return <AddArtist />; // Render AddArtist form
       default:
-        return <ApproveLyrics />;
+        return <ManageLyrics />;
     }
   };
 
@@ -33,6 +36,9 @@ const AdminDashboard = () => {
           </li>
           <li className={activeTab === 'messages' ? 'active' : ''} onClick={() => setActiveTab('messages')}>
             <FaEnvelope className="icon" /> Messages
+          </li>
+          <li className={activeTab === 'add-artist' ? 'active' : ''} onClick={() => setActiveTab('add-artist')}>
+            <FaUserPlus className="icon" /> Add Artist
           </li>
         </ul>
       </nav>

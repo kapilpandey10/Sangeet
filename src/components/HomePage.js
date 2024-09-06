@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
 import HomeYTVideo from './homeytvideo'; // Import the HomeYTVideo component
+import DOMPurify from 'dompurify'; // For sanitizing HTML
+
 
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -13,6 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
+  const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +54,26 @@ const HomePage = () => {
       }
     };
 
+    const fetchArtists = async () => {
+      try {
+        const { data: allArtists, error: artistsError } = await supabase
+          .from('artists')
+          .select('*');
+
+        if (artistsError) {
+          console.error('Error fetching artists:', artistsError.message);
+          setArtists([]);
+          return;
+        }
+
+        setArtists(allArtists || []);
+      } catch (error) {
+        console.error('Error fetching artists:', error.message);
+      }
+    };
+
     fetchAllLyrics();
+    fetchArtists();
 
     // Initialize Google Ads
     const adElement = document.querySelector('.adsbygoogle');
@@ -118,13 +140,32 @@ const HomePage = () => {
           </section>
 
           {/* Render the HomeYTVideo component after the lyrics */}
-          <HomeYTVideo /> 
+          <HomeYTVideo />
+
+          {/* Display artist cards */}
+          <section className="artist-cards">
+            <h2>Featured Artists</h2>
+            <div className="artist-card-container">
+              {artists.map((artist) => (
+                <div className="artist-card" key={artist.name}>
+                  <img src={artist.image_url} alt={artist.name} className="artist-card-image" />
+                  <h3>{artist.name}</h3>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(artist.bio.substring(0, 150)), // Sanitize bio to avoid HTML rendering issues
+                    }}
+                  ></p>
+                  <Link to={`/artistbio/${artist.name}`}>Read More</Link>
+                </div>
+              ))}
+            </div>
+          </section>
         </>
       )}
 
       {/* Google AdSense Ad */}
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <ins 
+        <ins
           className="adsbygoogle"
           style={{ display: 'block' }}
           data-ad-client="ca-pub-9887409333966239"

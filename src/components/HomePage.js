@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
 import HomeYTVideo from './homeytvideo'; // Import the HomeYTVideo component
 import DOMPurify from 'dompurify'; // For sanitizing HTML
-
+import FeaturedArtistCard from './FeaturedArtistCard'; // Import the FeaturedArtistCard component
 
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -15,13 +15,15 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
-  const [artists, setArtists] = useState([]);
+  const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
+  const adRef = useRef(null); // Reference for the ad element
+  const [adInitialized, setAdInitialized] = useState(false); // Track ad initialization
 
   useEffect(() => {
     document.title = "Sangeet Lyrics Central | Latest Lyrics";
 
-    const fetchAllLyrics = async () => {
+    const fetchAllData = async () => {
       setLoading(true);
 
       try {
@@ -34,52 +36,37 @@ const HomePage = () => {
         if (lyricsError) {
           console.error('Error fetching lyrics:', lyricsError.message);
           setLyrics([]);
-          setLoading(false);
-          return;
-        }
-
-        if (allLyrics && allLyrics.length > 0) {
-          // Randomly select 4 lyrics
+        } else if (allLyrics && allLyrics.length > 0) {
           const randomLyrics = getRandomLyrics(allLyrics, 4);
           setLyrics(randomLyrics);
-        } else {
-          setLyrics([]); // No lyrics found
         }
 
-        setLoading(false);
-
-      } catch (error) {
-        console.error('Error fetching lyrics:', error);
-        setLoading(false);
-      }
-    };
-
-    const fetchArtists = async () => {
-      try {
+        // Fetch all artists
         const { data: allArtists, error: artistsError } = await supabase
           .from('artists')
           .select('*');
 
         if (artistsError) {
           console.error('Error fetching artists:', artistsError.message);
-          setArtists([]);
-          return;
+          setArtist(null);
+        } else {
+          const randomArtist = getArtistForToday(allArtists);
+          setArtist(randomArtist);
         }
-
-        setArtists(allArtists || []);
       } catch (error) {
-        console.error('Error fetching artists:', error.message);
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchAllLyrics();
-    fetchArtists();
+    fetchAllData();
 
-    // Initialize Google Ads
-    const adElement = document.querySelector('.adsbygoogle');
-    if (adElement && !adElement.classList.contains('adsbygoogle-initialized')) {
+    // Initialize Google Ads once
+    if (!adInitialized && adRef.current && !adRef.current.classList.contains('adsbygoogle-initialized')) {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-      adElement.classList.add('adsbygoogle-initialized');
+      adRef.current.classList.add('adsbygoogle-initialized');
+      setAdInitialized(true); // Ensure this runs only once
     }
 
     // Floating Emoji Setup
@@ -96,12 +83,18 @@ const HomePage = () => {
     window.addEventListener('mousemove', handleMouseMove);
 
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [adInitialized]); // Depend on adInitialized to prevent multiple ad pushes
 
   // Function to get random lyrics from the full list
   const getRandomLyrics = (allLyrics, limit) => {
     const shuffled = allLyrics.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
+  };
+
+  // Function to get an artist based on the current day
+  const getArtistForToday = (allArtists) => {
+    const dayOfYear = new Date().getDay(); // Get current day number (0 - 6)
+    return allArtists[dayOfYear % allArtists.length]; // Rotate through artists based on the day
   };
 
   return (
@@ -110,15 +103,18 @@ const HomePage = () => {
       <div className="floating-emoji emoji-1">🎶</div>
       <div className="floating-emoji emoji-2">🎵</div>
       <div className="floating-emoji emoji-3">♭</div>
-      <div className="floating-emoji emoji-55">4</div>
+      <div className="floating-emoji emoji-5">🎶</div>
+      <div className="floating-emoji emoji-6">🎵</div>
+      <div className="floating-emoji emoji-9">♭</div>
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
 
       {loading ? (
-        <p>Loading lyrics... Hold On</p>
+        <p>Loading lyrics and artist... Hold On</p>
       ) : (
         <>
+          {/* Display Lyrics */}
           <section className="lyrics-bar">
             {lyrics.length > 0 ? (
               <div className="lyrics-horizontal-bar">
@@ -142,38 +138,25 @@ const HomePage = () => {
           {/* Render the HomeYTVideo component after the lyrics */}
           <HomeYTVideo />
 
-          {/* Display artist cards */}
-          <section className="artist-cards">
-            <h2>Featured Artists</h2>
-            <div className="artist-card-container">
-              {artists.map((artist) => (
-                <div className="artist-card" key={artist.name}>
-                  <img src={artist.image_url} alt={artist.name} className="artist-card-image" />
-                  <h3>{artist.name}</h3>
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(artist.bio.substring(0, 150)), // Sanitize bio to avoid HTML rendering issues
-                    }}
-                  ></p>
-                  <Link to={`/artistbio/${artist.name}`}>Read More</Link>
-                </div>
-              ))}
-            </div>
-          </section>
+          {/* Display Featured Artist with FeaturedArtistCard */}
+          {artist && (
+            <FeaturedArtistCard artist={artist} />
+          )}
+
+          {/* Google AdSense Ad */}
+          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <ins
+              className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="6720877169"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+              ref={adRef}
+            ></ins>
+          </div>
         </>
       )}
-
-      {/* Google AdSense Ad */}
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <ins
-          className="adsbygoogle"
-          style={{ display: 'block' }}
-          data-ad-client="ca-pub-9887409333966239"
-          data-ad-slot="6720877169"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        ></ins>
-      </div>
     </div>
   );
 };

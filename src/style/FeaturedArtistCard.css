@@ -1,0 +1,110 @@
+/* FeaturedArtistCard.css */
+
+/* General styles for the artist card */
+.artist-feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    text-align: center;
+    margin: 40px 0;
+  }
+  
+  .artist-feature h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .artist-card {
+    width: 300px; /* Default width for desktop */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  
+  .artist-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .artist-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .artist-card-content {
+    padding: 16px;
+  }
+  
+  .artist-name {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .artist-bio {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 16px;
+  }
+  
+  .read-more {
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .read-more:hover {
+    background-color: #45a049;
+  }
+  
+  /* Responsive styles for smaller screens */
+  @media (max-width: 768px) {
+    .artist-card {
+      width: 90%; /* Make the card wider for tablets and smaller screens */
+      max-width: 400px;
+    }
+  
+    .artist-name {
+      font-size: 1.25rem; /* Slightly smaller font size for artist name */
+    }
+  
+    .artist-bio {
+      font-size: 0.85rem; /* Reduce the bio text size */
+    }
+  
+    .read-more {
+      padding: 10px 20px; /* Increase padding on smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .artist-feature h2 {
+      font-size: 1.5rem; /* Smaller heading for mobile */
+    }
+  
+    .artist-card {
+      width: 95%; /* Nearly full width for mobile */
+      max-width: 320px; /* Cap the card width on mobile */
+    }
+  
+    .artist-name {
+      font-size: 1.1rem; /* Reduce font size for mobile */
+    }
+  
+    .artist-bio {
+      font-size: 0.75rem; /* Smaller bio font for mobile */
+    }
+  
+    .read-more {
+      padding: 8px 16px; /* Adjust padding for mobile */
+    }
+  }
+  

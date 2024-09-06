@@ -14,10 +14,11 @@ const HomeYTVideo = () => {
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Function to fetch a random video from the database
-  const fetchRandomVideo = async () => {
+  // Function to fetch a video based on the current 5-minute interval
+  const fetchVideoForInterval = async () => {
     setLoading(true);
     try {
+      // Fetch the list of approved videos with a non-null `music_url`
       const { data: lyricsWithVideos, error } = await supabase
         .from('lyrics')
         .select('music_url')
@@ -29,12 +30,12 @@ const HomeYTVideo = () => {
       }
 
       if (lyricsWithVideos && lyricsWithVideos.length > 0) {
-        const randomLyric = lyricsWithVideos[Math.floor(Math.random() * lyricsWithVideos.length)];
-        const selectedVideoUrl = randomLyric.music_url;
+        // Calculate the 5-minute interval (current minutes divided by 5)
+        const currentUTCMinutes = new Date().getUTCMinutes();
+        const intervalIndex = Math.floor(currentUTCMinutes / 5) % lyricsWithVideos.length; // Cycle through available videos
 
-        localStorage.setItem('videoUrl', selectedVideoUrl); // Store the video URL
-        localStorage.setItem('timestamp', new Date().getTime().toString()); // Store the current timestamp
-
+        // Select the video based on the calculated interval
+        const selectedVideoUrl = lyricsWithVideos[intervalIndex].music_url;
         setVideoUrl(selectedVideoUrl);
       } else {
         throw new Error('No videos found');
@@ -48,55 +49,33 @@ const HomeYTVideo = () => {
     }
   };
 
-  // Set interval to update the clock and change video every hour
+  // Set up the interval to update the video every 5 minutes and synchronize across all devices
   useEffect(() => {
-    const storedVideo = localStorage.getItem('videoUrl');
-    const storedTimestamp = localStorage.getItem('timestamp');
-    const currentTime = new Date().getTime();
-    const oneHour = 3600000; // 1 hour in milliseconds
+    fetchVideoForInterval(); // Fetch video immediately when component loads
 
-    if (storedVideo && storedTimestamp) {
-      const timeElapsed = currentTime - parseInt(storedTimestamp, 10);
+    // Set interval to check and update video every 5 minutes
+    const videoUpdateInterval = setInterval(() => {
+      fetchVideoForInterval();
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
 
-      if (timeElapsed < oneHour) {
-        setVideoUrl(storedVideo);
-        setLoading(false);
-      } else {
-        // If an hour has passed, fetch a new video
-        fetchRandomVideo();
-      }
-    } else {
-      // If no video is stored, fetch a new video
-      fetchRandomVideo();
-    }
-
-    // Set interval for the clock and video update every minute
-    const clockInterval = setInterval(() => {
-      setCurrentTime(new Date());
-      const newTimeElapsed = new Date().getTime() - parseInt(localStorage.getItem('timestamp'), 10);
-
-      if (newTimeElapsed >= oneHour) {
-        fetchRandomVideo(); // Fetch a new video if an hour has passed
-      }
-    }, 1000); // Update every second for the clock
-
-    return () => clearInterval(clockInterval); // Clean up the interval when the component unmounts
+    return () => clearInterval(videoUpdateInterval); // Clean up interval when the component unmounts
   }, []);
 
+  // Extract the YouTube video ID from the URL
   const extractYouTubeId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const matches = url.match(regex);
     return matches ? matches[1] : null;
   };
 
+  // Render the YouTube embed
   const renderYouTubeEmbed = () => {
     if (!videoUrl) return null;
 
     const videoId = extractYouTubeId(videoUrl);
     if (!videoId) return null;
 
-    // Customize the YouTube player parameters here
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=0&rel=0&controls=1&showinfo=1&autoplay=0&fs=0&mute=0`;
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&controls=1&showinfo=0&autoplay=1&mute=0`;
 
     return (
       <div className="youtube-video-section">
@@ -107,33 +86,42 @@ const HomeYTVideo = () => {
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen={false} // Disable fullscreen
+          allowFullScreen
         ></iframe>
       </div>
     );
   };
 
-  // Function to render a digital clock with animated transitions
+  // Render a digital clock to show current time (optional)
   const renderClock = () => {
-    const hours = currentTime.getHours().toString().padStart(1, '0');
-    const minutes = currentTime.getMinutes().toString().padStart(1, '0');
-    const seconds = currentTime.getSeconds().toString().padStart(1, '0');
+    const hours = currentTime.getUTCHours().toString().padStart(2, '0');
+    const minutes = currentTime.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = currentTime.getUTCSeconds().toString().padStart(2, '0');
 
     return (
       <div className="digital-clock">
         <span className="digit">{hours}</span>:
         <span className="digit">{minutes}</span>:
-        <span className="digit">{seconds}</span>
+        <span className="digit">{seconds}</span> UTC
       </div>
     );
   };
 
+  // Update the current time every second
+  useEffect(() => {
+    const clockInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(clockInterval); // Clean up interval
+  }, []);
+
   return (
     <div className="homeytvideo-container">
-      <h2>Music for the Hours</h2> {/* Text added above the video */}
+      <h2>Changing Vibes Every 5 Minutes</h2> {/* Heading added above the video */}
       {renderClock()} {/* Render the clock */}
       {loading ? (
-        <p>Loading video...</p>
+        <p>Loading Youtube video...</p>
       ) : (
         renderYouTubeEmbed()
       )}

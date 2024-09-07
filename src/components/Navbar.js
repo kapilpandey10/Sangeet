@@ -1,13 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../style/Navbar.css';
-import logo from '../logo/logo.png'; // Update the logo path accordingly
+import logo from '../logo/logo.webp'; // Update the logo path accordingly
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    // Set the meta description dynamically
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content = 'Sangeet Lyrics Central - Your ultimate destination for song lyrics, artist bios, and more.';
+    document.head.appendChild(metaDescription);
+    const metaKeywords = document.createElement('meta');
+    metaKeywords.name = 'keywords';
+    metaKeywords.content = 'lyrics, songs, music, artists, Sangeet';
+    document.head.appendChild(metaKeywords);
+    // Clean up to avoid duplicate meta tags
+    return () => {
+      document.head.removeChild(metaDescription);
+    };
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -31,7 +47,7 @@ const Navbar = () => {
         {/* Logo and Brand Name */}
         <div className="logo-container">
           <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-            <img src={logo} alt="Sangeet Logo" className="navbar-logo" />
+            <img src={logo} alt="Sangeet Logo" className="navbar-logo" width="50" height="50" />
             <span className="navbar-title">Sangeet</span>
           </Link>
         </div>
@@ -50,7 +66,6 @@ const Navbar = () => {
         {/* Navbar Links and Search wrapped inside mobile menu */}
         <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <div className="nav-links">
-           
             <Link to="/lyrics" className={isActive('/lyrics')} onClick={toggleMobileMenu}>
               View Lyrics
             </Link>

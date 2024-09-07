@@ -13,6 +13,10 @@
 body {
   margin-top: 10px; /* Adjust this based on the height of your navbar */
 }
+.navbar-logo {
+  max-width: 50px;
+  height: auto; /* Maintain aspect ratio */
+}
 
 /* Navbar container for flex layout */
 .navbar-container {

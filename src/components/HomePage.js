@@ -6,6 +6,7 @@ import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
 
+
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;

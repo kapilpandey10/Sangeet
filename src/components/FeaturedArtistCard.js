@@ -15,7 +15,7 @@ const FeaturedArtistCard = () => {
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch one random approved artist
+  // Function to fetch one approved artist based on the day of the month
   const fetchFeaturedArtist = async () => {
     try {
       // Fetch all approved artists
@@ -27,9 +27,11 @@ const FeaturedArtistCard = () => {
       if (error) {
         console.error('Error fetching artist:', error.message);
       } else if (artists.length > 0) {
-        // Select one random artist from the list of approved artists
-        const randomArtist = artists[Math.floor(Math.random() * artists.length)];
-        setArtist(randomArtist);
+        // Use the current day to select an artist (e.g., day of the month)
+        const dayOfMonth = new Date().getDate();
+        const artistIndex = dayOfMonth % artists.length; // Ensure index is within bounds
+        const featuredArtist = artists[artistIndex];
+        setArtist(featuredArtist);
       }
     } catch (error) {
       console.error('Error fetching artist:', error);
@@ -38,9 +40,27 @@ const FeaturedArtistCard = () => {
     }
   };
 
+  // Meta tags for SEO (description and keywords)
   useEffect(() => {
     fetchFeaturedArtist();
-  }, []);
+
+    if (artist) {
+      const metaDescription = document.createElement('meta');
+      metaDescription.name = 'description';
+      metaDescription.content = `Learn more about ${artist.name}, a featured artist at Sangeet Lyrics Central. Discover their music, bio, and more.`;
+      document.head.appendChild(metaDescription);
+
+      const metaKeywords = document.createElement('meta');
+      metaKeywords.name = 'keywords';
+      metaKeywords.content = `${artist.name}, artist, music, biography, lyrics, songs`;
+      document.head.appendChild(metaKeywords);
+
+      return () => {
+        document.head.removeChild(metaDescription);
+        document.head.removeChild(metaKeywords);
+      };
+    }
+  }, [artist]);
 
   if (loading) {
     return <p>Loading featured artist...</p>;
@@ -53,14 +73,15 @@ const FeaturedArtistCard = () => {
   return (
     <div className="artist-feature">
       <div className="artist-card">
-        <img src={artist.image_url} alt={artist.name} className="artist-card-image" />
+        <img src={artist.image_url} alt={artist.name} className="artist-card-image" width="300" height="300" />
         <h3>{artist.name}</h3>
         <p
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(artist.bio.substring(0, 150)), // Limit bio to 150 characters
           }}
         ></p>
-        <Link to={`/artistbio/${artist.name}`}>Read More</Link>
+        {/* Updated descriptive link */}
+        <Link to={`/artistbio/${artist.name}`}>Read more about {artist.name}</Link>
       </div>
     </div>
   );

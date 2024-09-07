@@ -15,7 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
-  const [artist, setArtist] = useState(null);
+  const [artists, setArtists] = useState([]); // Store multiple artists
   const [loading, setLoading] = useState(true);
   const adRef = useRef(null); // Reference for the ad element
   const [adInitialized, setAdInitialized] = useState(false); // Track ad initialization
@@ -48,10 +48,10 @@ const HomePage = () => {
 
         if (artistsError) {
           console.error('Error fetching artists:', artistsError.message);
-          setArtist(null);
+          setArtists([]);
         } else {
-          const randomArtist = getArtistForToday(allArtists);
-          setArtist(randomArtist);
+          const randomArtists = getRandomArtists(allArtists, 3); // Fetch three random artists
+          setArtists(randomArtists);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -91,10 +91,10 @@ const HomePage = () => {
     return shuffled.slice(0, limit);
   };
 
-  // Function to get an artist based on the current day
-  const getArtistForToday = (allArtists) => {
-    const dayOfYear = new Date().getDay(); // Get current day number (0 - 6)
-    return allArtists[dayOfYear % allArtists.length]; // Rotate through artists based on the day
+  // Function to get three random artists
+  const getRandomArtists = (allArtists, limit = 3) => {
+    const shuffled = allArtists.sort(() => 0.5 - Math.random()); // Shuffle artists
+    return shuffled.slice(0, limit); // Return the first 'limit' number of artists
   };
 
   return (
@@ -138,9 +138,16 @@ const HomePage = () => {
           {/* Render the HomeYTVideo component after the lyrics */}
           <HomeYTVideo />
 
-          {/* Display Featured Artist with FeaturedArtistCard */}
-          {artist && (
-            <FeaturedArtistCard artist={artist} />
+          {/* Display Featured Artists */}
+          {artists.length > 0 && (
+            <section className="featured-artists">
+              <h2>Featured Artists</h2>
+              <div className="featured-artists-grid">
+                {artists.map((artist) => (
+                  <FeaturedArtistCard key={artist.id} artist={artist} />
+                ))}
+              </div>
+            </section>
           )}
 
           {/* Google AdSense Ad */}

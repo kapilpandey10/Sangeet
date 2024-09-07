@@ -8,7 +8,7 @@ import '../style/FeaturedArtistCard.css'; // Make sure you have this CSS file
 const FeaturedArtistCard = ({ artist }) => {
   return (
     <section className="artist-feature">
-      <h2>Featured Artist</h2>
+     
       <div className="artist-card-container"> {/* Added container */}
         <div className="artist-card">
           <img src={artist.image_url} alt={artist.name} className="artist-card-image" />

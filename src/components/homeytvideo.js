@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom'; // To handle navigation to /lyrics/{ID}
 import '../style/HomeYTVideo.css'; // You can create this CSS file for styling
 
 // Access environment variables
@@ -12,7 +13,9 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const HomeYTVideo = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(true);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [lyricsId, setLyricsId] = useState(null); // Store the ID for the lyrics page
+  const navigate = useNavigate(); // React Router hook to handle navigation
 
   // Function to fetch a video based on the current 5-minute interval
   const fetchVideoForInterval = async () => {
@@ -21,7 +24,7 @@ const HomeYTVideo = () => {
       // Fetch the list of approved videos with a non-null `music_url`
       const { data: lyricsWithVideos, error } = await supabase
         .from('lyrics')
-        .select('music_url')
+        .select('id, music_url') // Get the ID as well for navigation
         .not('music_url', 'is', null)
         .eq('status', 'approved');
 
@@ -36,7 +39,10 @@ const HomeYTVideo = () => {
 
         // Select the video based on the calculated interval
         const selectedVideoUrl = lyricsWithVideos[intervalIndex].music_url;
+        const selectedLyricsId = lyricsWithVideos[intervalIndex].id; // Get the lyrics ID
+
         setVideoUrl(selectedVideoUrl);
+        setLyricsId(selectedLyricsId); // Set the ID for the lyrics
       } else {
         throw new Error('No videos found');
       }
@@ -59,6 +65,24 @@ const HomeYTVideo = () => {
     }, 5 * 60 * 1000); // 5 minutes in milliseconds
 
     return () => clearInterval(videoUpdateInterval); // Clean up interval when the component unmounts
+  }, []);
+
+  // Countdown Timer Logic
+  const calculateTimeLeft = () => {
+    const currentUTCMinutes = new Date().getUTCMinutes();
+    const currentUTCSeconds = new Date().getUTCSeconds();
+    const timeElapsed = (currentUTCMinutes % 5) * 60 + currentUTCSeconds; // Time elapsed in seconds within the 5-minute interval
+    const timeRemaining = 5 * 60 - timeElapsed; // 5 minutes in seconds
+    return timeRemaining;
+  };
+
+  // Update the countdown timer every second
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timerInterval); // Clean up the timer interval
   }, []);
 
   // Extract the YouTube video ID from the URL
@@ -92,38 +116,32 @@ const HomeYTVideo = () => {
     );
   };
 
-  // Render a digital clock to show current time (optional)
-  const renderClock = () => {
-    const hours = currentTime.getUTCHours().toString().padStart(2, '0');
-    const minutes = currentTime.getUTCMinutes().toString().padStart(2, '0');
-    const seconds = currentTime.getUTCSeconds().toString().padStart(2, '0');
+  // Calculate the remaining minutes and seconds for the countdown
+  const minutesLeft = Math.floor(timeLeft / 60);
+  const secondsLeft = timeLeft % 60;
 
-    return (
-      <div className="digital-clock">
-        <span className="digit">{hours}</span>:
-        <span className="digit">{minutes}</span>:
-        <span className="digit">{seconds}</span> 
-      </div>
-    );
+  // Handle the navigation to the lyrics page
+  const handleViewLyricsClick = () => {
+    if (lyricsId) {
+      navigate(`/lyrics/${lyricsId}`); // Navigate to the specific lyrics page
+    }
   };
-
-  // Update the current time every second
-  useEffect(() => {
-    const clockInterval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(clockInterval); // Clean up interval
-  }, []);
 
   return (
     <div className="homeytvideo-container">
-      <h2>Changing Vibes Every 5 Minutes</h2> {/* Heading added above the video */}
-      {renderClock()} {/* Render the clock */}
+      <h2>New Song in {minutesLeft}:{secondsLeft.toString().padStart(2, '0')} Minutes. Stay Tuned!</h2> {/* Countdown timer displayed */}
       {loading ? (
         <p>Loading Youtube video...</p>
       ) : (
-        renderYouTubeEmbed()
+        <>
+          {renderYouTubeEmbed()}
+          <button 
+            className="view-lyrics-button"
+            onClick={handleViewLyricsClick} // Navigate to the lyrics page
+          >
+            View Lyrics
+          </button>
+        </>
       )}
     </div>
   );

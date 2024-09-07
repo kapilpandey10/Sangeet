@@ -1,89 +1,92 @@
-/* General container styles */
+/* Container for the YouTube video section */
 .homeytvideo-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
     text-align: center;
-    background-color: #f4f4f4;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 30px;
   }
   
-  h2 {
-    font-size: 2.2rem;
-    color: #2c3e50;
-    margin-bottom: 20px;
-    font-family: 'Montserrat', sans-serif;
-    text-transform: uppercase;
-  }
-  
-  /* Digital clock styling */
-  .digital-clock {
-    display: inline-block;
-    background-color: #2c3e50;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
+  .homeytvideo-container h2 {
     font-size: 2rem;
-    font-family: 'Roboto Mono', monospace;
-    letter-spacing: 2px;
+    color: #333;
     margin-bottom: 20px;
   }
   
-  .digital-clock .digit {
-    padding: 0 5px;
-  }
-  
-  /* YouTube video section */
   .youtube-video-section {
-    margin-top: 20px;
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio for responsive video */
+    height: 0;
+    max-width: 80%; /* Set the max width to 80% to avoid full-width video */
+    margin: 0 auto; /* Center align the video */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
   }
   
   .youtube-video-section iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 1000px;
-    height: 500px;
-    border-radius: 8px;
+    height: 100%;
     border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 12px; /* Add rounded corners */
   }
   
-  /* Loading message */
-  .homeytvideo-container p {
-    font-size: 1.5rem;
-    color: #2c3e50;
-    font-family: 'Roboto', sans-serif;
+  /* View Lyrics Button */
+  .view-lyrics-button {
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
     margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
   }
   
-  /* Media queries for responsiveness */
+  .view-lyrics-button:hover {
+    background-color: #007acc;
+  }
+  
+  /* Responsive design for tablets */
+  @media (max-width: 1024px) {
+    .youtube-video-section {
+      max-width: 90%; /* Make the video larger on tablets */
+    }
+    .homeytvideo-container h2 {
+      font-size: 1.8rem; /* Adjust the heading size for tablet */
+    }
+  }
+  
+  /* Responsive design for mobile devices */
   @media (max-width: 768px) {
-    h2 {
-      font-size: 1.8rem;
+    .youtube-video-section {
+      max-width: 95%; /* Allow more width on mobile for better fit */
+    }
+    .homeytvideo-container h2 {
+      font-size: 1.6rem; /* Adjust heading for mobile devices */
     }
   
-    .digital-clock {
-      font-size: 1.5rem;
-      padding: 8px 15px;
-    }
-  
-    .youtube-video-section iframe {
-      height: 300px;
+    .view-lyrics-button {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      padding: 9px 18px;
     }
   }
   
+  /* Smaller mobile devices (less than 480px) */
   @media (max-width: 480px) {
-    h2 {
-      font-size: 0.5rem;
+    .youtube-video-section {
+      max-width: 100%; /* Make video full width on small devices */
+    }
+    
+    .homeytvideo-container h2 {
+      font-size: 1.4rem; /* Further reduce heading size for smaller screens */
     }
   
-    .digital-clock {
-      font-size: 1.2rem;
-      padding: 5px 10px;
-    }
-  
-    .youtube-video-section iframe {
-      height: 250px;
+    .view-lyrics-button {
+      font-size: 0.9rem;
+      padding: 8px 16px;
     }
   }
   

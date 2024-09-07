@@ -1,3 +1,7 @@
 User-agent: *
 Disallow: /admin
+Disallow: /private/
+
 Allow: /
+
+Sitemap: https://www.pandeykapil.com.np/sitemap.xml

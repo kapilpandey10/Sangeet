@@ -1,92 +1,94 @@
-/* Container for the YouTube video section */
+/* General container styling */
 .homeytvideo-container {
     text-align: center;
-    padding: 20px;
-    margin-top: 30px;
+    padding: 30px;
+    background-color: #f0f4f8;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: 1200px; /* Set a max-width for the whole container */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the content */
   }
   
+  /* Countdown timer text */
   .homeytvideo-container h2 {
     font-size: 2rem;
-    color: #333;
-    margin-bottom: 20px;
+    color: #34495e;
+    margin-bottom: 30px;
+    font-weight: bold;
   }
   
+  /* YouTube video section */
   .youtube-video-section {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio for responsive video */
-    height: 0;
-    max-width: 80%; /* Set the max width to 80% to avoid full-width video */
-    margin: 0 auto; /* Center align the video */
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
+    margin: 0;
+    display: flex;
+    justify-content: center; /* Center the video */
+    width: 100%; /* Make sure the video section takes up the entire width of the container */
   }
   
+  /* Responsive video iframe */
   .youtube-video-section iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 12px; /* Add rounded corners */
+    max-width: 1000px; /* Limit the width of the video */
+    height: 600px; /* Set the default height */
   }
   
-  /* View Lyrics Button */
+  /* Adjust video height on different screen sizes */
+  @media (max-width: 768px) {
+    .youtube-video-section iframe {
+      height: 400px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .youtube-video-section iframe {
+      height: 300px;
+    }
+  }
+  
+  /* Button styling */
   .view-lyrics-button {
-    background-color: #1e90ff;
+    display: inline-block;
+    background-color: #1abc9c;
     color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
     font-size: 1rem;
+    padding: 12px 24px;
     margin-top: 20px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
   }
   
   .view-lyrics-button:hover {
-    background-color: #007acc;
+    background-color: #16a085;
+    transform: translateY(-2px); /* Subtle lift on hover */
   }
   
-  /* Responsive design for tablets */
-  @media (max-width: 1024px) {
-    .youtube-video-section {
-      max-width: 90%; /* Make the video larger on tablets */
-    }
-    .homeytvideo-container h2 {
-      font-size: 1.8rem; /* Adjust the heading size for tablet */
-    }
+  .view-lyrics-button:active {
+    transform: translateY(0); /* Revert back on click */
   }
   
-  /* Responsive design for mobile devices */
+  /* Countdown text responsive adjustments */
   @media (max-width: 768px) {
-    .youtube-video-section {
-      max-width: 95%; /* Allow more width on mobile for better fit */
-    }
     .homeytvideo-container h2 {
-      font-size: 1.6rem; /* Adjust heading for mobile devices */
-    }
-  
-    .view-lyrics-button {
-      margin-top: 15px;
-      font-size: 0.95rem;
-      padding: 9px 18px;
+      font-size: 1.5rem;
     }
   }
   
-  /* Smaller mobile devices (less than 480px) */
   @media (max-width: 480px) {
-    .youtube-video-section {
-      max-width: 100%; /* Make video full width on small devices */
-    }
-    
     .homeytvideo-container h2 {
-      font-size: 1.4rem; /* Further reduce heading size for smaller screens */
+      font-size: 1.2rem;
     }
   
     .view-lyrics-button {
+      padding: 10px 20px;
       font-size: 0.9rem;
-      padding: 8px 16px;
     }
   }
   

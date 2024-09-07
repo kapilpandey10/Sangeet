@@ -50,11 +50,12 @@ const Navbar = () => {
         {/* Navbar Links and Search wrapped inside mobile menu */}
         <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <div className="nav-links">
-            <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>
-              Submit Lyrics
-            </Link>
+           
             <Link to="/lyrics" className={isActive('/lyrics')} onClick={toggleMobileMenu}>
               View Lyrics
+            </Link>
+            <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>
+              Submit Lyrics
             </Link>
             <Link to="/bhajan" className={isActive('/bhajan')} onClick={toggleMobileMenu}>
               Bhajan

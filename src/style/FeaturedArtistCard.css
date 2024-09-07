@@ -1,110 +1,102 @@
-/* FeaturedArtistCard.css */
-
-/* General styles for the artist card */
-.artist-feature {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 50vh;
+/* Container for the Featured Artist section */
+.featured-artist-section {
     text-align: center;
-    margin: 40px 0;
+    margin-top: 50px;
   }
   
-  .artist-feature h2 {
+  /* Title Styling */
+  .featured-artist-title {
     font-size: 2rem;
+    color: #2c3e50;
+    font-weight: bold;
     margin-bottom: 20px;
-    color: #333;
   }
   
+  /* Centering the card under the title */
+  .featured-artist-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Artist card styling */
   .artist-card {
-    width: 300px; /* Default width for desktop */
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: white;
-    overflow: hidden;
-    transition: transform 0.3s ease;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 20px auto;
+    border: 1px solid #e0e0e0;
   }
   
   .artist-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   }
   
-  .artist-card-image {
+  /* Image Styling */
+  .artist-card img {
     width: 100%;
-    height: 200px;
+    height: 250px;
     object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   
-  .artist-card-content {
-    padding: 16px;
-  }
-  
-  .artist-name {
-    font-size: 1.5rem;
+  /* Artist name */
+  .artist-card h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    font-weight: bold;
     margin-bottom: 10px;
-    color: #333;
   }
   
-  .artist-bio {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 16px;
+  /* Artist bio */
+  .artist-card p {
+    font-size: 1rem;
+    color: #7f8c8d;
+    line-height: 1.6;
+    margin-bottom: 20px;
   }
   
-  .read-more {
-    background-color: #4CAF50;
+  /* Read More button styling */
+  .artist-card a {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #1abc9c;
     color: white;
+    font-size: 1rem;
     text-decoration: none;
-    padding: 8px 16px;
     border-radius: 8px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
   }
   
-  .read-more:hover {
-    background-color: #45a049;
+  .artist-card a:hover {
+    background-color: #16a085;
+    transform: translateY(-2px);
   }
   
-  /* Responsive styles for smaller screens */
+  /* Responsive adjustments */
   @media (max-width: 768px) {
     .artist-card {
-      width: 90%; /* Make the card wider for tablets and smaller screens */
-      max-width: 400px;
+      max-width: 90%;
     }
   
-    .artist-name {
-      font-size: 1.25rem; /* Slightly smaller font size for artist name */
+    .artist-card img {
+      height: 220px;
     }
   
-    .artist-bio {
-      font-size: 0.85rem; /* Reduce the bio text size */
+    .artist-card h3 {
+      font-size: 1.5rem;
     }
   
-    .read-more {
-      padding: 10px 20px; /* Increase padding on smaller screens */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .artist-feature h2 {
-      font-size: 1.5rem; /* Smaller heading for mobile */
-    }
-  
-    .artist-card {
-      width: 95%; /* Nearly full width for mobile */
-      max-width: 320px; /* Cap the card width on mobile */
-    }
-  
-    .artist-name {
-      font-size: 1.1rem; /* Reduce font size for mobile */
-    }
-  
-    .artist-bio {
-      font-size: 0.75rem; /* Smaller bio font for mobile */
-    }
-  
-    .read-more {
-      padding: 8px 16px; /* Adjust padding for mobile */
+    .artist-card p {
+      font-size: 0.95rem;
     }
   }
   

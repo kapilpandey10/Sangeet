@@ -2,11 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
-import HomeYTVideo from './homeytvideo'; // Import the HomeYTVideo component
-import DOMPurify from 'dompurify'; // For sanitizing HTML
-import FeaturedArtistCard from './FeaturedArtistCard'; // Import the FeaturedArtistCard component
-import HeroSlider from './HeroSlider'; // Import the HeroSlider component
-
+import HomeYTVideo from './homeytvideo';
+import FeaturedArtistCard from './FeaturedArtistCard';
+import HeroSlider from './HeroSlider';
 
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -17,19 +15,18 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
-  const [artists, setArtists] = useState([]); // Store multiple artists
+  const [featuredArtist, setFeaturedArtist] = useState(null);
   const [loading, setLoading] = useState(true);
-  const adRef = useRef(null); // Reference for the ad element
-  const [adInitialized, setAdInitialized] = useState(false); // Track ad initialization
+  const adRef = useRef(null);
+  const [adInitialized, setAdInitialized] = useState(false);
 
   useEffect(() => {
-    document.title = "Sangeet Lyrics Central | Latest Lyrics";
+    document.title = 'Sangeet Lyrics Central | Latest Lyrics';
 
     const fetchAllData = async () => {
       setLoading(true);
-
       try {
-        // Fetch all lyrics
+        // Fetch lyrics
         const { data: allLyrics, error: lyricsError } = await supabase
           .from('lyrics')
           .select('id, title, artist, published_date')
@@ -43,18 +40,21 @@ const HomePage = () => {
           setLyrics(randomLyrics);
         }
 
-        // Fetch all artists
-        const { data: allArtists, error: artistsError } = await supabase
+        // Fetch all approved artists and randomly select one
+        const { data: artistData, error: artistError } = await supabase
           .from('artists')
-          .select('*');
+          .select('*')
+          .eq('status', 'approved');
 
-        if (artistsError) {
-          console.error('Error fetching artists:', artistsError.message);
-          setArtists([]);
-        } else {
-          const randomArtists = getRandomArtists(allArtists, 3); // Fetch three random artists
-          setArtists(randomArtists);
+        console.log("Fetched artists:", artistData); // Log all fetched artists for debugging
+
+        if (artistError) {
+          console.error('Error fetching artists:', artistError.message);
+        } else if (artistData && artistData.length > 0) {
+          const randomArtist = artistData[Math.floor(Math.random() * artistData.length)]; // Select a random artist
+          setFeaturedArtist(randomArtist);
         }
+
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -64,53 +64,34 @@ const HomePage = () => {
 
     fetchAllData();
 
-    // Initialize Google Ads once
     if (!adInitialized && adRef.current && !adRef.current.classList.contains('adsbygoogle-initialized')) {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       adRef.current.classList.add('adsbygoogle-initialized');
-      setAdInitialized(true); // Ensure this runs only once
+      setAdInitialized(true);
     }
+  }, [adInitialized]);
 
-    // Floating Emoji Setup
-    const emojis = document.querySelectorAll('.floating-emoji');
-    const handleMouseMove = (e) => {
-      const { clientX: x, clientY: y } = e;
-      emojis.forEach((emoji, index) => {
-        const speed = 10 + index * 5;
-        const xPos = (window.innerWidth / 2 - x) / speed;
-        const yPos = (window.innerHeight / 2 - y) / speed;
-        emoji.style.transform = `translate(${xPos}px, ${yPos}px)`;
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [adInitialized]); // Depend on adInitialized to prevent multiple ad pushes
-
-  // Function to get random lyrics from the full list
   const getRandomLyrics = (allLyrics, limit) => {
     const shuffled = allLyrics.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
   };
 
-  // Function to get three random artists
-  const getRandomArtists = (allArtists, limit = 3) => {
-    const shuffled = allArtists.sort(() => 0.5 - Math.random()); // Shuffle artists
-    return shuffled.slice(0, limit); // Return the first 'limit' number of artists
-  };
-
   return (
     <div className="homepage-container">
-      {/* Floating Emojis */}
+      <meta name="description" content="Sangeet Lyrics Central is the ultimate destination for song lyrics. Explore lyrics across genres and eras." />
+      <meta name="keywords" content="lyrics, music, artists, song lyrics, songwriters" />
+      <meta name="author" content="Sangeet Lyrics Central" />
+      <meta name="robots" content="index, follow" />
+
       <div className="floating-emoji emoji-1">🎶</div>
       <div className="floating-emoji emoji-2">🎵</div>
       <div className="floating-emoji emoji-3">♭</div>
       <div className="floating-emoji emoji-5">🎶</div>
       <div className="floating-emoji emoji-6">🎵</div>
       <div className="floating-emoji emoji-9">♭</div>
-      
-     {/* Hero Slider */}
-     <HeroSlider /> {/* Add the hero slider */}
+
+      <HeroSlider />
+
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
 
@@ -118,9 +99,8 @@ const HomePage = () => {
         <p>Loading lyrics and artist... Hold On</p>
       ) : (
         <>
-          {/* Display Lyrics */}
           <section className="lyrics-bar">
-          <h2>Featured Lyrics</h2>
+            <h2>Featured Lyrics</h2>
             {lyrics.length > 0 ? (
               <div className="lyrics-horizontal-bar">
                 {lyrics.map((lyric, index) => (
@@ -140,22 +120,22 @@ const HomePage = () => {
             </div>
           </section>
 
-          {/* Render the HomeYTVideo component after the lyrics */}
           <HomeYTVideo />
 
-          {/* Display Featured Artists */}
-          {artists.length > 0 && (
-            <section className="featured-artists">
-              <h2>Featured Artists</h2>
-              <div className="featured-artists-grid">
-                {artists.map((artist) => (
-                  <FeaturedArtistCard key={artist.id} artist={artist} />
-                ))}
-              </div>
-            </section>
-          )}
+{/* Display Featured Artist */}
+{featuredArtist ? (
+  <div className="featured-artist-section">
+    <h2 className="featured-artist-title">Featured Artist</h2>
+    <div className="featured-artist-container">
+      <FeaturedArtistCard artist={featuredArtist} />
+    </div>
+  </div>
+) : (
+  <p>No featured artist available.</p>
+)}
 
-          {/* Google AdSense Ad */}
+
+
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <ins
               className="adsbygoogle"

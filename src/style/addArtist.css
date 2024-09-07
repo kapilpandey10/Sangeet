@@ -59,11 +59,3 @@
   }
   
   /* React Quill Editor */
-  .ql-container {
-    height: 150px;
-    margin-bottom: 20px;
-  }
-  .admin-dashboard .main-content {
-    padding-top: 0; /* Remove any extra padding at the top */
-    margin-top: 0;
-  }

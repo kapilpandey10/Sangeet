@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import ReactQuill from 'react-quill'; // Rich text editor for bio
-import 'react-quill/dist/quill.snow.css'; // Quill's CSS for styling
 import '../style/addArtist.css';
 
 // Access environment variables
@@ -93,10 +91,13 @@ const AddArtist = () => {
       return;
     }
 
+    // Handle Bio formatting: Only set HTML if bio contains HTML, otherwise treat as plain text
+    const bioContent = /<\/?[a-z][\s\S]*>/i.test(artistBio) ? artistBio : `<p>${artistBio}</p>`;
+
     try {
       const { data, error } = await supabase
         .from('artists')
-        .upsert([{ name: artistName, image_url: artistImage, bio: artistBio, video_url: musicUrl }]); // Push music_url to the video_url column
+        .upsert([{ name: artistName, image_url: artistImage, bio: bioContent, video_url: musicUrl }]); // Push music_url to the video_url column
 
       if (error) {
         throw error;
@@ -158,19 +159,12 @@ const AddArtist = () => {
 
         <label>
           Artist Bio:
-          <ReactQuill
-            theme="snow"
+          <textarea
             value={artistBio}
-            onChange={setArtistBio}
+            onChange={(e) => setArtistBio(e.target.value)}
             placeholder="Write artist bio here..."
-            modules={{
-              toolbar: [
-                ['bold', 'italic', 'underline'], // Simplified formatting options
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Bullet points
-                ['link'], // Insert links
-                ['clean'] // Remove formatting button
-              ]
-            }}
+            rows="5"
+            required
           />
         </label>
 

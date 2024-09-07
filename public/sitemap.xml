@@ -6,18 +6,13 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://pandeykapil.com.np/</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://pandeykapil.com.np/contact</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pandeykapil.com.np/lyrics</loc>
-    <changefreq>Daily</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
@@ -29,5 +24,26 @@
     <loc>https://pandeykapil.com.np/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
+  </url>
+   <url>
+    <loc>https://pandeykapil.com.np/bhajan</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.</priority>
+  </url>
+  <!-- Artist Bios -->
+  <url>
+    <loc>https://pandeykapil.com.np/artistbio/anju-panta</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pandeykapil.com.np/artistbio/laxmi-prasad-devkota</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pandeykapil.com.np/artistbio/sujan-chapagain</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

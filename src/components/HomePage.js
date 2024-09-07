@@ -5,6 +5,8 @@ import '../style/HomePage.css';
 import HomeYTVideo from './homeytvideo'; // Import the HomeYTVideo component
 import DOMPurify from 'dompurify'; // For sanitizing HTML
 import FeaturedArtistCard from './FeaturedArtistCard'; // Import the FeaturedArtistCard component
+import HeroSlider from './HeroSlider'; // Import the HeroSlider component
+
 
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -106,7 +108,9 @@ const HomePage = () => {
       <div className="floating-emoji emoji-5">🎶</div>
       <div className="floating-emoji emoji-6">🎵</div>
       <div className="floating-emoji emoji-9">♭</div>
-
+      
+     {/* Hero Slider */}
+     <HeroSlider /> {/* Add the hero slider */}
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
 
@@ -116,6 +120,7 @@ const HomePage = () => {
         <>
           {/* Display Lyrics */}
           <section className="lyrics-bar">
+          <h2>Featured Lyrics</h2>
             {lyrics.length > 0 ? (
               <div className="lyrics-horizontal-bar">
                 {lyrics.map((lyric, index) => (

@@ -10,6 +10,9 @@
   position: relative;
   z-index: 1000;
 }
+body {
+  margin-top: 10px; /* Adjust this based on the height of your navbar */
+}
 
 /* Navbar container for flex layout */
 .navbar-container {

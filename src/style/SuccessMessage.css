@@ -1,0 +1,20 @@
+.success-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+    font-size: 2em;
+    background-color: #4BB543;
+    animation: fadeOut 2s forwards;
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  

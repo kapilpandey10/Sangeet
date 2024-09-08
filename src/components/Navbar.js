@@ -1,41 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../style/Navbar.css';
-import logo from '../logo/logo.webp'; // Update the logo path accordingly
+import { FaSearch, FaUser, FaBars, FaTimes } from 'react-icons/fa'; // Import icons
+import logo from '../logo/logo.webp'; // Update logo path if needed
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    // Set the meta description dynamically
-    const metaDescription = document.createElement('meta');
-    metaDescription.name = 'description';
-    metaDescription.content = 'Sangeet Lyrics Central - Your ultimate destination for song lyrics, artist bios, and more.';
-    document.head.appendChild(metaDescription);
-    const metaKeywords = document.createElement('meta');
-    metaKeywords.name = 'keywords';
-    metaKeywords.content = 'lyrics, songs, music, artists, Sangeet';
-    document.head.appendChild(metaKeywords);
-    // Clean up to avoid duplicate meta tags
-    return () => {
-      document.head.removeChild(metaDescription);
-    };
-  }, []);
+  const location = useLocation(); // For detecting active class
+  const searchRef = useRef(null); // Reference to search input
+  const mobileMenuRef = useRef(null); // Reference to mobile menu
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?query=${searchQuery}`);
-      setIsMobileMenuOpen(false); // Close the menu after search
+      navigate(`/search?query=${searchQuery}&filter=approved`); // Filter search for approved lyrics, title, artists, added_by
+    }
+  };
+
+  const handleClickOutside = (e) => {
+    // Close search if clicking outside
+    if (searchRef.current && !searchRef.current.contains(e.target)) {
+      setIsSearchActive(false);
+    }
+
+    // Close mobile menu if clicking outside
+    if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+      setIsMobileMenuOpen(false);
     }
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const isActive = (path) => {
     return location.pathname === path ? 'active' : '';
@@ -44,53 +50,57 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo and Brand Name */}
-        <div className="logo-container">
-          <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-            <img src={logo} alt="Sangeet Logo" className="navbar-logo" width="50" height="50" />
-            <span className="navbar-title">Sangeet</span>
-          </Link>
-        </div>
-
-        {/* Hamburger Menu Icon */}
+        {/* Hamburger Menu for Mobile */}
         <button
           className={`mobile-menu-icon ${isMobileMenuOpen ? 'open' : ''}`}
           onClick={toggleMobileMenu}
           aria-label="Toggle navigation"
         >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
+          {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* Navbar Links and Search wrapped inside mobile menu */}
-        <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
-          <div className="nav-links">
-            <Link to="/lyrics" className={isActive('/lyrics')} onClick={toggleMobileMenu}>
-              View Lyrics
-            </Link>
-            <Link to="/add" className={isActive('/add')} onClick={toggleMobileMenu}>
-              Submit Lyrics
-            </Link>
-            <Link to="/bhajan" className={isActive('/bhajan')} onClick={toggleMobileMenu}>
-              Bhajan
-            </Link>
+        {/* Logo and Brand Name */}
+        <div className={`logo-brand-container ${isSearchActive ? 'logo-hidden' : ''}`}>
+          <img src={logo} alt="Logo" className="navbar-logo" />
+          <Link to="/" className="brand-name">
+            San<span className="highlight">Geet</span>
+          </Link>
           </div>
 
-          {/* Search Bar */}
-          <form className="search-bar" onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Search Lyrics, Artists, Writers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit">Search</button>
-          </form>
-        </div>
-      </div>
-    </nav>
-  );
+{/* Nav Links */}
+<div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`} ref={mobileMenuRef}>
+  <div className="nav-links">
+    <Link to="/" className={isActive('/')}>Home</Link>
+    <Link to="/lyrics" className={isActive('/lyrics')}>View Lyrics</Link>
+    <Link to="/contact" className={isActive('/contact')}>Contact Us</Link>
+  </div>
+</div>
+
+{/* Search Bar and Login */}
+<div className="search-login-container">
+  <form className={`search-bar ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearch} ref={searchRef}>
+    <input
+      type="text"
+      placeholder="Search..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="search-input"
+    />
+    <button type="button" className="search-icon" onClick={() => setIsSearchActive(!isSearchActive)}>
+      <FaSearch />
+    </button>
+  </form>
+
+  {/* Login Button */}
+  <div className={`login-button ${isSearchActive ? 'hidden' : ''}`}>
+    <Link to="/admin-login">
+      <FaUser className="login-icon" /> Login
+    </Link>
+  </div>
+</div>
+</div>
+</nav>
+);
 };
 
 export default Navbar;

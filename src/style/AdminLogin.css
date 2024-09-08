@@ -1,132 +1,93 @@
-/* Style for the admin login container */
-.admin-login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* General Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f0f5;
+  margin: 0;
 }
 
-/* Login form styling */
-.admin-login-form {
-  background-color: #fff;
-  padding: 3rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 100%;
-  display: grid;
-  gap: 1.5rem;
-  animation: fadeIn 0.5s ease-in-out;
-}
 
-/* Form header styling */
-.admin-login-form h1 {
+/* Container for the form */
+.login-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
-  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 100px auto; /* Ensure form is centered with margin from the top */
+  position: relative;
+  z-index: 1; /* Ensure form does not overlap with navbar or footer */
+}
+
+/* Login form heading */
+h1 {
   font-size: 2rem;
   color: #333;
+  margin-bottom: 20px;
 }
 
-/* Input fields styling */
-.admin-login-form input[type="email"],
-.admin-login-form input[type="password"] {
-  padding: 0.75rem;
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: #f8f8f8;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-}
-
-/* Input fields focus effect */
-.admin-login-form input[type="email"]:focus,
-.admin-login-form input[type="password"]:focus {
-  border-color: #007bff;
-  background-color: #fff;
-  outline: none;
-}
-
-/* Error message styling */
-.admin-login-form p {
-  color: #ff4c4c;
-  font-size: 0.9rem;
-  text-align: center;
-  margin-top: -1rem;
-  margin-bottom: 1rem;
-}
-
-/* Submit button styling */
-.admin-login-form button {
+/* Input fields */
+input {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: bold;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: #555;
+  transition: all 0.3s ease;
+}
+
+/* Focus effect on input fields */
+input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Styling for the forgot password link */
+.forgot-password-link {
+  color: #125175;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: underline;
+  margin-top: 10px;
 }
 
-/* Submit button hover and active effect */
-.admin-login-form button:hover {
-  background-color: #0056b3;
+.forgot-password-link:hover {
+  color: #0056b3;
 }
 
-.admin-login-form button:active {
-  transform: scale(0.98);
+
+
+
+
+/* Error message */
+.error-message {
+  color: #ff4d4d;
+  margin-bottom: 10px;
 }
 
-/* Responsive styles for smaller devices */
-@media (max-width: 768px) {
-  .admin-login-form {
-    padding: 2rem;
-    max-width: 350px;
-  }
-
-  .admin-login-form h1 {
-    font-size: 1.75rem;
-  }
-
-  .admin-login-form input[type="email"],
-  .admin-login-form input[type="password"] {
-    padding: 0.65rem;
-    font-size: 0.95rem;
-  }
-
-  .admin-login-form button {
-    font-size: 1rem;
-  }
+/* Success message animation */
+.success-message {
+  color: #28a745;
+  font-size: 1.5rem;
+  animation: fadeInOut 0.9s ease-in-out forwards;
 }
 
-/* Very small devices */
-@media (max-width: 480px) {
-  .admin-login-form {
-    padding: 1.5rem;
-    max-width: 300px;
-  }
-
-  .admin-login-form h1 {
-    font-size: 1.5rem;
-  }
-
-  .admin-login-form button {
-    font-size: 0.9rem;
-  }
-}
-
-/* Fade-in animation */
-@keyframes fadeIn {
-  from {
+/* Keyframe animation for success message */
+@keyframes fadeInOut {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: scale(0.8);
   }
-  to {
+  50% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
   }
 }

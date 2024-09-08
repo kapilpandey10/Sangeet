@@ -41,9 +41,7 @@
   transition: opacity 0.4s ease; /* For fading out the logo */
 }
 
-.logo-hidden {
-  opacity: 0;
-}
+
 
 .navbar-logo {
   width: 35px; /* Small responsive size for logo */
@@ -68,6 +66,7 @@
   justify-content: space-around;
   flex-grow: 1;
   margin: 0 50px;
+ 
 }
 
 .nav-links a {
@@ -75,7 +74,7 @@
   font-size: 1rem;
   padding: 0 20px;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   transition: color 0.3s ease;
 }
 
@@ -90,26 +89,23 @@
 
 /* Search and Login Container */
 .search-login-container {
-  display: flex;
+  
   align-items: center;
   color: white;
 }
 
 /* Search Bar */
 .search-bar {
-  display: flex;
+ 
   align-items: center;
   background-color: transparent;
   border-radius: 5px;
-  transition: width 0.4s ease;
-  overflow: hidden;
   border: none;
-  width: 30px; /* Initial collapsed width */
+  width: 100%; 
   color: #fff;
 }
 
 .search-bar.active {
-  width: 150px; /* Expanded width when active */
   background-color: #f1f1f1; /* Set background only when active */
   border: 1px solid #000000;
   padding: 5px;
@@ -141,35 +137,50 @@
 
 
 /* Login Button */
+/* Container for the login button on the right */
 .login-button {
   display: flex;
-  align-items: center;
+  align-items: center; /* Centers the icon and text vertically */
+  justify-content: center; /* Centers the content horizontally inside its container */
+  position: absolute;
+  right: 25px; /* Aligns to the right of the navbar */
+  top: 50%; /* Positions the element halfway from the top */
+  transform: translateY(-50%); /* Moves the element up by 50% of its own height, making it vertically centered */
+  height: 100%; /* Ensures it takes up the full height of the navbar */
 }
 
-.login-button.hidden {
-  display: none; /* Hidden when search is active on mobile */
-}
-
+/* Styling for the link */
 .login-button a {
   color: #fff;
   font-size: 1rem;
   text-decoration: none;
   padding: 5px 15px;
   font-weight: 500;
+  display: flex;
+  align-items: center; /* Centers the text and icon together */
 }
 
+/* Hover effect */
 .login-button a:hover {
   color: #1abc9c;
 }
 
+/* Styling for the login icon */
 .login-icon {
-  margin-right: 5px;
+  margin-right: 8px; /* Adds some space between the icon and text */
 }
+
+/* Adjustments for mobile */
+
 
 /* Mobile Styling for Screens Smaller than 450px */
 @media (max-width: 450px) {
   .navbar-container {
     justify-content: space-between;
+  }
+
+  .search-bar {
+    opacity: 0;
   }
 
   /* Hamburger Menu displayed on mobile */
@@ -185,26 +196,19 @@
     text-align: center;
   }
 
-  /* Hide login button and logo when search is active */
-  .search-bar.active ~ .login-button {
-    display: none;
-  }
-
-  .search-bar.active ~ .logo-brand-container {
-    opacity: 0;
-  }
+ 
 
   /* Hide nav links initially on mobile */
   .nav-menu {
     display: none;
     position: absolute;
-    top: 60px;
+    top: 99px;
     left: 0;
     width: 100%;
     background-color: #34495e;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   }
 
@@ -225,15 +229,7 @@
     text-align: center;
   }
 
-  /* Adjust the search bar to be on the same line */
-  .search-bar {
-    width: 30px;
-  }
-
-  .search-bar.active {
-    width: 100%; /* Expand the search bar fully on mobile */
-  }
-}
+ }
 
 /* For Larger Screens (More than 450px) */
 @media (min-width: 451px) {
@@ -248,7 +244,7 @@
   }
 
   .search-bar {
-    width: 150px; /* Maintain a larger size for search bar */
+    width: 100%; /* Maintain a larger size for search bar */
   }
 
   .search-bar.active {

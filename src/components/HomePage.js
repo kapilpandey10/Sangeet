@@ -135,8 +135,6 @@ const HomePage = () => {
   <p>No featured artist available.</p>
 )}
 
-
-
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <ins
               className="adsbygoogle"

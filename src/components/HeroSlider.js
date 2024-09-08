@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../style/HeroSlider.css';
@@ -63,6 +64,15 @@ const HeroSlider = () => {
           src={slide.image_url}
           alt={`${slide.title} - ${slide.subtitle}`}
           className="slide-image"
+          loading="lazy"  // Lazy loading for better performance
+          width="1200"  // Set explicit width and height to reduce layout shifts
+          height="600"
+          srcSet={`
+            ${slide.image_url}?w=600 600w,
+            ${slide.image_url}?w=1200 1200w,
+            ${slide.image_url}?w=1800 1800w
+          `}
+          sizes="(max-width: 768px) 600px, (max-width: 1200px) 1200px, 1800px"
         />
         <div className="slide-content">
           <h1>{slide.title}</h1>

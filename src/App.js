@@ -36,9 +36,7 @@ function App() {
             )
           } 
         />
-        {/* Catch-all route to redirect to homepage */}
-        <Route path="*" element={<Navigate to="/" />} />
-
+        
         {/* Public routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/artistbio/:name" element={<ArtistBio />} /> {/* Route for ArtistBio */}
@@ -49,7 +47,10 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/add" element={<AddLyrics />} />
-        <Route path="/bhajan" component={BhajanHP} />
+        <Route path="/bhajan" element={<BhajanHP />} /> {/* Updated to use element instead of component */}
+        
+        {/* Catch-all route to redirect to homepage */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 
       <Footer />

@@ -71,7 +71,8 @@ const ArtistBio = () => {
   return (
     <div className="artist-bio-page">
       <h1>{artist.name}</h1>
-      <img src={artist.image_url} alt={artist.name} className="artist-image" />
+      <img src={artist.image_url} alt={artist.name} className="artist-image" loading="lazy" />
+      ""
       <div className="artist-bio">
         {/* Render sanitized HTML bio */}
         <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(artist.bio) }}></div>

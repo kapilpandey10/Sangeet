@@ -1,64 +1,54 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { supabase } from './supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash, FaCheckCircle } from 'react-icons/fa'; // Importing icons
-import '../style/AdminLogin.css';
 
-const AdminLogin = ({ setIsAuthenticated }) => {
-  const [pin, setPin] = useState('');
-  const [showPin, setShowPin] = useState(false); // Toggle for showing/hiding PIN
-  const [isLoginSuccessful, setIsLoginSuccessful] = useState(false); // For success animation
+const AdminLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const adminPin = process.env.REACT_APP_ADMIN_PIN; // Access the admin pin from .env
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (pin === adminPin) {
-      setIsAuthenticated(true);
-      setIsLoginSuccessful(true); // Trigger success animation
-      setTimeout(() => {
-        navigate('/admin/lyrics'); // Redirect after the animation
-      }, 2000); // 2 seconds delay to show the animation
+    if (error) {
+      setError('Login failed');
     } else {
-      alert('Invalid PIN. Please try again.');
+      // Check if the user is admin
+      const { data: user, error } = await supabase.auth.getUser();
+      if (user && user.user_metadata.role === 'admin') {
+        navigate('/admin');
+      } else {
+        setError('Unauthorized');
+      }
     }
   };
 
   return (
-    <div className="main-content">
-      <div className={`admin-login-container ${isLoginSuccessful ? 'login-success' : ''}`}>
-        {isLoginSuccessful ? (
-          <div className="success-animation">
-            <FaCheckCircle className="success-icon" />
-            <h2>Login Successful!</h2>
-          </div>
-        ) : (
-          <>
-            <h1>Admin Login</h1>
-            <form onSubmit={handleLogin}>
-              <div className="form-group">
-                <label htmlFor="pin">Enter Access PIN</label>
-                <div className="pin-input-wrapper">
-                  <input
-                    type={showPin ? 'text' : 'password'}
-                    id="pin"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    required
-                  />
-                  <span
-                    className="toggle-pin-visibility"
-                    onClick={() => setShowPin((prev) => !prev)}
-                  >
-                    {showPin ? <FaEye /> : <FaEyeSlash />}
-                  </span>
-                </div>
-              </div>
-              <button type="submit">Login</button>
-            </form>
-          </>
-        )}
-      </div>
+    <div>
+      <h1>Admin Login</h1>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p>{error}</p>}
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 };

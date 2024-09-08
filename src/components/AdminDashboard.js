@@ -4,6 +4,7 @@ import { FaCheckCircle, FaEdit, FaEnvelope, FaUserPlus } from 'react-icons/fa'; 
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
+import AddLyrics from './AddLyrics'; // Correct the import statement for AddLyrics
 import AddArtist from './addArtist'; // Import AddArtist component
 
 const AdminDashboard = () => {
@@ -17,6 +18,8 @@ const AdminDashboard = () => {
         return <ManageLyrics />;
       case 'messages':
         return <Messages />;
+      case 'add-lyrics': // Updated to match the correct case
+        return <AddLyrics />;
       case 'add-artist':
         return <AddArtist />; // Render AddArtist form
       default:
@@ -28,6 +31,9 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <nav className="top-nav">
         <ul>
+          <li className={activeTab === 'add-lyrics' ? 'active' : ''} onClick={() => setActiveTab('add-lyrics')}>
+            <FaUserPlus className="icon" /> Add Lyrics
+          </li>
           <li className={activeTab === 'approve' ? 'active' : ''} onClick={() => setActiveTab('approve')}>
             <FaCheckCircle className="icon" /> Approve
           </li>

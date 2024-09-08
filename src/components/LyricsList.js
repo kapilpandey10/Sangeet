@@ -24,6 +24,7 @@ const LyricsList = () => {
     // Add meta tags for SEO
     const metaDescription = document.createElement('meta');
     metaDescription.name = "description";
+    
     metaDescription.content = "Explore a vast collection of Nepali song lyrics from various artists. Find lyrics from popular Nepali songs and artists, including the latest hits.";
     document.head.appendChild(metaDescription);
 

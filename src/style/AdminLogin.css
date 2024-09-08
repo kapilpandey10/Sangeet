@@ -47,18 +47,7 @@ input:focus {
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* Styling for the forgot password link */
-.forgot-password-link {
-  color: #125175;
-  cursor: pointer;
-  text-decoration: underline;
-  margin-top: 10px;
-}
-
-.forgot-password-link:hover {
-  color: #0056b3;
-}
-
+/* Login button */
 
 
 

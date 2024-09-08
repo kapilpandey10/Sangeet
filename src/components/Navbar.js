@@ -8,10 +8,18 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
   const navigate = useNavigate();
   const location = useLocation(); // For detecting active class
   const searchRef = useRef(null); // Reference to search input
   const mobileMenuRef = useRef(null); // Reference to mobile menu
+
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem('isLoggedIn');
+    if (loggedInStatus === 'true') {
+      setIsLoggedIn(true); // User is logged in
+    }
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -34,6 +42,12 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+    navigate('/login'); // Redirect to login page
   };
 
   useEffect(() => {
@@ -65,42 +79,48 @@ const Navbar = () => {
           <Link to="/" className="brand-name">
             San<span className="highlight">Geet</span>
           </Link>
+        </div>
+
+        {/* Nav Links */}
+        <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`} ref={mobileMenuRef}>
+          <div className="nav-links">
+            <Link to="/" className={isActive('/')}>Home</Link>
+            <Link to="/lyrics" className={isActive('/lyrics')}>View Lyrics</Link>
+            <Link to="/contact" className={isActive('/contact')}>Contact Us</Link>
           </div>
+        </div>
 
-{/* Nav Links */}
-<div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`} ref={mobileMenuRef}>
-  <div className="nav-links">
-    <Link to="/" className={isActive('/')}>Home</Link>
-    <Link to="/lyrics" className={isActive('/lyrics')}>View Lyrics</Link>
-    <Link to="/contact" className={isActive('/contact')}>Contact Us</Link>
-  </div>
-</div>
+        {/* Search Bar and Login/Logout */}
+        <div className="search-login-container">
+          <form className={`search-bar ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearch} ref={searchRef}>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+            <button type="button" className="search-icon" onClick={() => setIsSearchActive(!isSearchActive)}>
+              <FaSearch />
+            </button>
+          </form>
 
-{/* Search Bar and Login */}
-<div className="search-login-container">
-  <form className={`search-bar ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearch} ref={searchRef}>
-    <input
-      type="text"
-      placeholder="Search..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="search-input"
-    />
-    <button type="button" className="search-icon" onClick={() => setIsSearchActive(!isSearchActive)}>
-      <FaSearch />
-    </button>
-  </form>
-
-  {/* Login Button */}
-  <div className={`login-button ${isSearchActive ? 'hidden' : ''}`}>
-    <Link to="/admin-login">
-      <FaUser className="login-icon" /> Login
-    </Link>
-  </div>
-</div>
-</div>
-</nav>
-);
+          {/* Login or Logout Button */}
+          <div className={`login-button ${isSearchActive ? 'hidden' : ''}`}>
+            {isLoggedIn ? (
+              <button className="logout-btn" onClick={handleLogout}>
+                <FaUser className="login-icon" /> Logout
+              </button>
+            ) : (
+              <Link to="/admin-login">
+                <FaUser className="login-icon" /> Login
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;

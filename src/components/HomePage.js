@@ -128,7 +128,7 @@ const HomePage = () => {
               <p>No lyrics available at the moment.</p>
             )}
             <div className="view-all">
-              <Link to="/lyrics">View All Nepali Lyrics</Link>
+              <Link to="/lyrics-list">View All Nepali Lyrics</Link>
             </div>
           </section>
 

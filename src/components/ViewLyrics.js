@@ -124,7 +124,7 @@ const ViewLyrics = () => {
         />
         <meta
           property="og:title"
-          content={lyric ? `${lyric.title} by ${lyric.artist}` : 'Song Lyrics'}
+          content={lyric ? `${lyric.title} by ${lyric.artist} - Sangeet Central || Pandey Kapil` : 'Song Lyrics'}
         />
         <meta
           property="og:description"

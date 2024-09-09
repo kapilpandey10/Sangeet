@@ -73,7 +73,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setIsResetLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: process.env.REACT_APP_RESET_PASSWORD_URL || 'http://localhost:3000/reset-password',  // Adjust URL
+      redirectTo: process.env.REACT_APP_RESET_PASSWORD_URL || 'http://pandeykapil.com.np/reset-password',  // Adjust URL
     });
 
     setIsResetLoading(false);

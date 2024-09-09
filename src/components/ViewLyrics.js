@@ -120,7 +120,7 @@ const ViewLyrics = () => {
         />
         <meta
           name="keywords"
-          content={lyric ? `${lyric.title}, ${lyric.artist}, ${lyric.lyrics.slice(0, 10)}, lyrics, song lyrics, music` : 'song lyrics, music, popular songs'}
+          content={lyric ? `${lyric.title} lyrics, ${lyric.artist} song, viral song of ${lyric.title}, ${lyric.lyrics.slice(0, 10)}, lyrics, song lyrics, music` : 'song lyrics, music, popular songs'}
         />
         <meta
           property="og:title"

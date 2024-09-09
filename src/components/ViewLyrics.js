@@ -2,14 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { FaMusic } from 'react-icons/fa';
+import { Helmet } from 'react-helmet'; // Import React Helmet
 import Verified from './verified';
 import '../style/ViewLyrics.css';
 
-// Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Initialize Supabase client
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ViewLyrics = () => {
@@ -86,7 +84,7 @@ const ViewLyrics = () => {
   const renderYouTubeEmbed = (videoUrl) => {
     const videoId = extractYouTubeId(videoUrl);
     if (!videoId) {
-      return null; // Ensure only a valid YouTube video URL is used
+      return null;
     }
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
     return (
@@ -114,51 +112,24 @@ const ViewLyrics = () => {
 
   return (
     <div className="view-lyrics-container">
+      <Helmet>
+        <title>{lyric ? `${lyric.title} Lyrics - ${lyric.artist}` : 'Lyrics'}</title>
+        <meta
+          name="description"
+          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}.` : 'Lyrics of popular songs.'}
+        />
+        <meta
+          name="keywords"
+          content={lyric ? `${lyric.title}, ${lyric.artist}, lyrics, song lyrics` : 'song lyrics, music, popular songs'}
+        />
+      </Helmet>
+
       {lyric ? (
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
-          <p><strong>Lyrics Writer:</strong> {lyric.lyrics_writer}</p>      
-          <p>
-          <strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}     
-          </p>
-          <p><strong>Added By:</strong> {lyric.added_by}</p> {/* Display added_by */}
-          {lyric.status === 'approved' && <Verified />}
-          <pre className="lyrics-text">{lyric.lyrics}</pre><br></br>
-          <p><strong>Listen to this Music on YouTube</strong></p>
+          <pre className="lyrics-text">{lyric.lyrics}</pre>
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
-
-          {/* Google AdSense Ad */}
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
-            <ins 
-              className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="6720877169"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-              ref={adRef}
-            ></ins>
-          </div>
-
-          {relatedLyrics.length > 0 && (
-            <div className="related-lyrics">
-              <h3>You May Also Like</h3>
-              <div className="related-lyrics-grid">
-                {relatedLyrics.map((relatedLyric) => (
-                  <Link to={`/lyrics/${relatedLyric.id}`} key={relatedLyric.id} className="related-lyric-item">
-                    <div className="related-lyric-icon">
-                      <FaMusic size={40} />
-                    </div>
-                    <div className="related-lyric-info">
-                      <h4>{relatedLyric.title}</h4>
-                      <p>{relatedLyric.artist}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </>
       ) : (
         <p>Lyrics not found.</p>

@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import LyricsList from './components/LyricsList';
+import ContactUs from './components/ContactUs';
+
 import HomePage from './components/HomePage';
 import ViewLyrics from './components/ViewLyrics';
-import LyricsList from './components/LyricsList';
 import AdminDashboard from './components/AdminDashboard';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsAndService from './components/TermsAndService';
-import ContactUs from './components/ContactUs';
 import SearchResults from './components/SearchResults';
 import AdminLogin from './components/AdminLogin';
 import BhajanHP from './components/Bhajan/bhajanHP'; 

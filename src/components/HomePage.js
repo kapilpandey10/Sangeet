@@ -6,7 +6,6 @@ import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
 
-
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
@@ -22,8 +21,27 @@ const HomePage = () => {
   const [adInitialized, setAdInitialized] = useState(false);
 
   useEffect(() => {
-    document.title = 'Sangeet Lyrics Central | Latest Lyrics';
+    document.title = 'Nepali Music Lyrics Collection | Latest Nepali Songs - Sangeet Lyrics Central';
 
+    // Meta tags for SEO
+    const metaDescription = document.createElement('meta');
+    metaDescription.name = 'description';
+    metaDescription.content =
+      'Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics.';
+    document.head.appendChild(metaDescription);
+
+    const metaKeywords = document.createElement('meta');
+    metaKeywords.name = 'keywords';
+    metaKeywords.content =
+      'Nepali music, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali hit songs, Nepali songwriters';
+    document.head.appendChild(metaKeywords);
+
+    const metaRobots = document.createElement('meta');
+    metaRobots.name = 'robots';
+    metaRobots.content = 'index, follow';
+    document.head.appendChild(metaRobots);
+
+    // Fetching data for lyrics and artist
     const fetchAllData = async () => {
       setLoading(true);
       try {
@@ -47,15 +65,12 @@ const HomePage = () => {
           .select('*')
           .eq('status', 'approved');
 
-        console.log("Fetched artists:", artistData); // Log all fetched artists for debugging
-
         if (artistError) {
           console.error('Error fetching artists:', artistError.message);
         } else if (artistData && artistData.length > 0) {
-          const randomArtist = artistData[Math.floor(Math.random() * artistData.length)]; // Select a random artist
+          const randomArtist = artistData[Math.floor(Math.random() * artistData.length)];
           setFeaturedArtist(randomArtist);
         }
-
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -79,11 +94,7 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
-      <meta name="description" content="Sangeet Lyrics Central is the ultimate destination for song lyrics. Explore lyrics across genres and eras." />
-      <meta name="keywords" content="lyrics, music, artists, song lyrics, songwriters" />
-      <meta name="author" content="Sangeet Lyrics Central" />
-      <meta name="robots" content="index, follow" />
-
+      {/* Floating emojis for design */}
       <div className="floating-emoji emoji-1">🎶</div>
       <div className="floating-emoji emoji-2">🎵</div>
       <div className="floating-emoji emoji-3">♭</div>
@@ -94,14 +105,14 @@ const HomePage = () => {
       <HeroSlider />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
-      <p>Your ultimate destination for song lyrics, spanning all genres and eras.</p>
+      <p>Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
 
       {loading ? (
         <p>Loading lyrics and artist... Hold On</p>
       ) : (
         <>
           <section className="lyrics-bar">
-            <h2>Featured Lyrics</h2>
+            <h2>Featured Nepali Lyrics</h2>
             {lyrics.length > 0 ? (
               <div className="lyrics-horizontal-bar">
                 {lyrics.map((lyric, index) => (
@@ -117,23 +128,23 @@ const HomePage = () => {
               <p>No lyrics available at the moment.</p>
             )}
             <div className="view-all">
-              <Link to="/lyrics">View All Lyrics</Link>
+              <Link to="/lyrics">View All Nepali Lyrics</Link>
             </div>
           </section>
 
           <HomeYTVideo />
 
-{/* Display Featured Artist */}
-{featuredArtist ? (
-  <div className="featured-artist-section">
-    <h2 className="featured-artist-title">Featured Artist</h2>
-    <div className="featured-artist-container">
-      <FeaturedArtistCard artist={featuredArtist} />
-    </div>
-  </div>
-) : (
-  <p>No featured artist available.</p>
-)}
+          {/* Display Featured Artist */}
+          {featuredArtist ? (
+            <div className="featured-artist-section">
+              <h2 className="featured-artist-title">Featured Nepali Artist</h2>
+              <div className="featured-artist-container">
+                <FeaturedArtistCard artist={featuredArtist} />
+              </div>
+            </div>
+          ) : (
+            <p>No featured artist available.</p>
+          )}
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
             <ins

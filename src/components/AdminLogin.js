@@ -7,22 +7,35 @@ const AdminLogin = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);  // State to show success message
   const [forgotPassword, setForgotPassword] = useState(false);  // State to toggle forgot password mode
+  const [isResetLoading, setIsResetLoading] = useState(false);
   const navigate = useNavigate();  // Hook to navigate to different routes
 
   // Handle admin login
   const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please provide both email and password.");
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');  // Reset the error message before login
+
     const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    setIsLoading(false);
+
     if (loginError) {
-      setError(loginError.message);
+      setError('Invalid login credentials. Please try again.');
       return;
     }
 
+    // Fetch user role from the admin table
     const { data: adminData, error: adminError } = await supabase
       .from('admin')
       .select('role')
@@ -40,10 +53,11 @@ const AdminLogin = ({ setIsAuthenticated }) => {
       return;
     }
 
-    // Show success message and navigate to dashboard
+    // If login and role verification succeed
     setIsAuthenticated(true);
     setIsSuccess(true);
 
+    // Navigate to the admin dashboard after a short delay
     setTimeout(() => {
       navigate('/admin');  // Navigate to admin dashboard
     }, 900);  // 0.9 seconds delay
@@ -51,12 +65,21 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
   // Handle password reset
   const handlePasswordReset = async () => {
+    if (!email) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setIsResetLoading(true);
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://localhost:3000/reset-password',  // Change this to your actual reset password page URL
+      redirectTo: process.env.REACT_APP_RESET_PASSWORD_URL || 'http://localhost:3000/reset-password',  // Adjust URL
     });
 
+    setIsResetLoading(false);
+
     if (error) {
-      setError("If this email is registered, you will receive a reset link.");
+      setError("Failed to send password reset link. Please try again later.");
     } else {
       setError("If this email is registered, you will receive a reset link.");
     }
@@ -82,13 +105,17 @@ const AdminLogin = ({ setIsAuthenticated }) => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
           />
-          <button onClick={handleLogin}>Login</button>
+          <button onClick={handleLogin} disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
         </>
       )}
 
       {forgotPassword && (
         <>
-          <button onClick={handlePasswordReset}>Send Reset Link</button>
+          <button onClick={handlePasswordReset} disabled={isResetLoading}>
+            {isResetLoading ? 'Sending...' : 'Send Reset Link'}
+          </button>
         </>
       )}
 

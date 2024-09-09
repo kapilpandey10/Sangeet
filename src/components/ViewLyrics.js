@@ -54,7 +54,7 @@ const ViewLyrics = () => {
           .select('*')
           .eq('artist', artist)
           .neq('id', id)
-          .limit(3);
+          .limit(3); // Fetch up to 3 related lyrics by the same artist
 
         if (error) {
           throw error;
@@ -141,6 +141,26 @@ const ViewLyrics = () => {
           {lyric.status === 'approved' && <Verified />} {/* Display verified badge if approved */}
           <pre className="lyrics-text">{lyric.lyrics}</pre>
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
+
+          {/* Display related lyrics (You May Also Like) */}
+          {relatedLyrics.length > 0 && (
+            <div className="related-lyrics">
+              <h3>You May Also Like</h3>
+              <div className="related-lyrics-grid">
+                {relatedLyrics.map((relatedLyric) => (
+                  <Link to={`/lyrics/${relatedLyric.id}`} key={relatedLyric.id} className="related-lyric-item">
+                    <div className="related-lyric-icon">
+                      <FaMusic size={40} />
+                    </div>
+                    <div className="related-lyric-info">
+                      <h4>{relatedLyric.title}</h4>
+                      <p>{relatedLyric.artist}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <p>Lyrics not found.</p>

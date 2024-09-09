@@ -54,59 +54,43 @@
   }
   
   .related-lyrics {
-    margin-top: 40px;
+    margin-top: 20px;
   }
   
   .related-lyrics h3 {
-    font-size: 1.6rem;
-    color: #2c3e50;
-    margin-bottom: 20px;
-    text-align: center;
+    margin-bottom: 10px;
   }
   
   .related-lyrics-grid {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
     gap: 15px;
   }
   
   .related-lyric-item {
-    flex: 1 1 calc(33.333% - 15px);
-    background-color: #fff;
-    border: 1px solid #e1e1e1;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .related-lyric-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .related-lyric-item h4 {
-    font-size: 1.2rem;
-    color: #2c3e50;
-    margin-top: 10px;
-  }
-  
-  .related-lyric-item p {
-    font-size: 1rem;
-    color: #7f8c8d;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
   }
   
   .related-lyric-icon {
-    background-color: #1abc9c;
-    color: white;
-    border-radius: 50%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
+    margin-right: 10px;
   }
+  
+  .related-lyric-info h4 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .related-lyric-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  
+ 
+  
   
   .ins {
     margin-top: 20px;

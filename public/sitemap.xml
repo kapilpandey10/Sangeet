@@ -86,6 +86,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+    <url>
+    <loc>http://localhost:3000/lyrics/d57cff20-fe23-4ed4-8f43-190a9f63e76b</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <url>
     <loc>https://pandeykapil.com.np/lyrics/7b9373b7-b259-4027-848a-3f212e6311fd</loc>
     <changefreq>weekly</changefreq>

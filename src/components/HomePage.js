@@ -33,7 +33,7 @@ const HomePage = () => {
     const metaKeywords = document.createElement('meta');
     metaKeywords.name = 'keywords';
     metaKeywords.content =
-      'Nepali music, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali hit songs, Nepali songwriters';
+      'Nepali music,music lyrics, git sangit, Nepali music lyrics, Sangeet Central, Nepali git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali  songs lyrics, PandeyKapil, Nepali songwriters, Balen song, Nepali Music industry, Music Nepal';
     document.head.appendChild(metaKeywords);
 
     const metaRobots = document.createElement('meta');

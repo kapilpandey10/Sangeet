@@ -47,10 +47,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/artistbio/:name" element={<ArtistBio />} />
         <Route path="/lyrics/:id" element={<ViewLyrics />} />
-        <Route path="/lyrics" element={<LyricsList />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/lyrics-list" element={<LyricsList />} />
+        <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsAndService />} />
-        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/contactus" element={<ContactUs />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/bhajan" element={<BhajanHP />} />
         

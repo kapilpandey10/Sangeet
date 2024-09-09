@@ -116,11 +116,19 @@ const ViewLyrics = () => {
         <title>{lyric ? `${lyric.title} Lyrics - ${lyric.artist}` : 'Lyrics'}</title>
         <meta
           name="description"
-          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}.` : 'Lyrics of popular songs.'}
+          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}. Enjoy the lyrics of this amazing song and explore more music by ${lyric.artist}.` : 'Lyrics of popular songs.'}
         />
         <meta
           name="keywords"
-          content={lyric ? `${lyric.title}, ${lyric.artist}, lyrics, song lyrics` : 'song lyrics, music, popular songs'}
+          content={lyric ? `${lyric.title}, ${lyric.artist}, ${lyric.lyrics.slice(0, 10)}, lyrics,Nepali song lyrics, music, ${lyric.artist} popular song, ${lyric.title} lyrics Nepali  ` : 'song lyrics, music, popular songs, '}
+        />
+        <meta
+          property="og:title"
+          content={lyric ? `${lyric.title} by ${lyric.artist}` : 'Song Lyrics'}
+        />
+        <meta
+          property="og:description"
+          content={lyric ? `Check out the full lyrics of "${lyric.title}" by ${lyric.artist}.` : 'Explore our collection of song lyrics.'}
         />
       </Helmet>
 

@@ -85,8 +85,8 @@ const Navbar = () => {
         <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`} ref={mobileMenuRef}>
           <div className="nav-links">
             <Link to="/" className={isActive('/')}>Home</Link>
-            <Link to="/lyrics" className={isActive('/lyrics')}>View Lyrics</Link>
-            <Link to="/contact" className={isActive('/contact')}>Contact Us</Link>
+            <Link to="/lyrics-list" className={isActive('/LyricsList')}>View Lyrics</Link>
+            <Link to="/contactus" className={isActive('/ContactUs')}>Contact Us</Link>
           </div>
         </div>
 

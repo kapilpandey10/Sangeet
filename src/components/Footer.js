@@ -9,8 +9,8 @@ const Footer = () => {
         <p>&copy; 2024 Lyrics Central. All rights reserved.</p>
         <div className="footer-links">
           <a href="/terms">Terms of Service</a>
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/contact">Contact Us</a>
+          <a href="/privacyandpolicy">Privacy Policy</a>
+          <a href="/contactus">Contact Us</a>
         </div>
         <div className="social-links">
           <a className="facebook" href="https://www.facebook.com/Burn2VLOG" target="_blank" rel="noopener noreferrer">

@@ -120,7 +120,7 @@ const ViewLyrics = () => {
         />
         <meta
           name="keywords"
-          content={lyric ? `${lyric.title}, ${lyric.artist}, ${lyric.lyrics.slice(0, 10)}, lyrics,Nepali song lyrics, music, ${lyric.artist} popular song, ${lyric.title} lyrics Nepali  ` : 'song lyrics, music, popular songs, '}
+          content={lyric ? `${lyric.title}, ${lyric.artist}, ${lyric.lyrics.slice(0, 10)}, lyrics, song lyrics, music` : 'song lyrics, music, popular songs'}
         />
         <meta
           property="og:title"
@@ -136,6 +136,9 @@ const ViewLyrics = () => {
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
+          <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p> {/* Display release year */}
+          <p><strong>Added By:</strong> {lyric.added_by}</p> {/* Display added_by */}
+          {lyric.status === 'approved' && <Verified />} {/* Display verified badge if approved */}
           <pre className="lyrics-text">{lyric.lyrics}</pre>
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
         </>

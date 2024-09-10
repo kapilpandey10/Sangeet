@@ -25,9 +25,9 @@
 /* Artist bio section */
 .artist-bio {
   text-align: justify;
-  font-size: 2.2rem;
+  font-size: 1.2rem;
   color: #555;
-  line-height: 2;
+  line-height: 1.7;
   margin-bottom: 40px;
 }
 

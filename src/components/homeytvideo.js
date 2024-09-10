@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom'; // To handle navigation to /lyrics/{ID}
 import '../style/HomeYTVideo.css'; // You can create this CSS file for styling
 
-// Access environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HomeYTVideo = () => {
   const [videoUrl, setVideoUrl] = useState('');

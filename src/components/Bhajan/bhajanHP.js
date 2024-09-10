@@ -1,6 +1,6 @@
 // bhajanHP.js
 import React from 'react';
-import '../../style/bhajanHP.css'; // Make sure to import the CSS file
+import './style/bhajanHP.css'; // Make sure to import the CSS file
 
 const BhajanHP = () => {
   return (

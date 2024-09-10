@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import '../style/AdminLogin.css';  // Import the updated CSS
+import './style/AdminLogin.css';  // Import the updated CSS
 
 const AdminLogin = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');

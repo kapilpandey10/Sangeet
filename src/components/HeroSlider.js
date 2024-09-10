@@ -1,14 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient'; // Import from the centralized supabaseClient file
+
 import '../style/HeroSlider.css';
 
-// Access environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const HeroSlider = () => {
   const [slides, setSlides] = useState([]);

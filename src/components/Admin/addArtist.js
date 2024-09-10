@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import '../style/addArtist.css';
+import './style/addArtist.css';
 
 // Access environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;

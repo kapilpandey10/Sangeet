@@ -191,7 +191,7 @@ body {
 
 
 /* Mobile Styling for Screens Smaller than 450px */
-@media (max-width: 450px) {
+@media (max-width: 750px) {
   .navbar-container {
     justify-content: space-between;
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../style/PrivacyPolicy.css';
+import './style/PrivacyPolicy.css';
 const TermsAndService = () => {
   return (
     <div className="terms-container">

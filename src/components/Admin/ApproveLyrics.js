@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import ConfirmMsg from './ConfirmMsg'; // Import modal for confirmation
-import '../style/ApproveLyrics.css'; // Include the stylesheet
+import ConfirmMsg from '../ConfirmMsg'; // Import modal for confirmation
+import './style/ApproveLyrics.css'; // Include the stylesheet
 
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;

@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient'; // Import from the centralized supabaseClient file
 import { FaMusic } from 'react-icons/fa';
 import { Helmet } from 'react-helmet'; // Import React Helmet
 import Verified from './verified';
 import '../style/ViewLyrics.css';
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ViewLyrics = () => {
   const { id } = useParams();

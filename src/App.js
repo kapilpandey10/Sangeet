@@ -2,21 +2,22 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet'; // Import Helmet for SEO
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Footer from './components/footer/Footer';
 import LyricsList from './components/LyricsList';
 import ContactUs from './components/ContactUs';
 import { Analytics } from "@vercel/analytics/react";
 import HomePage from './components/HomePage';
 import ViewLyrics from './components/ViewLyrics';
-import AdminDashboard from './components/AdminDashboard';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsAndService from './components/TermsAndService';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import PrivacyPolicy from './components/footer/PrivacyPolicy';
+import TermsAndService from './components/footer/TermsAndService';
 import SearchResults from './components/SearchResults';
-import AdminLogin from './components/AdminLogin';
+import AdminLogin from './components/Admin/AdminLogin';
 import BhajanHP from './components/Bhajan/bhajanHP';
-import ArtistBio from './components/ArtistBio';
+import ArtistBio from './components/Artist/ArtistBio';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import Artistlist from './components/Artist/Artistlist';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -70,6 +71,7 @@ function App() {
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/bhajan" element={<BhajanHP />} />
+          <Route path="/Artistbio" element={<Artistlist />} />
           
           {/* Catch-all route to redirect to homepage */}
           <Route path="*" element={<Navigate to="/" />} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import '../style/AddLyrics.css';
+import './style/AddLyrics.css';
 import { FaTrash, FaPlus } from 'react-icons/fa'; // Icons for adding/removing
 
 // Initialize Supabase client

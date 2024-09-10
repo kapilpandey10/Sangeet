@@ -16,7 +16,7 @@ const HomePage = () => {
 
   // Fetch data for lyrics and featured artist
   useEffect(() => {
-    document.title = 'Nepali Music Lyrics Collection | Latest Nepali Songs - Sangeet Lyrics Central';
+    document.title = 'Latest Nepali Songs lyrics  - Sangeet Lyrics Central';
 
     // Add meta tags for SEO
     const metaDescription = document.createElement('meta');

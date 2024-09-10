@@ -13,50 +13,40 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('all');
+  const [yearFilter, setYearFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
 
   useEffect(() => {
-    // Set the page title
-    document.title = "Nepali Song Lyrics Library | Sangeet Lyrics Central";
+    // Set the page title and meta tags for SEO
+    const dynamicTitle = searchQuery
+      ? `Search Results for "${searchQuery}" | Sangeet Lyrics Central`
+      : 'Nepali Song Lyrics Library | Sangeet Lyrics Central';
 
-    // Add meta tags for SEO
+    const dynamicDescription = searchQuery
+      ? `Search results for "${searchQuery}" in Nepali songs. Discover lyrics from artists like 1974 AD, Sushant KC, Narayan Gopal, and more.`
+      : 'Explore a vast collection of Nepali song lyrics from various artists. Find lyrics from popular Nepali songs and artists, including the latest hits.';
+
+    document.title = dynamicTitle;
+
     const metaDescription = document.createElement('meta');
     metaDescription.name = "description";
-    
-    metaDescription.content = "Explore a vast collection of Nepali song lyrics from various artists. Find lyrics from popular Nepali songs and artists, including the latest hits.";
+    metaDescription.content = dynamicDescription;
     document.head.appendChild(metaDescription);
 
     const metaKeywords = document.createElement('meta');
     metaKeywords.name = "keywords";
-    metaKeywords.content = "Nepali song lyrics, Nepali artists, Nepali music, Nepali songs, popular Nepali lyrics, Sangeet Lyrics Central";
+    metaKeywords.content = `Nepali song lyrics, ${searchQuery}, Nepali artists, Nepali music, popular Nepali lyrics, Sangeet Lyrics Central`;
     document.head.appendChild(metaKeywords);
-
-    const metaOgTitle = document.createElement('meta');
-    metaOgTitle.setAttribute("property", "og:title");
-    metaOgTitle.content = "Nepali Song Lyrics Library | Sangeet Lyrics Central";
-    document.head.appendChild(metaOgTitle);
-
-    const metaOgDescription = document.createElement('meta');
-    metaOgDescription.setAttribute("property", "og:description");
-    metaOgDescription.content = "Explore the Nepali music library with lyrics from various Nepali artists. Discover the beauty of Nepali songs and lyrics.";
-    document.head.appendChild(metaOgDescription);
-
-    const metaOgUrl = document.createElement('meta');
-    metaOgUrl.setAttribute("property", "og:url");
-    metaOgUrl.content = window.location.href; // Use current URL
-    document.head.appendChild(metaOgUrl);
 
     return () => {
       // Cleanup meta tags when component unmounts
       document.head.removeChild(metaDescription);
       document.head.removeChild(metaKeywords);
-      document.head.removeChild(metaOgTitle);
-      document.head.removeChild(metaOgDescription);
-      document.head.removeChild(metaOgUrl);
     };
-  }, []);
+  }, [searchQuery]);
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -65,7 +55,7 @@ const LyricsList = () => {
           .from('lyrics')
           .select('*')
           .eq('status', 'approved') // Only fetch approved lyrics
-          .order('artist', { ascending: true });
+          .order('published_date', { ascending: false }); // Fetch latest songs first
 
         if (error) {
           throw error;
@@ -99,13 +89,19 @@ const LyricsList = () => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
-  // Filter results based on search query (artist, lyrics, or writer)
+  // Filter results based on search query, language, and year of publication
   const filteredLyrics = Object.keys(lyricsByArtist).reduce((filtered, artist) => {
-    const filteredByArtist = lyricsByArtist[artist].filter(lyric =>
-      lyric.title.toLowerCase().includes(searchQuery) ||
-      lyric.artist.toLowerCase().includes(searchQuery) ||
-      (lyric.lyrics_writer && lyric.lyrics_writer.toLowerCase().includes(searchQuery))
-    );
+    const filteredByArtist = lyricsByArtist[artist].filter(lyric => {
+      const matchesSearchQuery = lyric.title.toLowerCase().includes(searchQuery) ||
+        lyric.artist.toLowerCase().includes(searchQuery) ||
+        (lyric.lyrics_writer && lyric.lyrics_writer.toLowerCase().includes(searchQuery)) ||
+        lyric.lyrics.toLowerCase().includes(searchQuery); // Search within lyrics
+
+      const matchesLanguage = languageFilter === 'all' || lyric.language === languageFilter;
+      const matchesYear = yearFilter === 'all' || new Date(lyric.published_date).getFullYear().toString() === yearFilter;
+
+      return matchesSearchQuery && matchesLanguage && matchesYear;
+    });
 
     if (filteredByArtist.length > 0) {
       filtered[artist] = filteredByArtist;
@@ -113,6 +109,10 @@ const LyricsList = () => {
 
     return filtered;
   }, {});
+
+  // Get unique languages and years for filtering
+  const uniqueLanguages = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => lyric.language))];
+  const uniqueYears = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => new Date(lyric.published_date).getFullYear()))];
 
   // "Load More" functionality to display more artists
   const loadMoreArtists = () => {
@@ -140,6 +140,23 @@ const LyricsList = () => {
           onChange={handleSearch}
           className="search-input"
         />
+      </div>
+
+      {/* Filter by language and year */}
+      <div className="filter-bar">
+        <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
+          <option value="all">All Languages</option>
+          {uniqueLanguages.map((lang, idx) => (
+            <option key={idx} value={lang}>{lang}</option>
+          ))}
+        </select>
+
+        <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+          <option value="all">All Years</option>
+          {uniqueYears.map((year, idx) => (
+            <option key={idx} value={year}>{year}</option>
+          ))}
+        </select>
       </div>
 
       {/* Display filtered results with a limit on visible artists */}

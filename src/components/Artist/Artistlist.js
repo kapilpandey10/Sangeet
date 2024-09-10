@@ -28,7 +28,7 @@ const Artistlist = () => {
       <Helmet>
         <title>Artist Contribution to the Music Industry of Nepal</title>
         <meta name="description" content="Explore the invaluable contributions of Nepali artists to the music industry, including prominent figures such as Anju Panta and Pashupati Sharma. Discover their impact on the vibrant music scene in Nepal." />
-        <meta name="keywords" content="Nepali music artists, Nepal music industry, Anju Panta, Pashupati Sharma, Nepali singers, Nepali music, contemporary Nepali music" />
+        <meta name="keywords" content="Nepali music artists, Nepal music industry, Anju Panta, Pashupati Sharma, Nepali singers, Nepali music, contemporary Nepali musi, Sangeet Lyrics central, Sangeet Lyrics, Sangeet Lyrics Nepali, Nepali Song lyrics" />
       </Helmet>
       <section className="history-section">
         <h1 className="history-title">History of Music in Nepal</h1>

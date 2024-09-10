@@ -6,9 +6,7 @@ import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
 
-
 // Initialize Supabase client
-
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
   const [featuredArtist, setFeaturedArtist] = useState(null);
@@ -16,10 +14,11 @@ const HomePage = () => {
   const adRef = useRef(null);
   const [adInitialized, setAdInitialized] = useState(false);
 
+  // Fetch data for lyrics and featured artist
   useEffect(() => {
     document.title = 'Nepali Music Lyrics Collection | Latest Nepali Songs - Sangeet Lyrics Central';
 
-    // Meta tags for SEO
+    // Add meta tags for SEO
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';
     metaDescription.content =
@@ -37,7 +36,16 @@ const HomePage = () => {
     metaRobots.content = 'index, follow';
     document.head.appendChild(metaRobots);
 
-    // Fetching data for lyrics and artist
+    // Cleanup meta tags on component unmount
+    return () => {
+      document.head.removeChild(metaDescription);
+      document.head.removeChild(metaKeywords);
+      document.head.removeChild(metaRobots);
+    };
+  }, []);
+
+  // Fetch lyrics and featured artist
+  useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
       try {
@@ -75,14 +83,22 @@ const HomePage = () => {
     };
 
     fetchAllData();
+  }, []);
 
-    if (!adInitialized && adRef.current && !adRef.current.classList.contains('adsbygoogle-initialized')) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-      adRef.current.classList.add('adsbygoogle-initialized');
-      setAdInitialized(true);
+  // Initialize Google AdSense only once
+  useEffect(() => {
+    if (!adInitialized && adRef.current) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        adRef.current.classList.add('adsbygoogle-initialized');
+        setAdInitialized(true); // Only set this once to avoid re-renders
+      } catch (error) {
+        console.error('Error initializing Google AdSense:', error);
+      }
     }
   }, [adInitialized]);
 
+  // Function to get random lyrics
   const getRandomLyrics = (allLyrics, limit) => {
     const shuffled = allLyrics.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
@@ -90,14 +106,6 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
-      {/* Floating emojis for design */}
-      <div className="floating-emoji emoji-1">🎶</div>
-      <div className="floating-emoji emoji-2">🎵</div>
-      <div className="floating-emoji emoji-3">♭</div>
-      <div className="floating-emoji emoji-5">🎶</div>
-      <div className="floating-emoji emoji-6">🎵</div>
-      <div className="floating-emoji emoji-9">♭</div>
-
       <HeroSlider />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>

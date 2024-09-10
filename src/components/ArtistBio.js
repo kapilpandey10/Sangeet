@@ -60,7 +60,7 @@ const ArtistBio = () => {
       <div className="artist-video">
         <iframe
           width="100%"
-          height="450px"
+          height="600px"
           src={embedUrl}
           title="YouTube video player"
           frameBorder="0"

@@ -83,3 +83,15 @@
     max-width: 100%;
   }
 }
+
+@media (max-width: 768px) {
+  .artist-video iframe {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .artist-video iframe {
+    height: 300px;
+  }
+}

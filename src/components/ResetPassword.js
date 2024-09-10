@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
-import '../style/ResetPassword.css';   // For reset password styling
+import { supabase } from '../supabaseClient'; // Import your Supabase client
 
 const ResetPassword = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const params = new URLSearchParams(window.location.search);
+  const accessToken = params.get('access_token'); // Get the access token from the URL
 
-  const handlePasswordUpdate = async () => {
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+  const handlePasswordReset = async () => {
+    if (!accessToken) {
+      setError('Invalid or missing reset token.');
       return;
     }
 
-    const { data, error } = await supabase.auth.updateUser({ password });
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+      accessToken,  // Use the token provided in the URL
+    });
 
     if (error) {
-      setError("Failed to reset password.");
+      setError(error.message);
     } else {
-      setMessage("Password updated successfully.");
+      setMessage('Your password has been reset successfully.');
     }
   };
 
@@ -30,17 +33,11 @@ const ResetPassword = () => {
       {error && <p className="error-message">{error}</p>}
       <input
         type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="New Password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        placeholder="Enter your new password"
       />
-      <input
-        type="password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirm New Password"
-      />
-      <button onClick={handlePasswordUpdate}>Update Password</button>
+      <button onClick={handlePasswordReset}>Reset Password</button>
     </div>
   );
 };

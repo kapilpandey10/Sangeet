@@ -12,15 +12,13 @@ html, body {
   }
   
   /* Footer Styling */
-  .footer {
+  footer {
+    width: 100%;
     background-color: #333;
     color: white;
-    padding: 20px;
     text-align: center;
+    padding: 20px 0;
     position: relative;
-    bottom: 0;
-    width: 100%;
-    flex-shrink: 0; /* Prevents the footer from shrinking */
   }
   
   .footer-container {

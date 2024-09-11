@@ -1,22 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 import './style/AdminLogin.css';  // Import the updated CSS
 
 const AdminLogin = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to show/hide password
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);  // State to show success message
   const [forgotPassword, setForgotPassword] = useState(false);  // State to toggle forgot password mode
   const [isResetLoading, setIsResetLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false); // Remember Me checkbox state
+  const [recaptchaToken, setRecaptchaToken] = useState(null); // State for the reCAPTCHA token
   const navigate = useNavigate();  // Hook to navigate to different routes
+
+  // Fetch siteKey from environment variables
+  const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
+
+  // Load reCAPTCHA script
+  useEffect(() => {
+    const loadRecaptcha = () => {
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`;
+      script.async = true;
+      document.body.appendChild(script);
+
+      script.onload = () => {
+        console.log('reCAPTCHA script loaded.');
+      };
+    };
+    
+    loadRecaptcha();
+  }, [siteKey]);
 
   // Handle admin login
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Please provide both email and password.");
+      return;
+    }
+
+    if (!recaptchaToken) {
+      setError("Please verify the reCAPTCHA.");
       return;
     }
 
@@ -61,6 +89,13 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setIsSuccess(true);
     await updateAdminStatus(sessionData.user.email, 'in');  // Mark status as 'in'
 
+    // Save the session based on "Remember Me"
+    if (rememberMe) {
+      localStorage.setItem('isLoggedIn', 'true');
+    } else {
+      sessionStorage.setItem('isLoggedIn', 'true');
+    }
+
     // Navigate to the admin dashboard after a short delay
     setTimeout(() => {
       navigate('/admin');  // Navigate to admin dashboard
@@ -69,7 +104,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
   // Update admin status
   const updateAdminStatus = async (email, status) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('admin')
       .update({ status })
       .eq('email', email);
@@ -80,8 +115,6 @@ const AdminLogin = ({ setIsAuthenticated }) => {
       console.log(`Status updated successfully for ${email}`);
     }
   };
-  
-  
 
   // Handle password reset
   const handlePasswordReset = async () => {
@@ -105,49 +138,88 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     }
   };
 
+  // Execute reCAPTCHA when the form is submitted
+  const handleRecaptcha = async (e) => {
+    e.preventDefault();
+
+    // Check if the reCAPTCHA client exists
+    if (!window.grecaptcha || !window.grecaptcha.enterprise) {
+      setError("reCAPTCHA is not ready. Please reload the page.");
+      return;
+    }
+
+    // Ensure reCAPTCHA is ready before executing it
+    window.grecaptcha.enterprise.ready(async () => {
+      const token = await window.grecaptcha.enterprise.execute(siteKey, { action: 'login' });
+      setRecaptchaToken(token); // Set the token once verification is done
+      handleLogin(); // Call login after successful reCAPTCHA
+    });
+  };
+
   return (
     <div className="login-container">
       <h1>{forgotPassword ? "Reset Password" : "Admin Login"}</h1>
       {error && <p className="error-message">{error}</p>}
 
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter admin email"
-      />
+      <form onSubmit={handleRecaptcha}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter admin email"
+        />
 
-      {!forgotPassword && (
-        <>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
-          />
-          <button onClick={handleLogin} disabled={isLoading}>
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </>
-      )}
+        {!forgotPassword && (
+          <>
+            <div className="password-input-container">
+              <input
+                type={showPassword ? 'text' : 'password'} // Toggle password visibility
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+              />
+              <button
+                type="button" // Updated to button to avoid form submission
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
 
-      {forgotPassword && (
-        <>
-          <button onClick={handlePasswordReset} disabled={isResetLoading}>
-            {isResetLoading ? 'Sending...' : 'Send Reset Link'}
-          </button>
-        </>
-      )}
+            <label>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+              />
+              Remember Me
+            </label>
 
-      {!forgotPassword ? (
-        <p className="forgot-password-link" onClick={() => setForgotPassword(true)}>
-          Forgot Password?
-        </p>
-      ) : (
-        <p className="forgot-password-link" onClick={() => setForgotPassword(false)}>
-          Back to Login
-        </p>
-      )}
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? <span className="spinner"></span> : 'Login'}
+            </button>
+          </>
+        )}
+
+        {forgotPassword && (
+          <>
+            <button onClick={handlePasswordReset} disabled={isResetLoading}>
+              {isResetLoading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+          </>
+        )}
+
+        {!forgotPassword ? (
+          <p className="forgot-password-link" onClick={() => setForgotPassword(true)}>
+            Forgot Password?
+          </p>
+        ) : (
+          <p className="forgot-password-link" onClick={() => setForgotPassword(false)}>
+            Back to Login
+          </p>
+        )}
+      </form>
     </div>
   );
 };

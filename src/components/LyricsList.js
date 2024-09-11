@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/LyricsList.css';
 
 // Access environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
@@ -87,6 +82,11 @@ const LyricsList = () => {
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
+  };
+
+  // Function to generate URL slugs for title and artist
+  const generateSlug = (title) => {
+    return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
   };
 
   // Filter results based on search query, language, and year of publication
@@ -169,7 +169,9 @@ const LyricsList = () => {
                 <div className="lyric-card-content">
                   <h3>{lyric.title}</h3>
                   <p className="small-text">Published: {new Date(lyric.published_date).getFullYear()}</p>
-                  <Link to={`/lyrics/${lyric.id}`} className="view-lyrics-button">View Lyrics</Link>
+                  <Link to={`/lyrics/${generateSlug(lyric.title)}`} className="view-lyrics-button">
+  View Lyrics
+</Link>
                 </div>
               </div>
             ))}

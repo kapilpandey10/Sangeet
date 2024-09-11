@@ -6,28 +6,25 @@ import { Helmet } from 'react-helmet'; // Import React Helmet
 import Verified from './verified';
 import '../style/ViewLyrics.css';
 
-
 const ViewLyrics = () => {
-  const { id } = useParams();
+  const { title } = useParams(); // Get title from URL
   const [lyric, setLyric] = useState(null);
   const [relatedLyrics, setRelatedLyrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const adRef = useRef(null);
 
-  useEffect(() => {
-    if (!id) {
-      setError("No ID provided for fetching lyrics.");
-      setLoading(false);
-      return;
-    }
+  // Replace underscores with spaces
+  const formattedTitle = title.replace(/_/g, ' ');
 
+  useEffect(() => {
     const fetchLyric = async () => {
       try {
+        // Fetch the lyric based on the title (case-insensitive query)
         const { data, error } = await supabase
           .from('lyrics')
           .select('*')
-          .eq('id', id)
+          .ilike('title', formattedTitle) // Case-insensitive query for title
           .single();
 
         if (error || !data) {
@@ -35,7 +32,7 @@ const ViewLyrics = () => {
         }
 
         setLyric(data);
-        fetchRelatedLyrics(data.artist);
+        fetchRelatedLyrics(data.artist); // Fetch related lyrics by the same artist
       } catch (error) {
         console.error('Error fetching lyric:', error);
         setError("Failed to fetch lyric or lyric not approved.");
@@ -49,8 +46,8 @@ const ViewLyrics = () => {
         const { data: artistLyrics, error } = await supabase
           .from('lyrics')
           .select('*')
-          .eq('artist', artist)
-          .neq('id', id)
+          .ilike('artist', artist) // Case-insensitive match for related lyrics
+          .neq('title', formattedTitle) // Exclude the current song
           .limit(3); // Fetch up to 3 related lyrics by the same artist
 
         if (error) {
@@ -70,7 +67,7 @@ const ViewLyrics = () => {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       adRef.current.classList.add('adsbygoogle-initialized');
     }
-  }, [id]);
+  }, [title]);
 
   const extractYouTubeId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -145,7 +142,11 @@ const ViewLyrics = () => {
               <h3>You May Also Like</h3>
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (
-                  <Link to={`/lyrics/${relatedLyric.id}`} key={relatedLyric.id} className="related-lyric-item">
+                  <Link
+                    to={`/lyrics/${relatedLyric.title.replace(/\s+/g, '_')}`} // Update the related lyrics URL
+                    key={relatedLyric.id}
+                    className="related-lyric-item"
+                  >
                     <div className="related-lyric-icon">
                       <FaMusic size={40} />
                     </div>

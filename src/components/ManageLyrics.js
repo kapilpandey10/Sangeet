@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
 import { FaEdit, FaTrashAlt, FaSave, FaTimes } from 'react-icons/fa';
 import ConfirmMsg from './ConfirmMsg'; // Import the confirmation modal
 import '../style/ManageLyrics.css';
 
-// Access environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ManageLyrics = () => {
   const [lyrics, setLyrics] = useState([]);

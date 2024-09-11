@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import ConfirmMsg from '../ConfirmMsg'; // Import modal for confirmation
+import MatchLyrics from './matchlyrics'; // Import MatchLyrics component
 import './style/ApproveLyrics.css'; // Include the stylesheet
 
-// Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -15,6 +15,7 @@ const ApproveLyrics = () => {
   const [message, setMessage] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [lyricToReject, setLyricToReject] = useState(null);
+  const [duplicateLyrics, setDuplicateLyrics] = useState([]); // State for duplicate lyrics
 
   useEffect(() => {
     const fetchPendingLyrics = async () => {
@@ -31,9 +32,55 @@ const ApproveLyrics = () => {
     };
 
     fetchPendingLyrics();
+    checkDuplicateLyrics(); // Check for duplicates
   }, []);
 
-  // Handle approval of lyrics
+  const checkDuplicateLyrics = async () => {
+    const { data: allLyrics, error } = await supabase
+      .from('lyrics')
+      .select('*');
+
+    if (error) {
+      console.error('Error fetching all lyrics:', error);
+      return;
+    }
+
+    const duplicates = findDuplicateLyrics(allLyrics);
+    setDuplicateLyrics(duplicates);
+  };
+
+  const findDuplicateLyrics = (lyrics) => {
+    const duplicates = [];
+
+    for (let i = 0; i < lyrics.length; i++) {
+      for (let j = i + 1; j < lyrics.length; j++) {
+        const similarity = compareLyrics(lyrics[i].lyrics, lyrics[j].lyrics);
+        if (similarity > 0.9) {
+          duplicates.push({ lyric1: lyrics[i], lyric2: lyrics[j] });
+        }
+      }
+    }
+    return duplicates;
+  };
+
+  const compareLyrics = (lyric1, lyric2) => {
+    const normalize = (str) => str.replace(/\s+/g, ' ').trim().toLowerCase();
+    const l1 = normalize(lyric1);
+    const l2 = normalize(lyric2);
+    const commonLength = Math.min(l1.length, l2.length);
+
+    if (commonLength === 0) return 0;
+
+    let matchCount = 0;
+    for (let i = 0; i < commonLength; i++) {
+      if (l1[i] === l2[i]) {
+        matchCount++;
+      }
+    }
+
+    return matchCount / commonLength;
+  };
+
   const handleApprove = async (id) => {
     const { error } = await supabase
       .from('lyrics')
@@ -53,11 +100,10 @@ const ApproveLyrics = () => {
       setPendingLyrics(pendingLyrics.filter((lyric) => lyric.id !== id));
       setSelectedLyric(null);
       setMessage('Lyric approved successfully!');
-      setTimeout(() => setMessage(''), 5000); // Clear message after 5 seconds
+      setTimeout(() => setMessage(''), 5000);
     }
   };
 
-  // Handle rejection of lyrics
   const handleReject = async () => {
     const { error } = await supabase
       .from('lyrics')
@@ -70,20 +116,18 @@ const ApproveLyrics = () => {
       setPendingLyrics(pendingLyrics.filter((lyric) => lyric.id !== lyricToReject));
       setSelectedLyric(null);
       setMessage('Lyric rejected successfully!');
-      setTimeout(() => setMessage(''), 5000); // Clear message after 5 seconds
+      setTimeout(() => setMessage(''), 5000);
     }
 
-    setShowConfirm(false); // Close modal
+    setShowConfirm(false);
     setLyricToReject(null);
   };
 
-  // View details of the selected lyric
   const handleViewDetails = (lyric) => {
     setSelectedLyric(lyric);
     setEditedLyric({ ...lyric });
   };
 
-  // Handle edit changes in the form fields
   const handleEditChange = (field, value) => {
     setEditedLyric((prev) => ({
       ...prev,
@@ -91,36 +135,6 @@ const ApproveLyrics = () => {
     }));
   };
 
-  // Extract YouTube ID from the URL
-  const extractYouTubeId = (url) => {
-    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const matches = url.match(regex);
-    return matches ? matches[1] : null;
-  };
-
-  // Render YouTube embed if a valid URL exists
-  const renderYouTubeEmbed = (url) => {
-    const videoId = extractYouTubeId(url);
-    if (!videoId) return null;
-
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&controls=1`;
-
-    return (
-      <div className="youtube-video-section">
-        <iframe
-          width="100%"
-          height="315"
-          src={embedUrl}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    );
-  };
-
-  // Show modal for rejecting lyrics
   const showRejectConfirm = (id) => {
     setLyricToReject(id);
     setShowConfirm(true);
@@ -149,6 +163,13 @@ const ApproveLyrics = () => {
           </ul>
         </div>
 
+        {duplicateLyrics.length > 0 && (
+          <div className="duplicate-lyrics-section">
+            <h2>Potential Duplicate Lyrics</h2>
+            <MatchLyrics duplicateLyrics={duplicateLyrics} />
+          </div>
+        )}
+
         {selectedLyric && (
           <div className="lyric-details">
             <h3>Edit Lyric Details</h3>
@@ -168,31 +189,10 @@ const ApproveLyrics = () => {
                 onChange={(e) => handleEditChange('artist', e.target.value)}
               />
             </div>
-            <div className="edit-field">
-              <label>Language:</label>
-              <input
-                type="text"
-                value={editedLyric.language}
-                onChange={(e) => handleEditChange('language', e.target.value)}
-              />
-            </div>
-            <div className="edit-field">
-              <label>Added By:</label>
-              <input
-                type="text"
-                value={editedLyric.added_by}
-                onChange={(e) => handleEditChange('added_by', e.target.value)}
-              />
-            </div>
-            <p><strong>Release Year:</strong> {selectedLyric.published_date.split('-')[0]}</p>
-            <p><strong>Lyrics:</strong></p>
             <textarea
               value={editedLyric.lyrics}
               onChange={(e) => handleEditChange('lyrics', e.target.value)}
             ></textarea>
-
-            {/* Render YouTube video if a music URL exists */}
-            {selectedLyric.music_url && renderYouTubeEmbed(selectedLyric.music_url)}
 
             <div className="action-buttons">
               <button onClick={() => handleApprove(selectedLyric.id)} className="approve-btn">Approve</button>
@@ -202,7 +202,6 @@ const ApproveLyrics = () => {
         )}
       </div>
 
-      {/* Confirmation modal */}
       {showConfirm && (
         <ConfirmMsg
           message="Are you sure you want to reject this lyric?"

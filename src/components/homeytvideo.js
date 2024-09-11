@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom'; // To handle navigation to /lyrics/{ID}
+import { useNavigate } from 'react-router-dom'; // To handle navigation to /lyrics/{title_artist}
 import '../style/HomeYTVideo.css'; // You can create this CSS file for styling
-
 
 const HomeYTVideo = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [lyricsId, setLyricsId] = useState(null); // Store the ID for the lyrics page
+  const [lyricsData, setLyricsData] = useState(null); // Store the title, artist, and other data
   const navigate = useNavigate(); // React Router hook to handle navigation
 
   // Function to fetch a video based on the current 5-minute interval
@@ -18,7 +17,7 @@ const HomeYTVideo = () => {
       // Fetch the list of approved videos with a non-null `music_url`
       const { data: lyricsWithVideos, error } = await supabase
         .from('lyrics')
-        .select('id, music_url') // Get the ID as well for navigation
+        .select('title, artist, music_url') // Fetch the title and artist
         .not('music_url', 'is', null)
         .eq('status', 'approved');
 
@@ -32,11 +31,10 @@ const HomeYTVideo = () => {
         const intervalIndex = Math.floor(currentUTCMinutes / 5) % lyricsWithVideos.length; // Cycle through available videos
 
         // Select the video based on the calculated interval
-        const selectedVideoUrl = lyricsWithVideos[intervalIndex].music_url;
-        const selectedLyricsId = lyricsWithVideos[intervalIndex].id; // Get the lyrics ID
+        const selectedVideoData = lyricsWithVideos[intervalIndex];
 
-        setVideoUrl(selectedVideoUrl);
-        setLyricsId(selectedLyricsId); // Set the ID for the lyrics
+        setVideoUrl(selectedVideoData.music_url);
+        setLyricsData(selectedVideoData); // Set the title and artist data
       } else {
         throw new Error('No videos found');
       }
@@ -114,10 +112,18 @@ const HomeYTVideo = () => {
   const minutesLeft = Math.floor(timeLeft / 60);
   const secondsLeft = timeLeft % 60;
 
-  // Handle the navigation to the lyrics page
+  // Generate a slug for the title
+  const generateSlug = (title) => {
+    // Replace spaces with underscores, but keep dashes
+    return title.replace(/\s+/g, '_');
+  };
+
+  // Handle the navigation to the lyrics page using the title with underscores
   const handleViewLyricsClick = () => {
-    if (lyricsId) {
-      navigate(`/lyrics/${lyricsId}`); // Navigate to the specific lyrics page
+    if (lyricsData) {
+      const { title } = lyricsData;
+      const slug = generateSlug(title); // Generate the slug based on the title
+      navigate(`/lyrics/${slug}`); // Navigate to the specific lyrics page
     }
   };
 

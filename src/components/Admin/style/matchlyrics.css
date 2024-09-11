@@ -1,93 +1,108 @@
-/* Container for the entire duplicate lyrics section */
-.duplicate-pair {
-    border: 2px solid #ccc;
-    margin-bottom: 20px;
-    padding: 15px;
+/* General container styling for mobile responsiveness */
+.container {
+    padding: 1rem;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  .duplicate-pair {
     background-color: #f9f9f9;
+    padding: 1rem;
+    margin-bottom: 1rem;
     border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  /* Header to show the similarity percentage */
+  /* Responsive typography */
   h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 1.4rem;
   }
   
-  /* Each individual lyric item */
-  .lyric-item {
-    margin-bottom: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
+  h4 {
+    font-size: 1.2rem;
   }
   
-  /* Title of the lyric */
-  .lyric-item h4 {
-    font-size: 1.2em;
-    margin-bottom: 8px;
-    color: #2c3e50;
-  }
-  
-  /* The preformatted lyrics block */
   .lyric-item pre {
-    background-color: #f0f0f0;
-    padding: 10px;
+    background-color: #e8e8e8;
+    padding: 0.5rem;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
     border-radius: 4px;
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 0.9em;
-    color: #555;
   }
   
-  /* Action buttons container */
+  /* Button styling */
   .actions {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 1rem;
   }
   
-  /* Action buttons (Approve/Delete) */
-  .actions button {
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
+  .approve-btn,
+  .delete-btn {
+    padding: 0.8rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
     border: none;
     border-radius: 5px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
   }
   
-  /* Approve button style */
-  .actions button:first-child {
-    background-color: #28a745;
+  .approve-btn {
+    background-color: #4caf50;
     color: white;
   }
   
-  .actions button:first-child:hover {
-    background-color: #218838;
+  .approve-btn:hover {
+    background-color: #45a049;
   }
   
-  /* Delete button style */
-  .actions button:last-child {
-    background-color: #dc3545;
+  .delete-btn {
+    background-color: #f44336;
     color: white;
   }
   
-  .actions button:last-child:hover {
-    background-color: #c82333;
+  .delete-btn:hover {
+    background-color: #e41e22;
   }
   
-  /* Loading state text */
-  .loading-text {
-    font-size: 1.2em;
-    color: #666;
-    text-align: center;
+  /* Mobile first styling */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+  
+    .duplicate-pair {
+      padding: 0.8rem;
+    }
+  
+    .lyric-item pre {
+      font-size: 0.9rem;
+    }
+  
+    .approve-btn,
+    .delete-btn {
+      font-size: 0.9rem;
+      padding: 0.6rem;
+    }
   }
   
-  /* Error message */
-  .error-message {
-    color: #dc3545;
-    text-align: center;
-    font-size: 1.2em;
+  /* Larger screen adjustments */
+  @media (min-width: 769px) {
+    .actions {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  
+    .approve-btn,
+    .delete-btn {
+      width: 48%;
+    }
   }
   

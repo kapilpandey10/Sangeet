@@ -8,7 +8,7 @@ const MatchLyrics = () => {
   const [duplicatePairs, setDuplicatePairs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Fetch all lyrics from the database
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -38,7 +38,7 @@ const MatchLyrics = () => {
     for (let i = 0; i < lyricsData.length; i++) {
       for (let j = i + 1; j < lyricsData.length; j++) {
         const similarity = compareTwoStrings(lyricsData[i].lyrics, lyricsData[j].lyrics);
-        if (similarity > 0.9) { // If similarity is greater than 90%
+        if (similarity > 0.4) { // If similarity is greater than 40%
           potentialDuplicates.push({
             lyric1: lyricsData[i],
             lyric2: lyricsData[j],
@@ -53,7 +53,6 @@ const MatchLyrics = () => {
   // Approve lyrics as not duplicate
   const approveNotDuplicate = async (lyric1, lyric2) => {
     alert('Lyrics approved as not duplicate');
-    // Optionally, you can add functionality to tag or mark these lyrics as approved in the database
   };
 
   // Delete duplicate lyrics
@@ -83,7 +82,7 @@ const MatchLyrics = () => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h1>Duplicate Lyrics Finder</h1>
       {duplicatePairs.length > 0 ? (
         <div>
@@ -99,8 +98,8 @@ const MatchLyrics = () => {
                 <pre>{pair.lyric2.lyrics}</pre>
               </div>
               <div className="actions">
-                <button onClick={() => approveNotDuplicate(pair.lyric1, pair.lyric2)}>Approve as Not Duplicate</button>
-                <button onClick={() => deleteDuplicate(pair.lyric2.id)}>Delete Duplicate (Second)</button>
+                <button onClick={() => approveNotDuplicate(pair.lyric1, pair.lyric2)} className="approve-btn">Approve as Not Duplicate</button>
+                <button onClick={() => deleteDuplicate(pair.lyric2.id)} className="delete-btn">Delete Duplicate (Second)</button>
               </div>
             </div>
           ))}

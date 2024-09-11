@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { createClient } from '@supabase/supabase-js';
 import { FaEdit, FaTrashAlt, FaSave, FaTimes } from 'react-icons/fa';
-import ConfirmMsg from './ConfirmMsg'; // Import the confirmation modal
-import '../style/ManageLyrics.css';
+import ConfirmMsg from '../ConfirmMsg'; // Import the confirmation modal
+import './style/ManageLyrics.css';
 
+// Access environment variables
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
+// Initialize Supabase client
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ManageLyrics = () => {
   const [lyrics, setLyrics] = useState([]);
@@ -16,11 +21,15 @@ const ManageLyrics = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [lyricToDelete, setLyricToDelete] = useState(null);
 
-  // Fetch lyrics from Supabase
+  // Fetch only approved lyrics from Supabase
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
-        const { data, error } = await supabase.from('lyrics').select('*');
+        const { data, error } = await supabase
+          .from('lyrics')
+          .select('*')
+          .eq('status', 'approved'); // Fetch only approved lyrics
+        
         if (error) throw error;
         setLyrics(data || []);
         setFilteredLyrics(data || []); // Initial filtered lyrics
@@ -253,7 +262,7 @@ const ManageLyrics = () => {
           ))}
         </ul>
       ) : (
-        <p>No lyrics available.</p>
+        <p>No approved lyrics available.</p>
       )}
 
       {/* ConfirmMsg modal, shown only when showConfirm is true */}
@@ -262,11 +271,8 @@ const ManageLyrics = () => {
           show={showConfirm}  // Determines whether to show the modal
           onConfirm={handleConfirmDelete}  // Function to execute if the user confirms deletion
           onCancel={handleCancelDelete}  // Function to execute if the user cancels deletion
-          message="Are you sure you want to delete this lyric?"  // Custom message in the modal
-        />
-      )}
-    </div>
-  );
-};
+          message="Are you sure you want to delete this lyric?" // Custom message in the modal 
+          /> )}
+           </div> ); };
 
 export default ManageLyrics;

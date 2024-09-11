@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { FaCheckCircle, FaEdit, FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt } from 'react-icons/fa';
 import ApproveLyrics from './ApproveLyrics';
-import ManageLyrics from '../ManageLyrics';
+import ManageLyrics from './ManageLyrics';
 import Messages from '../Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';

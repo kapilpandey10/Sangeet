@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient'; // Import Supabase client
 import { compareTwoStrings } from 'string-similarity'; // Use string-similarity package for comparison
+import ConfirmMsg from '../ConfirmMsg'; // Import the confirmation modal
 import './style/matchlyrics.css';  // Import the updated CSS
 
 const MatchLyrics = () => {
@@ -8,6 +9,9 @@ const MatchLyrics = () => {
   const [duplicatePairs, setDuplicatePairs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmAction, setConfirmAction] = useState('');
+  const [selectedPair, setSelectedPair] = useState(null);
 
   // Fetch all lyrics from the database
   useEffect(() => {
@@ -38,7 +42,7 @@ const MatchLyrics = () => {
     for (let i = 0; i < lyricsData.length; i++) {
       for (let j = i + 1; j < lyricsData.length; j++) {
         const similarity = compareTwoStrings(lyricsData[i].lyrics, lyricsData[j].lyrics);
-        if (similarity > 0.4) { // If similarity is greater than 40%
+        if (similarity > 0.3) { // If similarity is greater than 30%
           potentialDuplicates.push({
             lyric1: lyricsData[i],
             lyric2: lyricsData[j],
@@ -52,25 +56,55 @@ const MatchLyrics = () => {
 
   // Approve lyrics as not duplicate
   const approveNotDuplicate = async (lyric1, lyric2) => {
-    alert('Lyrics approved as not duplicate');
+    setConfirmAction('keep-both');
+    setSelectedPair({ lyric1, lyric2 });
+    setShowConfirm(true);
   };
 
   // Delete duplicate lyrics
-  const deleteDuplicate = async (lyricId) => {
-    try {
-      const { error } = await supabase
-        .from('lyrics')
-        .delete()
-        .eq('id', lyricId);
+  const deleteDuplicate = async (lyric) => {
+    setConfirmAction('delete');
+    setSelectedPair(lyric);
+    setShowConfirm(true);
+  };
 
-      if (error) throw error;
+  // Confirm the action to keep both or delete
+  const handleConfirm = async () => {
+    if (confirmAction === 'keep-both' && selectedPair) {
+      try {
+        await supabase
+          .from('lyrics')
+          .update({ is_duplicate: false })
+          .eq('id', selectedPair.lyric1.id);
+        await supabase
+          .from('lyrics')
+          .update({ is_duplicate: false })
+          .eq('id', selectedPair.lyric2.id);
 
-      alert('Duplicate lyrics deleted successfully');
-      // Refresh the page or update state to remove deleted lyrics
-    } catch (error) {
-      console.error('Error deleting lyrics:', error);
-      alert('Error deleting lyrics');
+        alert('Both lyrics are kept and marked as not duplicates.');
+        setDuplicatePairs(duplicatePairs.filter(pair => pair !== selectedPair)); // Remove from list
+      } catch (error) {
+        alert('Error marking as not duplicates');
+      }
+    } else if (confirmAction === 'delete' && selectedPair) {
+      try {
+        await supabase
+          .from('lyrics')
+          .delete()
+          .eq('id', selectedPair.lyric2.id);
+
+        alert('Duplicate lyric deleted successfully.');
+        setDuplicatePairs(duplicatePairs.filter(pair => pair !== selectedPair)); // Remove from list
+      } catch (error) {
+        alert('Error deleting lyric');
+      }
     }
+    setShowConfirm(false);
+  };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
+    setSelectedPair(null);
   };
 
   if (loading) {
@@ -97,15 +131,29 @@ const MatchLyrics = () => {
                 <h4>{pair.lyric2.title} by {pair.lyric2.artist}</h4>
                 <pre>{pair.lyric2.lyrics}</pre>
               </div>
+              <p className="similarity-score">Similarity: {pair.similarity}%</p>
               <div className="actions">
-                <button onClick={() => approveNotDuplicate(pair.lyric1, pair.lyric2)} className="approve-btn">Approve as Not Duplicate</button>
-                <button onClick={() => deleteDuplicate(pair.lyric2.id)} className="delete-btn">Delete Duplicate (Second)</button>
+                <button onClick={() => approveNotDuplicate(pair.lyric1, pair.lyric2)} className="approve-btn">
+                  Keep Both
+                </button>
+                <button onClick={() => deleteDuplicate(pair)} className="delete-btn">
+                  Delete Duplicate (Second)
+                </button>
               </div>
             </div>
           ))}
         </div>
       ) : (
         <p>No duplicate lyrics found.</p>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <ConfirmMsg
+          message={`Are you sure you want to ${confirmAction === 'keep-both' ? 'keep both lyrics and mark as not duplicate' : 'delete the duplicate lyric'}?`}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
       )}
     </div>
   );

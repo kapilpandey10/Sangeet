@@ -1,20 +1,20 @@
 import React from 'react';
 import '../style/ConfirmMsg.css';
 
-const ConfirmMsg = ({ show, onConfirm, onCancel, message }) => {
+const ConfirmMsg = ({ show, onConfirm, onCancel, message, confirmButtonText, cancelButtonText }) => {
   if (!show) return null;
 
   return (
     <div className="confirm-modal">
       <div className="confirm-modal-content">
-        <h2>Confirm Delete</h2>
+        <h2>Confirmation</h2> {/* More generic title */}
         <p>{message}</p>
         <div className="confirm-modal-actions">
           <button className="confirm-modal-button confirm" onClick={onConfirm}>
-            Yes, Delete
+            {confirmButtonText || 'Yes, Confirm'} {/* Default to "Yes, Confirm" */}
           </button>
           <button className="confirm-modal-button cancel" onClick={onCancel}>
-            Cancel
+            {cancelButtonText || 'Cancel'} {/* Default to "Cancel" */}
           </button>
         </div>
       </div>

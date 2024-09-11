@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/footer/Footer';
 import LyricsList from './components/LyricsList';
 import ContactUs from './components/ContactUs';
-import { Analytics } from "@vercel/analytics/react";
 import HomePage from './components/HomePage';
 import ViewLyrics from './components/ViewLyrics';
 import AdminDashboard from './components/Admin/AdminDashboard';

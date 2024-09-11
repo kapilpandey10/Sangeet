@@ -1,43 +1,63 @@
-import React, { useState } from 'react';
-import { supabase } from '../supabaseClient'; // Import your Supabase client
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
+import { useNavigate, useLocation } from 'react-router-dom'; // For navigation and getting query params
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const params = new URLSearchParams(window.location.search);
-  const accessToken = params.get('access_token'); // Get the access token from the URL
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('access_token'); // Supabase uses 'access_token' as the reset token
+
+    if (!token) {
+      setError('Invalid or missing reset token.');
+    }
+  }, [location.search]);
 
   const handlePasswordReset = async () => {
-    if (!accessToken) {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('access_token');
+
+    if (!token) {
       setError('Invalid or missing reset token.');
       return;
     }
 
-    const { error } = await supabase.auth.updateUser({
+    const { error: resetError } = await supabase.auth.updateUser({
+      access_token: token,  // Use the token to reset the password
       password: newPassword,
-      accessToken,  // Use the token provided in the URL
     });
 
-    if (error) {
-      setError(error.message);
+    if (resetError) {
+      setError(resetError.message);
     } else {
-      setMessage('Your password has been reset successfully.');
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/login'); // Redirect to login after success
+      }, 2000);
     }
   };
 
   return (
-    <div className="reset-password-container">
-      <h1>Reset Password</h1>
-      {message && <p className="success-message">{message}</p>}
-      {error && <p className="error-message">{error}</p>}
-      <input
-        type="password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        placeholder="Enter your new password"
-      />
-      <button onClick={handlePasswordReset}>Reset Password</button>
+    <div>
+      {error && <p>{error}</p>}
+      {success ? (
+        <p>Password reset successful. Redirecting to login...</p>
+      ) : (
+        <div>
+          <input
+            type="password"
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <button onClick={handlePasswordReset}>Reset Password</button>
+        </div>
+      )}
     </div>
   );
 };

@@ -32,6 +32,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
     if (loginError) {
       setError('Invalid login credentials. Please try again.');
+      await updateAdminStatus(email, 'out');  // Update status as 'out' on failed login
       return;
     }
 
@@ -44,24 +45,43 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
     if (adminError || !adminData) {
       setError("Failed to fetch user role or user not found.");
+      await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
       return;
     }
 
     if (adminData.role.toLowerCase() !== 'admin') {
       setError("Access denied: You are not an admin.");
       await supabase.auth.signOut();
+      await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
       return;
     }
 
     // If login and role verification succeed
     setIsAuthenticated(true);
     setIsSuccess(true);
+    await updateAdminStatus(sessionData.user.email, 'in');  // Mark status as 'in'
 
     // Navigate to the admin dashboard after a short delay
     setTimeout(() => {
       navigate('/admin');  // Navigate to admin dashboard
     }, 900);  // 0.9 seconds delay
   };
+
+  // Update admin status
+  const updateAdminStatus = async (email, status) => {
+    const { data, error } = await supabase
+      .from('admin')
+      .update({ status })
+      .eq('email', email);
+  
+    if (error) {
+      console.error(`Failed to update status:`, error.message);
+    } else {
+      console.log(`Status updated successfully for ${email}`);
+    }
+  };
+  
+  
 
   // Handle password reset
   const handlePasswordReset = async () => {

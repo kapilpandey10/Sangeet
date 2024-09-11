@@ -77,9 +77,7 @@ const AdminDashboard = () => {
           <li className={activeTab === 'add-artist' ? 'active' : ''} onClick={() => setActiveTab('add-artist')}>
             <FaUserPlus className="icon" /> Add Artist
           </li>
-          <li onClick={handleLogout} className="logout-btn">
-            <FaSignOutAlt className="icon" /> Logout {/* Added Logout button */}
-          </li>
+          
         </ul>
       </nav>
       <main className="main-content">

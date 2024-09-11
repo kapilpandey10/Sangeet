@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
@@ -14,37 +14,12 @@ const AdminLogin = ({ setIsAuthenticated }) => {
   const [forgotPassword, setForgotPassword] = useState(false);  // State to toggle forgot password mode
   const [isResetLoading, setIsResetLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false); // Remember Me checkbox state
-  const [recaptchaToken, setRecaptchaToken] = useState(null); // State for the reCAPTCHA token
   const navigate = useNavigate();  // Hook to navigate to different routes
-
-  // Fetch siteKey from environment variables
-  const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY;
-
-  // Load reCAPTCHA script
-  useEffect(() => {
-    const loadRecaptcha = () => {
-      const script = document.createElement('script');
-      script.src = `https://www.google.com/recaptcha/enterprise.js?render=${siteKey}`;
-      script.async = true;
-      document.body.appendChild(script);
-
-      script.onload = () => {
-        console.log('reCAPTCHA script loaded.');
-      };
-    };
-    
-    loadRecaptcha();
-  }, [siteKey]);
 
   // Handle admin login
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Please provide both email and password.");
-      return;
-    }
-
-    if (!recaptchaToken) {
-      setError("Please verify the reCAPTCHA.");
       return;
     }
 
@@ -89,7 +64,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setIsSuccess(true);
     await updateAdminStatus(sessionData.user.email, 'in');  // Mark status as 'in'
 
-    // Save the session based on "Remember Me"
+    // Save the session in localStorage if 'Remember Me' is checked
     if (rememberMe) {
       localStorage.setItem('isLoggedIn', 'true');
     } else {
@@ -138,30 +113,12 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     }
   };
 
-  // Execute reCAPTCHA when the form is submitted
-  const handleRecaptcha = async (e) => {
-    e.preventDefault();
-
-    // Check if the reCAPTCHA client exists
-    if (!window.grecaptcha || !window.grecaptcha.enterprise) {
-      setError("reCAPTCHA is not ready. Please reload the page.");
-      return;
-    }
-
-    // Ensure reCAPTCHA is ready before executing it
-    window.grecaptcha.enterprise.ready(async () => {
-      const token = await window.grecaptcha.enterprise.execute(siteKey, { action: 'login' });
-      setRecaptchaToken(token); // Set the token once verification is done
-      handleLogin(); // Call login after successful reCAPTCHA
-    });
-  };
-
   return (
     <div className="login-container">
       <h1>{forgotPassword ? "Reset Password" : "Admin Login"}</h1>
       {error && <p className="error-message">{error}</p>}
 
-      <form onSubmit={handleRecaptcha}>
+      <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
         <input
           type="email"
           value={email}

@@ -19,12 +19,12 @@
   </url>
 
   <!-- Another example of a content-specific URL -->
-  <url>
-    <loc>https://pandeykapil.com.np/contactus</loc>
-    <lastmod>2024-09-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
+<url>
+  <loc>https://pandeykapil.com.np/contactus</loc>
+  <lastmod>2024-09-11</lastmod>
+  <priority>0.8</priority>
+</url>
+
 
 
  <url>

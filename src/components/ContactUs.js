@@ -36,35 +36,40 @@ const ContactUs = () => {
   return (
     <div className="contact-us-container">
       <h1>Contact Us</h1>
+      <p>If you have any questions, feedback, or need support, feel free to reach out to the Sangeet Lyrics Central team using the form below. We are here to help you with any queries related to Nepali songs and lyrics.</p>
       <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Message:
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            required
-          ></textarea>
-        </label>
-        <button type="submit">Send Message</button>
-      </form>
+  <label htmlFor="name">Name:</label>
+  <input
+    type="text"
+    id="name"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    placeholder="Enter your full name"
+    required
+  />
+
+  <label htmlFor="email">Email:</label>
+  <input
+    type="email"
+    id="email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    placeholder="Enter your email address"
+    required
+  />
+
+  <label htmlFor="message">Message:</label>
+  <textarea
+    id="message"
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+    placeholder="Write your message here"
+    required
+  ></textarea>
+
+  <button type="submit">Send Message</button>
+</form>
+
       {status && <p>{status}</p>}
     </div>
   );

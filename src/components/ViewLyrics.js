@@ -124,6 +124,29 @@ const ViewLyrics = () => {
           property="og:description"
           content={lyric ? `Check out the full lyrics of "${lyric.title}" by ${lyric.artist}.` : 'Explore our collection of song lyrics.'}
         />
+
+        {/* Add Music Recording Schema */}
+        {lyric && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "MusicRecording",
+              "name": lyric.title,
+              "byArtist": {
+                "@type": "MusicGroup",
+                "name": lyric.artist
+              },
+              "inAlbum": {
+                "@type": "MusicAlbum",
+                "name": "Album Name" // You can dynamically fetch this if available
+              },
+              "datePublished": lyric.published_date, // Date format should be YYYY-MM-DD
+              "lyrics": lyric.lyrics,
+              "url": window.location.href,
+              "identifier": window.location.href
+            })}
+          </script>
+        )}
       </Helmet>
 
       {lyric ? (

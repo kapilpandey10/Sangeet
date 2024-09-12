@@ -93,3 +93,18 @@
     margin-bottom: 5px;
   }
 }
+.dropdown-menu li {
+  padding: 15px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f1f1f1;
+}
+
+.main-content {
+  padding: 30px;
+}
+
+/* Add specific styling for the Admin Management menu if needed */

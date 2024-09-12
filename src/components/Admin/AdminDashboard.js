@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
-import { FaCaretDown, FaCheckCircle, FaEdit, FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt } from 'react-icons/fa';
+import { FaCaretDown, FaCheckCircle, FaEdit, FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt, FaUsersCog } from 'react-icons/fa'; // Import the admin icon
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from '../Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
+import Admin from './Admin'; // Import Admin management component
 import './style/AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -79,6 +80,8 @@ const AdminDashboard = () => {
         return <AddLyrics />;
       case 'add-artist':
         return <AddArtist />;
+      case 'admin-management': // Add this new case for admin management
+        return <Admin />; // Render the Admin component here
       default:
         return <ManageLyrics />;
     }
@@ -125,6 +128,9 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('messages')}>
                   <FaEnvelope className="icon" /> Messages
                 </li>
+                <li onClick={() => setActiveTab('admin-management')}>
+                  <FaUsersCog className="icon" /> Admin Management
+                </li> {/* New admin management option */}
                 <li onClick={handleLogout}>
                   <FaSignOutAlt className="icon" /> Logout
                 </li>

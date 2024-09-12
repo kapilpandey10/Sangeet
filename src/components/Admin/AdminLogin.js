@@ -118,7 +118,7 @@ const AdminLogin = ({ setIsAuthenticated }) => {
       <h1>{forgotPassword ? "Reset Password" : "Admin Login"}</h1>
       {error && <p className="error-message">{error}</p>}
 
-      <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+      <form onSubmit={(e) => { e.preventDefault(); forgotPassword ? handlePasswordReset() : handleLogin(); }}>
         <input
           type="email"
           value={email}

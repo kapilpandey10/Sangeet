@@ -104,6 +104,11 @@ const HomePage = () => {
     return shuffled.slice(0, limit);
   };
 
+  // Format the title to create URL-friendly slugs
+  const formatTitleForURL = (title) => {
+    return title.replace(/\s+/g, '_').toLowerCase();
+  };
+
   return (
     <div className="homepage-container">
       <HeroSlider />
@@ -124,7 +129,7 @@ const HomePage = () => {
                     <h3>{lyric.title}</h3>
                     <p>{lyric.artist}</p>
                     <p>{new Date(lyric.published_date).getFullYear()}</p>
-                    <Link to={`/lyrics/${lyric.id}`}>Read Lyrics</Link>
+                    <Link to={`/lyrics/${formatTitleForURL(lyric.title)}`}>Read Lyrics</Link> {/* Updated URL format */}
                   </div>
                 ))}
               </div>

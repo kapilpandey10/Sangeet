@@ -55,20 +55,6 @@ const ViewLyrics = () => {
     fetchLyric();
   }, [title]);
 
-  // Function to inject ads dynamically into the DOM
-  const injectAd = (scriptSrc) => {
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = scriptSrc;
-    script.async = true;
-    document.body.appendChild(script);
-  };
-
-  // UseEffect to inject multiple ads at different points
-  useEffect(() => {
-    injectAd('https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g');
-  }, []);
-
   const extractYouTubeId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const matches = url.match(regex);
@@ -97,6 +83,16 @@ const ViewLyrics = () => {
   if (loading) return <p>Loading the lyrics of {formattedTitle}...</p>;
   if (error) return <p>{error}</p>;
 
+  // Define your ad scripts here
+  const adScript = `
+    <script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>
+  `;
+  const noscriptTag = `
+    <a href="https://yllix.com/publishers/343571" target="_blank">
+      <img src="//ylx-aff.advertica-cdn.com/pub/300x250.png" style="border:none;margin:0;padding:0;vertical-align:baseline;" alt="ylliX - Online Advertising Network" />
+    </a>
+  `;
+
   return (
     <div className="view-lyrics-container">
       {/* Helmet for SEO */}
@@ -114,7 +110,6 @@ const ViewLyrics = () => {
           <p><strong>Artist:</strong> {lyric.artist}</p>
           
           {/* First Ad - Below Artist Name */}
-          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
 
           <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p>
           <p><strong>Added By:</strong> {lyric.added_by}</p>
@@ -123,18 +118,15 @@ const ViewLyrics = () => {
           {lyric.status === 'approved' && <Verified />}
           
           {/* Second Ad - Below Verified Sticker/Above the lyrics */}
-          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
 
           <pre className="lyrics-text">{lyric.lyrics}</pre>
 
           {/* Third Ad - Middle of lyrics */}
-          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
 
           {/* YouTube Video */}
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
 
           {/* Fourth Ad - Between Video and Lyrics */}
-          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
 
           {/* Related Lyrics */}
           {relatedLyrics.length > 0 && (
@@ -142,7 +134,6 @@ const ViewLyrics = () => {
               <h3>You May Also Like</h3>
 
               {/* Fifth Ad - Before 'You May Also Like' */}
-              <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
 
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (

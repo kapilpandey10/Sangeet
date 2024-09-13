@@ -5,7 +5,6 @@ import '../style/HomePage.css';
 import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
-import BannerAd from './BannerAd'; // Import your BannerAd component
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
@@ -92,7 +91,6 @@ const HomePage = () => {
     
     <div className="homepage-container">
             {/* Add BannerAd Component Between Sections */}
-            <BannerAd />
       <HeroSlider />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
@@ -126,7 +124,6 @@ const HomePage = () => {
           <HomeYTVideo />
 
           {/* Add BannerAd Component Between Sections */}
-          <BannerAd />
 
           {featuredArtist ? (
             <div className="featured-artist-section">

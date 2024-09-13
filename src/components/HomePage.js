@@ -5,16 +5,13 @@ import '../style/HomePage.css';
 import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
+import BannerAd from './BannerAd'; // Import your BannerAd component
 
-// Initialize Supabase client
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
   const [featuredArtist, setFeaturedArtist] = useState(null);
   const [loading, setLoading] = useState(true);
-  const adRef = useRef(null);
-  const [adInitialized, setAdInitialized] = useState(false);
 
-  // Fetch data for lyrics and featured artist
   useEffect(() => {
     document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
     // Add meta tags for SEO
@@ -48,7 +45,6 @@ const HomePage = () => {
     const fetchAllData = async () => {
       setLoading(true);
       try {
-        // Fetch lyrics
         const { data: allLyrics, error: lyricsError } = await supabase
           .from('lyrics')
           .select('id, title, artist, published_date')
@@ -62,7 +58,6 @@ const HomePage = () => {
           setLyrics(randomLyrics);
         }
 
-        // Fetch all approved artists and randomly select one
         const { data: artistData, error: artistError } = await supabase
           .from('artists')
           .select('*')
@@ -84,26 +79,11 @@ const HomePage = () => {
     fetchAllData();
   }, []);
 
-  // Initialize Google AdSense only once
-  useEffect(() => {
-    if (!adInitialized && adRef.current) {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        adRef.current.classList.add('adsbygoogle-initialized');
-        setAdInitialized(true); // Only set this once to avoid re-renders
-      } catch (error) {
-        console.error('Error initializing Google AdSense:', error);
-      }
-    }
-  }, [adInitialized]);
-
-  // Function to get random lyrics
   const getRandomLyrics = (allLyrics, limit) => {
     const shuffled = allLyrics.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
   };
 
-  // Format the title to create URL-friendly slugs
   const formatTitleForURL = (title) => {
     return title.replace(/\s+/g, '_').toLowerCase();
   };
@@ -128,7 +108,7 @@ const HomePage = () => {
                     <h3>{lyric.title}</h3>
                     <p>{lyric.artist}</p>
                     <p>{new Date(lyric.published_date).getFullYear()}</p>
-                    <Link to={`/lyrics/${formatTitleForURL(lyric.title)}`}>Read Lyrics</Link> {/* Updated URL format */}
+                    <Link to={`/lyrics/${formatTitleForURL(lyric.title)}`}>Read Lyrics</Link>
                   </div>
                 ))}
               </div>
@@ -142,7 +122,9 @@ const HomePage = () => {
 
           <HomeYTVideo />
 
-          {/* Display Featured Artist */}
+          {/* Add BannerAd Component Between Sections */}
+          <BannerAd />
+
           {featuredArtist ? (
             <div className="featured-artist-section">
               <h2 className="featured-artist-title">Featured Nepali Artist</h2>
@@ -153,18 +135,6 @@ const HomePage = () => {
           ) : (
             <p>No featured artist available.</p>
           )}
-
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
-            <ins
-              className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="6720877169"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-              ref={adRef}
-            ></ins>
-          </div>
         </>
       )}
     </div>

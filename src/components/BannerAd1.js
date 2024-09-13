@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
-const BannerAd = () => {
+const BannerAd1 = () => {
   const adRef = useRef(null);
 
   useEffect(() => {
     // Dynamically create and append the script tag for the ad
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g';
+    script.src = 'https://udbaa.com/bnr.php?section=General&pub=343571&format=728x90&ga=g';
     adRef.current.appendChild(script);
 
     return () => {
@@ -23,7 +23,7 @@ const BannerAd = () => {
       <noscript>
         <a href="https://yllix.com/publishers/343571" target="_blank" rel="noopener noreferrer">
           <img
-            src="//ylx-aff.advertica-cdn.com/pub/300x250.png"
+            src="//ylx-aff.advertica-cdn.com/pub/728x90.png"
             style={{ border: 'none', margin: '0', padding: '0', verticalAlign: 'baseline' }}
             alt="ylliX - Online Advertising Network"
           />
@@ -33,4 +33,4 @@ const BannerAd = () => {
   );
 };
 
-export default BannerAd;
+export default BannerAd1;

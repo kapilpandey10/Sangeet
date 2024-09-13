@@ -5,6 +5,7 @@ import { FaMusic } from 'react-icons/fa';
 import { Helmet } from 'react-helmet'; // Import React Helmet
 import Verified from './verified';
 import '../style/ViewLyrics.css';
+import BannerAd1 from './BannerAd1'; // Import the BannerAd1 component
 
 const ViewLyrics = () => {
   const { title } = useParams(); // Get title from URL
@@ -106,6 +107,7 @@ const ViewLyrics = () => {
 
   return (
     <div className="view-lyrics-container">
+      <BannerAd1 />
       <Helmet>
         <title>{lyric ? `${lyric.title} Lyrics - ${lyric.artist}` : 'Lyrics'}</title>
         <meta
@@ -163,6 +165,7 @@ const ViewLyrics = () => {
           {/* Display related lyrics (You May Also Like) */}
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">
+              <BannerAd1 />
               <h3>You May Also Like</h3>
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (

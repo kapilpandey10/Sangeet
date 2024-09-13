@@ -5,7 +5,6 @@ import { FaMusic } from 'react-icons/fa';
 import { Helmet } from 'react-helmet'; // Import React Helmet
 import Verified from './verified';
 import '../style/ViewLyrics.css';
-import BannerAd1 from './BannerAd1'; // Import the BannerAd1 component
 
 const ViewLyrics = () => {
   const { title } = useParams(); // Get title from URL
@@ -64,10 +63,18 @@ const ViewLyrics = () => {
 
     fetchLyric();
 
-    if (adRef.current && !adRef.current.classList.contains('adsbygoogle-initialized')) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-      adRef.current.classList.add('adsbygoogle-initialized');
-    }
+    // Dynamically add the banner ad script
+    const adScript = document.createElement('script');
+    adScript.type = 'text/javascript';
+    adScript.src = 'https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g';
+    adRef.current.appendChild(adScript);
+
+    // Cleanup function to remove script on component unmount
+    return () => {
+      if (adRef.current) {
+        adRef.current.innerHTML = ''; // Clear the ad script from the DOM
+      }
+    };
   }, [title]);
 
   const extractYouTubeId = (url) => {
@@ -107,7 +114,19 @@ const ViewLyrics = () => {
 
   return (
     <div className="view-lyrics-container">
-      <BannerAd1 />
+      {/* Display Banner Ad */}
+      <div ref={adRef} style={{ margin: '20px 0', textAlign: 'center' }}>
+        <noscript>
+          <a href="https://yllix.com/publishers/343571" target="_blank" rel="noopener noreferrer">
+            <img
+              src="//ylx-aff.advertica-cdn.com/pub/300x250.png"
+              style={{ border: 'none', margin: '0', padding: '0', verticalAlign: 'baseline' }}
+              alt="ylliX - Online Advertising Network"
+            />
+          </a>
+        </noscript>
+      </div>
+
       <Helmet>
         <title>{lyric ? `${lyric.title} Lyrics - ${lyric.artist}` : 'Lyrics'}</title>
         <meta
@@ -126,30 +145,6 @@ const ViewLyrics = () => {
           property="og:description"
           content={lyric ? `Check out the full lyrics of "${lyric.title}" by ${lyric.artist}.` : 'Explore our collection of song lyrics.'}
         />
-
-        {/* Add Music Recording Schema */}
-        {lyric && (
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "MusicRecording",
-              "name": lyric.title,
-              "byArtist": {
-                "@type": "MusicGroup",
-                "name": lyric.artist
-              },
-              "inAlbum": {
-                "@type": "MusicAlbum",
-                "name": "Album Name" // You can dynamically fetch this if available
-              },
-              "datePublished": lyric.published_date, // Date format should be YYYY-MM-DD
-              "lyrics": lyric.lyrics,
-              "url": window.location.href,
-              "identifier": window.location.href
-            })}
-          </script>
-        )}
-        
       </Helmet>
 
       {lyric ? (
@@ -165,7 +160,6 @@ const ViewLyrics = () => {
           {/* Display related lyrics (You May Also Like) */}
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">
-              <BannerAd1 />
               <h3>You May Also Like</h3>
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (

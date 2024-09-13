@@ -1,58 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Homepage URL -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 
-
-  <url>
-    <loc>https://pandeykapil.com.np</loc>
-    <lastmod>2024-09-07</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
- 
-  <url>
-    <loc>https://www.pandeykapil.com.np/lyrics-list</loc>
-    <lastmod>2024-09-06</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Another example of a content-specific URL -->
 <url>
-  <loc>https://pandeykapil.com.np/contactus</loc>
-  <lastmod>2024-09-11</lastmod>
-  <priority>0.8</priority>
+<loc>https://pandeykapil.com.np/</loc>
+<changefreq>daily</changefreq>
+<priority>1.0</priority>
 </url>
 
+<url>
+<loc>https://pandeykapil.com.np/lyrics/Yadd_garna_pani</loc>
+<changefreq>weekly</changefreq>
+<priority>0.8</priority>
+</url>
 
-
- <url>
-    <loc>https://pandeykapil.com.np/artistbio</loc>
-    <lastmod>2024-09-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-   <url>
-    <loc>https://pandeykapil.com.np/artistbio/Pashupati%20Sharma</loc>
-    <lastmod>2024-09-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-   <url>
-    <loc>https://pandeykapil.com.np/artistbio/Sujan%20chapagain</loc>
-    <lastmod>2024-09-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-   
-   <url>
-    <loc>https://pandeykapil.com.np/artistbio/Anju%20Panta</loc>
-    <lastmod>2024-09-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-</urlset>
+<url><loc>https://pandeykapil.com.np/lyrics/Sathi_-2019_Nepali_Song</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Chaubandi_ma_patuki</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Junko_jyoti</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Makhamali_Paccheurile_Sanu</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Rato_Rani_fhule_jhai_sajhama</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Pir_diyo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Uni_Aakash_bata_jhareki_apsara</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Wui_Mula_ko_sinki_wui_Mula_ko_chana</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/%E0%A4%A6%E0%A5%8B%E0%A4%B9%E0%A5%8B%E0%A4%B0%E0%A5%80%E0%A4%95%E0%A5%8B_%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%BE_-_Dohoriko_Raja</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Jharana_Ko_chiso_pani</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Fulthungey_rani</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Gurasai_fulyo_banaima_%E0%A4%97%E0%A5%81%E0%A4%B0%E0%A4%BE%E0%A4%B8%E0%A5%88_%E0%A4%AB%E0%A5%81%E0%A4%B2%E0%A5%8D%E0%A4%AF%E0%A5%8B</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Ritu_haruma_timi</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Chulbul_chulbul</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Jhuma_jhumka_wali</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Gau_Gau_bata_utha</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Maya_Luki_Luki</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Kauli</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Sagar_sari_chokho_maya</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Kahiley_timro_pacheuri_ma_aljhey</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Aasuko_Artha_</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Chanchale</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Fewa_tal_ma_saili</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Kya_Dami_bho</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Yo_kura_gopye</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/%E0%A4%95%E0%A5%81%E0%A4%A8_%E0%A4%AE%E0%A4%A8%E0%A5%8D%E0%A4%A6%E0%A4%BF%E0%A4%B0%E0%A4%AE%E0%A4%BE_%E0%A4%9C%E0%A4%BE%E0%A4%A8%E0%A5%8D%E0%A4%9B%E0%A5%8C_%E0%A4%AF%E0%A4%BE%E0%A4%A4%E0%A5%8D%E0%A4%B0%E0%A5%80</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Aja_Bara_hate_patukiko_kura_gara_Mayalu</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Timro_aakha_ma_aakha_judai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/%E0%A4%A8_%E0%A4%AC%E0%A4%BF%E0%A4%B0%E0%A5%8D%E0%A4%B8%E0%A5%87%E0%A4%81_%E0%A4%A4%E0%A4%BF%E0%A4%AE%E0%A5%80%E0%A4%B2%E0%A4%BE%E0%A4%88_%E0%A4%A8_%E0%A4%AA%E0%A4%BE%E0%A4%8F%E0%A4%81_%E0%A4%A4%E0%A4%BF%E0%A4%AE%E0%A5%80%E0%A4%B2%E0%A4%BE%E0%A4%88_-_Nabirse_Timilai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Kalo_Keshma_Relimai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Timilai_euta_kura_bhannu_thiyo_suttukai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Chanchale_chanchale_(Haribansha_Acharya)</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Timro_Phool_Butte_Choli</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Yeh_Bau_Kindeuna_Bhatbhate</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Gajalu</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Sarangi_-_%E0%A4%AF%E0%A4%BE%E0%A4%A6%E0%A4%AE%E0%A4%BE_%E0%A4%A4%E0%A4%BF%E0%A4%AE%E0%A5%8D%E0%A4%B0%E0%A5%8B_%E0%A4%AB%E0%A5%87%E0%A4%B0%E0%A4%BF_Sushant_KC</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/%E0%A4%A4%E0%A4%BF%E0%A4%AE%E0%A5%80%E0%A4%B2%E0%A4%BE%E0%A4%88_%E0%A4%A6%E0%A5%87%E0%A4%96%E0%A5%87%E0%A4%B0_%E0%A4%B9%E0%A4%BF%E0%A4%AE%E0%A4%BE%E0%A4%B2_%E0%A4%B9%E0%A4%BE%E0%A4%81%E0%A4%B8%E0%A5%87%E0%A4%95%E0%A5%8B</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Timile_bato_fereu_arey</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Dekhana_champa_sunana_champa</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Pagal_ma_Banna_sakxu_</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Dashain_aayo_-_Muglan</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Fulbutte_sari</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Galbandi</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Gala_pukka</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Parelima_Lukaai_Rakhana</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Chhori_bhanda_aama_taruni</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Euta_phool_ma_K_maagu</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Bottle_ko_Pani_le_</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Ghumi_Ghumi</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Parkhaima_bhijyo_sirani</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Ma_bachekai_timi_snga_Maya_launa_ho</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Mero_Dil_chha_Pokharama</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Dhokebaz_hau_timi</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Nogen_(Pramod_and_ruksana)</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Halla_chalecha</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Paisa</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Chari_ko_ghar_gudaima_bhaye</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Rato_Tika_nidharma</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Thamel_Bazar</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Rato_Ra_Chandra_surya</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Aama</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Piudina_bhanda_bhandai_pilayo_sathile_</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Phulai_phula_dinchau_ki</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Nabheti_Nabheti_-_%E0%A4%B2%E0%A4%97%E0%A4%BE%E0%A4%AF%E0%A5%8C_%E0%A4%AE%E0%A4%BE%E0%A4%AF%E0%A4%BE,_%E0%A4%B8%E0%A4%BE%E0%A4%9F%E0%A5%8D%E0%A4%AF%E0%A5%8C_%E0%A4%A8%E0%A4%BF_%E0%A4%AE%E0%A5%81%E0%A4%9F%E0%A5%81,_%E0%A4%A8%E0%A4%AD%E0%A5%87%E0%A4%9F%E0%A5%80,_%E0%A4%A8%E0%A4%AD%E0%A5%87%E0%A4%9F%E0%A5%80</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Gauthali_(Pahelo_Batti_Muni)</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Pakera_khako_fal_mitho</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Mohani_lagla_hai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Siri_ma_Siri_ni_kanxa</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Galti_hajar</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Bola_Maya</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/lyrics/Hamri_Aama</loc><changefreq>weekly</changefreq><priority>0.8</priority></url><url><loc>https://pandeykapil.com.np/contactus</loc><changefreq>monthly</changefreq><priority>0.5</priority></url></urlset>

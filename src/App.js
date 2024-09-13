@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet'; // Import Helmet for SEO
 import Navbar from './components/Navbar';
@@ -21,6 +21,25 @@ import Artistlist from './components/Artist/Artistlist';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Google Translate widget initialization
+  useEffect(() => {
+    const addTranslateScript = () => {
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      document.body.appendChild(script);
+    };
+
+    window.googleTranslateElementInit = function () {
+      new window.google.translate.TranslateElement(
+        { pageLanguage: 'ne' }, 
+        'google_translate_element'
+      );
+    };
+
+    addTranslateScript();
+  }, []);
+
   return (
     <>
       {/* General SEO for the entire app using Helmet */}
@@ -39,6 +58,7 @@ function App() {
       </Helmet>
 
       <Router>
+
         <Navbar />
 
         <Routes>

@@ -89,7 +89,10 @@ const HomePage = () => {
   };
 
   return (
+    
     <div className="homepage-container">
+            {/* Add BannerAd Component Between Sections */}
+            <BannerAd />
       <HeroSlider />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>

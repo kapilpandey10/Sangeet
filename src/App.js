@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet'; // Import Helmet for SEO
 import Navbar from './components/Navbar';
 import Footer from './components/footer/Footer';
@@ -20,6 +20,10 @@ import Artistlist from './components/Artist/Artistlist';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();  // Hook to get current route
+
+  // Function to check if the current route is part of the admin dashboard
+  const isAdminRoute = location.pathname.includes('/admin');
 
   // Google Translate widget initialization
   useEffect(() => {
@@ -128,6 +132,14 @@ function App() {
 
       <Router>
         <Navbar />
+
+        {/* Conditionally render ads only if not on admin page */}
+        {!isAdminRoute && (
+          <div>
+            {/* Your ad script goes here */}
+            <script src="https://monetag.com/path-to-your-ad-code.js"></script>
+          </div>
+        )}
 
         <Routes>
           {/* Admin login and dashboard */}

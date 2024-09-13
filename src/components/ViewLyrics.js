@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient'; // Import from the centralized supabaseClient file
 import { FaMusic } from 'react-icons/fa';
@@ -12,19 +12,16 @@ const ViewLyrics = () => {
   const [relatedLyrics, setRelatedLyrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const adRef = useRef(null);
 
-  // Replace underscores with spaces
   const formattedTitle = title.replace(/_/g, ' ');
 
   useEffect(() => {
     const fetchLyric = async () => {
       try {
-        // Fetch the lyric based on the title (case-insensitive query)
         const { data, error } = await supabase
           .from('lyrics')
           .select('*')
-          .ilike('title', formattedTitle) // Case-insensitive query for title
+          .ilike('title', formattedTitle)
           .single();
 
         if (error || !data) {
@@ -32,9 +29,8 @@ const ViewLyrics = () => {
         }
 
         setLyric(data);
-        fetchRelatedLyrics(data.artist); // Fetch related lyrics by the same artist
+        fetchRelatedLyrics(data.artist);
       } catch (error) {
-        console.error('Error fetching lyric:', error);
         setError("Failed to fetch lyric or lyric not approved.");
       } finally {
         setLoading(false);
@@ -46,36 +42,32 @@ const ViewLyrics = () => {
         const { data: artistLyrics, error } = await supabase
           .from('lyrics')
           .select('*')
-          .ilike('artist', artist) // Case-insensitive match for related lyrics
-          .neq('title', formattedTitle) // Exclude the current song
-          .limit(3); // Fetch up to 3 related lyrics by the same artist
-
-        if (error) {
-          throw error;
-        }
+          .ilike('artist', artist)
+          .neq('title', formattedTitle)
+          .limit(3);
 
         setRelatedLyrics(artistLyrics);
-      } catch (error) {
-        console.error('Error fetching related lyrics:', error);
+      } catch {
         setRelatedLyrics([]);
       }
     };
 
     fetchLyric();
-
-    // Dynamically add the banner ad script
-    const adScript = document.createElement('script');
-    adScript.type = 'text/javascript';
-    adScript.src = 'https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g';
-    adRef.current.appendChild(adScript);
-
-    // Cleanup function to remove script on component unmount
-    return () => {
-      if (adRef.current) {
-        adRef.current.innerHTML = ''; // Clear the ad script from the DOM
-      }
-    };
   }, [title]);
+
+  // Function to inject ads dynamically into the DOM
+  const injectAd = (scriptSrc) => {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = scriptSrc;
+    script.async = true;
+    document.body.appendChild(script);
+  };
+
+  // UseEffect to inject multiple ads at different points
+  useEffect(() => {
+    injectAd('https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g');
+  }, []);
 
   const extractYouTubeId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -85,9 +77,7 @@ const ViewLyrics = () => {
 
   const renderYouTubeEmbed = (videoUrl) => {
     const videoId = extractYouTubeId(videoUrl);
-    if (!videoId) {
-      return null;
-    }
+    if (!videoId) return null;
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
     return (
       <div className="music-video">
@@ -104,67 +94,60 @@ const ViewLyrics = () => {
     );
   };
 
-  if (loading) {
-    return <p>Loading the lyrics of {formattedTitle}...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
+  if (loading) return <p>Loading the lyrics of {formattedTitle}...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="view-lyrics-container">
-      {/* Display Banner Ad */}
-      <div ref={adRef} style={{ margin: '20px 0', textAlign: 'center' }}>
-        <noscript>
-          <a href="https://yllix.com/publishers/343571" target="_blank" rel="noopener noreferrer">
-            <img
-              src="//ylx-aff.advertica-cdn.com/pub/300x250.png"
-              style={{ border: 'none', margin: '0', padding: '0', verticalAlign: 'baseline' }}
-              alt="ylliX - Online Advertising Network"
-            />
-          </a>
-        </noscript>
-      </div>
-
+      {/* Helmet for SEO */}
       <Helmet>
         <title>{lyric ? `${lyric.title} Lyrics - ${lyric.artist}` : 'Lyrics'}</title>
         <meta
           name="description"
-          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}. Enjoy the lyrics of this amazing song and explore more music by ${lyric.artist}.` : 'Lyrics of popular songs.'}
-        />
-        <meta
-          name="keywords"
-          content={lyric ? `${lyric.title} lyrics, ${lyric.artist} song, viral song of ${lyric.title}, ${lyric.lyrics.slice(0, 10)}, lyrics, song lyrics, music` : 'song lyrics, music, popular songs'}
-        />
-        <meta
-          property="og:title"
-          content={lyric ? `${lyric.title} by ${lyric.artist} - Sangeet Central || Pandey Kapil` : 'Song Lyrics'}
-        />
-        <meta
-          property="og:description"
-          content={lyric ? `Check out the full lyrics of "${lyric.title}" by ${lyric.artist}.` : 'Explore our collection of song lyrics.'}
+          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}.` : 'Lyrics of popular songs.'}
         />
       </Helmet>
 
-      {lyric ? (
+      {lyric && (
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
-          <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p> {/* Display release year */}
-          <p><strong>Added By:</strong> {lyric.added_by}</p> {/* Display added_by */}
-          {lyric.status === 'approved' && <Verified />} {/* Display verified badge if approved */}
+          
+          {/* First Ad - Below Artist Name */}
+          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
+
+          <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p>
+          <p><strong>Added By:</strong> {lyric.added_by}</p>
+          
+          {/* Verified Sticker */}
+          {lyric.status === 'approved' && <Verified />}
+          
+          {/* Second Ad - Below Verified Sticker/Above the lyrics */}
+          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
+
           <pre className="lyrics-text">{lyric.lyrics}</pre>
+
+          {/* Third Ad - Middle of lyrics */}
+          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
+
+          {/* YouTube Video */}
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
 
-          {/* Display related lyrics (You May Also Like) */}
+          {/* Fourth Ad - Between Video and Lyrics */}
+          <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
+
+          {/* Related Lyrics */}
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">
               <h3>You May Also Like</h3>
+
+              {/* Fifth Ad - Before 'You May Also Like' */}
+              <div dangerouslySetInnerHTML={{__html: '<script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>'}}></div>
+
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (
                   <Link
-                    to={`/lyrics/${relatedLyric.title.replace(/\s+/g, '_')}`} // Update the related lyrics URL
+                    to={`/lyrics/${relatedLyric.title.replace(/\s+/g, '_')}`}
                     key={relatedLyric.id}
                     className="related-lyric-item"
                   >
@@ -181,8 +164,6 @@ const ViewLyrics = () => {
             </div>
           )}
         </>
-      ) : (
-        <p>Lyrics not found.</p>
       )}
     </div>
   );

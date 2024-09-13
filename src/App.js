@@ -1,22 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet'; // Import Helmet for SEO
 import Navbar from './components/Navbar';
 import Footer from './components/footer/Footer';
-import LyricsList from './components/LyricsList';
-import ContactUs from './components/ContactUs';
-import HomePage from './components/HomePage';
-import ViewLyrics from './components/ViewLyrics';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import PrivacyPolicy from './components/footer/PrivacyPolicy';
-import TermsAndService from './components/footer/TermsAndService';
-import SearchResults from './components/SearchResults';
-import AdminLogin from './components/Admin/AdminLogin';
-import BhajanHP from './components/Bhajan/bhajanHP';
-import ArtistBio from './components/Artist/ArtistBio';
-import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword';
-import Artistlist from './components/Artist/Artistlist';
+
+// Remove these as you're using lazy loading
+// import LyricsList from './components/LyricsList';
+// import ContactUs from './components/ContactUs';
+// import HomePage from './components/HomePage';
+// import ViewLyrics from './components/ViewLyrics';
+// import AdminDashboard from './components/Admin/AdminDashboard';
+// import PrivacyPolicy from './components/footer/PrivacyPolicy';
+// import TermsAndService from './components/footer/TermsAndService';
+// import SearchResults from './components/SearchResults';
+// import AdminLogin from './components/Admin/AdminLogin';
+// import BhajanHP from './components/Bhajan/bhajanHP';
+// import ArtistBio from './components/Artist/ArtistBio';
+// import ForgotPassword from './components/ForgotPassword';
+// import ResetPassword from './components/ResetPassword';
+// import Artistlist from './components/Artist/Artistlist';
+
+// Use lazy loading for components
+const LyricsList = React.lazy(() => import('./components/LyricsList'));
+const ContactUs = React.lazy(() => import('./components/ContactUs'));
+const HomePage = React.lazy(() => import('./components/HomePage'));
+const ViewLyrics = React.lazy(() => import('./components/ViewLyrics'));
+const AdminDashboard = React.lazy(() => import('./components/Admin/AdminDashboard'));
+const PrivacyPolicy = React.lazy(() => import('./components/footer/PrivacyPolicy'));
+const TermsAndService = React.lazy(() => import('./components/footer/TermsAndService'));
+const SearchResults = React.lazy(() => import('./components/SearchResults'));
+const AdminLogin = React.lazy(() => import('./components/Admin/AdminLogin'));
+const BhajanHP = React.lazy(() => import('./components/Bhajan/bhajanHP'));
+const ArtistBio = React.lazy(() => import('./components/Artist/ArtistBio'));
+const ForgotPassword = React.lazy(() => import('./components/ForgotPassword'));
+const ResetPassword = React.lazy(() => import('./components/ResetPassword'));
+const Artistlist = React.lazy(() => import('./components/Artist/Artistlist'));
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -90,43 +108,81 @@ function App() {
             ]
           })}
         </script>
+
+        {/* BreadcrumbList structured data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://pandeykapil.com.np/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Artist Bio",
+                "item": "https://pandeykapil.com.np/artistbio"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Lyrics List",
+                "item": "https://pandeykapil.com.np/lyrics-list"
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Contact Us",
+                "item": "https://pandeykapil.com.np/contactus"
+              }
+            ]
+          })}
+        </script>
       </Helmet>
 
       <Router>
         <Navbar />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            {/* Admin login and dashboard */}
+            <Route path="/admin-login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
+            <Route 
+              path="/admin/*" 
+              element={
+                isAuthenticated ? (
+                  <AdminDashboard />
+                ) : (
+                  <Navigate to="/admin-login" />  // Redirect to the login page if not authenticated
+                )
+              } 
+            />
+            
+            {/* Public routes */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/artistbio/:name" element={<ArtistBio />} />
+            <Route path="/lyrics/:title" element={<ViewLyrics />} />
+            <Route path="/lyrics-list" element={<LyricsList />} />
+            <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsAndService />} />
+            <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/search" element={<SearchResults />} />
+            <Route path="/bhajan" element={<BhajanHP />} />
+            <Route path="/Artistbio" element={<Artistlist />} />
 
-        <Routes>
-          {/* Admin login and dashboard */}
-          <Route path="/admin-login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
-          <Route 
-            path="/admin/*" 
-            element={
-              isAuthenticated ? (
-                <AdminDashboard />
-              ) : (
-                <Navigate to="/admin-login" />  // Redirect to the login page if not authenticated
-              )
-            } 
-          />
-          
-          {/* Public routes */}
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/artistbio/:name" element={<ArtistBio />} />
-          <Route path="/lyrics/:title" element={<ViewLyrics />} />
-          <Route path="/lyrics-list" element={<LyricsList />} />
-          <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsAndService />} />
-          <Route path="/contactus" element={<ContactUs />} />
-          <Route path="/search" element={<SearchResults />} />
-          <Route path="/bhajan" element={<BhajanHP />} />
-          <Route path="/Artistbio" element={<Artistlist />} />
-          
-          {/* Catch-all route to redirect to homepage */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+            {/* Multilanguage */}
+            <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
+            <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
 
+            {/* Catch-all route to redirect to homepage */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Suspense>
         <Footer />
       </Router>
     </>

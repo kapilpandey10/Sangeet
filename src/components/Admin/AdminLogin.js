@@ -26,68 +26,78 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setIsLoading(true);
     setError('');  // Reset the error message before login
 
-    const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    setIsLoading(false);
+      setIsLoading(false);
 
-    if (loginError) {
-      setError('Invalid login credentials. Please try again.');
-      await updateAdminStatus(email, 'out');  // Update status as 'out' on failed login
-      return;
+      if (loginError) {
+        setError('Invalid login credentials. Please try again.');
+        await updateAdminStatus(email, 'out');  // Update status as 'out' on failed login
+        return;
+      }
+
+      // Fetch user role from the admin table
+      const { data: adminData, error: adminError } = await supabase
+        .from('admin')
+        .select('role')
+        .ilike('email', sessionData.user.email)
+        .single();
+
+      if (adminError || !adminData) {
+        setError("Failed to fetch user role or user not found.");
+        await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
+        return;
+      }
+
+      if (adminData.role.toLowerCase() !== 'admin') {
+        setError("Access denied: You are not an admin.");
+        await supabase.auth.signOut();
+        await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
+        return;
+      }
+
+      // If login and role verification succeed
+      setIsAuthenticated(true);
+      setIsSuccess(true);
+      await updateAdminStatus(sessionData.user.email, 'in');  // Mark status as 'in'
+
+      // Save the session in localStorage if 'Remember Me' is checked
+      if (rememberMe) {
+        localStorage.setItem('isLoggedIn', 'true');
+      } else {
+        sessionStorage.setItem('isLoggedIn', 'true');
+      }
+
+      // Navigate to the admin dashboard after a short delay
+      setTimeout(() => {
+        navigate('/admin');  // Navigate to admin dashboard
+      }, 900);  // 0.9 seconds delay
+    } catch (error) {
+      console.error("Login error:", error);
+      setIsLoading(false);
+      setError("An unexpected error occurred. Please try again.");
     }
-
-    // Fetch user role from the admin table
-    const { data: adminData, error: adminError } = await supabase
-      .from('admin')
-      .select('role')
-      .ilike('email', sessionData.user.email)
-      .single();
-
-    if (adminError || !adminData) {
-      setError("Failed to fetch user role or user not found.");
-      await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
-      return;
-    }
-
-    if (adminData.role.toLowerCase() !== 'admin') {
-      setError("Access denied: You are not an admin.");
-      await supabase.auth.signOut();
-      await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
-      return;
-    }
-
-    // If login and role verification succeed
-    setIsAuthenticated(true);
-    setIsSuccess(true);
-    await updateAdminStatus(sessionData.user.email, 'in');  // Mark status as 'in'
-
-    // Save the session in localStorage if 'Remember Me' is checked
-    if (rememberMe) {
-      localStorage.setItem('isLoggedIn', 'true');
-    } else {
-      sessionStorage.setItem('isLoggedIn', 'true');
-    }
-
-    // Navigate to the admin dashboard after a short delay
-    setTimeout(() => {
-      navigate('/admin');  // Navigate to admin dashboard
-    }, 900);  // 0.9 seconds delay
   };
 
-  // Update admin status
+  // Update admin status in Supabase
   const updateAdminStatus = async (email, status) => {
-    const { error } = await supabase
-      .from('admin')
-      .update({ status })
-      .eq('email', email);
-  
-    if (error) {
-      console.error(`Failed to update status:`, error.message);
-    } else {
-      console.log(`Status updated successfully for ${email}`);
+    try {
+      const { error } = await supabase
+        .from('admin')
+        .update({ status })
+        .eq('email', email);
+
+      if (error) {
+        console.error(`Failed to update status:`, error.message);
+      } else {
+        console.log(`Status updated successfully for ${email}`);
+      }
+    } catch (error) {
+      console.error("Error updating admin status:", error);
     }
   };
 
@@ -100,16 +110,22 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
     setIsResetLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: process.env.REACT_APP_RESET_PASSWORD_URL || 'https://pandeykapil.com.np/reset-password',  // Adjust URL
-    });
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: process.env.REACT_APP_RESET_PASSWORD_URL || 'https://pandeykapil.com.np/reset-password',  // Adjust URL
+      });
 
-    setIsResetLoading(false);
+      setIsResetLoading(false);
 
-    if (error) {
-      setError("Failed to send password reset link. Please try again later.");
-    } else {
-      setError("If this email is registered, you will receive a reset link.");
+      if (error) {
+        setError("Failed to send password reset link. Please try again later.");
+      } else {
+        setError("If this email is registered, you will receive a reset link.");
+      }
+    } catch (error) {
+      console.error("Password reset error:", error);
+      setIsResetLoading(false);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 

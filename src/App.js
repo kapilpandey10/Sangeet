@@ -46,7 +46,7 @@ function App() {
       <Helmet>
         <title>Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists</title>
         <meta name="description" content="Explore Nepali music, songs, lyrics, and albums. Featured artists like Sushant KC, 1974 AD, Anju Panta, Narayan Gopal, Melina Rai, and more. Discover Nepali geet and bhajan lyrics." />
-        <meta name="keywords" content="Nepali music, Nepali songs, Nepali lyrics, Nepali artists, music library, Sangit, Sushant KC lyrics, 1974 AD lyrics, Anju Panta lyrics, Narayan Gopal lyrics, Melina Rai lyrics, Raju Lama lyrics, Pramod Kharel lyrics, Sadhana Sargam Nepali songs lyrics, Udit Narayan Nepali lyrics, Krishna Kafle lyrics, Nepali song lyrics, Nepali music lyrics, Nepali geet lyrics, Latest Nepali songs, Nepali lyrics collection, Nepali song lyrics by artist, Nepali bhajan lyrics, Nepali pop song lyrics, Nepali movie song lyrics, Old Nepali song lyrics, Lok geet lyrics, Nepali dohori lyrics, Classical Nepali song lyrics, Adhunik Nepali song lyrics, Folk song lyrics Nepal, Nepali geet lyrics" />
+        <meta name="keywords" content="Nepali music, Nepali songs, Nepali lyrics, Nepali artists, music library, Sangit, Sushant KC lyrics, 1974 AD lyrics, Anju Panta lyrics, Narayan Gopal lyrics, Melina Rai lyrics, Raju Lama lyrics, Pramod Kharel lyrics, Sadhana Sargam Nepali songs lyrics, Udit Narayan Nepali lyrics, Krishna Kafle lyrics, Nepali song lyrics, Nepali music lyrics, Nepali geet lyrics" />
         <meta property="og:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
         <meta property="og:description" content="Explore a vast collection of Nepali songs and lyrics, including works by Sushant KC, Anju Panta, Narayan Gopal, Melina Rai, and more." />
         <meta property="og:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
@@ -55,10 +55,44 @@ function App() {
         <meta name="twitter:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
         <meta name="twitter:description" content="Explore Nepali music, songs, lyrics, and albums from popular artists." />
         <meta name="twitter:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
+
+        {/* LocalBusiness structured data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Sangeet Lyrics Central",
+            "description": "A Nepali Music Digital Library to explore lyrics, songs, and albums.",
+            "url": "https://pandeykapil.com.np",
+            "telephone": "+977-9840172406",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+977-9840172406",
+              "contactType": "Customer Service",
+              "availableLanguage": ["English", "Nepali"]
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Kathmandu, Nepal",
+              "addressLocality": "Kathmandu",
+              "addressRegion": "Bagmati",
+              "postalCode": "44900",
+              "addressCountry": "NP"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": "27.72",
+              "longitude": "85.31"
+            },
+            "sameAs": [
+              "https://facebook.com/Burn2Vlog",
+              "https://youtube.com/c/borntovlog"
+            ]
+          })}
+        </script>
       </Helmet>
 
       <Router>
-
         <Navbar />
 
         <Routes>
@@ -76,10 +110,7 @@ function App() {
           />
           
           {/* Public routes */}
-          {/* Add route for forgot password */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
-
-          {/* Add route for resetting the password */}
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/artistbio/:name" element={<ArtistBio />} />

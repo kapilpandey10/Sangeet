@@ -97,7 +97,7 @@ const ViewLyrics = () => {
   };
 
   if (loading) {
-    return <p>Loading lyrics...</p>;
+    return <p>Loading the lyrics of {formattedTitle}...</p>;
   }
 
   if (error) {
@@ -147,6 +147,7 @@ const ViewLyrics = () => {
             })}
           </script>
         )}
+        
       </Helmet>
 
       {lyric ? (

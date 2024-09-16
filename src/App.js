@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom'; // Removed BrowserRouter to avoid conflict with Router in index.js
 import { Helmet } from 'react-helmet'; // Import Helmet for SEO
 import Navbar from './components/Navbar';
 import Footer from './components/footer/Footer';
@@ -18,136 +18,144 @@ import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 
+// Monetag script component for the homepage
+const MonetagAd = () => {
+  React.useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://aupoafto.com/400/8086963';
+    try {
+      (document.body || document.documentElement).appendChild(script);
+    } catch (e) {
+      console.error('Error appending Monetag script:', e);
+    }
+
+    // Cleanup the script on unmount
+    return () => {
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
+  return null; // No visual elements are returned, the script runs in the background
+};
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation(); // This is inside the Router context provided by index.js
+
+  // Show MonetagAd only on the homepage
+  const isHomePage = location.pathname === '/';
 
   return (
     <>
-      {/* General SEO for the entire app using Helmet */}
+      {/* SEO using Helmet */}
       <Helmet>
         <title>Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists</title>
-        <meta name="description" content="Explore Nepali music, songs, lyrics, and albums. Featured artists like Sushant KC, 1974 AD, Anju Panta, Narayan Gopal, Melina Rai, and more. Discover Nepali geet and bhajan lyrics." />
-        <meta name="keywords" content="Nepali music, Nepali songs, Nepali lyrics, Nepali artists, music library, Sangit, Sushant KC lyrics, 1974 AD lyrics, Anju Panta lyrics, Narayan Gopal lyrics, Melina Rai lyrics, Raju Lama lyrics, Pramod Kharel lyrics, Sadhana Sargam Nepali songs lyrics, Udit Narayan Nepali lyrics, Krishna Kafle lyrics, Nepali song lyrics, Nepali music lyrics, Nepali geet lyrics" />
+        <meta
+          name="description"
+          content="Explore Nepali music, songs, lyrics, and albums. Featured artists like Sushant KC, 1974 AD, Anju Panta, Narayan Gopal, Melina Rai, and more. Discover Nepali geet and bhajan lyrics."
+        />
+        <meta
+          name="keywords"
+          content="Nepali music, Nepali songs, Nepali lyrics, Nepali artists, music library, Sangit, Sushant KC lyrics, 1974 AD lyrics, Anju Panta lyrics, Narayan Gopal lyrics, Melina Rai lyrics, Raju Lama lyrics, Pramod Kharel lyrics, Sadhana Sargam Nepali songs lyrics, Udit Narayan Nepali lyrics, Krishna Kafle lyrics, Nepali song lyrics, Nepali music lyrics, Nepali geet lyrics"
+        />
         <meta property="og:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
-        <meta property="og:description" content="Explore a vast collection of Nepali songs and lyrics, including works by Sushant KC, Anju Panta, Narayan Gopal, Melina Rai, and more." />
+        <meta
+          property="og:description"
+          content="Explore a vast collection of Nepali songs and lyrics, including works by Sushant KC, Anju Panta, Narayan Gopal, Melina Rai, and more."
+        />
         <meta property="og:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
         <meta property="og:url" content="https://pandeykapil.com.np/" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
-        <meta name="twitter:description" content="Explore Nepali music, songs, lyrics, and albums from popular artists." />
+        <meta
+          name="twitter:description"
+          content="Explore Nepali music, songs, lyrics, and albums from popular artists."
+        />
         <meta name="twitter:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
 
-        {/* LocalBusiness structured data */}
+        {/* Structured data */}
         <script type="application/ld+json">
           {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": "Sangeet Lyrics Central",
-            "description": "A Nepali Music Digital Library to explore lyrics, songs, and albums.",
-            "url": "https://pandeykapil.com.np",
-            "telephone": "+977-9840172406",
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+977-9840172406",
-              "contactType": "Customer Service",
-              "availableLanguage": ["English", "Nepali"]
+            '@context': 'https://schema.org',
+            '@type': 'LocalBusiness',
+            name: 'Sangeet Lyrics Central',
+            description: 'A Nepali Music Digital Library to explore lyrics, songs, and albums.',
+            url: 'https://pandeykapil.com.np',
+            telephone: '+977-9840172406',
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: '+977-9840172406',
+              contactType: 'Customer Service',
+              availableLanguage: ['English', 'Nepali'],
             },
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "Kathmandu, Nepal",
-              "addressLocality": "Kathmandu",
-              "addressRegion": "Bagmati",
-              "postalCode": "44900",
-              "addressCountry": "NP"
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: 'Kathmandu, Nepal',
+              addressLocality: 'Kathmandu',
+              addressRegion: 'Bagmati',
+              postalCode: '44900',
+              addressCountry: 'NP',
             },
-            "geo": {
-              "@type": "GeoCoordinates",
-              "latitude": "27.72",
-              "longitude": "85.31"
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: '27.72',
+              longitude: '85.31',
             },
-            "sameAs": [
-              "https://facebook.com/Burn2Vlog",
-              "https://youtube.com/c/borntovlog"
-            ]
+            sameAs: ['https://facebook.com/Burn2Vlog', 'https://youtube.com/c/borntovlog'],
           })}
         </script>
 
         {/* BreadcrumbList structured data */}
         <script type="application/ld+json">
           {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://pandeykapil.com.np/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Artist Bio",
-                "item": "https://pandeykapil.com.np/artistbio"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": "Lyrics List",
-                "item": "https://pandeykapil.com.np/lyrics-list"
-              },
-              {
-                "@type": "ListItem",
-                "position": 4,
-                "name": "Contact Us",
-                "item": "https://pandeykapil.com.np/contactus"
-              }
-            ]
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://pandeykapil.com.np/' },
+              { '@type': 'ListItem', position: 2, name: 'Artist Bio', item: 'https://pandeykapil.com.np/artistbio' },
+              { '@type': 'ListItem', position: 3, name: 'Lyrics List', item: 'https://pandeykapil.com.np/lyrics-list' },
+              { '@type': 'ListItem', position: 4, name: 'Contact Us', item: 'https://pandeykapil.com.np/contactus' },
+            ],
           })}
         </script>
       </Helmet>
 
-      <Router>
-        <Navbar />
+      <Navbar />
+      {isHomePage && <MonetagAd />} {/* Monetag ad only on the homepage */}
 
-        <Routes>
-          {/* Admin login and dashboard */}
-          <Route path="/admin-login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
-          <Route 
-            path="/admin/*" 
-            element={
-              isAuthenticated ? (
-                <AdminDashboard />
-              ) : (
-                <Navigate to="/admin-login" />  // Redirect to the login page if not authenticated
-              )
-            } 
-          />
-          
-          {/* Public routes */}
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/artistbio/:name" element={<ArtistBio />} />
-          <Route path="/lyrics/:title" element={<ViewLyrics />} />
-          <Route path="/lyrics-list" element={<LyricsList />} />
-          <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsAndService />} />
-          <Route path="/contactus" element={<ContactUs />} />
-          <Route path="/search" element={<SearchResults />} />
-          <Route path="/bhajan" element={<BhajanHP />} />
-          <Route path="/Artistbio" element={<Artistlist />} />
-          
-          {/* Multilanguage */}
-          <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
-          <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
+      <Routes>
+        {/* Admin login and dashboard */}
+        <Route path="/admin-login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
+        <Route
+          path="/admin/*"
+          element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/admin-login" />} // Admin protected routes
+        />
 
-          {/* Catch-all route to redirect to homepage */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        {/* Public routes */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/artistbio/:name" element={<ArtistBio />} />
+        <Route path="/lyrics/:title" element={<ViewLyrics />} />
+        <Route path="/lyrics-list" element={<LyricsList />} />
+        <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsAndService />} />
+        <Route path="/contactus" element={<ContactUs />} />
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="/bhajan" element={<BhajanHP />} />
+        <Route path="/Artistbio" element={<Artistlist />} />
 
-        <Footer />
-      </Router>
+        {/* Multilanguage lyrics routes */}
+        <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
+        <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
+
+        {/* Catch-all route */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+
+      <Footer />
     </>
   );
 }

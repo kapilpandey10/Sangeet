@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons
 import './style/AdminLogin.css';  // Import the updated CSS
+
+const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 const AdminLogin = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState('');
@@ -14,9 +16,23 @@ const AdminLogin = ({ setIsAuthenticated }) => {
   const [forgotPassword, setForgotPassword] = useState(false);  // State to toggle forgot password mode
   const [isResetLoading, setIsResetLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false); // Remember Me checkbox state
+  const [inactivityTimeout, setInactivityTimeout] = useState(null); // For tracking inactivity
   const navigate = useNavigate();  // Hook to navigate to different routes
 
-  // Handle admin login
+  // Reset inactivity timer and log out after 10 minutes of inactivity
+  const resetInactivityTimeout = useCallback(() => {
+    if (inactivityTimeout) {
+      clearTimeout(inactivityTimeout); // Clear previous timeout
+    }
+
+    const timeoutId = setTimeout(() => {
+      handleLogout(); // Log out after 10 minutes of inactivity
+    }, AUTO_LOGOUT_TIME);
+
+    setInactivityTimeout(timeoutId);
+  }, [inactivityTimeout]);
+
+  // Handle login process
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Please provide both email and password.");
@@ -35,7 +51,6 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
     if (loginError) {
       setError('Invalid login credentials. Please try again.');
-      await updateAdminStatus(email, 'out');  // Update status as 'out' on failed login
       return;
     }
 
@@ -48,21 +63,18 @@ const AdminLogin = ({ setIsAuthenticated }) => {
 
     if (adminError || !adminData) {
       setError("Failed to fetch user role or user not found.");
-      await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
       return;
     }
 
     if (adminData.role.toLowerCase() !== 'admin') {
       setError("Access denied: You are not an admin.");
       await supabase.auth.signOut();
-      await updateAdminStatus(sessionData.user.email, 'out');  // Update status as 'out'
       return;
     }
 
     // If login and role verification succeed
     setIsAuthenticated(true);
     setIsSuccess(true);
-    await updateAdminStatus(sessionData.user.email, 'in');  // Mark status as 'in'
 
     // Save the session in localStorage if 'Remember Me' is checked
     if (rememberMe) {
@@ -75,20 +87,17 @@ const AdminLogin = ({ setIsAuthenticated }) => {
     setTimeout(() => {
       navigate('/admin');  // Navigate to admin dashboard
     }, 900);  // 0.9 seconds delay
+
+    resetInactivityTimeout(); // Start the inactivity timeout after successful login
   };
 
-  // Update admin status
-  const updateAdminStatus = async (email, status) => {
-    const { error } = await supabase
-      .from('admin')
-      .update({ status })
-      .eq('email', email);
-  
-    if (error) {
-      console.error(`Failed to update status:`, error.message);
-    } else {
-      console.log(`Status updated successfully for ${email}`);
-    }
+  // Logout the user after inactivity or manually
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    sessionStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('isLoggedIn');
+    setIsAuthenticated(false);
+    navigate('/admin-login');  // Redirect to the login page
   };
 
   // Handle password reset
@@ -112,6 +121,30 @@ const AdminLogin = ({ setIsAuthenticated }) => {
       setError("If this email is registered, you will receive a reset link.");
     }
   };
+
+  // Check if the user is already logged in when the component mounts
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('isLoggedIn');
+    if (loggedInStatus === 'true') {
+      setIsAuthenticated(true);  // User is already logged in
+      navigate('/admin');  // Redirect to admin dashboard
+    }
+  }, [navigate, setIsAuthenticated]);
+
+  // Listen for user activity to reset the timeout
+  useEffect(() => {
+    const events = ['click', 'mousemove', 'keypress'];
+
+    const handleUserActivity = () => {
+      resetInactivityTimeout(); // Reset the inactivity timer on user activity
+    };
+
+    events.forEach((event) => window.addEventListener(event, handleUserActivity));
+
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, handleUserActivity));
+    };
+  }, [resetInactivityTimeout]);
 
   return (
     <div className="login-container">

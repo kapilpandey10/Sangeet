@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom'; // Removed BrowserRouter to avoid conflict with Router in index.js
-import { Helmet } from 'react-helmet'; // Import Helmet for SEO
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom'; 
+import { Helmet } from 'react-helmet'; 
 import Navbar from './components/Navbar';
 import Footer from './components/footer/Footer';
 import LyricsList from './components/LyricsList';
@@ -17,6 +17,7 @@ import ArtistBio from './components/Artist/ArtistBio';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
+import BackToTop from './components/BackToTop'; // Make sure the path is correct
 
 // Monetag script component
 const MonetagAd = () => {
@@ -29,7 +30,6 @@ const MonetagAd = () => {
       console.error('Error appending Monetag script:', e);
     }
 
-    // Cleanup the script on unmount
     return () => {
       if (script && script.parentNode) {
         script.parentNode.removeChild(script);
@@ -37,12 +37,12 @@ const MonetagAd = () => {
     };
   }, []);
 
-  return null; // No visual elements are returned, the script runs in the background
+  return null;
 };
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const location = useLocation(); // This is inside the Router context provided by index.js
+  const location = useLocation(); 
 
   // Check if the current route is an admin route
   const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/admin-login';
@@ -124,8 +124,9 @@ function App() {
 
       <Navbar />
       {!isAdminRoute && <MonetagAd />} {/* Monetag ad on all non-admin pages */}
-
+      <BackToTop />
       <Routes>
+       
         {/* Admin login and dashboard */}
         <Route path="/admin-login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
         <Route
@@ -146,15 +147,15 @@ function App() {
         <Route path="/search" element={<SearchResults />} />
         <Route path="/bhajan" element={<BhajanHP />} />
         <Route path="/Artistbio" element={<Artistlist />} />
-
         {/* Multilanguage lyrics routes */}
         <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
         <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" />} />
+        
       </Routes>
-
+    
       <Footer />
     </>
   );

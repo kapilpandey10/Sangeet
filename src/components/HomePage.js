@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { supabase } from '../supabaseClient'; // Import from the centralized supabaseClient file
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
 import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
+import BannerAd from './BannerAd'; // Import the BannerAd component
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
@@ -13,7 +14,8 @@ const HomePage = () => {
 
   useEffect(() => {
     document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
-    // Add meta tags for SEO
+
+    // SEO Meta tags
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';
     metaDescription.content =
@@ -23,7 +25,7 @@ const HomePage = () => {
     const metaKeywords = document.createElement('meta');
     metaKeywords.name = 'keywords';
     metaKeywords.content =
-      'Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali music lyrics, Sangeet lyrics Central, Nepali git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali  songs lyrics, PandeyKapil, Nepali songwriters, Balen song, Nepali Music industry, Music Nepal';
+      'Nepali music, Nepali lyrics, git sangit, Nepali song lyrics, Pandey Kapil, Nepali songwriters, Nepali Music industry';
     document.head.appendChild(metaKeywords);
 
     const metaRobots = document.createElement('meta');
@@ -31,7 +33,6 @@ const HomePage = () => {
     metaRobots.content = 'index, follow';
     document.head.appendChild(metaRobots);
 
-    // Cleanup meta tags on component unmount
     return () => {
       document.head.removeChild(metaDescription);
       document.head.removeChild(metaKeywords);
@@ -39,7 +40,6 @@ const HomePage = () => {
     };
   }, []);
 
-  // Fetch lyrics and featured artist
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
@@ -88,9 +88,7 @@ const HomePage = () => {
   };
 
   return (
-    
     <div className="homepage-container">
-            {/* Add BannerAd Component Between Sections */}
       <HeroSlider />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
@@ -121,9 +119,10 @@ const HomePage = () => {
             </div>
           </section>
 
-          <HomeYTVideo />
+          {/* Add the BannerAd between sections */}
+          <BannerAd />
 
-          {/* Add BannerAd Component Between Sections */}
+          <HomeYTVideo />
 
           {featuredArtist ? (
             <div className="featured-artist-section">

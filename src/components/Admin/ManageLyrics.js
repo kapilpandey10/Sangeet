@@ -148,6 +148,9 @@ const ManageLyrics = () => {
         className="search-box"
       />
 
+      {/* Show the number of filtered results */}
+      <p>{filteredLyrics.length} {filteredLyrics.length === 1 ? 'result' : 'results'} found</p>
+
       {/* Display success/error messages */}
       {message && (
         <div className={`message ${messageType}`}>
@@ -272,7 +275,9 @@ const ManageLyrics = () => {
           onConfirm={handleConfirmDelete}  // Function to execute if the user confirms deletion
           onCancel={handleCancelDelete}  // Function to execute if the user cancels deletion
           message="Are you sure you want to delete this lyric?" // Custom message in the modal 
-          /> )}
-           </div> ); };
+        /> )}
+    </div> 
+  );
+};
 
 export default ManageLyrics;

@@ -18,7 +18,7 @@ import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 
-// Monetag script component for the homepage
+// Monetag script component
 const MonetagAd = () => {
   React.useEffect(() => {
     const script = document.createElement('script');
@@ -44,8 +44,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation(); // This is inside the Router context provided by index.js
 
-  // Show MonetagAd only on the homepage
-  const isHomePage = location.pathname === '/';
+  // Check if the current route is an admin route
+  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/admin-login';
 
   return (
     <>
@@ -123,7 +123,7 @@ function App() {
       </Helmet>
 
       <Navbar />
-      {isHomePage && <MonetagAd />} {/* Monetag ad only on the homepage */}
+      {!isAdminRoute && <MonetagAd />} {/* Monetag ad on all non-admin pages */}
 
       <Routes>
         {/* Admin login and dashboard */}

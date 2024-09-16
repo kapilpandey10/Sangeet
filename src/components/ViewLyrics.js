@@ -8,13 +8,12 @@ import '../style/ViewLyrics.css';
 
 const ViewLyrics = () => {
   const { title } = useParams(); // Get title from URL
-  const formattedTitle = title.replace(/_/g, ' ');
-
   const [lyric, setLyric] = useState(null);
   const [relatedLyrics, setRelatedLyrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const formattedTitle = title.replace(/_/g, ' ');
 
   useEffect(() => {
     const fetchLyric = async () => {

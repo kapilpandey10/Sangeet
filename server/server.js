@@ -1,13 +1,12 @@
 const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
 const { SitemapStream, streamToPromise } = require('sitemap');
 const fs = require('fs');
+const path = require('path'); // Add this
+const { supabase } = require('./supabaseClient');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // Function to generate the sitemap
 async function generateSitemap() {
@@ -49,8 +48,13 @@ app.get('/sitemap.xml', async (req, res) => {
     res.header('Content-Type', 'application/xml');
     res.send(sitemap);
 
-    // Save the sitemap to the public folder as well
-    fs.writeFileSync('public/sitemap.xml', sitemap);
+    // Use absolute path for saving the file in the public folder
+    const sitemapPath = path.resolve(__dirname, '..', 'public', 'sitemap.xml');
+    console.log(`Attempting to save sitemap to: ${sitemapPath}`); // More verbose log
+    fs.writeFileSync(sitemapPath, sitemap);
+    fs.writeFileSync(sitemapPath, 'test content'); // Write a simple test file instead of the sitemap content
+    console.log(`Test file written to: ${sitemapPath}`);
+        
   } catch (error) {
     console.error('Error generating sitemap:', error);
     res.status(500).send('Error generating sitemap.');

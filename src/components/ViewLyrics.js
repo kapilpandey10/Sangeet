@@ -86,42 +86,34 @@ const ViewLyrics = () => {
   if (error) return <p>{error}</p>;
 
   // Define your ad scripts here
-  const adScript = `
-    <script type="text/javascript" src="https://udbaa.com/bnr.php?section=General&pub=343571&format=300x250&ga=g"></script>
-  `;
-  const noscriptTag = `
-    <a href="https://yllix.com/publishers/343571" target="_blank">
-      <img src="//ylx-aff.advertica-cdn.com/pub/300x250.png" style="border:none;margin:0;padding:0;vertical-align:baseline;" alt="ylliX - Online Advertising Network" />
-    </a>
-  `;
-
-<script type="application/ld+json">
-{`
-  {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    "name": "${lyric.title}",
-    "artist": "${lyric.artist}",
-    "datePublished": "${lyric.published_date}",
-    "text": "${lyric.lyrics}",
-    "url": "${window.location.href}",
-    "inLanguage": "en",
-    "genre": "Music",
-    "mainEntityOfPage": "${window.location.href}"
-  }
-`}
-</script>
+ 
 
   return (
     <div className="view-lyrics-container">
       {/* Helmet for SEO */}
       <Helmet>
-        <title>{lyric ? `${lyric.title} Lyrics - ${lyric.artist}` : 'Lyrics'}</title>
-        <meta
-          name="description"
-          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}.` : 'Lyrics of popular songs.'}
-        />
-      </Helmet>
+  <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central`  : 'Lyrics'}</title>
+  <meta
+    name="description"
+    content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}.` : 'Lyrics of popular songs.'}
+  />
+  <script type="application/ld+json">
+    {`
+      {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "name": "${lyric ? lyric.title : ''}",
+        "artist": "${lyric ? lyric.artist : ''}",
+        "datePublished": "${lyric ? lyric.published_date : ''}",
+        "text": "${lyric ? lyric.lyrics : ''}",
+        "url": "${window.location.href}",
+        "inLanguage": "en",
+        "genre": "Music",
+        "mainEntityOfPage": "${window.location.href}"
+      }
+    `}
+  </script>
+</Helmet>
 
       {lyric && (
         <>

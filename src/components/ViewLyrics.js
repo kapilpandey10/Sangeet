@@ -16,6 +16,8 @@ const ViewLyrics = () => {
   const formattedTitle = title.replace(/_/g, ' ');
 
   useEffect(() => {
+
+    
     const fetchLyric = async () => {
       try {
         const { data, error } = await supabase
@@ -92,6 +94,23 @@ const ViewLyrics = () => {
       <img src="//ylx-aff.advertica-cdn.com/pub/300x250.png" style="border:none;margin:0;padding:0;vertical-align:baseline;" alt="ylliX - Online Advertising Network" />
     </a>
   `;
+
+<script type="application/ld+json">
+{`
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "${lyric.title}",
+    "artist": "${lyric.artist}",
+    "datePublished": "${lyric.published_date}",
+    "text": "${lyric.lyrics}",
+    "url": "${window.location.href}",
+    "inLanguage": "en",
+    "genre": "Music",
+    "mainEntityOfPage": "${window.location.href}"
+  }
+`}
+</script>
 
   return (
     <div className="view-lyrics-container">

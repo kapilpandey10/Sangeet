@@ -4,8 +4,9 @@ import '../style/BackToTop.css';
 const BackToTop = () => {
   const [show, setShow] = useState(false);
 
+  // Log scroll events to check if it's firing
   const checkScrollTop = () => {
-    console.log("Window Scroll Y:", window.pageYOffset); // Check if scroll event is firing
+    console.log("Window Scroll Y:", window.pageYOffset);  // For debugging
     if (window.pageYOffset > 400) {
       setShow(true);
     } else {
@@ -14,14 +15,14 @@ const BackToTop = () => {
   };
 
   const scrollTop = () => {
-    console.log("Scroll to top triggered"); // Confirm the button is clicked
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
-    console.log("BackToTop component mounted"); // Check if component mounts
+    console.log("Adding scroll event listener");
     window.addEventListener('scroll', checkScrollTop);
     return () => {
+      console.log("Removing scroll event listener");
       window.removeEventListener('scroll', checkScrollTop);
     };
   }, []);

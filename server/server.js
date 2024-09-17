@@ -49,7 +49,7 @@ app.get('/sitemap.xml', async (req, res) => {
     res.send(sitemap);
 
     // Use absolute path for saving the file in the public folder
-    const sitemapPath = path.resolve(__dirname, '..', 'public', 'sitemap.xml');
+    const sitemapPath = path.resolve(__dirname, 'sitemap.xml');
     console.log(`Attempting to save sitemap to: ${sitemapPath}`); // More verbose log
     fs.writeFileSync(sitemapPath, sitemap);
     fs.writeFileSync(sitemapPath, 'test content'); // Write a simple test file instead of the sitemap content

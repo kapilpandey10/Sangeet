@@ -16,8 +16,6 @@ const ViewLyrics = () => {
   const formattedTitle = title.replace(/_/g, ' ');
 
   useEffect(() => {
-
-    
     const fetchLyric = async () => {
       try {
         const { data, error } = await supabase
@@ -85,67 +83,56 @@ const ViewLyrics = () => {
   if (loading) return <p>Loading the lyrics of {formattedTitle}...</p>;
   if (error) return <p>{error}</p>;
 
-  // Define your ad scripts here
- 
-
   return (
     <div className="view-lyrics-container">
       {/* Helmet for SEO */}
       <Helmet>
-  <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central`  : 'Lyrics'}</title>
-  <meta
-    name="description"
-    content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist}.` : 'Lyrics of popular songs.'}
-  />
-  <script type="application/ld+json">
-    {`
-      {
-        "@context": "https://schema.org",
-        "@type": "CreativeWork",
-        "name": "${lyric ? lyric.title : ''}",
-        "artist": "${lyric ? lyric.artist : ''}",
-        "datePublished": "${lyric ? lyric.published_date : ''}",
-        "text": "${lyric ? lyric.lyrics : ''}",
-        "url": "${window.location.href}",
-        "inLanguage": "en",
-        "genre": "Music",
-        "mainEntityOfPage": "${window.location.href}"
-      }
-    `}
-  </script>
-</Helmet>
+        <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central` : 'Lyrics'}</title>
+        <meta
+          name="description"
+          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central. Explore more songs by ${lyric.artist}.` : 'Lyrics of popular songs.'}
+        />
+        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${title}`} />
+
+        {/* Structured Data for SEO */}
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "CreativeWork",
+              "name": "${lyric ? lyric.title : ''}",
+              "artist": "${lyric ? lyric.artist : ''}",
+              "datePublished": "${lyric ? lyric.published_date : ''}",
+              "text": "${lyric ? lyric.lyrics.replace(/\n/g, ' ') : ''}",
+              "url": "${window.location.href}",
+              "inLanguage": "en",
+              "genre": "Music",
+              "mainEntityOfPage": "${window.location.href}"
+            }
+          `}
+        </script>
+      </Helmet>
 
       {lyric && (
         <>
           <h1>{lyric.title}</h1>
           <p><strong>Artist:</strong> {lyric.artist}</p>
-          
-          {/* First Ad - Below Artist Name */}
 
           <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p>
           <p><strong>Added By:</strong> {lyric.added_by}</p>
-          
+
           {/* Verified Sticker */}
           {lyric.status === 'approved' && <Verified />}
-          
-          {/* Second Ad - Below Verified Sticker/Above the lyrics */}
 
           <pre className="lyrics-text">{lyric.lyrics}</pre>
 
-          {/* Third Ad - Middle of lyrics */}
-
-          {/* YouTube Video */}
+          {/* YouTube Video Embed */}
           {lyric.music_url && renderYouTubeEmbed(lyric.music_url)}
-
-          {/* Fourth Ad - Between Video and Lyrics */}
 
           {/* Related Lyrics */}
           {relatedLyrics.length > 0 && (
             <div className="related-lyrics">
               <h3>You May Also Like</h3>
-
-              {/* Fifth Ad - Before 'You May Also Like' */}
-
               <div className="related-lyrics-grid">
                 {relatedLyrics.map((relatedLyric) => (
                   <Link

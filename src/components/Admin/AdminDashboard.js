@@ -126,9 +126,7 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('messages')}>
                   <FaEnvelope className="icon" /> Messages
                 </li>
-                <li onClick={() => setActiveTab('admin-management')}>
-                  <FaUsersCog className="icon" /> Admin Management
-                </li> {/* New admin management option */}
+                {/* New admin management option */}
                 <li onClick={handleLogout}>
                   <FaSignOutAlt className="icon" /> Logout
                 </li>

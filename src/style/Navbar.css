@@ -7,6 +7,7 @@
 body {
   overflow-x: hidden;
 }
+
 /* Navbar container */
 .navbar {
   background-color: #34495e; /* Dark background */
@@ -50,8 +51,6 @@ body {
   transition: opacity 0.4s ease; /* For fading out the logo */
 }
 
-
-
 .navbar-logo {
   width: 35px; /* Small responsive size for logo */
   height: 35px;
@@ -75,7 +74,6 @@ body {
   justify-content: space-around;
   flex-grow: 1;
   margin: 0 50px;
- 
 }
 
 .nav-links a {
@@ -96,21 +94,20 @@ body {
   border-bottom: 2px solid #1abc9c; /* Active link styling */
 }
 
-/* Search and Login Container */
-.search-login-container {
-  
+/* Search Container */
+.search-container {
+  display: flex;
   align-items: center;
   color: white;
 }
 
 /* Search Bar */
 .search-bar {
- 
+  display: flex;
   align-items: center;
   background-color: transparent;
   border-radius: 5px;
   border: none;
-  width: 100%; 
   color: #fff;
 }
 
@@ -143,61 +140,11 @@ body {
   font-size: 1.1rem;
 }
 
-
-
-/* Login Button */
-/* Container for the login button on the right */
-.login-button {
-  display: flex;
-  align-items: center; /* Centers the icon and text vertically */
-  justify-content: center; /* Centers the content horizontally inside its container */
-  position: absolute;
-  right: 25px; /* Aligns to the right of the navbar */
-  top: 50%; /* Positions the element halfway from the top */
-  transform: translateY(-50%); /* Moves the element up by 50% of its own height, making it vertically centered */
-  height: 100%; /* Ensures it takes up the full height of the navbar */
-}
-
-/* Styling for the link */
-.login-button a,logout-btn {
-  color: #fff;
-  font-size: 1rem;
-  text-decoration: none;
-  padding: 5px 15px;
-  font-weight: 500;
-  display: flex;
-  align-items: center; /* Centers the text and icon together */
-}
-
-/* Hover effect */
-.login-button a:hover, .logout-btn:hover {
-  color: #1abc9c;
-}
-.logout-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-}
-.hidden {
-  display: none;
-}
-/* Styling for the login icon */
-.login-icon {
-  margin-right: 8px; /* Adds some space between the icon and text */
-}
-
 /* Adjustments for mobile */
-
-
-/* Mobile Styling for Screens Smaller than 450px */
+/* Mobile Styling for Screens Smaller than 750px */
 @media (max-width: 750px) {
   .navbar-container {
     justify-content: space-between;
-  }
-
-  .search-bar {
-    opacity: 0;
   }
 
   /* Hamburger Menu displayed on mobile */
@@ -212,8 +159,6 @@ body {
     transform: translateX(-50%);
     text-align: center;
   }
-
- 
 
   /* Hide nav links initially on mobile */
   .nav-menu {
@@ -244,28 +189,6 @@ body {
     padding: 15px 0;
     width: 100%;
     text-align: center;
-  }
-
- }
-
-/* For Larger Screens (More than 450px) */
-@media (min-width: 451px) {
-  .search-login-container {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Small gap between search and login button */
-  }
-
-  .logo-brand-container {
-    opacity: 1; /* No effect on larger screens */
-  }
-
-  .search-bar {
-    width: 100%; /* Maintain a larger size for search bar */
-  }
-
-  .search-bar.active {
-    width: 200px; /* Expand more on larger screens */
   }
 }
 

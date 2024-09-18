@@ -3,8 +3,6 @@ import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/LyricsList.css';
 
-// Access environment variables
-
 const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,7 +13,6 @@ const LyricsList = () => {
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
 
   useEffect(() => {
-    // Set the page title and meta tags for SEO
     const dynamicTitle = searchQuery
       ? `Search Results for "${searchQuery}" | Sangeet Lyrics Central`
       : 'Nepali Song Lyrics Library | Sangeet Lyrics Central';
@@ -37,7 +34,6 @@ const LyricsList = () => {
     document.head.appendChild(metaKeywords);
 
     return () => {
-      // Cleanup meta tags when component unmounts
       document.head.removeChild(metaDescription);
       document.head.removeChild(metaKeywords);
     };
@@ -97,7 +93,7 @@ const LyricsList = () => {
         (lyric.lyrics_writer && lyric.lyrics_writer.toLowerCase().includes(searchQuery)) ||
         lyric.lyrics.toLowerCase().includes(searchQuery); // Search within lyrics
 
-      const matchesLanguage = languageFilter === 'all' || lyric.language === languageFilter;
+      const matchesLanguage = languageFilter === 'all' || lyric.language.trim().toLowerCase() === languageFilter.toLowerCase();
       const matchesYear = yearFilter === 'all' || new Date(lyric.published_date).getFullYear().toString() === yearFilter;
 
       return matchesSearchQuery && matchesLanguage && matchesYear;
@@ -111,7 +107,7 @@ const LyricsList = () => {
   }, {});
 
   // Get unique languages and years for filtering
-  const uniqueLanguages = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => lyric.language))];
+  const uniqueLanguages = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => lyric.language.trim().toLowerCase()))]; // Trim and lowercase to avoid duplicates
   const uniqueYears = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => new Date(lyric.published_date).getFullYear()))];
 
   // "Load More" functionality to display more artists
@@ -147,7 +143,7 @@ const LyricsList = () => {
         <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
           <option value="all">All Languages</option>
           {uniqueLanguages.map((lang, idx) => (
-            <option key={idx} value={lang}>{lang}</option>
+            <option key={idx} value={lang}>{lang.charAt(0).toUpperCase() + lang.slice(1)}</option> // Capitalize first letter
           ))}
         </select>
 
@@ -170,8 +166,8 @@ const LyricsList = () => {
                   <h3>{lyric.title}</h3>
                   <p className="small-text">Published: {new Date(lyric.published_date).getFullYear()}</p>
                   <Link to={`/lyrics/${generateSlug(lyric.title)}`} className="view-lyrics-button">
-  View Lyrics
-</Link>
+                    View Lyrics
+                  </Link>
                 </div>
               </div>
             ))}

@@ -19,33 +19,12 @@ import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 import BackToTop from './components/BackToTop'; // Make sure the path is correct
 
-// Monetag script component
-const MonetagAd = () => {
-  React.useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://aupoafto.com/400/8086963';
-    try {
-      (document.body || document.documentElement).appendChild(script);
-    } catch (e) {
-      console.error('Error appending Monetag script:', e);
-    }
-
-    return () => {
-      if (script && script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, []);
-
-  return null;
-};
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation(); 
 
   // Check if the current route is an admin route
-  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/admin-login';
+  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/1234/secret';
 
   return (
     <>
@@ -123,15 +102,14 @@ function App() {
       </Helmet>
 
       <Navbar />
-      {!isAdminRoute && <MonetagAd />} {/* Monetag ad on all non-admin pages */}
       <BackToTop />
       <Routes>
        
         {/* Admin login and dashboard */}
-        <Route path="/admin-login" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
+        <Route path="/1234/secret" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
         <Route
           path="/admin/*"
-          element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/admin-login" />} // Admin protected routes
+          element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} // Admin protected routes
         />
 
         {/* Public routes */}

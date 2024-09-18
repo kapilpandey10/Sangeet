@@ -6,7 +6,6 @@ import ManageLyrics from './ManageLyrics';
 import Messages from '../Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
-import Admin from './Admin'; // Import Admin management component
 import './style/AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -80,8 +79,7 @@ const AdminDashboard = () => {
         return <AddLyrics />;
       case 'add-artist':
         return <AddArtist />;
-      case 'admin-management': // Add this new case for admin management
-        return <Admin />; // Render the Admin component here
+   
       default:
         return <ManageLyrics />;
     }

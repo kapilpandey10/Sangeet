@@ -96,21 +96,20 @@ const ViewLyrics = () => {
 
         {/* Structured Data for SEO */}
         <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "CreativeWork",
-              "name": "${lyric ? lyric.title : ''}",
-              "artist": "${lyric ? lyric.artist : ''}",
-              "datePublished": "${lyric ? lyric.published_date : ''}",
-              "text": "${lyric ? lyric.lyrics.replace(/\n/g, ' ') : ''}",
-              "url": "${window.location.href}",
-              "inLanguage": "en",
-              "genre": "Music",
-              "mainEntityOfPage": "${window.location.href}"
-            }
-          `}
-        </script>
+  {JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": lyric?.title || "Lyrics",
+    "artist": lyric?.artist || "Unknown Artist",
+    "datePublished": lyric?.published_date || "Unknown Date",
+    "text": lyric?.lyrics ? lyric.lyrics.replace(/\n/g, ' ') : "",
+    "url": window.location.href,
+    "inLanguage": "en",
+    "genre": "Music",
+    "mainEntityOfPage": window.location.href
+  })}
+</script>
+
       </Helmet>
 
       {lyric && (

@@ -33,7 +33,7 @@ const RequestResetCode = () => {
           placeholder="Enter your email"
           required
         />
-        <button type="submit">Send Reset Code</button>
+        <button type="submit">Send Reset Link</button>
       </form>
       {status && <p>{status}</p>}
     </div>

@@ -21,7 +21,7 @@ const RequestResetCode = () => {
     setLoading(false); // Stop loading
 
     if (error) {
-      setStatus('Failed to send reset email with link. Please try again later.');
+      setStatus('Failed to send reset code. Please try again later.');
     } else {
       setStatus('A reset link has been sent to your email.');
     }

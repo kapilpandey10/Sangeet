@@ -63,3 +63,35 @@
     text-align: center;
   }
   
+  /* Team Section */
+.team-section {
+  margin-top: 40px;
+}
+
+.team-members {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.team-member {
+  text-align: center;
+  margin: 20px;
+}
+
+.team-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.team-member h3 {
+  margin-top: 15px;
+  font-size: 1.2rem;
+}
+
+.team-member p {
+  color: #555;
+  font-size: 1rem;
+}

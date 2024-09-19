@@ -6,6 +6,8 @@ import ManageLyrics from './ManageLyrics';
 import Messages from '../Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
+import AddNews from './AddNews'; // Import AddNews.js component
+
 import './style/AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -79,6 +81,8 @@ const AdminDashboard = () => {
         return <AddLyrics />;
       case 'add-artist':
         return <AddArtist />;
+      case 'add-news':
+        return <AddNews />;
    
       default:
         return <ManageLyrics />;
@@ -109,9 +113,13 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('manage')}>
                   <FaEdit className="icon" /> Manage Lyrics
                 </li>
+                <li onClick={() => setActiveTab('add-news')}>
+                  <FaUserPlus className="icon" /> Add News
+                </li>
                 <li onClick={() => setActiveTab('add-artist')}>
                   <FaUserPlus className="icon" /> Add Artist
                 </li>
+
               </ul>
             )}
           </li>

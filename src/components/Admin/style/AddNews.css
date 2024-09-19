@@ -1,0 +1,96 @@
+/* AddNews Component Specific Styles */
+.add-news-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .add-news-container h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .add-news-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add-news-container label {
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 10px;
+  }
+  
+  .add-news-container input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .add-news-container .ql-container {
+    height: 300px; /* Adjust the height of the rich text editor */
+  }
+  
+  .add-news-container .ql-editor {
+    font-size: 1em;
+    line-height: 1.6;
+  }
+  
+  .add-news-container button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .add-news-container button:hover {
+    background-color: #2980b9;
+  }
+  
+  .add-news-container .error {
+    color: red;
+  }
+  
+  .add-news-container .success {
+    color: green;
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .add-news-container {
+      padding: 10px;
+    }
+  
+    .add-news-container h1 {
+      font-size: 1.5em;
+    }
+  
+    .add-news-container label {
+      font-size: 1em;
+    }
+  
+    .add-news-container input[type="text"] {
+      padding: 8px;
+      font-size: 0.9em;
+    }
+  
+    .add-news-container .ql-container {
+      height: 200px;
+    }
+  
+    .add-news-container button {
+      font-size: 1em;
+    }
+  }
+  

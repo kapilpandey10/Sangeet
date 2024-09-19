@@ -15,13 +15,14 @@ const RequestResetCode = () => {
 
     // Send reset email with token to user's email
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: null, // No redirect; handle manually in the reset flow
+      // Set the `redirectTo` parameter to your reset password page URL
+      redirectTo: 'https://your-domain.com/reset-password', // Replace with your actual URL
     });
 
     setLoading(false); // Stop loading
 
     if (error) {
-      setStatus('Failed to send reset code. Please try again later.');
+      setStatus('Failed to send reset link. Please try again later.');
     } else {
       setStatus('A reset link has been sent to your email.');
     }

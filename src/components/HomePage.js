@@ -6,6 +6,7 @@ import HomeYTVideo from './homeytvideo';
 import FeaturedArtistCard from './FeaturedArtistCard';
 import HeroSlider from './HeroSlider';
 
+
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
   const [featuredArtist, setFeaturedArtist] = useState(null);
@@ -121,7 +122,6 @@ const HomePage = () => {
           </section>
 
           <HomeYTVideo />
-
 
           {featuredArtist ? (
             <div className="featured-artist-section">

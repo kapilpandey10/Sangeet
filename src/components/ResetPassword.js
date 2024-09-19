@@ -7,7 +7,6 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [status, setStatus] = useState('');
-  const [resetToken, setResetToken] = useState(null); // Store token here, but don't display it
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -16,7 +15,8 @@ const ResetPassword = () => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('access_token');
     if (token) {
-      setResetToken(token); // Set token from URL in the state
+      // Supabase automatically takes care of the token internally
+      supabase.auth.setSession(token); // Set the token in Supabase's session
     } else {
       setStatus('Invalid or missing reset token.');
     }
@@ -25,7 +25,7 @@ const ResetPassword = () => {
   const handlePasswordReset = async (e) => {
     e.preventDefault();
 
-    if (!resetToken || !newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword) {
       setStatus('Please provide and confirm your new password.');
       return;
     }
@@ -37,10 +37,9 @@ const ResetPassword = () => {
 
     setLoading(true);
 
-    // Use the token from the URL to update the user's password
+    // Use the token that was set in Supabase's session to update the user's password
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
-      access_token: resetToken, // Automatically uses token from URL
     });
 
     setLoading(false);

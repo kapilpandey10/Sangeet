@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'; // Import from the centralized sup
 import { FaMusic } from 'react-icons/fa';
 import { Helmet } from 'react-helmet'; // Import React Helmet
 import Verified from './verified';
+import FloatingModal from './FloatingModal';
 import '../style/ViewLyrics.css';
 
 const ViewLyrics = () => {
@@ -119,7 +120,7 @@ const ViewLyrics = () => {
 
           <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p>
           <p><strong>Added By:</strong> {lyric.added_by}</p>
-
+          <FloatingModal /> {/* Modal will appear automatically */}
           {/* Verified Sticker */}
           {lyric.status === 'approved' && <Verified />}
 

@@ -1,46 +1,52 @@
 // File: src/components/ResetPassword.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient'; // Import your Supabase client
+import { useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
-  const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [status, setStatus] = useState('');
+  const [resetToken, setResetToken] = useState(null);
+  const navigate = useNavigate();
+
+  // Extract the token from the URL when the user visits the page
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('access_token');
+    if (token) {
+      setResetToken(token);
+    } else {
+      setStatus('Invalid or missing reset token.');
+    }
+  }, []);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
 
     if (!resetToken || !newPassword) {
-      setStatus('Please provide both the reset code and a new password.');
+      setStatus('Please provide a new password.');
       return;
     }
 
-    // Use the reset token (code) to update the user's password
+    // Use the token from the URL to update the user's password
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
-      access_token: resetToken, // The reset token (code) from the email
+      access_token: resetToken, // Automatically uses token from URL
     });
 
     if (error) {
-      setStatus('Failed to reset password. Please try again.');
+      setStatus('Failed to reset password: ' + error.message);
     } else {
       setStatus('Password reset successfully! You can now log in.');
+      navigate('/login'); // Redirect to login page after successful reset
     }
   };
 
   return (
     <div>
       <h1>Reset Password</h1>
+      {status && <p>{status}</p>}
       <form onSubmit={handlePasswordReset}>
-        <label>Reset Code:</label>
-        <input
-          type="text"
-          value={resetToken}
-          onChange={(e) => setResetToken(e.target.value)}
-          placeholder="Enter the reset code"
-          required
-        />
-
         <label>New Password:</label>
         <input
           type="password"
@@ -49,10 +55,8 @@ const ResetPassword = () => {
           placeholder="Enter your new password"
           required
         />
-
         <button type="submit">Reset Password</button>
       </form>
-      {status && <p>{status}</p>}
     </div>
   );
 };

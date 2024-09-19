@@ -14,7 +14,7 @@ import SearchResults from './components/SearchResults';
 import AdminLogin from './components/Admin/AdminLogin';
 import BhajanHP from './components/Bhajan/bhajanHP';
 import ArtistBio from './components/Artist/ArtistBio';
-import ForgotPassword from './components/ForgotPassword';
+import RequestResetCode from './components/ RequestResetCode';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 import BackToTop from './components/BackToTop'; // Make sure the path is correct
@@ -113,7 +113,7 @@ function App() {
         />
 
         {/* Public routes */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/request-reset-code" element={<RequestResetCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/artistbio/:name" element={<ArtistBio />} />

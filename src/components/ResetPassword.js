@@ -1,63 +1,58 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { useNavigate, useLocation } from 'react-router-dom'; // For navigation and getting query params
+// File: src/components/ResetPassword.js
+import React, { useState } from 'react';
+import { supabase } from '../supabaseClient'; // Import your Supabase client
 
 const ResetPassword = () => {
+  const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [status, setStatus] = useState('');
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('access_token'); // Supabase uses 'access_token' as the reset token
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
 
-    if (!token) {
-      setError('Invalid or missing reset token.');
-    }
-  }, [location.search]);
-
-  const handlePasswordReset = async () => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('access_token');
-
-    if (!token) {
-      setError('Invalid or missing reset token.');
+    if (!resetToken || !newPassword) {
+      setStatus('Please provide both the reset code and a new password.');
       return;
     }
 
-    const { error: resetError } = await supabase.auth.updateUser({
-      access_token: token,  // Use the token to reset the password
+    // Use the reset token (code) to update the user's password
+    const { error } = await supabase.auth.updateUser({
       password: newPassword,
+      access_token: resetToken, // The reset token (code) from the email
     });
 
-    if (resetError) {
-      setError(resetError.message);
+    if (error) {
+      setStatus('Failed to reset password. Please try again.');
     } else {
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/login'); // Redirect to login after success
-      }, 2000);
+      setStatus('Password reset successfully! You can now log in.');
     }
   };
 
   return (
     <div>
-      {error && <p>{error}</p>}
-      {success ? (
-        <p>Password reset successful. Redirecting to login...</p>
-      ) : (
-        <div>
-          <input
-            type="password"
-            placeholder="New password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <button onClick={handlePasswordReset}>Reset Password</button>
-        </div>
-      )}
+      <h1>Reset Password</h1>
+      <form onSubmit={handlePasswordReset}>
+        <label>Reset Code:</label>
+        <input
+          type="text"
+          value={resetToken}
+          onChange={(e) => setResetToken(e.target.value)}
+          placeholder="Enter the reset code"
+          required
+        />
+
+        <label>New Password:</label>
+        <input
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="Enter your new password"
+          required
+        />
+
+        <button type="submit">Reset Password</button>
+      </form>
+      {status && <p>{status}</p>}
     </div>
   );
 };

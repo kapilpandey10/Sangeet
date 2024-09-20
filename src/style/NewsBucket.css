@@ -8,7 +8,7 @@
   /* Style for the news grid */
   .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
   }
   
@@ -18,27 +18,44 @@
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    text-align: center;
+    display: flex;
     transition: transform 0.3s ease;
+    flex-direction: row; /* Ensure cover photo and content are side-by-side */
   }
   
   .news-card:hover {
     transform: scale(1.05);
   }
   
+  /* Content container inside each news card */
+  .news-card-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+  
   /* Cover image for the news */
   .news-cover-image {
-    width: 100%;
-    height: 180px;
+    width: 120px; /* Set a fixed width for the image */
+    height: 100px;
     object-fit: cover;
-    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    flex-shrink: 0;
+  }
+  
+  /* Details container for title and read more */
+  .news-details {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
   }
   
   /* Title styling */
-  .news-card h2 {
-    font-size: 18px;
+  .news-details h2 {
+    font-size: 16px;
     font-weight: bold;
-    padding: 10px;
     margin: 0;
     color: #333;
     white-space: nowrap;
@@ -48,18 +65,31 @@
   
   /* Read more link */
   .read-more {
-    display: block;
-    padding: 10px;
+    margin-top: auto;
+    padding: 8px;
     text-align: center;
     background-color: #007bff;
     color: white;
     text-decoration: none;
     transition: background-color 0.3s ease;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-radius: 4px;
   }
   
   .read-more:hover {
     background-color: #0056b3;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .news-card {
+      flex-direction: column; /* Stack the image and content vertically on smaller screens */
+    }
+  
+    .news-cover-image {
+      width: 100%;
+      height: 150px; /* Adjust height for mobile */
+      border-right: none;
+      border-bottom: 1px solid #ddd;
+    }
   }
   

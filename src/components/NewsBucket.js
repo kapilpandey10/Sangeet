@@ -12,7 +12,7 @@ const NewsBucket = () => {
     const fetchNews = async () => {
       const { data, error } = await supabase
         .from('news') // Your 'news' table
-        .select('id, title, cover_photo, created_at') // Only fetch the necessary fields
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -45,21 +45,25 @@ const NewsBucket = () => {
       <div className="news-grid">
         {news.map((item) => (
           <div key={item.id} className="news-card">
-            {/* Cover Photo */}
-            <img
-              src={item.cover_photo}
-              alt={item.title}
-              className="news-cover-image"
-            />
-            {/* News Title */}
-            <h2>{item.title}</h2>
-            {/* Updated Link to reflect new URL structure */}
-            <Link
-              to={`/news/${item.id}/${generateSlug(item.title)}`}
-              className="read-more"
-            >
-              Read More
-            </Link>
+            {/* Cover photo on the left */}
+            <div className="news-card-content">
+              <img
+                src={item.cover_photo}
+                alt="Cover"
+                className="news-cover-image"
+              />
+              {/* Title on the right */}
+              <div className="news-details">
+                <h2>{item.title}</h2>
+                {/* Link to read more */}
+                <Link
+                  to={`/news/${item.id}/${generateSlug(item.title)}`}
+                  className="read-more"
+                >
+                  Read More
+                </Link>
+              </div>
+            </div>
           </div>
         ))}
       </div>

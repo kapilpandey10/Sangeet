@@ -10,7 +10,6 @@ const AddNews = () => {
   const [title, setTitle] = useState('');
   const [newsBody, setNewsBody] = useState(''); // Rich text content
   const [addedBy, setAddedBy] = useState('Admin'); // Default author name
-  const [coverPhoto, setCoverPhoto] = useState(''); // For storing cover photo as Base64 string
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -24,24 +23,12 @@ const AddNews = () => {
     }
   }, [navigate]);
 
-  // Function to convert image to Base64 string
-  const handleCoverPhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverPhoto(reader.result); // Set the Base64 string to state
-      };
-      reader.readAsDataURL(file); // Convert the image to Base64
-    }
-  };
-
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !newsBody || !coverPhoto || !addedBy) {
-      setStatus('Please fill in all fields and select a cover photo.');
+    if (!title || !newsBody || !addedBy) {
+      setStatus('Please fill in all fields.');
       return;
     }
 
@@ -55,7 +42,6 @@ const AddNews = () => {
           {
             title,
             news_content: newsBody, // Rich text content
-            cover_photo: coverPhoto, // Base64-encoded cover photo
             added_by: addedBy, // The author/admin who added the news
             created_at: new Date(), // Automatically set timestamp
           },
@@ -67,7 +53,6 @@ const AddNews = () => {
       setStatus('News added successfully!');
       setTitle('');
       setNewsBody('');
-      setCoverPhoto('');
     } catch (error) {
       console.error('Error adding news:', error.message);
       setStatus('Error adding news. Please try again.');
@@ -122,22 +107,6 @@ const AddNews = () => {
           className="input-large"
           required
         />
-
-        {/* Cover Photo Upload */}
-        <label>Cover Photo:</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleCoverPhotoChange}
-          required
-        />
-        {coverPhoto && (
-          <img
-            src={coverPhoto}
-            alt="Cover Preview"
-            style={{ width: '100%', marginTop: '10px' }}
-          />
-        )}
 
         {/* Submit Button */}
         <button type="submit" disabled={loading}>

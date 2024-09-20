@@ -27,6 +27,13 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
 
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={newsItem.title} />
+    <meta property="og:description" content={newsItem.news_content.substring(0, 160)} />
+    <meta property="og:image" content={newsItem.cover_photo} /> {/* Make sure cover_photo has a public URL */}
+    <meta property="og:url" content={`https://pandeykapil.com.np/news/${id}`} />
+    <meta property="og:site_name" content="My News Site" />
+
     <!-- Structured Data for MusicGroup -->
     <script type="application/ld+json">
     {

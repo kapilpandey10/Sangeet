@@ -1,95 +1,112 @@
-/* Style for the news container */
+/* General container for the news */
 .news-container {
     width: 90%;
     margin: 0 auto;
     padding: 20px;
   }
   
-  /* Style for the news grid */
+  /* Grid layout for the news cards */
   .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
   }
   
-  /* Style for each news card */
+  /* Styling for individual news cards */
   .news-card {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    text-align: center;
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     transition: transform 0.3s ease;
-    flex-direction: row; /* Ensure cover photo and content are side-by-side */
   }
   
   .news-card:hover {
     transform: scale(1.05);
   }
   
-  /* Content container inside each news card */
-  .news-card-content {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-  }
-  
-  /* Cover image for the news */
+  /* Cover image */
   .news-cover-image {
-    width: 120px; /* Set a fixed width for the image */
-    height: 100px;
+    width: 100%;
+    height: 180px;
     object-fit: cover;
-    border-right: 1px solid #ddd;
-    flex-shrink: 0;
+    border-bottom: 1px solid #ddd;
   }
   
-  /* Details container for title and read more */
-  .news-details {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-grow: 1;
-  }
-  
-  /* Title styling */
-  .news-details h2 {
-    font-size: 16px;
+  /* News title */
+  .news-title {
+    font-size: 18px;
     font-weight: bold;
+    padding: 10px;
     margin: 0;
     color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   
-  /* Read more link */
+  /* News excerpt (truncated content) */
+  .news-excerpt {
+    font-size: 14px;
+    padding: 10px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  /* Styling the read-more button and centering it */
   .read-more {
-    margin-top: auto;
-    padding: 8px;
-    text-align: center;
+    display: inline-block;
+    padding: 10px 20px;
     background-color: #007bff;
     color: white;
     text-decoration: none;
-    transition: background-color 0.3s ease;
-    border-radius: 4px;
+    border-radius: 5px;
+    margin: 0 auto;
+    text-align: center;
   }
   
   .read-more:hover {
     background-color: #0056b3;
   }
   
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .news-card {
-      flex-direction: column; /* Stack the image and content vertically on smaller screens */
-    }
+  /* Featured news specific styling */
+  .featured-news-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
   
-    .news-cover-image {
-      width: 100%;
-      height: 150px; /* Adjust height for mobile */
-      border-right: none;
-      border-bottom: 1px solid #ddd;
-    }
+  .featured-cover-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 20px;
+  }
+  
+  .featured-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .featured-excerpt {
+    font-size: 16px;
+    padding: 10px;
+  }
+  
+  .read-more-featured {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .read-more-featured:hover {
+    background-color: #0056b3;
   }
   

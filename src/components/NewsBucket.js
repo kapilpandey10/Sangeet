@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient'; // Supabase client
 import { Link } from 'react-router-dom';
-import '../style/NewsBucket.css'; // Custom CSS
+import '../style/NewsBucket.css'; // Import custom CSS for responsive design
 
 const NewsBucket = () => {
   const [news, setNews] = useState([]);
@@ -41,28 +41,57 @@ const NewsBucket = () => {
 
   return (
     <div className="news-container">
-      <h1>Latest News</h1>
-      <div className="news-grid">
-        {news.map((item) => (
-          <div key={item.id} className="news-card">
-            {/* Cover photo on the left */}
-            <div className="news-card-content">
-              <img
-                src={item.cover_photo}
-                alt="Cover"
-                className="news-cover-image"
+      <h1 className="page-title">Latest News</h1>
+      <div className="featured-news">
+        {/* Display the latest/featured news larger */}
+        {news[0] && (
+          <div className="featured-news-item">
+            <img
+              src={news[0].cover_photo}
+              alt="Cover"
+              className="featured-cover-image"
+            />
+            <div className="featured-news-content">
+              <h2 className="featured-title">{news[0].title}</h2>
+              <div
+                className="featured-excerpt"
+                dangerouslySetInnerHTML={{
+                  __html: `${news[0].news_content.slice(0, 150)}...`,
+                }}
               />
-              {/* Title on the right */}
-              <div className="news-details">
-                <h2>{item.title}</h2>
-                {/* Link to read more */}
-                <Link
-                  to={`/news/${item.id}/${generateSlug(item.title)}`}
-                  className="read-more"
-                >
-                  Read More
-                </Link>
-              </div>
+              <Link
+                to={`/news/${news[0].id}/${generateSlug(news[0].title)}`}
+                className="read-more-featured"
+              >
+                Read More
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="news-grid">
+        {news.slice(1).map((item) => (
+          <div key={item.id} className="news-card">
+            <img
+              src={item.cover_photo}
+              alt="Cover"
+              className="news-cover-image"
+            />
+            <div className="news-card-content">
+              <h2 className="news-title">{item.title}</h2>
+              <div
+                className="news-excerpt"
+                dangerouslySetInnerHTML={{
+                  __html: `${item.news_content.slice(0, 100)}...`,
+                }}
+              />
+              <Link
+                to={`/news/${item.id}/${generateSlug(item.title)}`}
+                className="read-more"
+              >
+                Read More
+              </Link>
             </div>
           </div>
         ))}

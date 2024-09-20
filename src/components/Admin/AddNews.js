@@ -109,8 +109,8 @@ const AddNews = () => {
         />
 
         {/* Submit Button */}
-        <button type="submit" disabled={loading}>
-          {loading ? 'Submitting...' : 'Submit News'}
+        <button type="Publish Now" disabled={loading}>
+          {loading ? 'Publish now...' : 'Published'}
         </button>
       </form>
     </div>

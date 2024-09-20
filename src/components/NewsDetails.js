@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient'; // Supabase client
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import '../style/NewsDetails.css'; // Import custom CSS for responsive design
+
 
 const NewsDetails = () => {
   const { id } = useParams(); // Get the news ID from the URL

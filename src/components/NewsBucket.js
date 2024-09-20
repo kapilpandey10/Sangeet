@@ -49,53 +49,57 @@ const NewsBucket = () => {
   return (
     <div className="news-container">
       <h1 className="page-title">Latest News</h1>
-      <div className="featured-news">
-        {/* Display the latest/featured news larger */}
-        {news[0] && (
-          <div className="featured-news-item">
-            <img
-              src={extractFirstImage(news[0].news_content) || news[0].cover_photo} // Use extracted image or fallback to cover_photo
-              alt="Cover"
-              className="featured-cover-image"
-            />
-            <div className="featured-news-content">
-              <h2 className="featured-title">{news[0].title}</h2>
-              <p className="featured-excerpt">
-                {news[0].news_content.replace(/<\/?[^>]+(>|$)/g, '').slice(0, 150)}... {/* Strip HTML tags */}
-              </p>
-              <Link
-                to={`/news/${news[0].id}/${generateSlug(news[0].title)}`}
-                className="read-more-featured"
-              >
-                Read More
-              </Link>
+      <div className="news-layout">
+        <div className="featured-news">
+          {/* Display the latest/featured news larger */}
+          {news[0] && (
+            <div className="featured-news-item">
+              <img
+                src={extractFirstImage(news[0].news_content) || 'default_image_url'}
+                alt="Cover"
+                className="featured-cover-image"
+              />
+              <div className="featured-news-content">
+                <h2 className="featured-title">{news[0].title}</h2>
+                <p className="featured-excerpt">
+                  {news[0].news_content.replace(/<\/?[^>]+(>|$)/g, '').slice(0, 150)}... {/* Strip HTML tags */}
+                </p>
+                <Link
+                  to={`/news/${news[0].id}/${generateSlug(news[0].title)}`}
+                  className="read-more-featured"
+                >
+                  Read More
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      <div className="news-grid">
-        {news.slice(1).map((item) => (
-          <div key={item.id} className="news-card">
-            <img
-              src={extractFirstImage(item.news_content) || item.cover_photo} // Extract first image or use cover_photo
-              alt="Cover"
-              className="news-cover-image"
-            />
-            <div className="news-card-content">
-              <h2 className="news-title">{item.title}</h2>
-              <p className="news-excerpt">
-                {item.news_content.replace(/<\/?[^>]+(>|$)/g, '').slice(0, 100)}... {/* Strip HTML tags */}
-              </p>
-              <Link
-                to={`/news/${item.id}/${generateSlug(item.title)}`}
-                className="read-more"
-              >
-                Read More
-              </Link>
+        <div className="news-list">
+          {news.slice(1).map((item) => (
+            <div key={item.id} className="news-card">
+              <div className="news-card-item">
+                <img
+                  src={extractFirstImage(item.news_content) || 'default_image_url'}
+                  alt="Cover"
+                  className="news-cover-image"
+                />
+                <div className="news-card-content">
+                  <h2 className="news-title">{item.title}</h2>
+                  <p className="news-excerpt">
+                    {item.news_content.replace(/<\/?[^>]+(>|$)/g, '').slice(0, 100)}... {/* Strip HTML tags */}
+                  </p>
+                  <Link
+                    to={`/news/${item.id}/${generateSlug(item.title)}`}
+                    className="read-more"
+                  >
+                    Read More
+                  </Link>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

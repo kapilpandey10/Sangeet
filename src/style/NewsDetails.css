@@ -1,67 +1,94 @@
+/* News Details Container */
 .news-details-container {
-    max-width: 800px;
+    width: 90%;
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .news-title {
-    font-size: 2em;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  
-  .news-meta {
-    font-size: 0.9em;
-    color: #777;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .news-content {
-    font-size: 1.1em;
+    font-family: Arial, sans-serif;
     line-height: 1.6;
-    color: #333;
+    background-color: #f9f9f9;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden; /* Ensure no content overflows */
+    word-wrap: break-word; /* Handle long words */
   }
   
-  .news-content p {
+  /* Title Styling */
+  .news-details-container h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
     margin-bottom: 10px;
+    text-align: center;
   }
   
-  .news-content h2, .news-content h3 {
-    margin-top: 20px;
-    font-weight: bold;
+  /* Author and Date Information */
+  .news-details-container p {
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 20px;
   }
   
-  .news-content ul, .news-content ol {
-    margin-left: 20px;
+  /* News Content */
+  .news-details-container .news-content {
+    font-size: 1.1rem;
+    color: #333;
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    word-wrap: break-word;
+    overflow: hidden; /* Ensure content stays within bounds */
   }
   
-  .news-content img {
+  /* Make images in content responsive */
+  .news-details-container .news-content img {
     max-width: 100%;
     height: auto;
-    margin: 20px 0;
+    display: block;
+    margin: 20px auto;
+    border-radius: 5px;
+    object-fit: contain; /* Ensure images scale proportionally */
   }
   
-  @media (max-width: 768px) {
+  /* Ensure embedded elements (like videos, if any) are responsive */
+  .news-details-container .news-content iframe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+  }
+  
+  /* Tablet Styling */
+  @media (min-width: 768px) {
     .news-details-container {
-      padding: 10px;
+      width: 80%;
+      padding: 40px;
     }
   
-    .news-title {
-      font-size: 1.5em;
+    .news-details-container h1 {
+      font-size: 2.8rem;
     }
   
-    .news-meta {
-      font-size: 0.8em;
+    .news-details-container .news-content {
+      font-size: 1.2rem;
+    }
+  }
+  
+  /* Desktop Styling */
+  @media (min-width: 1024px) {
+    .news-details-container {
+      width: 70%;
     }
   
-    .news-content {
-      font-size: 1em;
+    .news-details-container h1 {
+      font-size: 3rem;
+    }
+  
+    .news-details-container p {
+      font-size: 1.2rem;
+    }
+  
+    .news-details-container .news-content {
+      font-size: 1.3rem;
     }
   }
   

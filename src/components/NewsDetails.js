@@ -63,7 +63,7 @@ const NewsDetails = () => {
             />
             <meta
               property="og:url"
-              content={`https://yourdomain.com/news/${newsItem.id}`}
+              content={`https://pandeykapil.com.np/news/${newsItem.id}`}
             />
             <meta property="og:type" content="article" />
           </Helmet>

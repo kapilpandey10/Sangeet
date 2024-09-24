@@ -18,9 +18,7 @@ import RequestResetCode from './components/ RequestResetCode';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 import BackToTop from './components/BackToTop'; // Make sure the path is correct
-import AddNews from './components/Admin/AddNews'; // Import the AddNews component
-import NewsBucket from './components/NewsBucket'; // Import the NewsBucket component
-import NewsDetails from './components/NewsDetails';
+
 import FtAnthem from './components/FtAnthem'; // Import the component
 
 
@@ -134,9 +132,6 @@ function App() {
         {/* Multilanguage lyrics routes */}
         <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
         <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
-        <Route path="/add-news" element={<AddNews />} /> {/* Route for adding news */}
-          <Route path="/news" element={<NewsBucket />} /> {/* Route for displaying news */}
-          <Route path="/news/:id/:slug" element={<NewsDetails />} />
 
       
         {/* Catch-all route */}

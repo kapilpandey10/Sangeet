@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
-import { FaCaretDown, FaCheckCircle, FaEdit, FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt, FaUsersCog } from 'react-icons/fa'; // Import the admin icon
+import { FaCaretDown, FaCheckCircle, FaEdit, FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper } from 'react-icons/fa'; // Add FaNewspaper for news
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from '../Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
-import AddNews from './AddNews'; // Import AddNews.js component
 
 import './style/AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +16,7 @@ const AdminDashboard = () => {
   const [session, setSession] = useState(null);
   const [manageDropdownOpen, setManageDropdownOpen] = useState(false); // Manage dropdown
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false); // Account dropdown
+  const [newsDropdownOpen, setNewsDropdownOpen] = useState(false); // News dropdown
   const dropdownRef = useRef(); // Ref for detecting click outside dropdowns
   const navigate = useNavigate();
 
@@ -46,11 +46,20 @@ const AdminDashboard = () => {
   const toggleManageDropdown = () => {
     setManageDropdownOpen(!manageDropdownOpen);
     setAccountDropdownOpen(false); // Close the other dropdown
+    setNewsDropdownOpen(false); // Close news dropdown if open
   };
 
   // Toggle the account dropdown
   const toggleAccountDropdown = () => {
     setAccountDropdownOpen(!accountDropdownOpen);
+    setManageDropdownOpen(false); // Close the other dropdown
+    setNewsDropdownOpen(false); // Close news dropdown if open
+  };
+
+  // Toggle the news dropdown
+  const toggleNewsDropdown = () => {
+    setNewsDropdownOpen(!newsDropdownOpen);
+    setAccountDropdownOpen(false); // Close the other dropdown
     setManageDropdownOpen(false); // Close the other dropdown
   };
 
@@ -59,6 +68,7 @@ const AdminDashboard = () => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setManageDropdownOpen(false);
       setAccountDropdownOpen(false);
+      setNewsDropdownOpen(false);
     }
   };
 
@@ -81,9 +91,7 @@ const AdminDashboard = () => {
         return <AddLyrics />;
       case 'add-artist':
         return <AddArtist />;
-      case 'add-news':
-        return <AddNews />;
-   
+        // Correctly switch to AddNews component
       default:
         return <ManageLyrics />;
     }
@@ -100,7 +108,7 @@ const AdminDashboard = () => {
           {/* Manage Dropdown */}
           <li className="dropdown">
             <span onClick={toggleManageDropdown}>
-              Manage <FaCaretDown className="caret-icon" />
+              Music <FaCaretDown className="caret-icon" />
             </span>
             {manageDropdownOpen && (
               <ul className="dropdown-menu">
@@ -113,13 +121,9 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('manage')}>
                   <FaEdit className="icon" /> Manage Lyrics
                 </li>
-                <li onClick={() => setActiveTab('add-news')}>
-                  <FaUserPlus className="icon" /> Add News
-                </li>
                 <li onClick={() => setActiveTab('add-artist')}>
                   <FaUserPlus className="icon" /> Add Artist
                 </li>
-
               </ul>
             )}
           </li>
@@ -134,13 +138,15 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('messages')}>
                   <FaEnvelope className="icon" /> Messages
                 </li>
-                {/* New admin management option */}
                 <li onClick={handleLogout}>
                   <FaSignOutAlt className="icon" /> Logout
                 </li>
               </ul>
             )}
           </li>
+
+          {/* News & Media Dropdown */}
+         
         </ul>
       </nav>
 

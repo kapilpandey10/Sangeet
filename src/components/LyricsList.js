@@ -1,44 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
-import '../style/LyricsList.css';
+import '../style/LyricsList.css'; // Your CSS file for styling
 
 const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [languageFilter, setLanguageFilter] = useState('all');
-  const [decadeFilter, setDecadeFilter] = useState('all'); // Decade filter
+  const [yearFilter, setYearFilter] = useState('all'); // For year filter
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
 
-  useEffect(() => {
-    const dynamicTitle = searchQuery
-      ? `Search Results for "${searchQuery}" | Sangeet Lyrics Central`
-      : 'Nepali Song Lyrics Library | Sangeet Lyrics Central';
-
-    const dynamicDescription = searchQuery
-      ? `Search results for "${searchQuery}" in Nepali songs. Discover lyrics from artists like 1974 AD, Sushant KC, Narayan Gopal, and more.`
-      : 'Explore a vast collection of Nepali song lyrics from various artists. Find lyrics from popular Nepali songs and artists, including the latest hits.';
-
-    document.title = dynamicTitle;
-
-    const metaDescription = document.createElement('meta');
-    metaDescription.name = "description";
-    metaDescription.content = dynamicDescription;
-    document.head.appendChild(metaDescription);
-
-    const metaKeywords = document.createElement('meta');
-    metaKeywords.name = "keywords";
-    metaKeywords.content = `Nepali song lyrics, ${searchQuery}, Nepali artists, Nepali music, popular Nepali lyrics, Sangeet Lyrics Central`;
-    document.head.appendChild(metaKeywords);
-
-    return () => {
-      document.head.removeChild(metaDescription);
-      document.head.removeChild(metaKeywords);
-    };
-  }, [searchQuery]);
-
+  // Fetch lyrics from Supabase when the component mounts
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
@@ -52,9 +26,9 @@ const LyricsList = () => {
           throw error;
         }
 
+        // Group lyrics by artist
         const groupedByArtist = data.reduce((result, lyric) => {
           const artists = lyric.artist.split(',').map(artist => artist.trim()); // Split multiple artists
-          
           artists.forEach(artist => {
             if (!result[artist]) {
               result[artist] = [];
@@ -76,6 +50,7 @@ const LyricsList = () => {
     fetchLyrics();
   }, []);
 
+  // Search function
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
   };
@@ -85,18 +60,17 @@ const LyricsList = () => {
     return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
   };
 
-  // Filter results based on search query, language, and decade of publication
+  // Filter results based on search query, language, and year
   const filteredLyrics = Object.keys(lyricsByArtist).reduce((filtered, artist) => {
     const filteredByArtist = lyricsByArtist[artist].filter(lyric => {
       const matchesSearchQuery = lyric.title.toLowerCase().includes(searchQuery) ||
         lyric.artist.toLowerCase().includes(searchQuery) ||
-        (lyric.lyrics_writer && lyric.lyrics_writer.toLowerCase().includes(searchQuery)) ||
-        lyric.lyrics.toLowerCase().includes(searchQuery); // Search within lyrics
+        lyric.lyrics.toLowerCase().includes(searchQuery);
 
       const matchesLanguage = languageFilter === 'all' || lyric.language.trim().toLowerCase() === languageFilter.toLowerCase();
-      const matchesDecade = decadeFilter === 'all' || Math.floor(new Date(lyric.published_date).getFullYear() / 10) * 10 === parseInt(decadeFilter);
+      const matchesYear = yearFilter === 'all' || new Date(lyric.published_date).getFullYear().toString() === yearFilter;
 
-      return matchesSearchQuery && matchesLanguage && matchesDecade;
+      return matchesSearchQuery && matchesLanguage && matchesYear;
     });
 
     if (filteredByArtist.length > 0) {
@@ -106,10 +80,9 @@ const LyricsList = () => {
     return filtered;
   }, {});
 
-  // Get unique languages for filtering
-  const uniqueLanguages = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => lyric.language.trim().toLowerCase()))]; // Trim and lowercase to avoid duplicates
-
-  const decades = ['1970', '1980', '1990', '2000', '2010', '2020'];
+  // Get unique languages and years for dropdown filters
+  const uniqueLanguages = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => lyric.language.trim().toLowerCase()))];
+  const uniqueYears = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => new Date(lyric.published_date).getFullYear()))];
 
   // "Load More" functionality to display more artists
   const loadMoreArtists = () => {
@@ -128,8 +101,9 @@ const LyricsList = () => {
     <div className="lyrics-list-container">
       <h1>Music Library</h1>
 
-      {/* Search input */}
-      <div className="search-bar">
+      {/* Search and filter inputs */}
+      <div className="search-filter-container">
+        {/* Search input */}
         <input
           type="text"
           placeholder="Search by artist, lyrics, or writer..."
@@ -137,21 +111,20 @@ const LyricsList = () => {
           onChange={handleSearch}
           className="search-input"
         />
-      </div>
 
-      {/* Filter by language and decade */}
-      <div className="filter-bar">
+        {/* Filter by language */}
         <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
           <option value="all">All Languages</option>
           {uniqueLanguages.map((lang, idx) => (
-            <option key={idx} value={lang}>{lang.charAt(0).toUpperCase() + lang.slice(1)}</option> // Capitalize first letter
+            <option key={idx} value={lang}>{lang.charAt(0).toUpperCase() + lang.slice(1)}</option>
           ))}
         </select>
 
-        <select value={decadeFilter} onChange={(e) => setDecadeFilter(e.target.value)}>
-          <option value="all">All Decades</option>
-          {decades.map((decade, idx) => (
-            <option key={idx} value={decade}>{decade + "'s"}</option>
+        {/* Filter by year */}
+        <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+          <option value="all">All Years</option>
+          {uniqueYears.map((year, idx) => (
+            <option key={idx} value={year}>{year}</option>
           ))}
         </select>
       </div>
@@ -176,7 +149,7 @@ const LyricsList = () => {
         </div>
       ))}
 
-      {/* "View More" button to load more artists */}
+      {/* "Load More" button to load more artists */}
       {Object.keys(filteredLyrics).length > visibleArtists && (
         <div className="view-more-container">
           <button onClick={loadMoreArtists} className="view-more-button">View More Artists</button>

@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
 
-// Use React.lazy to lazy load the components
+// Lazy load components
 const HomeYTVideo = React.lazy(() => import('./homeytvideo'));
 const FeaturedArtistCard = React.lazy(() => import('./FeaturedArtistCard'));
 const HeroSlider = React.lazy(() => import('./HeroSlider'));
@@ -15,6 +15,7 @@ const HomePage = () => {
 
   useEffect(() => {
     document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
+    
     // Add meta tags for SEO
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';
@@ -88,12 +89,36 @@ const HomePage = () => {
     return title.replace(/\s+/g, '_').toLowerCase();
   };
 
+  // Google AdSense component for rendering ads
+  const GoogleAd = ({ adSlot }) => {
+    useEffect(() => {
+      // Ensure adsbygoogle is loaded when the component is rendered
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }, []);
+
+    return (
+      <div className="ad-container">
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+          data-ad-slot={adSlot}
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+      </div>
+    );
+  };
+
   return (
     <div className="homepage-container">
       {/* Wrap the components with Suspense to handle lazy loading */}
       <Suspense fallback={<div>Loading Slider...</div>}>
         <HeroSlider />
       </Suspense>
+
+      {/* Google Ad - Full-width ad below the HeroSlider */}
+      <GoogleAd adSlot="1234567890" />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
@@ -123,6 +148,9 @@ const HomePage = () => {
             </div>
           </section>
 
+          {/* Google Ad - Between sections */}
+          <GoogleAd adSlot="1234567891" />
+
           {/* Lazy load the HomeYTVideo component */}
           <Suspense fallback={<div>Loading YouTube Video...</div>}>
             <HomeYTVideo />
@@ -141,6 +169,11 @@ const HomePage = () => {
           ) : (
             <p>No featured artist available.</p>
           )}
+
+          {/* Google Ad - Sidebar or vertical corner ad */}
+          <div className="sidebar-ad-container">
+            <GoogleAd adSlot="1234567892" />
+          </div>
         </>
       )}
     </div>

@@ -19,7 +19,6 @@ import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 import BackToTop from './components/BackToTop'; // Make sure the path is correct
 
-import FtAnthem from './components/FtAnthem'; // Import the component
 
 
 function App() {
@@ -123,7 +122,6 @@ function App() {
         <Route path="/lyrics/:title" element={<ViewLyrics />} />
         <Route path="/lyrics-list" element={<LyricsList />} />
         <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
-        <Route path="/anthem/:country" element={<FtAnthem />} />
         <Route path="/terms" element={<TermsAndService />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/search" element={<SearchResults />} />

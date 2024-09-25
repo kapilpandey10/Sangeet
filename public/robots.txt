@@ -3,9 +3,6 @@ Disallow: /admin/
 Disallow: /login/
 Disallow: /signup/
 Disallow: /private/
-Disallow: /tmp/
-Disallow: /scripts/
-Disallow: /cgi-bin/
 Allow: /public/
 Allow: /images/
 Allow: /lyrics/

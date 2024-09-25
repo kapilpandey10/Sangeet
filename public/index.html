@@ -28,20 +28,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
 
-    <!-- Dynamic OG tags for news articles -->
-    <script>
    
-
-      if (newsItem) {
-        document.head.insertAdjacentHTML('beforeend', `
-          <meta property="og:type" content="article" />
-          <meta property="og:title" content="${newsItem.title}" />
-          <meta property="og:description" content="${newsItem.news_content.substring(0, 160)}" />
-          <meta property="og:image" content="${newsItem.cover_photo}" />
-          <meta property="og:url" content="https://pandeykapil.com.np/news/${newsItem.id}" />
-        `);
-      }
-    </script>
 
     <!-- Structured Data for MusicGroup -->
     <script type="application/ld+json">

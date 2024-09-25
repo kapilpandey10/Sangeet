@@ -145,22 +145,7 @@ const AdminDashboard = () => {
             )}
           </li>
 
-          {/* News & Media Dropdown */}
-          <li className="dropdown">
-            <span onClick={toggleNewsDropdown}>
-              News & Media <FaCaretDown className="caret-icon" />
-            </span>
-            {newsDropdownOpen && (
-              <ul className="dropdown-menu">
-                <li onClick={() => setActiveTab('add-news')}>
-                  <FaNewspaper className="icon" /> Add News {/* This adds the tab for News */}
-                </li>
-                <li onClick={() => setActiveTab('manage-news')}>
-                  <FaEdit className="icon" /> Manage News {/* This adds the tab for News */}
-                </li>
-              </ul>
-            )}
-          </li>
+          
         </ul>
       </nav>
 

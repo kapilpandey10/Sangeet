@@ -7,7 +7,7 @@ const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [languageFilter, setLanguageFilter] = useState('all');
-  const [yearFilter, setYearFilter] = useState('all');
+  const [decadeFilter, setDecadeFilter] = useState('all'); // Decade filter
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
@@ -85,7 +85,7 @@ const LyricsList = () => {
     return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
   };
 
-  // Filter results based on search query, language, and year of publication
+  // Filter results based on search query, language, and decade of publication
   const filteredLyrics = Object.keys(lyricsByArtist).reduce((filtered, artist) => {
     const filteredByArtist = lyricsByArtist[artist].filter(lyric => {
       const matchesSearchQuery = lyric.title.toLowerCase().includes(searchQuery) ||
@@ -94,9 +94,9 @@ const LyricsList = () => {
         lyric.lyrics.toLowerCase().includes(searchQuery); // Search within lyrics
 
       const matchesLanguage = languageFilter === 'all' || lyric.language.trim().toLowerCase() === languageFilter.toLowerCase();
-      const matchesYear = yearFilter === 'all' || new Date(lyric.published_date).getFullYear().toString() === yearFilter;
+      const matchesDecade = decadeFilter === 'all' || Math.floor(new Date(lyric.published_date).getFullYear() / 10) * 10 === parseInt(decadeFilter);
 
-      return matchesSearchQuery && matchesLanguage && matchesYear;
+      return matchesSearchQuery && matchesLanguage && matchesDecade;
     });
 
     if (filteredByArtist.length > 0) {
@@ -106,9 +106,10 @@ const LyricsList = () => {
     return filtered;
   }, {});
 
-  // Get unique languages and years for filtering
+  // Get unique languages for filtering
   const uniqueLanguages = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => lyric.language.trim().toLowerCase()))]; // Trim and lowercase to avoid duplicates
-  const uniqueYears = [...new Set(Object.values(lyricsByArtist).flat().map(lyric => new Date(lyric.published_date).getFullYear()))];
+
+  const decades = ['1970', '1980', '1990', '2000', '2010', '2020'];
 
   // "Load More" functionality to display more artists
   const loadMoreArtists = () => {
@@ -138,7 +139,7 @@ const LyricsList = () => {
         />
       </div>
 
-      {/* Filter by language and year */}
+      {/* Filter by language and decade */}
       <div className="filter-bar">
         <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
           <option value="all">All Languages</option>
@@ -147,10 +148,10 @@ const LyricsList = () => {
           ))}
         </select>
 
-        <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-          <option value="all">All Years</option>
-          {uniqueYears.map((year, idx) => (
-            <option key={idx} value={year}>{year}</option>
+        <select value={decadeFilter} onChange={(e) => setDecadeFilter(e.target.value)}>
+          <option value="all">All Decades</option>
+          {decades.map((decade, idx) => (
+            <option key={idx} value={decade}>{decade + "'s"}</option>
           ))}
         </select>
       </div>

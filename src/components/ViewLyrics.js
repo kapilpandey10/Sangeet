@@ -13,7 +13,7 @@ const ViewLyrics = () => {
   const [relatedLyrics, setRelatedLyrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isEnglish, setIsEnglish] = useState(false); // Toggle between original and English
+  const [isEnglish, setIsEnglish] = useState(true); // Default to English version
   const formattedTitle = title.replace(/_/g, ' ');
 
   useEffect(() => {

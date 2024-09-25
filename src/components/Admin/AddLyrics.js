@@ -13,21 +13,18 @@ const AddLyrics = () => {
   const [artists, setArtists] = useState([{ name: '', suggestions: [] }]);
   const [writer, setWriter] = useState('');
   const [lyrics, setLyrics] = useState('');
+  const [englishLyrics, setEnglishLyrics] = useState(''); // New state for English lyrics
   const [releaseYear, setReleaseYear] = useState('');
   const [videoUrl, setVideoUrl] = useState(''); // Changed from videoId to videoUrl
   const [videoError, setVideoError] = useState(''); // Error message for invalid YouTube URLs or IDs
   const [message, setMessage] = useState('');
   const [addedBy, setAddedBy] = useState('');
-  const [language, setlangugae] = useState('');
+  const [language, setLanguage] = useState('');
 
   useEffect(() => {
     document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
     const metaDescription = document.createElement('meta');
-    metaDescription.name = "description";
-    metaDescription.content = "Contribute to Sangeet Lyrics Central by adding new song lyrics. Join our community of music lovers.";
-    document.head.appendChild(metaDescription);
 
-    return () => document.head.removeChild(metaDescription);
   }, []);
 
   // Function to validate the YouTube URL or video ID
@@ -114,11 +111,12 @@ const AddLyrics = () => {
             artist: artists.map(artist => artist.name).join(', '),
             lyrics_writer: writer,
             lyrics,
+            english_lyrics: englishLyrics, // Adding the English lyrics field
             published_date: `${releaseYear}-01-01`,
             music_url: `https://www.youtube.com/watch?v=${finalVideoId}`,
             status: 'pending',
             added_by: addedBy,
-            language:language
+            language: language,
           }
         ]);
 
@@ -129,6 +127,7 @@ const AddLyrics = () => {
       setArtists([{ name: '', suggestions: [] }]);
       setWriter('');
       setLyrics('');
+      setEnglishLyrics(''); // Clear English lyrics field after submission
       setReleaseYear('');
       setVideoUrl('');
       setAddedBy('');
@@ -199,7 +198,7 @@ const AddLyrics = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="lyrics">Lyrics</label>
+          <label htmlFor="lyrics">Lyrics (Original Language)</label>
           <textarea
             id="lyrics"
             value={lyrics}
@@ -208,13 +207,25 @@ const AddLyrics = () => {
             required
           />
         </div>
+
+        <div className="form-group">
+          <label htmlFor="englishLyrics">Lyrics (English)</label> {/* New input for English lyrics */}
+          <textarea
+            id="englishLyrics"
+            value={englishLyrics}
+            onChange={(e) => setEnglishLyrics(e.target.value)}
+            rows={10}
+            required
+          />
+        </div>
+
         <div className="form-group">
           <label htmlFor="language">Language</label>
           <input
             type="text"
             id="language"
             value={language}
-            onChange={(e) => setlangugae(e.target.value)}
+            onChange={(e) => setLanguage(e.target.value)}
             required
           />
         </div>

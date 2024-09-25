@@ -18,6 +18,11 @@ const generateSlug = (title) => {
   return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
 };
 
+// Route for root path "/"
+app.get('/', (req, res) => {
+  res.send('Welcome to the Sitemap Generator');
+});
+
 // Generate the sitemap.xml
 app.get('/generate-sitemap', async (req, res) => {
   try {

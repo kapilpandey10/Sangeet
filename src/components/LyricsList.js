@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/LyricsList.css'; // Your CSS file for styling
@@ -7,10 +7,13 @@ const LyricsList = () => {
   const [lyricsByArtist, setLyricsByArtist] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [languageFilter, setLanguageFilter] = useState('all');
-  const [yearFilter, setYearFilter] = useState('all'); // For year filter
+  const [yearFilter, setYearFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
+  const [limit, setLimit] = useState(10); // Initial number of artists visible
+
+  const loadMoreRef = useRef(null);
 
   // Fetch lyrics from Supabase when the component mounts
   useEffect(() => {
@@ -89,6 +92,28 @@ const LyricsList = () => {
     setVisibleArtists((prevVisible) => prevVisible + 10);
   };
 
+  // Use Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreArtists(); // Load more lyrics when the observer intersects
+        }
+      },
+      { threshold: 1.0 } // Trigger when 100% of the element is visible
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, []);
+
   if (loading) {
     return <p>Loading lyrics...</p>;
   }
@@ -149,12 +174,10 @@ const LyricsList = () => {
         </div>
       ))}
 
-      {/* "Load More" button to load more artists */}
-      {Object.keys(filteredLyrics).length > visibleArtists && (
-        <div className="view-more-container">
-          <button onClick={loadMoreArtists} className="view-more-button">View More Artists</button>
-        </div>
-      )}
+      {/* Load More Button */}
+      <div ref={loadMoreRef} className="view-more-container">
+        <button onClick={loadMoreArtists} className="view-more-button">Load More</button>
+      </div>
     </div>
   );
 };

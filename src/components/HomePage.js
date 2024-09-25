@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { supabase } from '../supabaseClient'; // Import from the centralized supabaseClient file
+import React, { useEffect, useState, Suspense } from 'react';
+import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
-import HomeYTVideo from './homeytvideo';
-import FeaturedArtistCard from './FeaturedArtistCard';
-import HeroSlider from './HeroSlider';
 
+// Use React.lazy to lazy load the components
+const HomeYTVideo = React.lazy(() => import('./homeytvideo'));
+const FeaturedArtistCard = React.lazy(() => import('./FeaturedArtistCard'));
+const HeroSlider = React.lazy(() => import('./HeroSlider'));
 
 const HomePage = () => {
   const [lyrics, setLyrics] = useState([]);
@@ -24,7 +25,7 @@ const HomePage = () => {
     const metaKeywords = document.createElement('meta');
     metaKeywords.name = 'keywords';
     metaKeywords.content =
-      'Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali music lyrics, Sangeet lyrics Central, Nepali git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali  songs lyrics, PandeyKapil, Nepali songwriters, Balen song, Nepali Music industry, Music Nepal';
+      'Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali music lyrics, Sangeet lyrics Central, Nepali git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali songs lyrics, PandeyKapil, Nepali songwriters, Balen song, Nepali Music industry, Music Nepal';
     document.head.appendChild(metaKeywords);
 
     const metaRobots = document.createElement('meta');
@@ -32,7 +33,6 @@ const HomePage = () => {
     metaRobots.content = 'index, follow';
     document.head.appendChild(metaRobots);
 
-    // Cleanup meta tags on component unmount
     return () => {
       document.head.removeChild(metaDescription);
       document.head.removeChild(metaKeywords);
@@ -89,9 +89,11 @@ const HomePage = () => {
   };
 
   return (
-    
     <div className="homepage-container">
-      <HeroSlider />
+      {/* Wrap the components with Suspense to handle lazy loading */}
+      <Suspense fallback={<div>Loading Slider...</div>}>
+        <HeroSlider />
+      </Suspense>
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
@@ -121,13 +123,19 @@ const HomePage = () => {
             </div>
           </section>
 
-          <HomeYTVideo />
+          {/* Lazy load the HomeYTVideo component */}
+          <Suspense fallback={<div>Loading YouTube Video...</div>}>
+            <HomeYTVideo />
+          </Suspense>
 
           {featuredArtist ? (
             <div className="featured-artist-section">
               <h2 className="featured-artist-title">Featured Nepali Artist</h2>
               <div className="featured-artist-container">
-                <FeaturedArtistCard artist={featuredArtist} />
+                {/* Lazy load the FeaturedArtistCard component */}
+                <Suspense fallback={<div>Loading Artist Card...</div>}>
+                  <FeaturedArtistCard artist={featuredArtist} />
+                </Suspense>
               </div>
             </div>
           ) : (

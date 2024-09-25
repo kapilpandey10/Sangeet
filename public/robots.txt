@@ -3,7 +3,8 @@ Disallow: /admin/
 Disallow: /login/
 Disallow: /signup/
 Disallow: /private/
-Allow: /public/
-Allow: /images/
+Allow: /contactus
+Allow: /terms
 Allow: /lyrics/
+Allow: /privacyandpolicy
 Sitemap: https://pandeykapil.com.np/sitemap.xml

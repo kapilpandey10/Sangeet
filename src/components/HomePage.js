@@ -3,7 +3,6 @@ import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css';
 
-// Lazy load components
 const HomeYTVideo = React.lazy(() => import('./homeytvideo'));
 const FeaturedArtistCard = React.lazy(() => import('./FeaturedArtistCard'));
 const HeroSlider = React.lazy(() => import('./HeroSlider'));
@@ -19,14 +18,12 @@ const HomePage = () => {
     // Add meta tags for SEO
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';
-    metaDescription.content =
-      'Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics.';
+    metaDescription.content = 'Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics.';
     document.head.appendChild(metaDescription);
 
     const metaKeywords = document.createElement('meta');
     metaKeywords.name = 'keywords';
-    metaKeywords.content =
-      'Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali music lyrics, Sangeet lyrics Central, Nepali git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists, song lyrics, Nepali songs lyrics, PandeyKapil, Nepali songwriters, Balen song, Nepali Music industry, Music Nepal';
+    metaKeywords.content = 'Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists';
     document.head.appendChild(metaKeywords);
 
     const metaRobots = document.createElement('meta');
@@ -89,36 +86,12 @@ const HomePage = () => {
     return title.replace(/\s+/g, '_').toLowerCase();
   };
 
-  // Google AdSense component for rendering ads
-  const GoogleAd = ({ adSlot }) => {
-    useEffect(() => {
-      // Ensure adsbygoogle is loaded when the component is rendered
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    }, []);
-
-    return (
-      <div className="ad-container">
-        <ins
-          className="adsbygoogle"
-          style={{ display: 'block' }}
-          data-ad-client="ca-pub-9887409333966239"
-          data-ad-slot={adSlot}
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        ></ins>
-      </div>
-    );
-  };
-
   return (
     <div className="homepage-container">
-      {/* Wrap the components with Suspense to handle lazy loading */}
+      {/* Hero Slider */}
       <Suspense fallback={<div>Loading Slider...</div>}>
         <HeroSlider />
       </Suspense>
-
-      {/* Google Ad - Full-width ad below the HeroSlider */}
-      <GoogleAd adSlot="1234567890" />
 
       <h1>Welcome to Sangeet Lyrics Central</h1>
       <p>Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
@@ -127,6 +100,7 @@ const HomePage = () => {
         <p>Loading lyrics and artist... Hold On</p>
       ) : (
         <>
+          {/* Lyrics Section */}
           <section className="lyrics-bar">
             <h2>Featured Nepali Lyrics</h2>
             {lyrics.length > 0 ? (
@@ -148,19 +122,30 @@ const HomePage = () => {
             </div>
           </section>
 
-          {/* Google Ad - Between sections */}
-          <GoogleAd adSlot="1234567891" />
+          {/* Insert AdSense Ad in Between Sections */}
+          <div className="ad-container">
+            {/* Hori-lyrics Ad */}
+            <ins className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="4756859110"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
 
-          {/* Lazy load the HomeYTVideo component */}
+          {/* YouTube Video Section */}
           <Suspense fallback={<div>Loading YouTube Video...</div>}>
             <HomeYTVideo />
           </Suspense>
 
+          {/* Featured Artist Section */}
           {featuredArtist ? (
             <div className="featured-artist-section">
               <h2 className="featured-artist-title">Featured Nepali Artist</h2>
               <div className="featured-artist-container">
-                {/* Lazy load the FeaturedArtistCard component */}
                 <Suspense fallback={<div>Loading Artist Card...</div>}>
                   <FeaturedArtistCard artist={featuredArtist} />
                 </Suspense>
@@ -170,9 +155,18 @@ const HomePage = () => {
             <p>No featured artist available.</p>
           )}
 
-          {/* Google Ad - Sidebar or vertical corner ad */}
-          <div className="sidebar-ad-container">
-            <GoogleAd adSlot="1234567892" />
+          {/* Insert AdSense Ad at the Bottom */}
+          <div className="ad-container">
+            {/* Another Ad Slot */}
+            <ins className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="4756859110"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
           </div>
         </>
       )}

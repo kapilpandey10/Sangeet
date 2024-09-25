@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom'; 
-import { Helmet } from 'react-helmet'; 
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Navbar from './components/Navbar';
 import Footer from './components/footer/Footer';
 import LyricsList from './components/LyricsList';
@@ -14,19 +14,47 @@ import SearchResults from './components/SearchResults';
 import AdminLogin from './components/Admin/AdminLogin';
 import BhajanHP from './components/Bhajan/bhajanHP';
 import ArtistBio from './components/Artist/ArtistBio';
-import RequestResetCode from './components/ RequestResetCode';
+import RequestResetCode from './components/RequestResetCode';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
-import BackToTop from './components/BackToTop'; // Make sure the path is correct
+import BackToTop from './components/BackToTop'; // Ensure path is correct
 
-
+const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID; // Fetch from .env.local
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const location = useLocation(); 
+  const location = useLocation();
 
   // Check if the current route is an admin route
   const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/1234/secret';
+
+  // Google Analytics tracking setup
+  useEffect(() => {
+    if (GA_TRACKING_ID) {
+      const loadGAScript = () => {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`;
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', GA_TRACKING_ID, { page_path: window.location.pathname });
+      };
+
+      loadGAScript();
+    }
+  }, []);
+
+  // Track page views on route changes
+  useEffect(() => {
+    if (window.gtag) {
+      window.gtag('config', GA_TRACKING_ID, { page_path: location.pathname });
+    }
+  }, [location]);
 
   return (
     <>
@@ -106,7 +134,6 @@ function App() {
       <Navbar />
       <BackToTop />
       <Routes>
-       
         {/* Admin login and dashboard */}
         <Route path="/1234/secret" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
         <Route
@@ -127,16 +154,15 @@ function App() {
         <Route path="/search" element={<SearchResults />} />
         <Route path="/bhajan" element={<BhajanHP />} />
         <Route path="/Artistbio" element={<Artistlist />} />
+
         {/* Multilanguage lyrics routes */}
         <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
         <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
 
-      
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" />} />
-        
       </Routes>
-    
+
       <Footer />
     </>
   );

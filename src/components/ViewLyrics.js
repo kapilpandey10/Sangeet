@@ -100,7 +100,7 @@ const ViewLyrics = () => {
           {/* Display Lyrics: Either Original or English */}
           <pre className="lyrics-text">
             {isEnglish 
-              ? (lyric.lyrics_en ? lyric.lyrics_en : 'Admin will soon put English lyrics for this song.') 
+              ? (lyric.english_lyrics ? lyric.english_lyrics : 'Admin will soon put English lyrics for this song.') 
               : lyric.lyrics}
           </pre>
 

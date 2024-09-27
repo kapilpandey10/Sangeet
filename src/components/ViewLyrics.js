@@ -73,14 +73,44 @@ const ViewLyrics = () => {
 
   return (
     <div className="view-lyrics-container">
-      <Helmet>
-        <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central` : 'Lyrics'}</title>
-        <meta
-          name="description"
-          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central. Explore more songs by ${lyric.artist}.` : 'Lyrics of popular songs.'}
-        />
-        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${title}`} />
-      </Helmet>
+     <Helmet>
+  <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central` : 'Lyrics'}</title>
+  <meta
+    name="description"
+    content={lyric 
+      ? `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central. Enjoy more songs by ${lyric.artist}. Discover their latest tracks and music videos here.` 
+      : 'Explore popular songs and lyrics on Sangeet Lyrics Central.'}
+  />
+  <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${title}`} />
+</Helmet>
+
+{lyric && (
+  <Helmet>
+    <script type="application/ld+json">
+      {`
+        {
+          "@context": "https://schema.org",
+          "@type": "MusicRecording",
+          "name": "${lyric.title}",
+          "byArtist": {
+            "@type": "MusicGroup",
+            "name": "${lyric.artist}"
+          },
+          "inAlbum": {
+            "@type": "MusicAlbum",
+            "name": "${lyric.album || 'Unknown Album'}"
+          },
+          "url": "https://pandeykapil.com.np/lyrics/${title}",
+          "datePublished": "${lyric.published_date}",
+          "isFamilyFriendly": "true",
+          "genre": "${lyric.genre || 'Unknown'}",
+          "description": "Lyrics of the song ${lyric.title} by ${lyric.artist}."
+        }
+      `}
+    </script>
+  </Helmet>
+)}
+
 
       {lyric && (
         <>
@@ -106,18 +136,19 @@ const ViewLyrics = () => {
 
           {/* YouTube Video Embed */}
           {lyric.music_url && (
-            <div className="music-video">
-              <iframe
-                width="715"
-                height="515"
-                src={`https://www.youtube.com/embed/${extractYouTubeId(lyric.music_url)}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          )}
+  <iframe
+    loading="lazy"
+    width="715"
+    height="515"
+    src={`https://www.youtube.com/embed/${extractYouTubeId(lyric.music_url)}`}
+    title="YouTube video player"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+)}
+
+
 
           {/* Related Lyrics */}
           {relatedLyrics.length > 0 && (

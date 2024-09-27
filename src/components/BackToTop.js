@@ -29,7 +29,7 @@ const BackToTop = () => {
 
   return (
     <div className={`back-to-top ${show ? 'show' : ''}`} onClick={scrollTop}>
-      ↑
+     ⬆
     </div>
   );
 };

@@ -34,14 +34,10 @@
     <meta property="og:title" content="Sangeet Lyrics Central: Nepali Music Digital Library" />
     <meta property="og:description" content="Explore a vast collection of Nepali songs, lyrics, and albums from your favorite artists." />
     <meta property="og:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
-    <meta property="og:url" content="https://pandeykapil.com.np/" />
+    <meta property="og:url" content={"https://pandeykapil.com.np/lyrics/" + lyric.title.replace(/\s+/g, '_')} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
 
-
-    <meta property="og:title" content={`${lyric.title} Lyrics - Nepali Song by ${lyric.artist}`} />
-  <meta property="og:description" content={`Explore the beautiful lyrics of ${lyric.title} by ${lyric.artist}. Read full lyrics on Sangeet Lyrics Central.`} />
-  <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${lyric.title.replace(/\s+/g, '_')}`} />
 
     <!-- Structured Data for MusicGroup -->
     <script type="application/ld+json">

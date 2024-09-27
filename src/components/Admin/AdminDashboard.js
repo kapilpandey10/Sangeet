@@ -6,6 +6,7 @@ import ManageLyrics from './ManageLyrics';
 import Messages from '../Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
+import AddBlog from './addBlog'; // Corrected path and case
 
 import './style/AdminDashboard.css';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +17,7 @@ const AdminDashboard = () => {
   const [session, setSession] = useState(null);
   const [manageDropdownOpen, setManageDropdownOpen] = useState(false); // Manage dropdown
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false); // Account dropdown
-  const [newsDropdownOpen, setNewsDropdownOpen] = useState(false); // News dropdown
+  const [blogDropdownOpen, setBlogDropdownOpen] = useState(false); // Blog dropdown
   const dropdownRef = useRef(); // Ref for detecting click outside dropdowns
   const navigate = useNavigate();
 
@@ -46,19 +47,19 @@ const AdminDashboard = () => {
   const toggleManageDropdown = () => {
     setManageDropdownOpen(!manageDropdownOpen);
     setAccountDropdownOpen(false); // Close the other dropdown
-    setNewsDropdownOpen(false); // Close news dropdown if open
+    setBlogDropdownOpen(false); // Close blog dropdown if open
   };
 
   // Toggle the account dropdown
   const toggleAccountDropdown = () => {
     setAccountDropdownOpen(!accountDropdownOpen);
     setManageDropdownOpen(false); // Close the other dropdown
-    setNewsDropdownOpen(false); // Close news dropdown if open
+    setBlogDropdownOpen(false); // Close blog dropdown if open
   };
 
-  // Toggle the news dropdown
-  const toggleNewsDropdown = () => {
-    setNewsDropdownOpen(!newsDropdownOpen);
+  // Toggle the blog dropdown
+  const toggleBlogDropdown = () => {
+    setBlogDropdownOpen(!blogDropdownOpen);
     setAccountDropdownOpen(false); // Close the other dropdown
     setManageDropdownOpen(false); // Close the other dropdown
   };
@@ -68,7 +69,7 @@ const AdminDashboard = () => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setManageDropdownOpen(false);
       setAccountDropdownOpen(false);
-      setNewsDropdownOpen(false);
+      setBlogDropdownOpen(false);
     }
   };
 
@@ -91,7 +92,8 @@ const AdminDashboard = () => {
         return <AddLyrics />;
       case 'add-artist':
         return <AddArtist />;
-        // Correctly switch to AddNews component
+      case 'blog': // Blog content
+        return <AddBlog />;
       default:
         return <ManageLyrics />;
     }
@@ -145,7 +147,19 @@ const AdminDashboard = () => {
             )}
           </li>
 
-          
+          {/* Blog Dropdown */}
+          <li className="dropdown">
+            <span onClick={toggleBlogDropdown}>
+              Blog <FaCaretDown className="caret-icon" />
+            </span>
+            {blogDropdownOpen && (
+              <ul className="dropdown-menu">
+                <li onClick={() => setActiveTab('blog')}>
+                  <FaNewspaper className="icon" /> Add Blog
+                </li>
+              </ul>
+            )}
+          </li>
         </ul>
       </nav>
 

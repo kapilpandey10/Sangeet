@@ -12,42 +12,25 @@ import PrivacyPolicy from './components/footer/PrivacyPolicy';
 import TermsAndService from './components/footer/TermsAndService';
 import SearchResults from './components/SearchResults';
 import AdminLogin from './components/Admin/AdminLogin';
-import BhajanHP from './components/Bhajan/bhajanHP';
+import AddBlog from './components/Admin/addBlog'; // AddBlog component for adding blog functionality
+import BlogHomepage from './components/BlogHomepage'; // Import the BlogHomepage component
+import ReadBlog from './components/ReadBlog';
 import ArtistBio from './components/Artist/ArtistBio';
 import RequestResetCode from './components/RequestResetCode';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
-import BackToTop from './components/BackToTop'; // Ensure path is correct
+import BackToTop from './components/BackToTop';
 
-const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID; // Fetch from .env.local
+const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem('isAuthenticated') === 'true'
+  );
   const location = useLocation();
 
   // Check if the current route is an admin route
-  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/1234/secret';
-
-  // Google Analytics tracking setup
-  useEffect(() => {
-    if (GA_TRACKING_ID) {
-      const loadGAScript = () => {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`;
-        document.head.appendChild(script);
-
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-          window.dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', GA_TRACKING_ID, { page_path: window.location.pathname });
-      };
-
-      loadGAScript();
-    }
-  }, []);
+  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/admin-login';
 
   // Track page views on route changes
   useEffect(() => {
@@ -56,79 +39,26 @@ function App() {
     }
   }, [location]);
 
+  // Ensure authentication state is saved
+  useEffect(() => {
+    if (isAuthenticated) {
+      localStorage.setItem('isAuthenticated', 'true');
+    } else {
+      localStorage.removeItem('isAuthenticated');
+    }
+  }, [isAuthenticated]);
+
   return (
     <>
       {/* SEO using Helmet */}
       <Helmet>
         <title>Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists</title>
-        <meta
-          name="description"
-          content="Explore Nepali music, songs, lyrics, and albums. Featured artists like Sushant KC, 1974 AD, Anju Panta, Narayan Gopal, Melina Rai, and more. Discover Nepali geet and bhajan lyrics."
-        />
-        <meta
-          name="keywords"
-          content="Nepali music, Nepali songs, Nepali lyrics, Nepali artists, music library, Sangit, Sushant KC lyrics, 1974 AD lyrics, Anju Panta lyrics, Narayan Gopal lyrics, Melina Rai lyrics, Raju Lama lyrics, Pramod Kharel lyrics, Sadhana Sargam Nepali songs lyrics, Udit Narayan Nepali lyrics, Krishna Kafle lyrics, Nepali song lyrics, Nepali music lyrics, Nepali geet lyrics"
-        />
+        <meta name="description" content="Explore Nepali music, songs, lyrics, and albums. Featured artists like Sushant KC, 1974 AD, Anju Panta, Narayan Gopal, Melina Rai, and more. Discover Nepali geet and bhajan lyrics." />
         <meta property="og:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
-        <meta
-          property="og:description"
-          content="Explore a vast collection of Nepali songs and lyrics, including works by Sushant KC, Anju Panta, Narayan Gopal, Melina Rai, and more."
-        />
+        <meta property="og:description" content="Explore a vast collection of Nepali songs and lyrics, including works by Sushant KC, Anju Panta, Narayan Gopal, Melina Rai, and more." />
         <meta property="og:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
         <meta property="og:url" content="https://pandeykapil.com.np/" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
-        <meta
-          name="twitter:description"
-          content="Explore Nepali music, songs, lyrics, and albums from popular artists."
-        />
-        <meta name="twitter:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
-
-        {/* Structured data */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'LocalBusiness',
-            name: 'Sangeet Lyrics Central',
-            description: 'A Nepali Music Digital Library to explore lyrics, songs, and albums.',
-            url: 'https://pandeykapil.com.np',
-            telephone: '+977-9840172406',
-            contactPoint: {
-              '@type': 'ContactPoint',
-              telephone: '+977-9840172406',
-              contactType: 'Customer Service',
-              availableLanguage: ['English', 'Nepali'],
-            },
-            address: {
-              '@type': 'PostalAddress',
-              streetAddress: 'Kathmandu, Nepal',
-              addressLocality: 'Kathmandu',
-              addressRegion: 'Bagmati',
-              postalCode: '44900',
-              addressCountry: 'NP',
-            },
-            geo: {
-              '@type': 'GeoCoordinates',
-              latitude: '27.72',
-              longitude: '85.31',
-            },
-            sameAs: ['https://facebook.com/Burn2Vlog', 'https://youtube.com/c/borntovlog'],
-          })}
-        </script>
-
-        {/* BreadcrumbList structured data */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://pandeykapil.com.np/' },
-              { '@type': 'ListItem', position: 2, name: 'Artist Bio', item: 'https://pandeykapil.com.np/artistbio' },
-              { '@type': 'ListItem', position: 3, name: 'Lyrics List', item: 'https://pandeykapil.com.np/lyrics-list' },
-              { '@type': 'ListItem', position: 4, name: 'Contact Us', item: 'https://pandeykapil.com.np/contactus' },
-            ],
-          })}
-        </script>
       </Helmet>
 
       <Navbar />
@@ -136,10 +66,7 @@ function App() {
       <Routes>
         {/* Admin login and dashboard */}
         <Route path="/1234/secret" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
-        <Route
-          path="/admin/*"
-          element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} // Admin protected routes
-        />
+        <Route path="/admin/*" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} />
 
         {/* Public routes */}
         <Route path="/request-reset-code" element={<RequestResetCode />} />
@@ -151,14 +78,18 @@ function App() {
         <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsAndService />} />
         <Route path="/contactus" element={<ContactUs />} />
+        <Route path="/ReadBlog/:slug" element={<ReadBlog />} />
         <Route path="/search" element={<SearchResults />} />
-        <Route path="/bhajan" element={<BhajanHP />} />
-        <Route path="/Artistbio" element={<Artistlist />} />
 
-        {/* Multilanguage lyrics routes */}
-        <Route path="/lyrics/en/:title" element={<ViewLyrics language="en" />} />
-        <Route path="/lyrics/ne/:title" element={<ViewLyrics language="ne" />} />
+        {/* Add Blog functionality */}
+        <Route path="/addblog" element={<AddBlog />} />
 
+        {/* Blog Homepage to display all blogs */}
+        <Route path="/blogs" element={<BlogHomepage />} />
+
+        <Route path="/artistbio" element={<Artistlist />} />
+
+       
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

@@ -62,43 +62,45 @@ function App() {
         <meta property="og:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
         <meta property="og:url" content="https://pandeykapil.com.np/" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" /> {/* Added for better mobile responsiveness */}
       </Helmet>
 
       <Navbar />
       <BackToTop />
-      <Routes>
-        {/* Admin login and dashboard */}
-        <Route path="/1234/secret" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/admin/*" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} />
+      <div className="main-content">
+        <Routes>
+          {/* Admin login and dashboard */}
+          <Route path="/1234/secret" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/admin/*" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} />
 
-        {/* Public routes */}
-        <Route path="/request-reset-code" element={<RequestResetCode />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/artistbio/:name" element={<ArtistBio />} />
-        <Route path="/lyrics/:title" element={<ViewLyrics />} />
-        <Route path="/lyrics-list" element={<LyricsList />} />
-        <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsAndService />} />
-        <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/Blogs/:slug" element={<ReadBlog />} />
-        <Route path="/search" element={<SearchResults />} />
-        <Route path="/FileTransfer" element={<FileTransfer />} /><Route path="/sendimage" element={<SendImage />} /> {/* Route to SendImage */}
-        <Route path="/receiveimg" element={<ReceiveImage />} /> {/* Route to ReceiveImage */}
-      
+          {/* Public routes */}
+          <Route path="/request-reset-code" element={<RequestResetCode />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/artistbio/:name" element={<ArtistBio />} />
+          <Route path="/lyrics/:title" element={<ViewLyrics />} />
+          <Route path="/lyrics-list" element={<LyricsList />} />
+          <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsAndService />} />
+          <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/Blogs/:slug" element={<ReadBlog />} />
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/filetransfer" element={<FileTransfer />} />
+          <Route path="/sendimage" element={<SendImage />} /> {/* Route to SendImage */}
+          <Route path="/receiveimg" element={<ReceiveImage />} /> {/* Route to ReceiveImage */}
+        
+          {/* Add Blog functionality */}
+          <Route path="/addblog" element={<AddBlog />} />
 
-        {/* Add Blog functionality */}
-        <Route path="/addblog" element={<AddBlog />} />
+          {/* Blog Homepage to display all blogs */}
+          <Route path="/Blogs" element={<BlogHomepage />} />
 
-        {/* Blog Homepage to display all blogs */}
-        <Route path="/Blogs" element={<BlogHomepage />} />
+          <Route path="/artistbio" element={<Artistlist />} />
 
-        <Route path="/artistbio" element={<Artistlist />} />
-
-       
-        {/* Catch-all route */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
 
       <Footer />
     </>

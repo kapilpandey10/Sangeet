@@ -20,6 +20,9 @@ import RequestResetCode from './components/RequestResetCode';
 import ResetPassword from './components/ResetPassword';
 import Artistlist from './components/Artist/Artistlist';
 import BackToTop from './components/BackToTop';
+import FileTransfer from './components/FileTransfer';
+import SendImage from './components/SendImage'; // Import the SendImage page
+import ReceiveImage from './components/ReceiveImage'; // Import the ReceiveImage page
 
 const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
 
@@ -80,6 +83,9 @@ function App() {
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/Blogs/:slug" element={<ReadBlog />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/FileTransfer" element={<FileTransfer />} /><Route path="/sendimage" element={<SendImage />} /> {/* Route to SendImage */}
+        <Route path="/receiveimg" element={<ReceiveImage />} /> {/* Route to ReceiveImage */}
+      
 
         {/* Add Blog functionality */}
         <Route path="/addblog" element={<AddBlog />} />

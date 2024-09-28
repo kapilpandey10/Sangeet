@@ -75,6 +75,9 @@ const Navbar = () => {
             <Link to="/artistbio" className={isActive('/artistbio')}>Artist Bio</Link>
             <Link to="/contactus" className={isActive('/contactus')}>Contact Us</Link>
             <Link to="/blogs" className={isActive('/blog')}>Blog</Link>
+            <Link to="/filetransfer" className={isActive('/blog')}>File Transfer</Link>
+
+
 
 
           </div>

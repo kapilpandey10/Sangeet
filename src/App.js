@@ -78,14 +78,14 @@ function App() {
         <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsAndService />} />
         <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/ReadBlog/:slug" element={<ReadBlog />} />
+        <Route path="/Blogs/:slug" element={<ReadBlog />} />
         <Route path="/search" element={<SearchResults />} />
 
         {/* Add Blog functionality */}
         <Route path="/addblog" element={<AddBlog />} />
 
         {/* Blog Homepage to display all blogs */}
-        <Route path="/blogs" element={<BlogHomepage />} />
+        <Route path="/Blogs" element={<BlogHomepage />} />
 
         <Route path="/artistbio" element={<Artistlist />} />
 

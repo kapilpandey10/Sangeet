@@ -50,6 +50,26 @@
   .blog-html-content p {
     margin-bottom: 15px;
   }
+  /* Breadcrumb styles */
+.breadcrumb {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .breadcrumb a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  .breadcrumb span {
+    color: #666;
+  }
+  
   
   /* Styles for the related blogs (suggestions) */
   .related-blogs {

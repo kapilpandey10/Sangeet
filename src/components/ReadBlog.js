@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient'; // Supabase client for fetching blogs
 import DOMPurify from 'dompurify'; // Import DOMPurify to sanitize HTML
 import '../style/ReadBlog.css'; // Custom CSS for styling
@@ -74,6 +74,11 @@ const ReadBlog = () => {
 
   return (
     <div className="read-blog-container">
+      {/* Breadcrumb */}
+      <nav className="breadcrumb">
+        <Link to="/">Home</Link> / <Link to="/blogs">Blogs</Link> / {blog.title}
+      </nav>
+
       <div className="blog-content">
         <header className="blog-header">
           <h1>{blog.title}</h1>
@@ -100,7 +105,7 @@ const ReadBlog = () => {
         <ul className="suggested-list">
           {relatedBlogs.map((relatedBlog) => (
             <li key={relatedBlog.id} className="suggested-item">
-              <a href={`/ReadBlog/${relatedBlog.slug}`}>
+              <a href={`/blogs/${relatedBlog.slug}`}>
                 <h4>{relatedBlog.title}</h4>
                 <p>{relatedBlog.excerpt}</p>
               </a>

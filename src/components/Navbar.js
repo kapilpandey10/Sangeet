@@ -76,6 +76,7 @@ const Navbar = () => {
             <Link to="/contactus" className={isActive('/contactus')}>Contact Us</Link>
             <Link to="/blogs" className={isActive('/blog')}>Blog</Link>
 
+
           </div>
         </div>
 

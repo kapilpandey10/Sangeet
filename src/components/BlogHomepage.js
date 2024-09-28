@@ -15,7 +15,7 @@ const BlogHomepage = () => {
       const { data, error } = await supabase
         .from('blogs')
         .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
-        .eq('status', 'Published'); // Fetch only blogs where status is 'published'
+        .eq('status', 'published'); // Fetch only blogs where status is 'published'
       
       if (error) {
         console.error('Error fetching blogs:', error.message);
@@ -72,14 +72,14 @@ const BlogHomepage = () => {
             <div className="blog-card" key={blog.id}>
               <img
                 className="blog-card-image"
-                src={blog.thumbnail_url || 'https://via.placeholder.com/400'}
+                src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
                 alt={blog.title}
               />
               <div className="blog-card-content">
                 <h2 className="blog-card-title">{blog.title}</h2>
                 <p className="blog-card-author">By {blog.author}</p>
                 <p className="blog-card-excerpt">{blog.excerpt}</p>
-                <Link to={`/ReadBlog/${blog.slug}`} className="read-more-button">
+                <Link to={`/blogs/${blog.slug}`} className="read-more-button">
                   Read More
                 </Link>
               </div>
@@ -100,7 +100,7 @@ const BlogHomepage = () => {
           <ul className="archive-list">
             {archivedBlogs.map((blog) => (
               <li key={blog.id}>
-                <Link to={`/ReadBlog/${blog.slug}`}>{blog.title} - {blog.author}</Link>
+                <Link to={`/blogs/${blog.slug}`}>{blog.title} - {blog.author}</Link>
               </li>
             ))}
           </ul>

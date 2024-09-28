@@ -52,7 +52,7 @@ const generateSitemap = async () => {
 
     // Generate dynamic URLs for blogs
     const blogUrls = blogs.map((blog) => ({
-      loc: `https://pandeykapil.com.np/ReadBlog/${generateSlug(blog.title)}`,
+      loc: `https://pandeykapil.com.np/blogs/${generateSlug(blog.title)}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.8',

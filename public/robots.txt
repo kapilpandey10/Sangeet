@@ -6,6 +6,7 @@ Disallow: /private/
 Allow: /contactus
 Allow: /terms
 Allow: /lyrics/
+Allow:/blogs/
 Allow: /privacyandpolicy
 
 # Optional: add a crawl delay if server performance is an issue

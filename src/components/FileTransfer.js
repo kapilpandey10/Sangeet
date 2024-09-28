@@ -17,17 +17,7 @@ const FileTransfer = () => {
 
   return (
     <div className="file-transfer-container">
-      {/* Revolving Emojis */}
-      <div className="orbit-container">
-        <div className="emoji emoji1">📷</div>
-        <div className="emoji emoji2">👤</div>
-        <div className="emoji emoji3">📱</div>
-        <div className="emoji emoji4">🖼️</div>
-        <div className="emoji emoji5">💻</div>
-        <div className="emoji emoji6">🌍</div>
-        <div className="emoji emoji7">📁</div>
-      </div>
-
+     
       <h1 className="file-transfer-title">Share Your Images Seamlessly</h1>
       <p className="file-transfer-description">
         Use the Send and Receive buttons to transfer your files easily. Images, documents, or anything important can be transferred within seconds.

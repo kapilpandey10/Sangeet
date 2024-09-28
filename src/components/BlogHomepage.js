@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient'; // Supabase client for fetching blogs
 import { Link } from 'react-router-dom'; // Import Link for navigation
+import { FaCalendarAlt } from 'react-icons/fa'; // Import Calendar icon for published date
+import { Helmet } from 'react-helmet'; // For dynamic SEO meta tags
 import '../style/BlogHomepage.css'; // Custom CSS for styling
 
 const BlogHomepage = () => {
@@ -8,6 +10,8 @@ const BlogHomepage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredBlogs, setFilteredBlogs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 10;
 
   // Fetch only published blogs from Supabase
   useEffect(() => {
@@ -42,16 +46,27 @@ const BlogHomepage = () => {
     );
   }, [searchQuery, blogs]);
 
+  // Pagination logic
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+
+  const loadMoreBlogs = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
   if (loading) {
     return <div className="loading-message">Loading blogs...</div>;
   }
 
-  // Display first 20 blogs and separate the rest into an archive section
-  const recentBlogs = filteredBlogs.slice(0, 20);
-  const archivedBlogs = filteredBlogs.slice(20);
-
   return (
     <div className="blog-homepage-container">
+      {/* Dynamic SEO with Helmet */}
+      <Helmet>
+        <title>Latest Blogs - My Blog Site</title>
+        <meta name="description" content="Explore the latest blogs on various topics." />
+      </Helmet>
+
       <h1 className="blog-homepage-title">Latest Blogs</h1>
 
       {/* Search bar */}
@@ -62,30 +77,39 @@ const BlogHomepage = () => {
           placeholder="Search by title, author, or tags..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          list="autocomplete-suggestions"
         />
+        <datalist id="autocomplete-suggestions">
+          {filteredBlogs.map((blog) => (
+            <option key={blog.id} value={blog.title} />
+          ))}
+        </datalist>
       </div>
 
       {/* Display recent blogs */}
       <div className="blog-grid-container">
-        {recentBlogs.length > 0 ? (
-          recentBlogs.map((blog) => (
+        {currentBlogs.length > 0 ? (
+          currentBlogs.map((blog) => (
             <div className="blog-card" key={blog.id}>
               <img
                 className="blog-card-image"
                 src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
                 alt={blog.title}
+                loading="lazy"
               />
               <div className="blog-card-content">
                 <h2 className="blog-card-title">{blog.title}</h2>
-                <p className="blog-card-author">By {blog.author}</p>
-                <p className="blog-card-excerpt">{blog.excerpt}</p>
+                <p className="blog-card-author">
+                  By {blog.author} | <FaCalendarAlt />{' '}
+                  {new Date(blog.published_date).toLocaleDateString()}
+                </p>
+                <p className="blog-card-excerpt">
+                  {blog.excerpt.length > 100 ? `${blog.excerpt.substring(0, 100)}...` : blog.excerpt}
+                </p>
                 <Link to={`/blogs/${blog.slug}`} className="read-more-button">
                   Read More
                 </Link>
               </div>
-              <p className="blog-card-date">
-                Published on: {new Date(blog.published_date).toLocaleDateString()}
-              </p>
             </div>
           ))
         ) : (
@@ -93,18 +117,11 @@ const BlogHomepage = () => {
         )}
       </div>
 
-      {/* Archive Section */}
-      {archivedBlogs.length > 0 && (
-        <div className="archive-section">
-          <h2>Archive</h2>
-          <ul className="archive-list">
-            {archivedBlogs.map((blog) => (
-              <li key={blog.id}>
-                <Link to={`/blogs/${blog.slug}`}>{blog.title} - {blog.author}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Load More Button */}
+      {filteredBlogs.length > currentBlogs.length && (
+        <button className="load-more-button" onClick={loadMoreBlogs}>
+          Load More
+        </button>
       )}
     </div>
   );

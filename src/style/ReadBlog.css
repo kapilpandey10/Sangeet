@@ -1,64 +1,17 @@
-/* General styles for ReadBlog component */
+/* General Styles */
 .read-blog-container {
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
-    width: 90%;
-    max-width: 1200px;
-    margin: auto;
     padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
   
-  .blog-content {
-    flex: 3;
-  }
-  
-  .blog-header h1 {
-    color: #333;
-  }
-  
-  .blog-meta {
+  .breadcrumb {
     font-size: 14px;
-    color: #777;
-  }
-  
-  .blog-meta span {
-    font-weight: bold;
-    color: #555;
-  }
-  
-  .blog-image {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 20px 0;
-    border-radius: 8px;
-  }
-  
-  .blog-html-content {
-    font-size: 18px;
-    color: #444;
-    line-height: 1.8;
-  }
-  
-  .blog-html-content h2,
-  .blog-html-content h3 {
-    font-size: 24px;
-    margin-top: 20px;
-  }
-  
-  .blog-html-content p {
-    margin-bottom: 15px;
-  }
-  /* Breadcrumb styles */
-.breadcrumb {
     margin-bottom: 20px;
-    font-size: 14px;
-    color: #555;
   }
   
   .breadcrumb a {
-    color: #007bff;
+    color: #3498db;
     text-decoration: none;
   }
   
@@ -66,21 +19,67 @@
     text-decoration: underline;
   }
   
-  .breadcrumb span {
-    color: #666;
+  /* Blog Layout */
+  .blog-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
   }
   
+  .blog-content {
+    font-size: 18px;
+  }
   
-  /* Styles for the related blogs (suggestions) */
-  .related-blogs {
-    flex: 1;
+  .blog-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .blog-meta {
+    font-size: 14px;
+    color: #888;
+  }
+  
+  .blog-image {
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+    max-height: 400px;
+  }
+  
+  .blog-html-content {
     margin-top: 20px;
   }
   
-  .related-blogs h3 {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 15px;
+  /* Social Share */
+  .social-share {
+    margin-top: 30px;
+  }
+  
+  .social-share a {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    color: #3498db;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .social-share a:hover {
+    text-decoration: underline;
+  }
+  
+  .social-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+  
+  /* Related Blogs */
+  .related-blogs {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
   }
   
   .suggested-list {
@@ -89,27 +88,85 @@
   }
   
   .suggested-item {
+    display: flex;
+    align-items: center;
     margin-bottom: 15px;
   }
   
-  .suggested-item h4 {
-    font-size: 16px;
-    color: #007bff;
+  .related-blog-thumbnail {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    object-fit: cover;
+    border-radius: 5px;
   }
   
-  .suggested-item p {
-    font-size: 14px;
-    color: #777;
-  }
+  /* Media Queries for Responsiveness */
   
-  /* Responsive styles */
+  /* Tablets and small screens (up to 768px) */
   @media (max-width: 768px) {
-    .read-blog-container {
-      flex-direction: column;
+    .blog-layout {
+      grid-template-columns: 1fr; /* Stack the content and sidebar */
     }
   
-    .related-blogs {
-      margin-top: 30px;
+    .blog-header h1 {
+      font-size: 2rem;
+    }
+  
+    .blog-meta {
+      font-size: 12px;
+    }
+  
+    .blog-content {
+      font-size: 16px;
+    }
+  
+    .social-icon {
+      width: 20px;
+      height: 20px;
+    }
+  
+    .related-blog-thumbnail {
+      width: 40px;
+      height: 40px;
+    }
+  }
+  
+  /* Mobile devices (up to 480px) */
+  @media (max-width: 480px) {
+    .read-blog-container {
+      padding: 15px;
+    }
+  
+    .breadcrumb {
+      font-size: 12px;
+    }
+  
+    .blog-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+  
+    .blog-meta {
+      font-size: 10px;
+    }
+  
+    .blog-content {
+      font-size: 14px;
+    }
+  
+    .social-share a {
+      font-size: 14px;
+    }
+  
+    .social-icon {
+      width: 18px;
+      height: 18px;
+    }
+  
+    .related-blog-thumbnail {
+      width: 35px;
+      height: 35px;
     }
   }
   

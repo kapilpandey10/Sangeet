@@ -4,6 +4,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
+const cron = require('node-cron'); // Import node-cron for scheduling tasks
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -18,30 +19,43 @@ const generateSlug = (title) => {
   return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
 };
 
-// Route for root path "/"
-app.get('/', (req, res) => {
-  res.send('Welcome to the Sitemap Generator');
-});
-
-// Generate the sitemap.xml
-app.get('/generate-sitemap', async (req, res) => {
+// Function to generate the sitemap
+const generateSitemap = async () => {
   try {
     // Fetch all lyrics titles from Supabase 'lyrics' table
-    const { data: lyrics, error } = await supabase
+    const { data: lyrics, error: lyricsError } = await supabase
       .from('lyrics')
       .select('title');
 
-    if (error) {
-      console.error('Error fetching lyrics:', error);
-      return res.status(500).send('Error generating sitemap.');
+    if (lyricsError) {
+      console.error('Error fetching lyrics:', lyricsError);
+      return false;
     }
 
-    // Generate dynamic URLs based on the fetched titles
-    const urls = lyrics.map((lyric) => ({
+    // Generate dynamic URLs for lyrics
+    const lyricsUrls = lyrics.map((lyric) => ({
       loc: `https://pandeykapil.com.np/lyrics/${generateSlug(lyric.title)}`,
       lastmod: new Date().toISOString(),
-      changefreq: 'weekly',  // Define change frequency
-      priority: '0.8',  // Set priority (scale 0.0 - 1.0)
+      changefreq: 'weekly',
+      priority: '0.8',
+    }));
+
+    // Fetch all blog titles from Supabase 'blogs' table
+    const { data: blogs, error: blogsError } = await supabase
+      .from('blogs')
+      .select('title');
+
+    if (blogsError) {
+      console.error('Error fetching blogs:', blogsError);
+      return false;
+    }
+
+    // Generate dynamic URLs for blogs
+    const blogUrls = blogs.map((blog) => ({
+      loc: `https://pandeykapil.com.np/ReadBlog/${generateSlug(blog.title)}`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'weekly',
+      priority: '0.8',
     }));
 
     // Add other static URLs if needed
@@ -50,7 +64,7 @@ app.get('/generate-sitemap', async (req, res) => {
       { loc: 'https://pandeykapil.com.np/contact', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
     ];
 
-    const allUrls = [...urls, ...staticUrls];
+    const allUrls = [...lyricsUrls, ...blogUrls, ...staticUrls];
 
     // Create the sitemap XML structure
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -73,12 +87,34 @@ app.get('/generate-sitemap', async (req, res) => {
     fs.writeFileSync(sitemapPath, sitemap);
 
     console.log('Sitemap generated successfully!');
-    res.send('Sitemap generated and saved successfully.');
+    return true;
   } catch (err) {
     console.error('Error generating sitemap:', err);
+    return false;
+  }
+};
+
+// Route for manual sitemap generation
+app.get('/generate-sitemap', async (req, res) => {
+  const result = await generateSitemap();
+  if (result) {
+    res.send('Sitemap generated and saved successfully.');
+  } else {
     res.status(500).send('Error generating sitemap.');
   }
 });
+
+// Automatically generate the sitemap every 3 minutes
+cron.schedule('*/3 * * * *', async () => {
+  console.log('Automatically generating sitemap...');
+  const result = await generateSitemap();
+  if (result) {
+    console.log('Sitemap automatically generated successfully.');
+  } else {
+    console.log('Error in automatic sitemap generation.');
+  }
+});
+
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase URL and Anon Key must be defined in environment variables.');

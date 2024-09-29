@@ -56,7 +56,11 @@ const generateSitemap = async () => {
     // Add other static URLs if needed
     const staticUrls = [
       { loc: 'https://pandeykapil.com.np/', lastmod: new Date().toISOString(), changefreq: 'daily', priority: '1.0' },
-      { loc: 'https://pandeykapil.com.np/contact', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://pandeykapil.com.np/contactus', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://pandeykapil.com.np/artistbio', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://pandeykapil.com.np/filetransfer', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://pandeykapil.com.np/terms', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://pandeykapil.com.np/blogs', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
     ];
 
     const allUrls = [...lyricsUrls, ...blogUrls, ...staticUrls];
@@ -93,7 +97,7 @@ const generateSitemap = async () => {
 app.get('/generate-sitemap', async (req, res) => {
   const result = await generateSitemap();
   if (result) {
-    res.send('Sitemap generated and saved successfully.');
+    res.send('Sitemap generated and saved successfully.  please check on website http://localhost:3001/generate-sitemap');
   } else {
     res.status(500).send('Error generating sitemap.');
   }
@@ -104,7 +108,7 @@ cron.schedule('*/3 * * * *', async () => {
   console.log('Automatically generating sitemap...');
   const result = await generateSitemap();
   if (result) {
-    console.log('Sitemap automatically generated successfully.');
+    console.log('Sitemap automatically generated successfully.  please check on website http://localhost:3001/generate-sitemap');
   } else {
     console.log('Error in automatic sitemap generation.');
   }
@@ -116,5 +120,5 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 app.listen(port, () => {
-  console.log(`Sitemap generator server running on port ${port}`);
+  console.log(`Sitemap generator server running on port ${port}. pleease check on website http://localhost:3001/generate-sitemap .`);
 });

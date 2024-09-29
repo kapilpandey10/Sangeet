@@ -11,17 +11,19 @@ const BlogHomepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedTag, setSelectedTag] = useState('all');
   const blogsPerPage = 10;
 
-  // Fetch only published blogs from Supabase
+  // Fetch only published blogs from Supabase and order by latest
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true); // Start loading
       const { data, error } = await supabase
         .from('blogs')
         .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
-        .eq('status', 'published'); // Fetch only blogs where status is 'published'
-      
+        .eq('status', 'published')
+        .order('published_date', { ascending: false }); // Order by published_date in descending order
+
       if (error) {
         console.error('Error fetching blogs:', error.message);
       } else {
@@ -47,6 +49,17 @@ const BlogHomepage = () => {
     );
   }, [searchQuery, blogs]);
 
+  // Filter blogs by selected tag
+  useEffect(() => {
+    if (selectedTag === 'all') {
+      setFilteredBlogs(blogs);
+    } else {
+      setFilteredBlogs(
+        blogs.filter((blog) => blog.tags.includes(selectedTag))
+      );
+    }
+  }, [selectedTag, blogs]);
+
   // Pagination logic
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
@@ -55,6 +68,15 @@ const BlogHomepage = () => {
   const loadMoreBlogs = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
+
+  // Handle tag click
+  const handleTagClick = (tag) => {
+    setSelectedTag(tag);
+    setCurrentPage(1); // Reset pagination to first page
+  };
+
+  // Dynamically generate tags from the blog data
+  const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags)));
 
   if (loading) {
     return (
@@ -74,7 +96,6 @@ const BlogHomepage = () => {
       </div>
     );
   }
-  
 
   return (
     <div className="blog-homepage-container">
@@ -102,6 +123,18 @@ const BlogHomepage = () => {
           ))}
         </datalist>
       </div>
+
+      {/* Tag Filter Section */}
+      <section className="tag-filter-section">
+        <ul className="tag-list">
+          <li className={`tag-item ${selectedTag === 'all' ? 'active-tag' : ''}`} onClick={() => handleTagClick('all')}>All</li>
+          {allTags.map((tag) => (
+            <li key={tag} className={`tag-item ${selectedTag === tag ? 'active-tag' : ''}`} onClick={() => handleTagClick(tag)}>
+              {tag.charAt(0).toUpperCase() + tag.slice(1)} {/* Capitalize the tag */}
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Display recent blogs */}
       <div className="blog-grid-container">

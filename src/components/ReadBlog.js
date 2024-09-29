@@ -155,7 +155,6 @@ const ReadBlog = () => {
                   <img src={relatedBlog.thumbnail_url || 'https://via.placeholder.com/150'} alt={relatedBlog.title} className="related-blog-thumbnail" />
                   <div>
                     <h4>{relatedBlog.title}</h4>
-                    <p>{relatedBlog.excerpt}</p>
                   </div>
                 </a>
               </li>

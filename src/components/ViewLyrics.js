@@ -161,7 +161,7 @@ const ViewLyrics = () => {
             <a href={`https://www.facebook.com/sharer/sharer.php?u=https://pandeykapil.com.np/lyrics/${slug}`} target="_blank">
               <FaFacebook />
             </a>
-            <a href={`https://api.whatsapp.com/send?text=Check out these lyrics: ${lyric.title} - ${lyric.artist} https://pandeykapil.com.np/lyrics/${slug}`} target="_blank">
+            <a href={`https://api.whatsapp.com/send?text= Check out these lyrics: ${lyric.title} - ${lyric.artist} https://pandeykapil.com.np/lyrics/${slug}`} target="_blank">
               <FaWhatsapp />
             </a>
           </div>

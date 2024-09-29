@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
-import '../style/HomePage.css';
+import '../style/HomePage.css'; // Add skeleton CSS here
 
 const HomeYTVideo = React.lazy(() => import('./homeytvideo'));
 const FeaturedArtistCard = React.lazy(() => import('./FeaturedArtistCard'));
@@ -14,8 +14,7 @@ const HomePage = () => {
 
   useEffect(() => {
     document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
-    
-    // Add meta tags for SEO
+
     const metaDescription = document.createElement('meta');
     metaDescription.name = 'description';
     metaDescription.content = 'Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics.';
@@ -38,7 +37,6 @@ const HomePage = () => {
     };
   }, []);
 
-  // Fetch lyrics and featured artist
   useEffect(() => {
     const fetchAllData = async () => {
       setLoading(true);
@@ -89,7 +87,7 @@ const HomePage = () => {
   return (
     <div className="homepage-container">
       {/* Hero Slider */}
-      <Suspense fallback={<div>Loading Slider...</div>}>
+      <Suspense fallback={<div className="skeleton-box"></div>}>
         <HeroSlider />
       </Suspense>
 
@@ -97,7 +95,25 @@ const HomePage = () => {
       <p>Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
 
       {loading ? (
-        <p>Loading lyrics and artist... Hold On</p>
+        <>
+          {/* Skeleton for Lyrics Section */}
+          <div className="skeleton-loader">
+            <div className="skeleton-title"></div>
+            <div className="skeleton-lyrics-item"></div>
+            <div className="skeleton-lyrics-item"></div>
+            <div className="skeleton-lyrics-item"></div>
+            <div className="skeleton-lyrics-item"></div>
+          </div>
+
+          {/* Skeleton for YouTube Video */}
+          <div className="skeleton-yt-video"></div>
+
+          {/* Skeleton for Featured Artist */}
+          <div className="skeleton-loader">
+            <div className="skeleton-title"></div>
+            <div className="skeleton-box"></div>
+          </div>
+        </>
       ) : (
         <>
           {/* Lyrics Section */}
@@ -137,7 +153,7 @@ const HomePage = () => {
           </div>
 
           {/* YouTube Video Section */}
-          <Suspense fallback={<div>Loading YouTube Video...</div>}>
+          <Suspense fallback={<div className="skeleton-yt-video"></div>}>
             <HomeYTVideo />
           </Suspense>
 
@@ -146,7 +162,7 @@ const HomePage = () => {
             <div className="featured-artist-section">
               <h2 className="featured-artist-title">Featured Nepali Artist</h2>
               <div className="featured-artist-container">
-                <Suspense fallback={<div>Loading Artist Card...</div>}>
+                <Suspense fallback={<div className="skeleton-box"></div>}>
                   <FeaturedArtistCard artist={featuredArtist} />
                 </Suspense>
               </div>

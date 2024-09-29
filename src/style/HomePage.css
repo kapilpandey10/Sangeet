@@ -7,7 +7,54 @@
 body {
     overflow-x: hidden;
 }
-
+/* Skeleton loader animation */
+@keyframes skeleton-loading {
+    0% {
+      background-color: #e0e0e0;
+    }
+    50% {
+      background-color: #f0f0f0;
+    }
+    100% {
+      background-color: #e0e0e0;
+    }
+  }
+  
+  .skeleton-loader {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .skeleton-title {
+    width: 60%;
+    height: 24px;
+    margin-bottom: 16px;
+    animation: skeleton-loading 1.5s infinite;
+  }
+  
+  .skeleton-text {
+    width: 80%;
+    height: 16px;
+    margin-bottom: 8px;
+    animation: skeleton-loading 1.5s infinite;
+  }
+  
+  .skeleton-box {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    animation: skeleton-loading 1.5s infinite;
+  }
+  
+  .skeleton-card {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    animation: skeleton-loading 1.5s infinite;
+  }
+  
 /* General Page Styles */
 .homepage-container {
     margin-top: 20px;

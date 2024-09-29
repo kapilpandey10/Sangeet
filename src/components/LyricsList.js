@@ -8,9 +8,9 @@ const LyricsList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [languageFilter, setLanguageFilter] = useState('all');
   const [yearFilter, setYearFilter] = useState('all');
-  const [availableLanguages, setAvailableLanguages] = useState([]); // Store available languages
-  const [availableYearRanges, setAvailableYearRanges] = useState([]); // Store available year ranges
-  const [loading, setLoading] = useState(true);
+  const [availableLanguages, setAvailableLanguages] = useState([]);
+  const [availableYearRanges, setAvailableYearRanges] = useState([]);
+  const [loading, setLoading] = useState(true); // Set loading state
   const [error, setError] = useState(null);
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
 
@@ -21,16 +21,14 @@ const LyricsList = () => {
 
     const fetchLyrics = async () => {
       try {
-        // Fetch slug along with other fields
         const { data, error } = await supabase
           .from('lyrics')
-          .select('title, artist, published_date, slug, language')  // Ensure slug and language are selected
-          .eq('status', 'approved') // Only fetch approved lyrics
-          .order('published_date', { ascending: false }); // Fetch latest songs first
+          .select('title, artist, published_date, slug, language')
+          .eq('status', 'approved')
+          .order('published_date', { ascending: false });
 
         if (error) throw error;
 
-        // Group lyrics by artist
         const groupedByArtist = data.reduce((result, lyric) => {
           const artists = lyric.artist.split(',').map((artist) => artist.trim());
           artists.forEach((artist) => {
@@ -42,11 +40,9 @@ const LyricsList = () => {
 
         setLyricsByArtist(groupedByArtist);
 
-        // Extract unique languages
         const languages = [...new Set(data.map((lyric) => lyric.language.trim().toLowerCase()))];
         setAvailableLanguages(languages);
 
-        // Extract year ranges from published_date
         const years = data.map((lyric) => new Date(lyric.published_date).getFullYear());
         const yearRanges = getYearRanges(years);
         setAvailableYearRanges(yearRanges);
@@ -54,14 +50,13 @@ const LyricsList = () => {
         console.error('Error fetching lyrics:', error);
         setError('Failed to load lyrics.');
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
     fetchLyrics();
   }, []);
 
-  // Function to generate year ranges (e.g., 70-80, 80-90)
   const getYearRanges = (years) => {
     const ranges = [
       { label: '1970-1980', min: 1970, max: 1980 },
@@ -71,19 +66,13 @@ const LyricsList = () => {
       { label: '2010-2020', min: 2010, max: 2020 },
       { label: '2020-present', min: 2020, max: new Date().getFullYear() },
     ];
-
-    // Filter ranges to only include years from the data
-    return ranges.filter((range) =>
-      years.some((year) => year >= range.min && year < range.max)
-    );
+    return ranges.filter((range) => years.some((year) => year >= range.min && year < range.max));
   };
 
-  // Search function
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
-  // Filter results based on search query, language, and year
   const filteredLyrics = Object.keys(lyricsByArtist).reduce((filtered, artist) => {
     const filteredByArtist = lyricsByArtist[artist].filter((lyric) => {
       const matchesSearchQuery =
@@ -108,7 +97,18 @@ const LyricsList = () => {
     return filtered;
   }, {});
 
-  if (loading) return <p>Loading lyrics...</p>;
+  // Render the skeleton loader while loading
+  const renderSkeletonLoader = () => (
+    <div className="skeleton-loader">
+      <div className="skeleton-title"></div>
+      <div className="skeleton-card"></div>
+      <div className="skeleton-card"></div>
+      <div className="skeleton-card"></div>
+      <div className="skeleton-card"></div>
+    </div>
+  );
+
+  if (loading) return renderSkeletonLoader(); // Render skeleton loader during loading
   if (error) return <p>{error}</p>;
 
   return (

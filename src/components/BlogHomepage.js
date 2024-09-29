@@ -16,6 +16,7 @@ const BlogHomepage = () => {
   // Fetch only published blogs from Supabase
   useEffect(() => {
     const fetchBlogs = async () => {
+      setLoading(true); // Start loading
       const { data, error } = await supabase
         .from('blogs')
         .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
@@ -27,7 +28,7 @@ const BlogHomepage = () => {
         setBlogs(data);
         setFilteredBlogs(data); // Initially set filtered blogs to all blogs
       }
-      setLoading(false);
+      setTimeout(() => setLoading(false), 1500); // 1.5-second delay
     };
 
     fetchBlogs();
@@ -56,8 +57,24 @@ const BlogHomepage = () => {
   };
 
   if (loading) {
-    return <div className="loading-message">Loading blogs...</div>;
+    return (
+      <div className="blog-homepage-container">
+        <div className="skeleton-header"></div>
+        <div className="skeleton-search-bar"></div>
+        <div className="skeleton-blog-grid">
+          <div className="skeleton-blog-card"></div>
+          <div className="skeleton-blog-card"></div>
+          <div className="skeleton-blog-card"></div>
+        </div>
+        <div className="skeleton-blog-grid">
+          <div className="skeleton-blog-card"></div>
+          <div className="skeleton-blog-card"></div>
+          <div className="skeleton-blog-card"></div>
+        </div>
+      </div>
+    );
   }
+  
 
   return (
     <div className="blog-homepage-container">

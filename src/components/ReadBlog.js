@@ -12,9 +12,10 @@ const ReadBlog = () => {
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch blog details by slug
+  // Simulate loading delay for 2 seconds
   useEffect(() => {
     const fetchBlogBySlug = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from('blogs')
         .select('*')
@@ -27,7 +28,9 @@ const ReadBlog = () => {
         setBlog(data);
         fetchRelatedBlogs(data.tags); // Fetch related blogs based on tags
       }
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false); // 2-second wait time before showing content
+      }, 2000);
     };
 
     fetchBlogBySlug();
@@ -46,27 +49,34 @@ const ReadBlog = () => {
       console.error('Error fetching related blogs:', error.message);
     }
 
-    if (blogsWithSameTags.length < 5) {
-      const { data: randomBlogs, error: randomError } = await supabase
-        .from('blogs')
-        .select('*')
-        .neq('slug', slug) // Exclude the current blog
-        .limit(5 - blogsWithSameTags.length); // Fill the rest with random blogs if needed
+    const { data: randomBlogs } = await supabase
+      .from('blogs')
+      .select('*')
+      .neq('slug', slug) // Exclude the current blog
+      .limit(5 - blogsWithSameTags.length); // Fill the rest with random blogs if needed
 
-      if (randomError) {
-        console.error('Error fetching random blogs:', randomError.message);
-      }
-
-      setRelatedBlogs([...blogsWithSameTags, ...randomBlogs]);
-    } else {
-      setRelatedBlogs(blogsWithSameTags);
-    }
+    setRelatedBlogs([...blogsWithSameTags, ...randomBlogs]);
   };
 
   if (loading) {
-    return <div>Loading blog...</div>;
+    return (
+      <div className="read-blog-container">
+        <div className="skeleton-header"></div>
+        <div className="skeleton-paragraph"></div>
+        <div className="skeleton-paragraph"></div>
+        <div className="skeleton-image"></div>
+  
+        {/* Suggested Articles */}
+        <aside className="skeleton-related-blogs">
+          <h3 className="skeleton-heading"></h3>
+          <div className="skeleton-suggested-item"></div>
+          <div className="skeleton-suggested-item"></div>
+          <div className="skeleton-suggested-item"></div>
+        </aside>
+      </div>
+    );
   }
-
+  
   if (!blog) {
     return <div>Blog not found</div>;
   }

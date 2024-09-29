@@ -43,7 +43,7 @@ const HomePage = () => {
       try {
         const { data: allLyrics, error: lyricsError } = await supabase
           .from('lyrics')
-          .select('id, title, artist, published_date')
+          .select('id, title, artist, published_date, slug') // Include slug here
           .eq('status', 'approved');
 
         if (lyricsError) {
@@ -126,7 +126,8 @@ const HomePage = () => {
                     <h3>{lyric.title}</h3>
                     <p>{lyric.artist}</p>
                     <p>{new Date(lyric.published_date).getFullYear()}</p>
-                    <Link to={`/lyrics/${formatTitleForURL(lyric.title)}`}>Read Lyrics</Link>
+                    {/* Use slug for the link */}
+                    <Link to={`/lyrics/${lyric.slug}`}>Read Lyrics</Link>
                   </div>
                 ))}
               </div>
@@ -137,6 +138,7 @@ const HomePage = () => {
               <Link to="/lyrics-list">View All Nepali Lyrics</Link>
             </div>
           </section>
+
 
           {/* Insert AdSense Ad in Between Sections */}
           <div className="ad-container">

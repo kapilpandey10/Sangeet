@@ -78,31 +78,16 @@ const BlogHomepage = () => {
   // Dynamically generate tags from the blog data
   const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags)));
 
-  if (loading) {
-    return (
-      <div className="blog-homepage-container">
-        <div className="skeleton-header"></div>
-        <div className="skeleton-search-bar"></div>
-        <div className="skeleton-blog-grid">
-          <div className="skeleton-blog-card"></div>
-          <div className="skeleton-blog-card"></div>
-          <div className="skeleton-blog-card"></div>
-        </div>
-        <div className="skeleton-blog-grid">
-          <div className="skeleton-blog-card"></div>
-          <div className="skeleton-blog-card"></div>
-          <div className="skeleton-blog-card"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="blog-homepage-container">
       {/* Dynamic SEO with Helmet */}
       <Helmet>
         <title>Latest Blogs - My Blog Site</title>
-        <meta name="description" content="Explore the latest blogs on various topics." />
+        <meta name="description" content="Explore the latest blogs on various topics from Sangeet Lyrics Central." />
+        <link rel="canonical" href="https://pandeykapil.com.np/blogs" />
+        <meta property="og:title" content="Sangeet Lyrics Central - Blogs" />
+        <meta property="og:description" content="Explore the latest blogs on various topics." />
+        <meta property="og:url" content="https://pandeykapil.com.np/blogs" />
       </Helmet>
 
       <h1 className="blog-homepage-title">Latest Blogs</h1>
@@ -116,12 +101,13 @@ const BlogHomepage = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           list="autocomplete-suggestions"
+          style={{ color: 'black' }} // Set the input text color to black
         />
-        <datalist id="autocomplete-suggestions">
-          {filteredBlogs.map((blog) => (
-            <option key={blog.id} value={blog.title} />
-          ))}
-        </datalist>
+        {searchQuery && (
+          <p className="search-results-info">
+            {filteredBlogs.length} articles found for "{searchQuery}"
+          </p>
+        )}
       </div>
 
       {/* Tag Filter Section */}
@@ -144,7 +130,7 @@ const BlogHomepage = () => {
               <img
                 className="blog-card-image"
                 src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
-                alt={blog.title}
+                alt={`${blog.title} thumbnail`}
                 loading="lazy"
               />
               <div className="blog-card-content">

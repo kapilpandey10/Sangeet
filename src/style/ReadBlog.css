@@ -130,74 +130,7 @@
   border-radius: 5px;
 }
 
-/* Media Queries for Responsiveness */
-
-/* Tablets and small screens (up to 768px) */
-@media (max-width: 768px) {
-  .blog-layout {
-    grid-template-columns: 1fr; /* Stack the content and sidebar */
-  }
-
-  .blog-header h1 {
-    font-size: 2rem;
-  }
-
-  .blog-meta {
-    font-size: 12px;
-  }
-
-  .blog-content {
-    font-size: 16px;
-  }
-
-  .social-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .related-blog-thumbnail {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* Mobile devices (up to 480px) */
-@media (max-width: 480px) {
-  .read-blog-container {
-    padding: 15px;
-  }
-
-  .breadcrumb {
-    font-size: 12px;
-  }
-
-  .blog-header h1 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-  }
-
-  .blog-meta {
-    font-size: 10px;
-  }
-
-  .blog-content {
-    font-size: 14px;
-  }
-
-  .social-share a {
-    font-size: 14px;
-  }
-
-  .social-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .related-blog-thumbnail {
-    width: 35px;
-    height: 35px;
-  }
-}
+/* Skeleton Styles */
 
 /* Skeleton header (mimics blog title) */
 .skeleton-header {
@@ -267,17 +200,34 @@
   }
   100% {
     background-color: #e0e0e0;
-  }
+}
 }
 
-
-
-/* Responsive Styles */
-
-/* Tablets and small screens (up to 768px) */
 @media (max-width: 768px) {
-  .read-blog-container {
+  .blog-layout {
     grid-template-columns: 1fr;
+  }
+
+  .blog-header h1 {
+    font-size: 2rem;
+  }
+
+  .blog-meta {
+    font-size: 12px;
+  }
+
+  .blog-content {
+    font-size: 16px;
+  }
+
+  .social-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .related-blog-thumbnail {
+    width: 40px;
+    height: 40px;
   }
 
   .skeleton-related-blogs {
@@ -291,6 +241,41 @@
 
 /* Mobile devices (up to 480px) */
 @media (max-width: 480px) {
+  .read-blog-container {
+    padding: 15px;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+  }
+
+  .blog-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  .blog-meta {
+    font-size: 10px;
+  }
+
+  .blog-content {
+    font-size: 14px;
+  }
+
+  .social-share a {
+    font-size: 14px;
+  }
+
+  .social-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .related-blog-thumbnail {
+    width: 35px;
+    height: 35px;
+  }
+
   .skeleton-header {
     width: 80%;
     height: 35px;

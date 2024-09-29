@@ -12,10 +12,10 @@ const ReadBlog = () => {
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate loading delay for 2 seconds
+  // Fetch blog details by slug
   useEffect(() => {
     const fetchBlogBySlug = async () => {
-      setLoading(true);
+      setLoading(true); // Loading starts immediately
       const { data, error } = await supabase
         .from('blogs')
         .select('*')
@@ -28,9 +28,7 @@ const ReadBlog = () => {
         setBlog(data);
         fetchRelatedBlogs(data.tags); // Fetch related blogs based on tags
       }
-      setTimeout(() => {
-        setLoading(false); // 2-second wait time before showing content
-      }, 2000);
+      setLoading(false); // Set loading to false once the blog data is fetched
     };
 
     fetchBlogBySlug();
@@ -65,8 +63,6 @@ const ReadBlog = () => {
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-image"></div>
-  
-        {/* Suggested Articles */}
         <aside className="skeleton-related-blogs">
           <h3 className="skeleton-heading"></h3>
           <div className="skeleton-suggested-item"></div>
@@ -76,7 +72,7 @@ const ReadBlog = () => {
       </div>
     );
   }
-  
+
   if (!blog) {
     return <div>Blog not found</div>;
   }
@@ -90,9 +86,48 @@ const ReadBlog = () => {
       <Helmet>
         <title>{blog.title}</title>
         <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
+        
+        {/* Open Graph tags for social media */}
         <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.excerpt} />
+        <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
         <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+        <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+        <meta property="og:type" content="article" />
+
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={blog.title} />
+        <meta name="twitter:description" content={blog.excerpt || 'Read this blog post on important topics'} />
+        <meta name="twitter:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+        <meta name="twitter:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+
+        {/* Structured Data for Blog Post */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": blog.title,
+            "image": blog.thumbnail_url || 'https://via.placeholder.com/300',
+            "author": {
+              "@type": "Person",
+              "name": blog.author
+            },
+            "datePublished": blog.published_date,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Sangeet Lyrics Central",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://pandeykapil.com.np/logo.png"
+              }
+            },
+            "description": blog.excerpt || 'Read our latest blog on important topics',
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://pandeykapil.com.np/blogs/${slug}`
+            }
+          })}
+        </script>
       </Helmet>
 
       {/* Breadcrumb */}

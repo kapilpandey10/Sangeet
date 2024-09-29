@@ -38,6 +38,7 @@ const ViewLyrics = () => {
       }
     };
 
+    // Function to fetch related lyrics based on artist
     const fetchRelatedLyrics = async (artist) => {
       try {
         const { data: artistLyrics } = await supabase
@@ -45,7 +46,7 @@ const ViewLyrics = () => {
           .select('*')
           .ilike('artist', artist)
           .neq('slug', slug) // Exclude the current lyric by its slug
-          .limit(3);
+          .limit(5); // Limit the results to 5
 
         setRelatedLyrics(artistLyrics);
       } catch {

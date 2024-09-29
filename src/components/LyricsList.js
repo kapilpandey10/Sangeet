@@ -8,6 +8,8 @@ const LyricsList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [languageFilter, setLanguageFilter] = useState('all');
   const [yearFilter, setYearFilter] = useState('all');
+  const [availableLanguages, setAvailableLanguages] = useState([]); // Store available languages
+  const [availableYearRanges, setAvailableYearRanges] = useState([]); // Store available year ranges
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
@@ -22,7 +24,7 @@ const LyricsList = () => {
         // Fetch slug along with other fields
         const { data, error } = await supabase
           .from('lyrics')
-          .select('title, artist, published_date, slug')  // Ensure slug is selected
+          .select('title, artist, published_date, slug, language')  // Ensure slug and language are selected
           .eq('status', 'approved') // Only fetch approved lyrics
           .order('published_date', { ascending: false }); // Fetch latest songs first
 
@@ -39,6 +41,15 @@ const LyricsList = () => {
         }, {});
 
         setLyricsByArtist(groupedByArtist);
+
+        // Extract unique languages
+        const languages = [...new Set(data.map((lyric) => lyric.language.trim().toLowerCase()))];
+        setAvailableLanguages(languages);
+
+        // Extract year ranges from published_date
+        const years = data.map((lyric) => new Date(lyric.published_date).getFullYear());
+        const yearRanges = getYearRanges(years);
+        setAvailableYearRanges(yearRanges);
       } catch (error) {
         console.error('Error fetching lyrics:', error);
         setError('Failed to load lyrics.');
@@ -49,6 +60,23 @@ const LyricsList = () => {
 
     fetchLyrics();
   }, []);
+
+  // Function to generate year ranges (e.g., 70-80, 80-90)
+  const getYearRanges = (years) => {
+    const ranges = [
+      { label: '1970-1980', min: 1970, max: 1980 },
+      { label: '1980-1990', min: 1980, max: 1990 },
+      { label: '1990-2000', min: 1990, max: 2000 },
+      { label: '2000-2010', min: 2000, max: 2010 },
+      { label: '2010-2020', min: 2010, max: 2020 },
+      { label: '2020-present', min: 2020, max: new Date().getFullYear() },
+    ];
+
+    // Filter ranges to only include years from the data
+    return ranges.filter((range) =>
+      years.some((year) => year >= range.min && year < range.max)
+    );
+  };
 
   // Search function
   const handleSearch = (e) => {
@@ -64,7 +92,11 @@ const LyricsList = () => {
 
       const matchesLanguage =
         languageFilter === 'all' || lyric.language.trim().toLowerCase() === languageFilter.toLowerCase();
-      const matchesYear = yearFilter === 'all' || new Date(lyric.published_date).getFullYear().toString() === yearFilter;
+
+      const matchesYear =
+        yearFilter === 'all' ||
+        (new Date(lyric.published_date).getFullYear() >= yearFilter.min &&
+          new Date(lyric.published_date).getFullYear() < yearFilter.max);
 
       return matchesSearchQuery && matchesLanguage && matchesYear;
     });
@@ -96,13 +128,27 @@ const LyricsList = () => {
         {/* Filter by language */}
         <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
           <option value="all">All Languages</option>
-          {/* You can populate languages here */}
+          {availableLanguages.map((lang, idx) => (
+            <option key={idx} value={lang}>
+              {lang.charAt(0).toUpperCase() + lang.slice(1)}
+            </option>
+          ))}
         </select>
 
         {/* Filter by year */}
-        <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+        <select
+          value={yearFilter === 'all' ? 'all' : yearFilter.label}
+          onChange={(e) => {
+            const selectedRange = availableYearRanges.find((range) => range.label === e.target.value);
+            setYearFilter(selectedRange || 'all');
+          }}
+        >
           <option value="all">All Years</option>
-          {/* You can populate years here */}
+          {availableYearRanges.map((range, idx) => (
+            <option key={idx} value={range.label}>
+              {range.label}
+            </option>
+          ))}
         </select>
       </div>
 

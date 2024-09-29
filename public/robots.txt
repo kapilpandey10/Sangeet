@@ -1,16 +1,9 @@
 User-agent: *
 Disallow: /admin/
-Disallow: /login/
-Disallow: /signup/
-Disallow: /private/
+
 Allow: /contactus
 Allow: /terms
 Allow: /lyrics/
 Allow:/blogs/
 Allow: /privacyandpolicy
-
-# Optional: add a crawl delay if server performance is an issue
-# Crawl-delay: 10
-
-# Sitemap location
 Sitemap: https://pandeykapil.com.np/sitemap.xml

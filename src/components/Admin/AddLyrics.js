@@ -10,6 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const AddLyrics = () => {
   const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState(''); // New state for the slug
   const [artists, setArtists] = useState([{ name: '', suggestions: [] }]);
   const [writer, setWriter] = useState('');
   const [lyrics, setLyrics] = useState('');
@@ -26,6 +27,16 @@ const AddLyrics = () => {
     const metaDescription = document.createElement('meta');
 
   }, []);
+
+  // Function to generate a slug from the title
+  const generateSlug = (title) => {
+    return title
+      .trim()
+      .toLowerCase() // Convert to lowercase
+      .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with dashes
+      .replace(/-+/g, '-'); // Replace multiple dashes with a single dash
+  };
 
   // Function to validate the YouTube URL or video ID
   const validateYouTubeURL = (url) => {
@@ -102,12 +113,16 @@ const AddLyrics = () => {
     const finalVideoId = validateYouTubeURL(videoUrl);
     if (!finalVideoId) return; // Stop submission if video ID is invalid
 
+    // Generate a slug from the title if the slug is not manually entered
+    const finalSlug = slug || generateSlug(title);
+
     try {
       const { data, error } = await supabase
         .from('lyrics')
         .insert([
           {
             title,
+            slug: finalSlug, // Save the slug in the database
             artist: artists.map(artist => artist.name).join(', '),
             lyrics_writer: writer,
             lyrics,
@@ -124,6 +139,7 @@ const AddLyrics = () => {
 
       setMessage('Lyrics submitted successfully! It will be reviewed by the admin and listed soon.');
       setTitle('');
+      setSlug(''); // Clear the slug field after submission
       setArtists([{ name: '', suggestions: [] }]);
       setWriter('');
       setLyrics('');
@@ -151,6 +167,17 @@ const AddLyrics = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="slug">Slug (URL-friendly):</label> {/* New slug field */}
+          <input
+            type="text"
+            id="slug"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="Leave empty to auto-generate"
           />
         </div>
 
@@ -268,7 +295,6 @@ const AddLyrics = () => {
           />
         </div>
 
-        
         <button type="submit">Submit Lyrics</button>
       </form>
     </div>

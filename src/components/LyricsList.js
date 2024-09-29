@@ -17,36 +17,12 @@ const LyricsList = () => {
   useEffect(() => {
     document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
 
-    // Set meta tags for SEO
-    const metaDescription = document.createElement('meta');
-    metaDescription.name = 'description';
-    metaDescription.content = 'Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics.';
-    document.head.appendChild(metaDescription);
-
-    const metaKeywords = document.createElement('meta');
-    metaKeywords.name = 'keywords';
-    metaKeywords.content = 'Nepali music lyrics, Nepali artists, songs, Sangeet Lyrics Central, latest Nepali songs, Balen, Nepali Music industry';
-    document.head.appendChild(metaKeywords);
-
-    const metaRobots = document.createElement('meta');
-    metaRobots.name = 'robots';
-    metaRobots.content = 'index, follow';
-    document.head.appendChild(metaRobots);
-
-    return () => {
-      document.head.removeChild(metaDescription);
-      document.head.removeChild(metaKeywords);
-      document.head.removeChild(metaRobots);
-    };
-  }, []);
-
-  // Fetch lyrics from Supabase when the component mounts
-  useEffect(() => {
     const fetchLyrics = async () => {
       try {
+        // Fetch slug along with other fields
         const { data, error } = await supabase
           .from('lyrics')
-          .select('*')
+          .select('title, artist, published_date, slug')  // Ensure slug is selected
           .eq('status', 'approved') // Only fetch approved lyrics
           .order('published_date', { ascending: false }); // Fetch latest songs first
 
@@ -79,18 +55,12 @@ const LyricsList = () => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
-  // Function to generate URL slugs for title and artist
-  const generateSlug = (title) => {
-    return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
-  };
-
   // Filter results based on search query, language, and year
   const filteredLyrics = Object.keys(lyricsByArtist).reduce((filtered, artist) => {
     const filteredByArtist = lyricsByArtist[artist].filter((lyric) => {
       const matchesSearchQuery =
         lyric.title.toLowerCase().includes(searchQuery) ||
-        lyric.artist.toLowerCase().includes(searchQuery) ||
-        lyric.lyrics.toLowerCase().includes(searchQuery);
+        lyric.artist.toLowerCase().includes(searchQuery);
 
       const matchesLanguage =
         languageFilter === 'all' || lyric.language.trim().toLowerCase() === languageFilter.toLowerCase();
@@ -106,56 +76,6 @@ const LyricsList = () => {
     return filtered;
   }, {});
 
-  // Get unique languages and years for dropdown filters
-  const uniqueLanguages = [
-    ...new Set(Object.values(lyricsByArtist).flat().map((lyric) => lyric.language.trim().toLowerCase())),
-  ];
-  const uniqueYears = [...new Set(Object.values(lyricsByArtist).flat().map((lyric) => new Date(lyric.published_date).getFullYear()))];
-
-  // "Load More" functionality to display more artists
-  const loadMoreArtists = () => {
-    setVisibleArtists((prevVisible) => prevVisible + 10);
-  };
-
-  // Use Intersection Observer for lazy loading
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMoreArtists(); // Load more lyrics when the observer intersects
-        }
-      },
-      { threshold: 1.0 } // Trigger when 100% of the element is visible
-    );
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, []);
-
-  // Render Google AdSense Ad
-  const renderGoogleAd = () => {
-    return (
-      <div className="ad-container">
-        <ins
-          className="adsbygoogle"
-          style={{ display: 'block' }}
-          data-ad-client="ca-pub-9887409333966239"
-          data-ad-slot="1234567890"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        ></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-      </div>
-    );
-  };
-
   if (loading) return <p>Loading lyrics...</p>;
   if (error) return <p>{error}</p>;
 
@@ -165,7 +85,6 @@ const LyricsList = () => {
 
       {/* Search and filter inputs */}
       <div className="search-filter-container">
-        {/* Search input */}
         <input
           type="text"
           placeholder="Search by artist, lyrics, or writer..."
@@ -177,50 +96,40 @@ const LyricsList = () => {
         {/* Filter by language */}
         <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
           <option value="all">All Languages</option>
-          {uniqueLanguages.map((lang, idx) => (
-            <option key={idx} value={lang}>
-              {lang.charAt(0).toUpperCase() + lang.slice(1)}
-            </option>
-          ))}
+          {/* You can populate languages here */}
         </select>
 
         {/* Filter by year */}
         <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
           <option value="all">All Years</option>
-          {uniqueYears.map((year, idx) => (
-            <option key={idx} value={year}>
-              {year}
-            </option>
-          ))}
+          {/* You can populate years here */}
         </select>
       </div>
 
-      {/* Display filtered results with a limit on visible artists */}
+      {/* Display filtered results */}
       {Object.keys(filteredLyrics).slice(0, visibleArtists).map((artist, index) => (
         <div key={artist} className="artist-section">
           <h2>{artist}</h2>
           <div className="lyrics-grid">
             {filteredLyrics[artist].map((lyric) => (
-              <div key={lyric.id} className="lyric-card">
+              <div key={lyric.slug} className="lyric-card">
                 <div className="lyric-card-content">
                   <h3>{lyric.title}</h3>
                   <p className="small-text">Published: {new Date(lyric.published_date).getFullYear()}</p>
-                  <Link to={`/lyrics/${generateSlug(lyric.title)}`} className="view-lyrics-button">
+                  {/* Use the slug for the Link */}
+                  <Link to={`/lyrics/${lyric.slug}`} className="view-lyrics-button">
                     View Lyrics
                   </Link>
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Insert a Google Ad after every 3rd artist */}
-          {index % 3 === 0 && renderGoogleAd()}
         </div>
       ))}
 
       {/* Load More Button */}
       <div ref={loadMoreRef} className="view-more-container">
-        <button onClick={loadMoreArtists} className="view-more-button">
+        <button onClick={() => setVisibleArtists((prev) => prev + 10)} className="view-more-button">
           Load More
         </button>
       </div>

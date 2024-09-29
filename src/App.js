@@ -78,7 +78,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/artistbio/:name" element={<ArtistBio />} />
-          <Route path="/lyrics/:title" element={<ViewLyrics />} />
+          <Route path="/lyrics/:slug" element={<ViewLyrics />} /> 
           <Route path="/lyrics-list" element={<LyricsList />} />
           <Route path="/privacyandpolicy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsAndService />} />

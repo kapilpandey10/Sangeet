@@ -1,4 +1,4 @@
-require('dotenv').config();  // This line should be at the very top
+require('dotenv').config(); // This line should be at the very top
 
 const express = require('express');
 const fs = require('fs');
@@ -14,45 +14,40 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const app = express();
 const port = 3001;
 
-// Helper function to generate the URL-friendly version of the title
-const generateSlug = (title) => {
-  return title.trim().replace(/\s+/g, '_').toLowerCase(); // Replaces spaces with underscores and converts to lowercase
-};
-
 // Function to generate the sitemap
 const generateSitemap = async () => {
   try {
-    // Fetch all lyrics titles from Supabase 'lyrics' table
+    // Fetch all lyrics with their slugs from Supabase 'lyrics' table
     const { data: lyrics, error: lyricsError } = await supabase
       .from('lyrics')
-      .select('title');
+      .select('slug');
 
     if (lyricsError) {
       console.error('Error fetching lyrics:', lyricsError);
       return false;
     }
 
-    // Generate dynamic URLs for lyrics
+    // Generate dynamic URLs for lyrics using slug
     const lyricsUrls = lyrics.map((lyric) => ({
-      loc: `https://pandeykapil.com.np/lyrics/${generateSlug(lyric.title)}`,
+      loc: `https://pandeykapil.com.np/lyrics/${lyric.slug}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.8',
     }));
 
-    // Fetch all blog titles from Supabase 'blogs' table
+    // Fetch all blogs with their slugs from Supabase 'blogs' table
     const { data: blogs, error: blogsError } = await supabase
       .from('blogs')
-      .select('title');
+      .select('slug');
 
     if (blogsError) {
       console.error('Error fetching blogs:', blogsError);
       return false;
     }
 
-    // Generate dynamic URLs for blogs
+    // Generate dynamic URLs for blogs using slug
     const blogUrls = blogs.map((blog) => ({
-      loc: `https://pandeykapil.com.np/blogs/${generateSlug(blog.title)}`,
+      loc: `https://pandeykapil.com.np/blogs/${blog.slug}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.8',
@@ -114,7 +109,6 @@ cron.schedule('*/3 * * * *', async () => {
     console.log('Error in automatic sitemap generation.');
   }
 });
-
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase URL and Anon Key must be defined in environment variables.');

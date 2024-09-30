@@ -30,7 +30,7 @@ const BlogHomepage = () => {
         setBlogs(data);
         setFilteredBlogs(data); // Initially set filtered blogs to all blogs
       }
-      setTimeout(() => setLoading(false), 1500); // 1.5-second delay
+      setTimeout(() => setLoading(false), 1500); // 1.5-second delay for skeleton loading
     };
 
     fetchBlogs();
@@ -88,6 +88,28 @@ const BlogHomepage = () => {
         <meta property="og:title" content="Sangeet Lyrics Central - Blogs" />
         <meta property="og:description" content="Explore the latest blogs on various topics." />
         <meta property="og:url" content="https://pandeykapil.com.np/blogs" />
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            "headline": "Sangeet Lyrics Central - Latest Blogs",
+            "url": "https://pandeykapil.com.np/blogs",
+            "author": {
+              "@type": "Organization",
+              "name": "Sangeet Lyrics Central"
+            },
+            "description": "Explore the latest blogs on various topics from Sangeet Lyrics Central.",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Sangeet Lyrics Central",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://pandeykapil.com.np/logo.png"
+              }
+            }
+          })}
+        </script>
       </Helmet>
 
       <h1 className="blog-homepage-title">Latest Blogs</h1>
@@ -102,6 +124,7 @@ const BlogHomepage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           list="autocomplete-suggestions"
           style={{ color: 'black' }} // Set the input text color to black
+          aria-label="Search blogs"
         />
         {searchQuery && (
           <p className="search-results-info">
@@ -112,7 +135,7 @@ const BlogHomepage = () => {
 
       {/* Tag Filter Section */}
       <section className="tag-filter-section">
-        <ul className="tag-list">
+        <ul className="tag-list" aria-label="Filter by tags">
           <li className={`tag-item ${selectedTag === 'all' ? 'active-tag' : ''}`} onClick={() => handleTagClick('all')}>All</li>
           {allTags.map((tag) => (
             <li key={tag} className={`tag-item ${selectedTag === tag ? 'active-tag' : ''}`} onClick={() => handleTagClick(tag)}>
@@ -122,42 +145,54 @@ const BlogHomepage = () => {
         </ul>
       </section>
 
-      {/* Display recent blogs */}
-      <div className="blog-grid-container">
-        {currentBlogs.length > 0 ? (
-          currentBlogs.map((blog) => (
-            <div className="blog-card" key={blog.id}>
-              <img
-                className="blog-card-image"
-                src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
-                alt={`${blog.title} thumbnail`}
-                loading="lazy"
-              />
-              <div className="blog-card-content">
-                <h2 className="blog-card-title">{blog.title}</h2>
-                <p className="blog-card-author">
-                  By {blog.author} | <FaCalendarAlt />{' '}
-                  {new Date(blog.published_date).toLocaleDateString()}
-                </p>
-                <p className="blog-card-excerpt">
-                  {blog.excerpt.length > 100 ? `${blog.excerpt.substring(0, 100)}...` : blog.excerpt}
-                </p>
-                <Link to={`/blogs/${blog.slug}`} className="read-more-button">
-                  Read More
-                </Link>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="no-blogs-message">No blogs available.</p>
-        )}
-      </div>
+      {/* Skeleton Loading while blogs are being fetched */}
+      {loading ? (
+        <div className="skeleton-container">
+          <div className="skeleton-card"></div>
+          <div className="skeleton-card"></div>
+          <div className="skeleton-card"></div>
+          <div className="skeleton-card"></div>
+        </div>
+      ) : (
+        <>
+          {/* Display recent blogs */}
+          <div className="blog-grid-container">
+            {currentBlogs.length > 0 ? (
+              currentBlogs.map((blog) => (
+                <div className="blog-card" key={blog.id}>
+                  <img
+                    className="blog-card-image"
+                    src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
+                    alt={`${blog.title} thumbnail`}
+                    loading="lazy"
+                  />
+                  <div className="blog-card-content">
+                    <h2 className="blog-card-title">{blog.title}</h2>
+                    <p className="blog-card-author">
+                      By {blog.author} | <FaCalendarAlt />{' '}
+                      {new Date(blog.published_date).toLocaleDateString()}
+                    </p>
+                    <p className="blog-card-excerpt">
+                      {blog.excerpt.length > 100 ? `${blog.excerpt.substring(0, 100)}...` : blog.excerpt}
+                    </p>
+                    <Link to={`/blogs/${blog.slug}`} className="read-more-button">
+                      Read More
+                    </Link>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="no-blogs-message">No blogs available.</p>
+            )}
+          </div>
 
-      {/* Load More Button */}
-      {filteredBlogs.length > currentBlogs.length && (
-        <button className="load-more-button" onClick={loadMoreBlogs}>
-          Load More
-        </button>
+          {/* Load More Button */}
+          {filteredBlogs.length > currentBlogs.length && (
+            <button className="load-more-button" onClick={loadMoreBlogs}>
+              Load More
+            </button>
+          )}
+        </>
       )}
     </div>
   );

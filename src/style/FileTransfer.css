@@ -99,3 +99,35 @@ body, html {
     width: 80%;
   }
 }
+.skeleton-suggested-item {
+  display: flex;
+  align-items: center;
+  background-color: #e0e0e0;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.skeleton-thumbnail {
+  width: 60px;
+  height: 60px;
+  background-color: #cfcfcf;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 16px;
+  background-color: #cfcfcf;
+  border-radius: 4px;
+}
+
+.skeleton-text {
+  display: flex;
+  width: 50%;
+  height: 150px;
+  background-color: #cfcfcf;
+  margin-top: 8px;
+  border-radius: 4px;
+}

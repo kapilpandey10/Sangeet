@@ -29,6 +29,8 @@ const FileTransfer = () => {
       <div className="skeleton-loader">
         <div className="skeleton-title"></div>
         <div className="skeleton-text"></div>
+        <div className="skeleton-text"></div>
+        <div className="skeleton-text"></div>
         <div className="skeleton-button"></div>
         <div className="skeleton-button"></div>
       </div>

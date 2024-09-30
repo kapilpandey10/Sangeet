@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { supabase } from '../supabaseClient'; // Supabase client for fetching blogs
-import DOMPurify from 'dompurify'; // Import DOMPurify to sanitize HTML
-import '../style/ReadBlog.css'; // Custom CSS for styling
-import { Helmet } from 'react-helmet'; // For dynamic SEO meta tags
-import { FaTwitter, FaFacebook } from 'react-icons/fa'; // Import icons from react-icons
+import { supabase } from '../supabaseClient';
+import DOMPurify from 'dompurify';
+import '../style/ReadBlog.css';
+import { Helmet } from 'react-helmet'; // For SEO
+import { FaTwitter, FaFacebook } from 'react-icons/fa';
+
+// Code Splitting: Lazy load related blogs
+const RelatedBlogs = React.lazy(() => import('./RelatedBlog'));
 
 const ReadBlog = () => {
   const { slug } = useParams(); // Get the slug from the URL
   const [blog, setBlog] = useState(null);
-  const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch blog details by slug
@@ -20,13 +22,12 @@ const ReadBlog = () => {
         .from('blogs')
         .select('*')
         .eq('slug', slug)
-        .single(); // Ensure we get only one result
+        .single();
 
       if (error) {
         console.error('Error fetching blog:', error.message);
       } else {
         setBlog(data);
-        fetchRelatedBlogs(data.tags); // Fetch related blogs based on tags
       }
       setLoading(false); // Set loading to false once the blog data is fetched
     };
@@ -34,41 +35,14 @@ const ReadBlog = () => {
     fetchBlogBySlug();
   }, [slug]);
 
-  // Fetch related blogs based on tags
-  const fetchRelatedBlogs = async (tags) => {
-    const { data: blogsWithSameTags, error } = await supabase
-      .from('blogs')
-      .select('*')
-      .contains('tags', tags) // Fetch blogs with the same tags
-      .neq('slug', slug) // Exclude the current blog
-      .limit(5);
-
-    if (error) {
-      console.error('Error fetching related blogs:', error.message);
-    }
-
-    const { data: randomBlogs } = await supabase
-      .from('blogs')
-      .select('*')
-      .neq('slug', slug) // Exclude the current blog
-      .limit(5 - blogsWithSameTags.length); // Fill the rest with random blogs if needed
-
-    setRelatedBlogs([...blogsWithSameTags, ...randomBlogs]);
-  };
-
   if (loading) {
     return (
       <div className="read-blog-container">
+        {/* Skeleton loaders */}
         <div className="skeleton-header"></div>
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-image"></div>
-        <aside className="skeleton-related-blogs">
-          <h3 className="skeleton-heading"></h3>
-          <div className="skeleton-suggested-item"></div>
-          <div className="skeleton-suggested-item"></div>
-          <div className="skeleton-suggested-item"></div>
-        </aside>
       </div>
     );
   }
@@ -82,26 +56,25 @@ const ReadBlog = () => {
 
   return (
     <div className="read-blog-container">
-      {/* Dynamic SEO with Helmet */}
+      {/* SEO Meta Tags */}
       <Helmet>
         <title>{blog.title}</title>
         <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
-        
-        {/* Open Graph tags for social media */}
+        <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
+        <meta name="author" content={blog.author} />
         <meta property="og:title" content={blog.title} />
         <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
         <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
         <meta property="og:type" content="article" />
-
-        {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={blog.title} />
         <meta name="twitter:description" content={blog.excerpt || 'Read this blog post on important topics'} />
         <meta name="twitter:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
         <meta name="twitter:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+        <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
 
-        {/* Structured Data for Blog Post */}
+        {/* Structured Data */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -146,25 +119,28 @@ const ReadBlog = () => {
             </p>
           </header>
 
+          {/* Lazy Load Image */}
           <img
             src={blog.thumbnail_url || 'https://via.placeholder.com/300'}
             alt={blog.title}
             className="blog-image"
-            loading="lazy" // Lazy loading for performance
+            loading="lazy"
           />
 
           {/* Render sanitized HTML content */}
           <div
             className="blog-html-content"
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+            aria-label="Blog content"
           ></div>
 
           {/* Social Sharing Icons */}
-          <div className="social-share">
+          <div className="social-share" aria-label="Share this blog">
             <a
               href={`https://twitter.com/intent/tweet?url=${window.location.href}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Share on Twitter"
               className="twitter-share"
             >
               <FaTwitter className="social-icon" /> Share on Twitter
@@ -173,6 +149,7 @@ const ReadBlog = () => {
               href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Share on Facebook"
               className="facebook-share"
             >
               <FaFacebook className="social-icon" /> Share on Facebook
@@ -181,21 +158,9 @@ const ReadBlog = () => {
         </div>
 
         {/* Suggested Articles */}
-        <aside className="related-blogs">
-          <h3>Suggested Articles</h3>
-          <ul className="suggested-list">
-            {relatedBlogs.map((relatedBlog) => (
-              <li key={relatedBlog.id} className="suggested-item">
-                <a href={`/blogs/${relatedBlog.slug}`}>
-                  <img src={relatedBlog.thumbnail_url || 'https://via.placeholder.com/150'} alt={relatedBlog.title} className="related-blog-thumbnail" />
-                  <div>
-                    <h4>{relatedBlog.title}</h4>
-                  </div>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </aside>
+        <Suspense fallback={<div>Loading related articles...</div>}>
+          <RelatedBlogs tags={blog.tags} slug={slug} />
+        </Suspense>
       </div>
     </div>
   );

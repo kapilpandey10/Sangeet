@@ -1,0 +1,133 @@
+/* General Styles for Related Blogs Section */
+.related-blogs {
+    flex: 0.3; /* Adjusting the width of related blogs on larger screens */
+    margin-top: 20px;
+  }
+  
+  .related-blogs h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .suggested-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .suggested-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .suggested-item:hover {
+    background-color: #e9f1f7;
+    transform: translateY(-2px);
+  }
+  
+  .related-blog-thumbnail {
+    width: 60px; /* Small image size for related blogs */
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .suggested-item h4 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #333;
+  }
+  
+  .suggested-item a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .suggested-item p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 5px 0 0;
+  }
+  
+  .related-blog-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .related-blog-info h4 {
+    font-size: 1rem;
+    margin-bottom: 3px;
+  }
+  
+  .related-blog-info p {
+    font-size: 0.85rem;
+    color: #888;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .related-blogs {
+      margin-top: 30px;
+    }
+  
+    .related-blog-thumbnail {
+      width: 50px;
+      height: 50px;
+    }
+  
+    .suggested-item {
+      flex-direction: row;
+      align-items: flex-start;
+      padding: 8px;
+    }
+  
+    .related-blog-info h4 {
+      font-size: 0.95rem;
+    }
+  
+    .related-blog-info p {
+      font-size: 0.75rem;
+    }
+  }
+  
+  /* Skeleton Loader for Related Blogs */
+  .skeleton-suggested-item {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .skeleton-thumbnail {
+    width: 60px;
+    height: 60px;
+    background-color: #cfcfcf;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .skeleton-title {
+    width: 70%;
+    height: 16px;
+    background-color: #cfcfcf;
+    border-radius: 4px;
+  }
+  
+  .skeleton-text {
+    width: 50%;
+    height: 12px;
+    background-color: #cfcfcf;
+    margin-top: 8px;
+    border-radius: 4px;
+  }
+  

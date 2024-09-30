@@ -223,7 +223,7 @@ const ReadBlog = () => {
 
         {/* Suggested Articles */}
         <aside className="suggested-articles">
-          <h3>Latest Articles</h3>
+          <h3>Suggested Articles</h3>
           <Suspense fallback={<div>Loading related articles...</div>}>
             <ul>
               {relatedBlogs.length > 0 ? (

@@ -42,31 +42,6 @@
   border-radius: 8px;
 }
 
-/* Social Sharing */
-.social-share {
-  margin-top: 20px;
-}
-
-.social-icon {
-  margin-right: 8px;
-}
-
-.twitter-share, .facebook-share {
-  margin-right: 20px;
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  color: #333;
-}
-
-.twitter-share:hover {
-  color: #1DA1F2;
-}
-
-.facebook-share:hover {
-  color: #1877F2;
-}
-
 /* Suggested Articles Section */
 .suggested-articles {
   width: 30%; /* Slightly larger for better visibility */
@@ -149,6 +124,236 @@
   margin-top: 4px;
 }
 
+/* Blog Content - Scoped to .blog-html-content */
+.blog-html-content h1, 
+.blog-html-content h2, 
+.blog-html-content h3, 
+.blog-html-content h4, 
+.blog-html-content h5, 
+.blog-html-content h6 {
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+.blog-html-content h1 {
+  font-size: 36px;
+  color: #333;
+}
+
+.blog-html-content h2 {
+  font-size: 30px;
+  color: #444;
+}
+
+.blog-html-content h3 {
+  font-size: 26px;
+  color: #555;
+}
+
+.blog-html-content h4 {
+  font-size: 22px;
+  color: #666;
+}
+
+.blog-html-content h5 {
+  font-size: 18px;
+  color: #777;
+}
+
+.blog-html-content h6 {
+  font-size: 16px;
+  color: #888;
+}
+
+/* Paragraph and Text Styles */
+.blog-html-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.blog-html-content a {
+  color: #007BFF;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.blog-html-content a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.blog-html-content strong {
+  font-weight: bold;
+  color: #000;
+}
+
+.blog-html-content em {
+  font-style: italic;
+  color: #666;
+}
+
+/* Lists (ul, ol, li) */
+.blog-html-content ul, 
+.blog-html-content ol {
+  margin: 20px 0;
+  padding-left: 40px;
+}
+
+.blog-html-content ul {
+  list-style-type: disc;
+}
+
+.blog-html-content ol {
+  list-style-type: decimal;
+}
+
+.blog-html-content ul li, 
+.blog-html-content ol li {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+/* Blockquote Styling */
+.blog-html-content blockquote {
+  font-size: 22px;
+  font-style: italic;
+  background: #f9f9f9;
+  border-left: 5px solid #ff007a;
+  margin: 20px 0;
+  padding: 20px 30px;
+  color: #555;
+}
+
+/* Code and Preformatted Text */
+.blog-html-content code {
+  background-color: #f4f4f4;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: "Courier New", Courier, monospace;
+  color: #d63384;
+}
+
+.blog-html-content pre {
+  background-color: #272822;
+  color: #f8f8f2;
+  padding: 15px;
+  font-size: 16px;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+/* Abbreviation (abbr) */
+.blog-html-content abbr {
+  border-bottom: 1px dotted #333;
+  cursor: help;
+}
+
+.blog-html-content abbr[title]:hover::after {
+  content: attr(title);
+  background: #333;
+  color: #fff;
+  padding: 5px;
+  position: absolute;
+  z-index: 10;
+  font-size: 12px;
+}
+
+/* Cite Styling */
+.blog-html-content cite {
+  font-style: italic;
+  color: #666;
+}
+
+/* Deleted and Inserted Text */
+.blog-html-content del {
+  text-decoration: line-through;
+  color: red;
+}
+
+.blog-html-content ins {
+  text-decoration: underline;
+  color: green;
+}
+
+/* Horizontal Rule */
+.blog-html-content hr {
+  border: 0;
+  height: 1px;
+  background: #ccc;
+  margin: 40px 0;
+}
+
+/* Table Styling */
+.blog-html-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.blog-html-content table th,
+.blog-html-content table td {
+  padding: 15px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.blog-html-content table th {
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.blog-html-content table td {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Figures and Captions */
+.blog-html-content figure {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.blog-html-content figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.blog-html-content figcaption {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #888;
+  font-style: italic;
+}
+
+/* Scroll Animation */
+.blog-html-content .scroll-section {
+  opacity: 0;
+  transform: translateY(100px);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.blog-html-content .scroll-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Highlight Styling */
+.blog-html-content .highlight {
+  font-size: 24px;
+  color: #ff007a;
+  font-weight: bold;
+  background-color: #ffe6e6;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .blog-layout {
@@ -164,5 +369,11 @@
     position: relative; /* No sticky behavior for mobile */
     max-height: none; /* Allow full height on small screens */
     overflow-y: visible; /* No scrollbar for small devices */
+  }
+
+  .blog-html-content table th,
+  .blog-html-content table td {
+    padding: 10px;
+    font-size: 16px;
   }
 }

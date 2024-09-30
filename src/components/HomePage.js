@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
-import '../style/HomePage.css'; // Add skeleton CSS here
+import '../style/HomePage.css'; // Include your CSS here
 
 const HomeYTVideo = React.lazy(() => import('./homeytvideo'));
 const FeaturedArtistCard = React.lazy(() => import('./FeaturedArtistCard'));
@@ -43,7 +43,7 @@ const HomePage = () => {
       try {
         const { data: allLyrics, error: lyricsError } = await supabase
           .from('lyrics')
-          .select('id, title, artist, published_date, slug') // Include slug here
+          .select('id, title, artist, published_date, slug')
           .eq('status', 'approved');
 
         if (lyricsError) {
@@ -75,6 +75,24 @@ const HomePage = () => {
     fetchAllData();
   }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // Stop observing once visible
+        }
+      });
+    });
+
+    const scrollElements = document.querySelectorAll('.scroll-animated');
+    scrollElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      scrollElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
   const getRandomLyrics = (allLyrics, limit) => {
     const shuffled = allLyrics.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
@@ -88,11 +106,13 @@ const HomePage = () => {
     <div className="homepage-container">
       {/* Hero Slider */}
       <Suspense fallback={<div className="skeleton-box"></div>}>
-        <HeroSlider />
+        <div className="scroll-animated fade-in">
+          <HeroSlider />
+        </div>
       </Suspense>
 
-      <h1>Welcome to Sangeet Lyrics Central</h1>
-      <p>Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
+      <h1 className="scroll-animated fade-in-up">Welcome to Sangeet Lyrics Central</h1>
+      <p className="scroll-animated fade-in-up">Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
 
       {loading ? (
         <>
@@ -107,61 +127,37 @@ const HomePage = () => {
 
           {/* Skeleton for YouTube Video */}
           <div className="skeleton-yt-video"></div>
-
-          {/* Skeleton for Featured Artist */}
-          <div className="skeleton-loader">
-            <div className="skeleton-title"></div>
-            <div className="skeleton-box"></div>
-          </div>
         </>
       ) : (
         <>
           {/* Lyrics Section */}
-          <section className="lyrics-bar">
+          <section className="lyrics-bar scroll-animated fade-in-up">
             <h2>Featured Nepali Lyrics</h2>
-            {lyrics.length > 0 ? (
-              <div className="lyrics-horizontal-bar">
-                {lyrics.map((lyric, index) => (
-                  <div className={`lyric-item color-${index % 4}`} key={lyric.id}>
-                    <h3>{lyric.title}</h3>
-                    <p>{lyric.artist}</p>
-                    <p>{new Date(lyric.published_date).getFullYear()}</p>
-                    {/* Use slug for the link */}
-                    <Link to={`/lyrics/${lyric.slug}`}>Read Lyrics</Link>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>No lyrics available at the moment.</p>
-            )}
+            <div className="lyrics-horizontal-bar">
+              {lyrics.map((lyric, index) => (
+                <div className={`lyric-item color-${index % 4}`} key={lyric.id}>
+                  <h3>{lyric.title}</h3>
+                  <p>{lyric.artist}</p>
+                  <p>{new Date(lyric.published_date).getFullYear()}</p>
+                  <Link to={`/lyrics/${lyric.slug}`}>Read Lyrics</Link>
+                </div>
+              ))}
+            </div>
             <div className="view-all">
               <Link to="/lyrics-list">View All Nepali Lyrics</Link>
             </div>
           </section>
 
-
-          {/* Insert AdSense Ad in Between Sections */}
-          <div className="ad-container">
-            {/* Hori-lyrics Ad */}
-            <ins className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="4756859110"
-              data-ad-format="auto"
-              data-full-width-responsive="true"></ins>
-            <script>
-              (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+          {/* YouTube Video Section */}
+          <div className="homeytvideo scroll-animated fade-in-up">
+            <Suspense fallback={<div className="skeleton-yt-video"></div>}>
+              <HomeYTVideo />
+            </Suspense>
           </div>
 
-          {/* YouTube Video Section */}
-          <Suspense fallback={<div className="skeleton-yt-video"></div>}>
-            <HomeYTVideo />
-          </Suspense>
-
           {/* Featured Artist Section */}
-          {featuredArtist ? (
-            <div className="featured-artist-section">
+          {featuredArtist && (
+            <div className="featured-artist-section scroll-animated fade-in-up">
               <h2 className="featured-artist-title">Featured Nepali Artist</h2>
               <div className="featured-artist-container">
                 <Suspense fallback={<div className="skeleton-box"></div>}>
@@ -169,25 +165,22 @@ const HomePage = () => {
                 </Suspense>
               </div>
             </div>
-          ) : (
-            <p>No featured artist available.</p>
           )}
-
-          {/* Insert AdSense Ad at the Bottom */}
-          <div className="ad-container">
-            {/* Another Ad Slot */}
-            <ins className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="4756859110"
-              data-ad-format="auto"
-              data-full-width-responsive="true"></ins>
-            <script>
-              (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-          </div>
         </>
       )}
+
+      {/* AdSense */}
+      <div className="ad-container scroll-animated fade-in">
+        <ins className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+          data-ad-slot="4756859110"
+          data-ad-format="auto"
+          data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
     </div>
   );
 };

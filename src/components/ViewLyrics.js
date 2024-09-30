@@ -30,7 +30,7 @@ const ViewLyrics = () => {
         }
 
         setLyric(data);
-        fetchRelatedLyrics(data.artist);
+        fetchRandomLyrics(); // Fetch 5 random lyrics
       } catch (error) {
         setError("Failed to fetch lyric or lyric not approved.");
       } finally {
@@ -38,18 +38,23 @@ const ViewLyrics = () => {
       }
     };
 
-    // Function to fetch related lyrics based on artist
-    const fetchRelatedLyrics = async (artist) => {
+    // Function to fetch 5 random lyrics
+    const fetchRandomLyrics = async () => {
       try {
-        const { data: artistLyrics } = await supabase
+        const { data: randomLyrics, error } = await supabase
           .from('lyrics')
           .select('*')
-          .ilike('artist', artist)
           .neq('slug', slug) // Exclude the current lyric by its slug
-          .limit(5); // Limit the results to 5
+          .limit(10); // Fetch more than 5 to ensure randomness
 
-        setRelatedLyrics(artistLyrics);
-      } catch {
+        if (error) {
+          throw new Error('Failed to fetch random lyrics.');
+        }
+
+        // Randomly select 5 lyrics
+        const shuffledLyrics = randomLyrics.sort(() => 0.5 - Math.random()).slice(0, 5);
+        setRelatedLyrics(shuffledLyrics);
+      } catch (error) {
         setRelatedLyrics([]);
       }
     };
@@ -84,7 +89,7 @@ const ViewLyrics = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="view-lyrics-container">
+    <div className="view-lyrics-page">
       {/* SEO Optimization and Rich Snippets */}
       <Helmet>
         <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central` : 'Lyrics'}</title>
@@ -111,8 +116,8 @@ const ViewLyrics = () => {
         </script>
       </Helmet>
 
-      {lyric && (
-        <>
+      <div className="lyrics-content">
+        <div className="main-lyrics">
           {/* Breadcrumb */}
           <nav className="breadcrumb">
             <Link to="/">Home</Link> / <Link to="/lyrics-list">Lyrics List</Link> / {lyric.title}
@@ -127,7 +132,7 @@ const ViewLyrics = () => {
           {lyric.status === 'approved' && <Verified />}
 
           {/* Toggle Button */}
-          <button onClick={handleToggleLanguage}>
+          <button onClick={handleToggleLanguage} className="toggle-button">
             {isEnglish ? 'View Original Lyrics' : 'View English Lyrics'}
           </button>
 
@@ -165,32 +170,30 @@ const ViewLyrics = () => {
               <FaWhatsapp />
             </a>
           </div>
+        </div>
 
-          {/* Related Lyrics */}
-          {relatedLyrics.length > 0 && (
-            <div className="related-lyrics">
-              <h3>You May Also Like</h3>
-              <div className="related-lyrics-grid">
-                {relatedLyrics.map((relatedLyric) => (
-                  <Link
-                    to={`/lyrics/${relatedLyric.slug}`} // Use slug here
-                    key={relatedLyric.id}
-                    className="related-lyric-item"
-                  >
-                    <div className="related-lyric-icon">
-                      <FaMusic size={40} />
-                    </div>
-                    <div className="related-lyric-info">
-                      <h4>{relatedLyric.title}</h4>
-                      <p>{relatedLyric.artist}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      )}
+        {/* Related Lyrics */}
+        <aside className="related-lyrics">
+          <h3>More Songs You Might Like</h3>
+          <div className="related-lyrics-grid">
+            {relatedLyrics.map((relatedLyric) => (
+              <Link
+                to={`/lyrics/${relatedLyric.slug}`} // Use slug here
+                key={relatedLyric.id}
+                className="related-lyric-item"
+              >
+                <div className="related-lyric-icon">
+                  <FaMusic size={20} aria-hidden="true" />
+                </div>
+                <div className="related-lyric-info">
+                  <h4>{relatedLyric.title}</h4>
+                  <p>{relatedLyric.artist}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 };

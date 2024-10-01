@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
-import './style/AddBlog.css'; // Ensure this file exists or create it
+import './style/AddBlog.css'; // Make sure your CSS file is in place
 
 const AddBlog = () => {
   const [title, setTitle] = useState('');
@@ -8,17 +8,64 @@ const AddBlog = () => {
   const [slug, setSlug] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [imageFile, setImageFile] = useState(null); // File input state for image upload
   const [tags, setTags] = useState('');
   const [status, setStatus] = useState('draft'); // Default status is 'draft'
   const [content, setContent] = useState(''); // Content will hold the HTML content
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(false); // New state for loading animation
+
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
+
+  // Function to upload image to Supabase storage and return the public URL
+  const uploadImage = async () => {
+    if (!imageFile) return null;
+
+    const fileName = `${slug}-${Date.now()}`; // Use slug and timestamp to create a unique file name
+    const filePath = `thumbnails/${fileName}`;
+
+    // Upload the image to Supabase storage
+    const { data, error } = await supabase.storage
+      .from('images') // Replace with your Supabase storage bucket name
+      .upload(filePath, imageFile);
+
+    if (error) {
+      throw new Error('Image upload failed: ' + error.message);
+    }
+
+    // Get the public URL for the uploaded image
+    const { data: urlData, error: urlError } = supabase
+      .storage
+      .from('images') // Replace with your Supabase storage bucket name
+      .getPublicUrl(filePath);
+
+    if (urlError) {
+      throw new Error('Error getting public URL: ' + urlError.message);
+    }
+
+    return urlData.publicUrl; // Return the public URL of the image
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setLoading(true); // Start loading animation
+
     try {
+      // Upload the image and get the public URL if an image is selected
+      let imageUrl = '';
+      if (imageFile) {
+        imageUrl = await uploadImage(); // Upload the image and get the full public URL
+      }
+
+      // Insert blog details into the blogs table, including the thumbnail URL
       const { data, error } = await supabase.from('blogs').insert([
         {
           title,
@@ -26,7 +73,7 @@ const AddBlog = () => {
           slug,
           excerpt,
           published_date: publishedDate,
-          thumbnail_url: thumbnailUrl,
+          thumbnail_url: imageUrl, // Store the uploaded image URL in the thumbnail_url column
           content, // Insert HTML content as a string
           status,
           tags: tags.split(','), // Split tags by comma
@@ -46,14 +93,16 @@ const AddBlog = () => {
         setSlug('');
         setExcerpt('');
         setPublishedDate('');
-        setThumbnailUrl('');
         setTags('');
         setContent(''); // Clear content
         setStatus('draft');
+        setImageFile(null); // Clear the image file
       }
     } catch (error) {
-      setErrorMessage('An error occurred while adding the blog.');
+      setErrorMessage(error.message || 'An error occurred while adding the blog.');
       setSuccessMessage(null);
+    } finally {
+      setLoading(false); // Stop loading animation
     }
   };
 
@@ -99,12 +148,14 @@ const AddBlog = () => {
           onChange={(e) => setPublishedDate(e.target.value)}
         />
 
-        <label>Thumbnail URL (Optional):</label>
+        {/* Image Upload Section */}
+        <label>Thumbnail Image (Optional):</label>
         <input
-          type="url"
-          value={thumbnailUrl}
-          onChange={(e) => setThumbnailUrl(e.target.value)}
+          type="file"
+          accept=".png,.jpg,.jpeg,.gif,.webp"
+          onChange={handleFileSelect}
         />
+        {imageFile && <p>Selected file: {imageFile.name}</p>}
 
         <label>Tags (comma-separated):</label>
         <input
@@ -128,7 +179,18 @@ const AddBlog = () => {
           <option value="published">Published</option>
         </select>
 
-        <button type="submit">Add Blog</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Uploading Blog...' : 'Add Blog'}
+        </button>
+
+        {/* Loading animation or message */}
+        {loading && (
+          <div className="loading-animation">
+            <div className="spinner"></div>
+            <p>Uploading blog...</p>
+          </div>
+        )}
+
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         {successMessage && <p className="success-message">{successMessage}</p>}
       </form>

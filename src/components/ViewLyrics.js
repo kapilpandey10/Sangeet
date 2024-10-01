@@ -100,7 +100,7 @@ const ViewLyrics = () => {
         <meta property="og:title" content={`${lyric.title} Lyrics - Nepali Song by ${lyric.artist}`} />
         <meta property="og:description" content={`Explore the beautiful lyrics of ${lyric.title} by ${lyric.artist}. Read full lyrics on Sangeet Lyrics Central.`} />
         <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${slug}`} />
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="article" />
 
         <script type="application/ld+json">
           {JSON.stringify({

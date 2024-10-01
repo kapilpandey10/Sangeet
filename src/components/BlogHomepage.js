@@ -152,6 +152,8 @@ const BlogHomepage = () => {
           <div className="skeleton-card"></div>
           <div className="skeleton-card"></div>
           <div className="skeleton-card"></div>
+          <div className="skeleton-card"></div>
+          <div className="skeleton-card"></div>
         </div>
       ) : (
         <>

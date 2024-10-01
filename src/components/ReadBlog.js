@@ -14,7 +14,12 @@ const ReadBlog = () => {
   const [blog, setBlog] = useState(null); // Blog content
   const [relatedBlogs, setRelatedBlogs] = useState([]); // Related blog articles
   const [loading, setLoading] = useState(true); // Loading state
+  const [currentUrl, setCurrentUrl] = useState('');
 
+    useEffect(() => {
+      setCurrentUrl(window.location.href);
+    }, []);
+    
   // Fetch blog details by slug
   useEffect(() => {
     const fetchBlogBySlug = async () => {
@@ -58,6 +63,8 @@ const ReadBlog = () => {
       }
     };
 
+  
+    
     // Fallback: Fetch any other recent blogs
     const fetchFallbackBlogs = async () => {
       const { data: fallbackData, error } = await supabase
@@ -122,18 +129,24 @@ const ReadBlog = () => {
     <div className="read-blog-container">
       {/* SEO Meta Tags */}
       <Helmet>
-        <title>{blog.title}</title>
-        <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
-        <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
-        <meta name="author" content={blog.author} />
-<meta property="og:title" content={blog.title} />
-<meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-<meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
-<meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
-<meta property="og:type" content="article" />
+  <title>{blog.title}</title>
+  <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
+  <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
+  <meta name="author" content={blog.author} />
 
-     
+  {/* Open Graph Tags */}
+  <meta property="og:title" content={blog.title} />
+  <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
+  <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+  <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+  <meta property="og:type" content="article" />
+
+  <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+
+
+
         <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",

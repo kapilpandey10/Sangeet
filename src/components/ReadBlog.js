@@ -126,16 +126,13 @@ const ReadBlog = () => {
         <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
         <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
         <meta name="author" content={blog.author} />
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-        <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
-        <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
-        <meta property="og:type" content="article" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-        <meta name="twitter:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
-        <meta name="twitter:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+<meta property="og:title" content={blog.title} />
+<meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
+<meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+<meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+<meta property="og:type" content="article" />
+
+     
         <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
         <script type="application/ld+json">
           {JSON.stringify({

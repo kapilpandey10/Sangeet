@@ -137,15 +137,12 @@ const ReadBlog = () => {
   {/* Open Graph Tags */}
   <meta property="og:title" content={blog.title} />
   <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-  <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+  <meta property="og:image" content={blog.thumbnail_url } />
   <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
   <meta property="og:type" content="article" />
 
   <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
 
-
-
-        <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
 
         <script type="application/ld+json">
           {JSON.stringify({

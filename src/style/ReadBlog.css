@@ -44,15 +44,15 @@
 
 /* Suggested Articles Section */
 .suggested-articles {
-  width: 30%; /* Slightly larger for better visibility */
+  width: 30%;
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
-  position: -webkit-sticky; /* Safari support */
+  position: -webkit-sticky;
   position: sticky;
-  top: 20px; /* Adjust to start sticking after 20px from the top */
-  max-height: 90vh; /* Prevent overflow */
-  overflow-y: auto; /* Allow scrolling within the suggested articles */
+  top: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -96,7 +96,7 @@
 }
 
 .related-article:hover {
-  transform: scale(1.05); /* Add hover effect for better UX */
+  transform: scale(1.05);
 }
 
 .related-article-thumbnail {
@@ -226,6 +226,60 @@
   color: #555;
 }
 
+/* Cards */
+.blog-html-content .card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.blog-html-content .card h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.blog-html-content .card p {
+  font-size: 16px;
+  color: #555;
+}
+
+/* Icon Styling */
+.blog-html-content .icon {
+  font-size: 24px;
+  margin-right: 10px;
+  color: #007BFF;
+}
+
+/* Marquee */
+.blog-html-content marquee {
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 18px;
+  color: #333;
+  margin: 20px 0;
+}
+
+/* YouTube Embed */
+.blog-html-content .youtube-embed {
+  margin: 20px 0;
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
+  background: #000;
+}
+
+.blog-html-content .youtube-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 /* Code and Preformatted Text */
 .blog-html-content code {
   background-color: #f4f4f4;
@@ -345,10 +399,9 @@
 
 /* Highlight Styling */
 .blog-html-content .highlight {
-  font-size: 24px;
-  color: #ff007a;
+
+  color: #000000;
   font-weight: bold;
-  background-color: #ffe6e6;
   padding: 5px 10px;
   border-radius: 5px;
   display: inline-block;
@@ -366,9 +419,9 @@
 
   .suggested-articles {
     margin-top: 20px;
-    position: relative; /* No sticky behavior for mobile */
-    max-height: none; /* Allow full height on small screens */
-    overflow-y: visible; /* No scrollbar for small devices */
+    position: relative;
+    max-height: none;
+    overflow-y: visible;
   }
 
   .blog-html-content table th,

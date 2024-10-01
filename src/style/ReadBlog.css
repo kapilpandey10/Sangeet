@@ -41,6 +41,48 @@
   margin: 20px 0;
   border-radius: 8px;
 }
+/* Social Share Section */
+.social-share {
+  display: flex;
+  gap: 20px; /* Space between the buttons */
+  margin: 20px 0;
+  justify-content: center; /* Center the buttons */
+}
+
+.social-share a {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+/* Twitter Share Button */
+.twitter-share {
+  background-color: #1da1f2; /* Twitter blue */
+}
+
+.twitter-share:hover {
+  background-color: #0d8de0; /* Darker blue on hover */
+}
+
+/* Facebook Share Button */
+.facebook-share {
+  background-color: #3b5998; /* Facebook blue */
+}
+
+.facebook-share:hover {
+  background-color: #2e4372; /* Darker blue on hover */
+}
+
+/* Social Media Icons */
+.social-icon {
+  margin-right: 10px; /* Space between the icon and text */
+  font-size: 20px; /* Adjust icon size */
+}
 
 /* Suggested Articles Section */
 .suggested-articles {

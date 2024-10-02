@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient'; // Supabase client for fetching bl
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import { FaCalendarAlt } from 'react-icons/fa'; // Import Calendar icon for published date
 import { Helmet } from 'react-helmet'; // For dynamic SEO meta tags
+import HotNews from './hotnews'; // Import the HotNews component
 import '../style/BlogHomepage.css'; // Custom CSS for styling
 
 const BlogHomepage = () => {
@@ -196,6 +197,9 @@ const BlogHomepage = () => {
           )}
         </>
       )}
+
+      {/* Include HotNews component */}
+      <HotNews />
     </div>
   );
 };

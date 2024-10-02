@@ -2,6 +2,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import '../style/HomePage.css'; // Include your CSS here
+import HotNews from './hotnews'; // Import the HotNews component
 
 const HomeYTVideo = React.lazy(() => import('./homeytvideo'));
 const FeaturedArtistCard = React.lazy(() => import('./FeaturedArtistCard'));
@@ -181,6 +182,9 @@ const HomePage = () => {
           (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
+
+      {/* Include HotNews component */}
+      <HotNews />
     </div>
   );
 };

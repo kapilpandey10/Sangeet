@@ -1,0 +1,83 @@
+/* Container for the hot news overlay */
+.hotnews-overlay {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 350px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: all 0.4s ease; /* Smooth slide and opacity transition */
+  }
+  
+  .hotnews-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0); /* Slide in from the right */
+  }
+  
+  /* Responsive design for smaller screens */
+  @media (max-width: 600px) {
+    .hotnews-overlay {
+      right: 10px;
+      bottom: 10px;
+      max-width: 90%; /* Make the overlay take up more space on mobile */
+    }
+  }
+  
+  .hotnews-content {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+  
+  .hotnews-thumbnail {
+    width: 60px;
+    height: 60px;
+    margin-right: 12px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  .hotnews-text {
+    flex-grow: 1;
+  }
+  
+  .hotnews-text p {
+    margin: 0;
+  }
+  
+  .hotnews-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+  }
+  
+  .hotnews-close {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: #888;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s;
+  }
+  
+  .hotnews-close:hover {
+    color: #f00; /* Close button hover effect */
+  }
+  
+  /* Sliding out animation for close */
+  .hotnews-overlay.closing {
+    transform: translateX(100%); /* Slide out to the right */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+  }
+  

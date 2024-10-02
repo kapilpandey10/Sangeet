@@ -23,6 +23,8 @@ import BackToTop from './components/BackToTop';
 import FileTransfer from './components/FileTransfer';
 import SendImage from './components/SendImage'; // Import the SendImage page
 import ReceiveImage from './components/ReceiveImage'; // Import the ReceiveImage page
+import HotNews from './components/hotnews'; // Import HotNews component if globally required
+
 
 const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
 

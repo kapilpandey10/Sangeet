@@ -1,14 +1,18 @@
-/* Container for the hot news overlay */
+/* HotNews Overlay */
 .hotnews-overlay {
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 1000;
-    max-width: 350px;
+    width: 300px;
+    max-width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     opacity: 0;
     visibility: hidden;
     transform: translateX(100%);
-    transition: all 0.4s ease; /* Smooth slide and opacity transition */
+    transition: all 0.5s ease;
   }
   
   .hotnews-overlay.show {
@@ -17,32 +21,21 @@
     transform: translateX(0); /* Slide in from the right */
   }
   
-  /* Responsive design for smaller screens */
-  @media (max-width: 600px) {
-    .hotnews-overlay {
-      right: 10px;
-      bottom: 10px;
-      max-width: 90%; /* Make the overlay take up more space on mobile */
-    }
-  }
-  
+  /* HotNews Content */
   .hotnews-content {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 16px;
     display: flex;
     align-items: center;
+    padding: 16px;
     cursor: pointer;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
   }
   
   .hotnews-thumbnail {
     width: 60px;
     height: 60px;
-    margin-right: 12px;
     border-radius: 8px;
     object-fit: cover;
+    margin-right: 16px;
   }
   
   .hotnews-text {
@@ -53,20 +46,27 @@
     margin: 0;
   }
   
+  .hotnews-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+  
   .hotnews-date {
     font-size: 12px;
     color: #888;
     margin-top: 4px;
   }
   
+  /* Close Button */
   .hotnews-close {
-    background-color: transparent;
+    font-size: 14px;
     border: none;
-    font-size: 16px;
+    background-color: transparent;
     color: #888;
     cursor: pointer;
-    margin-left: 10px;
-    transition: color 0.3s;
+    padding: 4px;
+    transition: color 0.3s ease;
   }
   
   .hotnews-close:hover {
@@ -79,5 +79,27 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s ease;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .hotnews-overlay {
+      right: 10px;
+      bottom: 10px;
+      max-width: 90%; /* Make the overlay take up more space on mobile */
+    }
+  
+    .hotnews-content {
+      padding: 12px;
+    }
+  
+    .hotnews-thumbnail {
+      width: 50px;
+      height: 50px;
+    }
+  
+    .hotnews-title {
+      font-size: 14px;
+    }
   }
   

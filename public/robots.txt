@@ -1,10 +1,12 @@
+
 User-agent: *
 Disallow: /admin/
 
 Allow: /contactus
 Allow: /terms
 Allow: /lyrics/
-Allow:/blogs/
+Allow: /blogs/
 Allow: /privacyandpolicy
-Allow:/filetransfer/
+Allow: /filetransfer/
+
 Sitemap: https://pandeykapil.com.np/sitemap.xml

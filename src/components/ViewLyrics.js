@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom'; // Use Navigate instead of Redirect
 import { supabase } from '../supabaseClient';
 import { FaMusic, FaTwitter, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { Helmet } from 'react-helmet';
 import Verified from './verified';
 import FloatingModal from './FloatingModal';
 import '../style/ViewLyrics.css';
+import HotNews from './hotnews'; // Import the HotNews component
+
 
 const ViewLyrics = () => {
   const { slug } = useParams(); // Get slug from URL
@@ -62,6 +64,11 @@ const ViewLyrics = () => {
     fetchLyric();
   }, [slug]);
 
+  // Redirect to 404 page if there's an error (e.g., lyrics not found)
+  if (error) {
+    return <Navigate to="/404" />; // Use Navigate instead of Redirect
+  }
+
   // Toggle between Original and English Lyrics
   const handleToggleLanguage = () => {
     setIsEnglish(!isEnglish);
@@ -86,8 +93,6 @@ const ViewLyrics = () => {
     );
   }
 
-  if (error) return <p>{error}</p>;
-
   return (
     <div className="view-lyrics-page">
       {/* SEO Optimization and Rich Snippets */}
@@ -101,6 +106,8 @@ const ViewLyrics = () => {
         <meta property="og:description" content={`Explore the beautiful lyrics of ${lyric.title} by ${lyric.artist}. Read full lyrics on Sangeet Lyrics Central.`} />
         <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${slug}`} />
         <meta property="og:type" content="article" />
+        {/* Canonical URL */}
+        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${slug}`} />
 
         <script type="application/ld+json">
           {JSON.stringify({
@@ -160,16 +167,30 @@ const ViewLyrics = () => {
 
           {/* Social Media Share Buttons */}
           <div className="social-share-buttons">
-            <a href={`https://twitter.com/intent/tweet?text=Check out these lyrics: ${lyric.title} - ${lyric.artist} &url=https://pandeykapil.com.np/lyrics/${slug}`} target="_blank">
+            <a
+              href={`https://twitter.com/intent/tweet?text=Check out these lyrics: ${lyric.title} - ${lyric.artist} &url=https://pandeykapil.com.np/lyrics/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaTwitter />
             </a>
-            <a href={`https://www.facebook.com/sharer/sharer.php?u=https://pandeykapil.com.np/lyrics/${slug}`} target="_blank">
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=https://pandeykapil.com.np/lyrics/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaFacebook />
             </a>
-            <a href={`https://api.whatsapp.com/send?text= Check out these lyrics: ${lyric.title} - ${lyric.artist} https://pandeykapil.com.np/lyrics/${slug}`} target="_blank">
+            <a
+              href={`https://api.whatsapp.com/send?text=Check out these lyrics: ${lyric.title} - ${lyric.artist} https://pandeykapil.com.np/lyrics/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <FaWhatsapp />
             </a>
           </div>
+          <HotNews />
+
         </div>
 
         {/* Related Lyrics */}
@@ -178,7 +199,7 @@ const ViewLyrics = () => {
           <div className="related-lyrics-grid">
             {relatedLyrics.map((relatedLyric) => (
               <Link
-                to={`/lyrics/${relatedLyric.slug}`} // Use slug here
+                to={`/lyrics/${relatedLyric.slug}`} // Use slug for related lyrics
                 key={relatedLyric.id}
                 className="related-lyric-item"
               >
@@ -191,9 +212,12 @@ const ViewLyrics = () => {
                 </div>
               </Link>
             ))}
+
           </div>
         </aside>
       </div>
+     
+
     </div>
   );
 };

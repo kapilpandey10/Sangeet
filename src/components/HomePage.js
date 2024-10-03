@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet'; // Helmet for SEO
 import '../style/HomePage.css'; // Include your CSS here
 import HotNews from './hotnews'; // Import the HotNews component
 
@@ -14,31 +15,10 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Set SEO meta tags using Helmet
     document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
 
-    const metaDescription = document.createElement('meta');
-    metaDescription.name = 'description';
-    metaDescription.content = 'Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics.';
-    document.head.appendChild(metaDescription);
-
-    const metaKeywords = document.createElement('meta');
-    metaKeywords.name = 'keywords';
-    metaKeywords.content = 'Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali music lyrics, Nepali lyrics collection, latest Nepali songs, Nepali artists';
-    document.head.appendChild(metaKeywords);
-
-    const metaRobots = document.createElement('meta');
-    metaRobots.name = 'robots';
-    metaRobots.content = 'index, follow';
-    document.head.appendChild(metaRobots);
-
-    return () => {
-      document.head.removeChild(metaDescription);
-      document.head.removeChild(metaKeywords);
-      document.head.removeChild(metaRobots);
-    };
-  }, []);
-
-  useEffect(() => {
+    // Fetch all data from Supabase
     const fetchAllData = async () => {
       setLoading(true);
       try {
@@ -105,6 +85,15 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
+      <Helmet>
+        <title>Sangeet Lyrics Central | Nepali Music Digital Library</title>
+        <meta name="description" content="Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics." />
+        <meta name="keywords" content="Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali lyrics collection, latest Nepali songs, Nepali artists" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://pandeykapil.com.np/" />
+        {/* Add JSON-LD structured data here if necessary */}
+      </Helmet>
+
       {/* Hero Slider */}
       <Suspense fallback={<div className="skeleton-box"></div>}>
         <div className="scroll-animated fade-in">

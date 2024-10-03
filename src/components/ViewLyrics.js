@@ -96,32 +96,24 @@ const ViewLyrics = () => {
   return (
     <div className="view-lyrics-page">
       {/* SEO Optimization and Rich Snippets */}
-      <Helmet>
-        <title>{lyric ? `${lyric.title} Lyrics - by ${lyric.artist}: Sangeet Lyrics Central` : 'Lyrics'}</title>
-        <meta
-          name="description"
-          content={lyric ? `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central. Explore more songs by ${lyric.artist}.` : 'Lyrics of popular songs.'}
-        />
-        <meta property="og:title" content={`${lyric.title} Lyrics - Nepali Song by ${lyric.artist}`} />
-        <meta property="og:description" content={`Explore the beautiful lyrics of ${lyric.title} by ${lyric.artist}. Read full lyrics on Sangeet Lyrics Central.`} />
-        <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${slug}`} />
-        <meta property="og:type" content="article" />
-        {/* Canonical URL */}
-        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${slug}`} />
 
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "MusicComposition",
-            "name": lyric.title,
-            "composer": lyric.artist,
-            "inLanguage": lyric.language,
-            "datePublished": new Date(lyric.published_date).toISOString(),
-            "url": `https://pandeykapil.com.np/lyrics/${slug}`,
-            "description": `Read the lyrics of ${lyric.title} by ${lyric.artist}.`,
-          })}
-        </script>
-      </Helmet>
+      <Helmet>
+  <title>{lyric.title} Lyrics - by {lyric.artist}: Sangeet Lyrics Central</title>
+  <meta name="description" content={`Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "MusicComposition",
+      "name": lyric.title,
+      "composer": lyric.artist,
+      "inLanguage": lyric.language,
+      "datePublished": new Date(lyric.published_date).toISOString(),
+      "url": `https://pandeykapil.com.np/lyrics/${slug}`,
+      "description": `Read the lyrics of ${lyric.title} by ${lyric.artist}.`,
+    })}
+  </script>
+</Helmet>
+
 
       <div className="lyrics-content">
         <div className="main-lyrics">

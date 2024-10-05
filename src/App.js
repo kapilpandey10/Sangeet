@@ -86,7 +86,7 @@ function App() {
           <Route path="/terms" element={<TermsAndService />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/Blogs/:slug" element={<ReadBlog />} />
-          <Route path="/search" element={<SearchResults />} />
+          <Route path="/searchresult" element={<SearchResults />} /> {/* Search Results Route */}
           <Route path="/filetransfer" element={<FileTransfer />} />
           <Route path="/sendimage" element={<SendImage />} /> {/* Route to SendImage */}
           <Route path="/receiveimg" element={<ReceiveImage />} /> {/* Route to ReceiveImage */}

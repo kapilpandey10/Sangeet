@@ -1,84 +1,102 @@
-/* BlogHomepage Styles */
+/* BlogHomepage.css - Improved Design */
+
 .blog-homepage-container {
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  font-family: 'Arial, sans-serif';
 }
 
 .blog-homepage-title {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
   text-align: center;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-/* Search bar styling */
 .search-bar-container {
-  text-align: center;
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
 }
 
 .search-bar {
+  width: 60%;
   padding: 10px;
-  font-size: 16px;
-  width: 50%;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  color: black; /* Black input text */
+  font-size: 1rem;
 }
 
 .search-results-info {
-  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1rem;
   color: #555;
-  margin-top: 5px;
 }
 
-/* Tag filter section */
 .tag-filter-section {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   text-align: center;
 }
 
 .tag-list {
-  list-style: none;
-  padding: 0;
   display: inline-flex;
   flex-wrap: wrap;
-  justify-content: center;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .tag-item {
-  margin: 5px;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  padding: 8px 15px;
+  border: 1px solid #007bff;
+  border-radius: 50px;
   cursor: pointer;
-  background-color: #f9f9f9;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  color: #007bff;
+  background-color: #fff;
 }
 
-.tag-item:hover {
-  background-color: #3498db;
-  color: white;
-}
-
+.tag-item:hover,
 .active-tag {
-  background-color: #3498db;
-  color: white;
+  background-color: #007bff;
+  color: #fff;
 }
 
-/* Blog grid styling */
+.skeleton-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.skeleton-card {
+  height: 250px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+}
+
 .blog-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
 }
 
 .blog-card {
   background-color: #fff;
-  border: 1px solid #ddd;
   border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  transition: transform 0.3s;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
 }
 
 .blog-card-image {
@@ -88,94 +106,57 @@
 }
 
 .blog-card-content {
-  padding: 15px;
+  padding: 20px;
 }
 
 .blog-card-title {
   font-size: 1.5rem;
+  color: #333;
   margin-bottom: 10px;
 }
 
 .blog-card-author {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #888;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .blog-card-excerpt {
-  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
 }
 
 .read-more-button {
-  color: #3498db;
   text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+  transition: color 0.3s;
 }
 
 .read-more-button:hover {
-  text-decoration: underline;
+  color: #0056b3;
 }
 
-/* Load more button */
+.no-blogs-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
 .load-more-button {
   display: block;
-  margin: 20px auto;
+  margin: 0 auto;
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: #3498db;
-  color: white;
+  background-color: #007bff;
+  color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
 .load-more-button:hover {
-  background-color: #2980b9;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .search-bar {
-    width: 100%;
-  }
-
-  .blog-grid-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .blog-homepage-title {
-    font-size: 2rem;
-  }
-
-  .blog-card-title {
-    font-size: 1.2rem;
-  }
-
-  .read-more-button {
-    font-size: 14px;
-  }
-}
-/* Skeleton Loading Styles */
-.skeleton-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.skeleton-card {
-  background-color: #f0f0f0;
-  height: 300px;
-  border-radius: 10px;
-  animation: shimmer 1.5s infinite linear;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -500px 0;
-  }
-  100% {
-    background-position: 500px 0;
-  }
+  background-color: #0056b3;
 }

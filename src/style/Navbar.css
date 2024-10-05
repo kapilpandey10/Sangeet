@@ -136,50 +136,18 @@ body {
   background-color: #1abc9c;
 }
 
-/* Search Container */
-.search-container {
-  display: flex;
-  align-items: center;
-  color: white;
-}
-
-/* Search Bar */
-.search-bar {
-  display: flex;
-  align-items: center;
-  background-color: transparent;
-  border-radius: 5px;
-  border: none;
-  color: #fff;
-}
-
-.search-bar.active {
-  background-color: #f1f1f1; /* Set background only when active */
-  border: 1px solid #000000;
-  padding: 5px;
-}
-
-.search-bar input {
-  border: none;
-  background: none;
-  outline: none;
-  padding: 5px;
-  font-size: 0.9rem;
-  width: 100%;
-  display: none; /* Hidden when inactive */
-}
-
-.search-bar.active input {
-  display: inline-block; /* Visible when active */
-}
-
+/* Search Icon */
 .search-icon {
-  background-color: #34495e;
-  border: 2px solid white;
-  padding: 7px;
-  color: #ffffff;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #fff;
   cursor: pointer;
-  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.search-icon:hover {
+  color: #1abc9c;
 }
 
 /* Adjustments for mobile */

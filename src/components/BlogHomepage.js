@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient'; // Supabase client for fetching blogs
-import { Link } from 'react-router-dom'; // Import Link for navigation
-import { FaCalendarAlt } from 'react-icons/fa'; // Import Calendar icon for published date
-import { Helmet } from 'react-helmet'; // For dynamic SEO meta tags
-import HotNews from './hotnews'; // Import the HotNews component
-import '../style/BlogHomepage.css'; // Custom CSS for styling
+import { supabase } from '../supabaseClient';
+import { Link } from 'react-router-dom';
+import { FaCalendarAlt } from 'react-icons/fa';
+import { Helmet } from 'react-helmet';
+import HotNews from './hotnews';
+import '../style/BlogHomepage.css';
 
 const BlogHomepage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -15,29 +15,30 @@ const BlogHomepage = () => {
   const [selectedTag, setSelectedTag] = useState('all');
   const blogsPerPage = 10;
 
-  // Fetch only published blogs from Supabase and order by latest
   useEffect(() => {
     const fetchBlogs = async () => {
-      setLoading(true); // Start loading
-      const { data, error } = await supabase
-        .from('blogs')
-        .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
-        .eq('status', 'published')
-        .order('published_date', { ascending: false }); // Order by published_date in descending order
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('blogs')
+          .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
+          .eq('status', 'published')
+          .order('published_date', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching blogs:', error.message);
-      } else {
+        if (error) throw error;
+
         setBlogs(data);
-        setFilteredBlogs(data); // Initially set filtered blogs to all blogs
+        setFilteredBlogs(data);
+      } catch (error) {
+        console.error('Error fetching blogs:', error.message);
+      } finally {
+        setLoading(false);
       }
-      setTimeout(() => setLoading(false), 1500); // 1.5-second delay for skeleton loading
     };
 
     fetchBlogs();
   }, []);
 
-  // Handle search query updates
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase();
     setFilteredBlogs(
@@ -50,38 +51,29 @@ const BlogHomepage = () => {
     );
   }, [searchQuery, blogs]);
 
-  // Filter blogs by selected tag
   useEffect(() => {
     if (selectedTag === 'all') {
       setFilteredBlogs(blogs);
     } else {
-      setFilteredBlogs(
-        blogs.filter((blog) => blog.tags.includes(selectedTag))
-      );
+      setFilteredBlogs(blogs.filter((blog) => blog.tags.includes(selectedTag)));
     }
   }, [selectedTag, blogs]);
 
-  // Pagination logic
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
   const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
-  const loadMoreBlogs = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
+  const loadMoreBlogs = () => setCurrentPage((prevPage) => prevPage + 1);
 
-  // Handle tag click
   const handleTagClick = (tag) => {
     setSelectedTag(tag);
-    setCurrentPage(1); // Reset pagination to first page
+    setCurrentPage(1);
   };
 
-  // Dynamically generate tags from the blog data
   const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags)));
 
   return (
     <div className="blog-homepage-container">
-      {/* Dynamic SEO with Helmet */}
       <Helmet>
         <title>Latest Blogs - My Blog Site</title>
         <meta name="description" content="Explore the latest blogs on various topics from Sangeet Lyrics Central." />
@@ -89,7 +81,6 @@ const BlogHomepage = () => {
         <meta property="og:title" content="Sangeet Lyrics Central - Blogs" />
         <meta property="og:description" content="Explore the latest blogs on various topics." />
         <meta property="og:url" content="https://pandeykapil.com.np/blogs" />
-        {/* JSON-LD Structured Data */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -115,7 +106,6 @@ const BlogHomepage = () => {
 
       <h1 className="blog-homepage-title">Latest Blogs</h1>
 
-      {/* Search bar */}
       <div className="search-bar-container">
         <input
           type="text"
@@ -124,7 +114,7 @@ const BlogHomepage = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           list="autocomplete-suggestions"
-          style={{ color: 'black' }} // Set the input text color to black
+          style={{ color: 'black' }}
           aria-label="Search blogs"
         />
         {searchQuery && (
@@ -134,31 +124,25 @@ const BlogHomepage = () => {
         )}
       </div>
 
-      {/* Tag Filter Section */}
       <section className="tag-filter-section">
         <ul className="tag-list" aria-label="Filter by tags">
           <li className={`tag-item ${selectedTag === 'all' ? 'active-tag' : ''}`} onClick={() => handleTagClick('all')}>All</li>
           {allTags.map((tag) => (
             <li key={tag} className={`tag-item ${selectedTag === tag ? 'active-tag' : ''}`} onClick={() => handleTagClick(tag)}>
-              {tag.charAt(0).toUpperCase() + tag.slice(1)} {/* Capitalize the tag */}
+              {tag.charAt(0).toUpperCase() + tag.slice(1)}
             </li>
           ))}
         </ul>
       </section>
 
-      {/* Skeleton Loading while blogs are being fetched */}
       {loading ? (
         <div className="skeleton-container">
-          <div className="skeleton-card"></div>
-          <div className="skeleton-card"></div>
-          <div className="skeleton-card"></div>
-          <div className="skeleton-card"></div>
-          <div className="skeleton-card"></div>
-          <div className="skeleton-card"></div>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div className="skeleton-card" key={index}></div>
+          ))}
         </div>
       ) : (
         <>
-          {/* Display recent blogs */}
           <div className="blog-grid-container">
             {currentBlogs.length > 0 ? (
               currentBlogs.map((blog) => (
@@ -189,7 +173,6 @@ const BlogHomepage = () => {
             )}
           </div>
 
-          {/* Load More Button */}
           {filteredBlogs.length > currentBlogs.length && (
             <button className="load-more-button" onClick={loadMoreBlogs}>
               Load More
@@ -198,7 +181,6 @@ const BlogHomepage = () => {
         </>
       )}
 
-      {/* Include HotNews component */}
       <HotNews />
     </div>
   );

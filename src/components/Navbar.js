@@ -1,31 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../style/Navbar.css';
-import { FaSearch, FaBars, FaTimes } from 'react-icons/fa'; // Removed FaUser since it's no longer needed
-import logo from '../logo/logo.webp'; // Update logo path if needed
+import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
+import logo from '../logo/logo.webp';
 
 const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchActive, setIsSearchActive] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // For detecting active class
-  const searchRef = useRef(null); // Reference to search input
-  const mobileMenuRef = useRef(null); // Reference to mobile menu
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?query=${searchQuery}&filter=approved`); // Filter search for approved lyrics, title, artists, added_by
-    }
-  };
+  const location = useLocation();
+  const mobileMenuRef = useRef(null);
 
   const handleClickOutside = (e) => {
-    // Close search if clicking outside
-    if (searchRef.current && !searchRef.current.contains(e.target)) {
-      setIsSearchActive(false);
-    }
-
     // Close mobile menu if clicking outside
     if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
       setIsMobileMenuOpen(false);
@@ -34,6 +19,16 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Close mobile menu on link click
+  const handleNavLinkClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  // Navigate to search results page directly
+  const handleSearchClick = () => {
+    navigate('/searchresult'); // No search term, just redirect to search page
   };
 
   useEffect(() => {
@@ -55,12 +50,13 @@ const Navbar = () => {
           className={`mobile-menu-icon ${isMobileMenuOpen ? 'open' : ''}`}
           onClick={toggleMobileMenu}
           aria-label="Toggle navigation"
+          aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
         {/* Logo and Brand Name */}
-        <div className={`logo-brand-container ${isSearchActive ? 'logo-hidden' : ''}`}>
+        <div className="logo-brand-container">
           <img src={logo} alt="Logo" className="navbar-logo" />
           <Link to="/" className="brand-name">
             San<span className="highlight">Geet</span>
@@ -70,35 +66,19 @@ const Navbar = () => {
         {/* Nav Links */}
         <div className={`nav-menu ${isMobileMenuOpen ? 'mobile-active' : ''}`} ref={mobileMenuRef}>
           <div className="nav-links">
-            <Link to="/" className={isActive('/')}>Home</Link>
-            <Link to="/lyrics-list" className={isActive('/lyrics-list')}>Music Lyrics</Link>
-            <Link to="/artistbio" className={isActive('/artistbio')}>Artist Bio</Link>
-            <Link to="/blogs" className={isActive('/blog')}>Blog</Link>
-            <Link to="/filetransfer" className={isActive('/blog')}>File Transfer</Link>
-            <Link to="/contactus" className={isActive('/contactus')}>Contact Us</Link>
-
-
-
-
-
+            <Link to="/" className={isActive('/')} onClick={handleNavLinkClick}>Home</Link>
+            <Link to="/lyrics-list" className={isActive('/lyrics-list')} onClick={handleNavLinkClick}>Music Lyrics</Link>
+            <Link to="/artistbio" className={isActive('/artistbio')} onClick={handleNavLinkClick}>Artist Bio</Link>
+            <Link to="/blogs" className={isActive('/blogs')} onClick={handleNavLinkClick}>Blog</Link>
+            <Link to="/filetransfer" className={isActive('/filetransfer')} onClick={handleNavLinkClick}>File Transfer</Link>
+            <Link to="/contactus" className={isActive('/contactus')} onClick={handleNavLinkClick}>Contact Us</Link>
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="search-container">
-          <form className={`search-bar ${isSearchActive ? 'active' : ''}`} onSubmit={handleSearch} ref={searchRef}>
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            <button type="button" className="search-icon" onClick={() => setIsSearchActive(!isSearchActive)}>
-              <FaSearch />
-            </button>
-          </form>
-        </div>
+        {/* Search Icon */}
+        <button className="search-icon" onClick={handleSearchClick} aria-label="Search">
+          <FaSearch />
+        </button>
       </div>
     </nav>
   );

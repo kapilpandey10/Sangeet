@@ -1,0 +1,141 @@
+/* Container for the card view */
+.view-card-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Dynamic day and night backgrounds */
+.day-background {
+    background-image: linear-gradient(to right, #87ceeb, #f9f9f9);
+}
+.night-background {
+    background-image: linear-gradient(to right, #2c3e50, #f9f9f9);
+    color: #fff;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Title of the card */
+.view-card-container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+/* Meta info (sender, receiver) */
+.meta {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Message box styling */
+.message-box {
+    background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.message-box .message {
+    font-size: 1.2rem;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Timestamp styling */
+.timestamp {
+    font-size: 1rem;
+    color: #999;
+}
+
+/* Interactive Buttons */
+.interactive-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.copy-button, .share-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.copy-button:hover, .share-button:hover {
+    background-color: #0056b3;
+}
+
+/* Toast Message */
+.toast-message {
+    color: green;
+    font-size: 1rem;
+    margin-top: 10px;
+    animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Error message */
+.error {
+    color: red;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+/* Placeholder for loading state */
+.loading-placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.placeholder-title {
+    height: 40px;
+    width: 60%;
+    margin: 0 auto;
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+.placeholder-meta {
+    height: 20px;
+    width: 40%;
+    margin: 0 auto;
+    background-color: #ddd;
+    border-radius: 5px;
+}
+
+.placeholder-message {
+    height: 100px;
+    width: 100%;
+    background-color: #eee;
+    border-radius: 5px;
+}

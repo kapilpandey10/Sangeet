@@ -23,7 +23,12 @@ import BackToTop from './components/BackToTop';
 import FileTransfer from './components/FileTransfer';
 import SendImage from './components/SendImage'; // Import the SendImage page
 import ReceiveImage from './components/ReceiveImage'; // Import the ReceiveImage page
-import HotNews from './components/hotnews'; // Import HotNews component if globally required
+import CreateCard from './components/CreateCard'; 
+import ViewCard from './components/ViewCard'; // Correct name here
+import Greeting  from './components/Greetings';
+
+
+
 
 
 const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
@@ -55,17 +60,7 @@ function App() {
 
   return (
     <>
-      {/* SEO using Helmet */}
-      <Helmet>
-        <title>Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists</title>
-        <meta name="description" content="Explore Nepali music, songs, lyrics, and albums. Featured artists like Sushant KC, 1974 AD, Anju Panta, Narayan Gopal, Melina Rai, and more. Discover Nepali geet and bhajan lyrics." />
-        <meta property="og:title" content="Nepali Geet Sangit Lyrics | Explore Nepali Songs, Lyrics & Artists" />
-        <meta property="og:description" content="Explore a vast collection of Nepali songs and lyrics, including works by Sushant KC, Anju Panta, Narayan Gopal, Melina Rai, and more." />
-        <meta property="og:image" content="https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp" />
-        <meta property="og:url" content="https://pandeykapil.com.np/" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" /> {/* Added for better mobile responsiveness */}
-      </Helmet>
+     
 
       <Navbar />
       <BackToTop />
@@ -96,6 +91,10 @@ function App() {
 
           {/* Blog Homepage to display all blogs */}
           <Route path="/Blogs" element={<BlogHomepage />} />
+          <Route path="/greetings" element={<Greeting />} />
+          <Route path="/create-card" element={<CreateCard />} />
+          <Route path="/cards/:recipient" element={<ViewCard />} />
+
 
           <Route path="/artistbio" element={<Artistlist />} />
 

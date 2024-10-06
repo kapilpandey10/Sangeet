@@ -72,6 +72,8 @@ const Navbar = () => {
             <Link to="/blogs" className={isActive('/blogs')} onClick={handleNavLinkClick}>Blog</Link>
             <Link to="/filetransfer" className={isActive('/filetransfer')} onClick={handleNavLinkClick}>File Transfer</Link>
             <Link to="/contactus" className={isActive('/contactus')} onClick={handleNavLinkClick}>Contact Us</Link>
+            <Link to="/greetings" className={isActive('/greetings')} onClick={handleNavLinkClick}>Greeting card</Link>
+
           </div>
         </div>
 

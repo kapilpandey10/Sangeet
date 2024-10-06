@@ -1,0 +1,130 @@
+/* Container for the create card form */
+.create-card-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title for the form */
+.create-card-container h2 {
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Form labels */
+.create-card-container label {
+    display: block;
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Input fields */
+.create-card-container input[type="text"],
+.create-card-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #333;
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+/* Disabled input fields */
+.create-card-container input[disabled],
+.create-card-container textarea[disabled] {
+    background-color: #f1f1f1;
+}
+
+/* Button styling */
+.create-card-container button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-card-container button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Error message styling */
+.create-card-container .error {
+    text-align: center;
+    color: red;
+    font-size: 1rem;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 999;
+}
+
+/* Modal Content */
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.success-icon {
+    font-size: 3rem;
+    color: green;
+    margin-bottom: 10px;
+}
+
+.card-link a {
+    font-size: 1.2rem;
+    color: #007bff;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+.close-modal-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.close-modal-button:hover {
+    background-color: #0056b3;
+}

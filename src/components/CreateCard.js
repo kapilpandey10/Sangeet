@@ -1,33 +1,34 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import '../style/CreateCard.css';
-import Modal from 'react-modal'; // Import react-modal
-import { FaCopy, FaCheckCircle } from 'react-icons/fa'; // Icons for copy functionality and success indicator
-import { PulseLoader } from 'react-spinners'; // Spinner for loading indicator
+import '../style/CreateCard.css'; 
+import Modal from 'react-modal';
+import { FaBold, FaItalic, FaUnderline, FaListOl, FaListUl, FaHeading, FaCheckCircle } from 'react-icons/fa'; // Added FaCheckCircle here
+import { PulseLoader } from 'react-spinners'; 
 
-// Set app element for accessibility
 Modal.setAppElement('#root');
 
 const CreateCard = () => {
     const [sender, setSender] = useState('');
     const [receiver, setReceiver] = useState('');
     const [title, setTitle] = useState('');
-    const [message, setMessage] = useState('');
-    const [cardLink, setCardLink] = useState(''); 
+    const [message, setMessage] = useState(''); 
+    const [cardLink, setCardLink] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [modalIsOpen, setModalIsOpen] = useState(false); 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    const formatText = (command, value = null) => {
+        document.execCommand(command, false, value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        // Generate card URL based on receiver's name (first-last format)
         const formattedReceiver = receiver.toLowerCase().replace(/\s/g, '-');
 
         try {
-            // Insert data into Supabase table
             const { data, error } = await supabase
                 .from('cards')
                 .insert([
@@ -35,20 +36,18 @@ const CreateCard = () => {
                         sender,
                         receiver,
                         title,
-                        message,
+                        message_html: message,
                         created_at: new Date(),
                     }
                 ]);
 
             if (error) throw error;
 
-            // Generate the card link and show it
             const cardUrl = `/cards/${formattedReceiver}`;
             setCardLink(cardUrl);
 
-            // Automatically copy to clipboard
             navigator.clipboard.writeText(window.location.origin + cardUrl).then(() => {
-                setModalIsOpen(true); // Open modal after successful copy
+                setModalIsOpen(true);
             }, () => {
                 setError('Failed to copy the link.');
             });
@@ -58,61 +57,95 @@ const CreateCard = () => {
             setError('Failed to create the card. Please try again.');
             console.error('Error creating card:', error);
         } finally {
-            setLoading(false); // Stop loading once done
+            setLoading(false);
         }
     };
 
     const closeModal = () => {
-        setModalIsOpen(false); // Close the modal
+        setModalIsOpen(false);
     };
 
     return (
         <div className="create-card-container">
             <h2>Create a New Card</h2>
+
             <form onSubmit={handleSubmit} className={loading ? 'loading' : ''}>
-                <label>Sender Name:</label>
-                <input
-                    type="text"
-                    value={sender}
-                    onChange={(e) => setSender(e.target.value)}
-                    required
-                    disabled={loading} 
-                />
+                {/* Sender Name */}
+                <div className="input-group">
+                    <label>Sender Name:</label>
+                    <input
+                        type="text"
+                        value={sender}
+                        onChange={(e) => setSender(e.target.value)}
+                        required
+                        disabled={loading}
+                    />
+                </div>
 
-                <label>Receiver Name:</label>
-                <input
-                    type="text"
-                    value={receiver}
-                    onChange={(e) => setReceiver(e.target.value)}
-                    required
-                    disabled={loading} 
-                />
+                {/* Receiver Name */}
+                <div className="input-group">
+                    <label>Receiver Name:</label>
+                    <input
+                        type="text"
+                        value={receiver}
+                        onChange={(e) => setReceiver(e.target.value)}
+                        required
+                        disabled={loading}
+                    />
+                </div>
 
-                <label>Title:</label>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    disabled={loading} 
-                />
+                {/* Title */}
+                <div className="input-group">
+                    <label>Title:</label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                        disabled={loading}
+                    />
+                </div>
 
-                <label>Message:</label>
-                <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    required
-                    disabled={loading} 
-                />
+                {/* Formatting Toolbar */}
+                <div className="toolbar">
+                    <button type="button" onClick={() => formatText('bold')} title="Bold">
+                        <FaBold />
+                    </button>
+                    <button type="button" onClick={() => formatText('italic')} title="Italic">
+                        <FaItalic />
+                    </button>
+                    <button type="button" onClick={() => formatText('underline')} title="Underline">
+                        <FaUnderline />
+                    </button>
+                    <button type="button" onClick={() => formatText('insertOrderedList')} title="Ordered List">
+                        <FaListOl />
+                    </button>
+                    <button type="button" onClick={() => formatText('insertUnorderedList')} title="Unordered List">
+                        <FaListUl />
+                    </button>
+                    <button type="button" onClick={() => formatText('formatBlock', 'H1')} title="Heading 1">
+                        <FaHeading /> H1
+                    </button>
+                    <button type="button" onClick={() => formatText('formatBlock', 'H2')} title="Heading 2">
+                        <FaHeading /> H2
+                    </button>
+                </div>
 
-                <button type="submit" disabled={loading}>
+                {/* Message Area */}
+                <div
+                    className="editable-content"
+                    contentEditable
+                    onInput={(e) => setMessage(e.currentTarget.innerHTML)} 
+                    placeholder="Type your message here... (You can format text)"
+                ></div>
+
+                <button type="submit" disabled={loading} className="submit-button">
                     {loading ? <PulseLoader size={10} color="#fff" /> : 'Create Card'}
                 </button>
 
                 {error && <p className="error">{error}</p>}
             </form>
 
-            {/* Modal for displaying card link */}
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}

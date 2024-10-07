@@ -16,7 +16,10 @@ const ViewCard = () => {
             setLoading(true);
             setError('');
 
+            // Log the recipient to debug
+            console.log('Original recipient:', recipient);
             const formattedReceiver = recipient.replace('-', ' '); // Replace dash with space
+            console.log('Formatted receiver:', formattedReceiver);
 
             // Fetch the card based on the recipient's name
             const { data, error } = await supabase
@@ -27,7 +30,7 @@ const ViewCard = () => {
 
             if (error || !data) {
                 setError('Card not found or an error occurred.');
-                console.error('Error fetching card:', error);
+                console.error('Error fetching card:', error.message, error.details); // Log error details
             } else {
                 setCard(data); // Set the card data
             }
@@ -95,7 +98,8 @@ const ViewCard = () => {
                         <strong>To:</strong> {card.receiver}
                     </p>
                     <div className="message-box">
-                        <p className="message">{card.message}</p>
+                        {/* Render HTML content safely */}
+                        <div className="message" dangerouslySetInnerHTML={{ __html: card.message_html }} />
                     </div>
                     <p className="timestamp">Sent on: {new Date(card.created_at).toLocaleString()}</p>
 

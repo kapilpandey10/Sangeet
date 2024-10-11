@@ -16,20 +16,7 @@ const ReadBlog = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [currentUrl, setCurrentUrl] = useState('');
 
-  useEffect(() => {
-    setCurrentUrl(window.location.href);
-
-    // Load Google Ads script
-    const loadGoogleAds = () => {
-      const script = document.createElement('script');
-      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-      script.async = true;
-      script.setAttribute('data-ad-client', 'YOUR_GOOGLE_AD_CLIENT_ID'); // replace with your actual Google Ad client ID
-      document.head.appendChild(script);
-    };
-    
-    loadGoogleAds();
-  }, []);
+  
     
   // Fetch blog details by slug
   useEffect(() => {

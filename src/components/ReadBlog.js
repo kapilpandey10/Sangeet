@@ -7,7 +7,6 @@ import { Helmet } from 'react-helmet'; // For SEO
 import { FaTwitter, FaFacebook } from 'react-icons/fa';
 
 // Lazy load the RelatedBlogs component
-const RelatedBlogs = React.lazy(() => import('./RelatedBlog'));
 
 const ReadBlog = () => {
   const { slug } = useParams(); // Extract slug from URL params
@@ -16,7 +15,9 @@ const ReadBlog = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [currentUrl, setCurrentUrl] = useState('');
 
-  
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
     
   // Fetch blog details by slug
   useEffect(() => {
@@ -42,20 +43,18 @@ const ReadBlog = () => {
       setLoading(false);
     };
 
+    // Fetch related blog articles based on tags
     const fetchRelatedBlogs = async (tags) => {
-      console.log('Tags for related blogs:', tags); 
       const { data: relatedData, error } = await supabase
         .from('blogs')
-        .select('title, slug, thumbnail_url, published_date')
-        .not('slug', 'eq', slug) 
-        .ilike('tags', `%${tags.join('%')}%`) 
+        .select('title, slug, thumbnail_url, published_date') // Added thumbnail_url and published_date
+        .not('slug', 'eq', slug) // Exclude the current blog
+        .ilike('tags', `%${tags.join('%')}%`) // Match tags, ensure correct format
         .limit(5);
 
       if (error || relatedData.length === 0) {
-        console.warn('No related articles found by tags, fetching fallback blogs...');
-        fetchFallbackBlogs();
+        fetchFallbackBlogs(); // Fetch fallback blogs if no related blogs by tags
       } else {
-        console.log('Related articles:', relatedData); 
         setRelatedBlogs(relatedData);
       }
     };
@@ -63,15 +62,14 @@ const ReadBlog = () => {
     const fetchFallbackBlogs = async () => {
       const { data: fallbackData, error } = await supabase
         .from('blogs')
-        .select('title, slug, thumbnail_url, published_date')
-        .not('slug', 'eq', slug)
-        .order('published_date', { ascending: false })
+        .select('title, slug, thumbnail_url, published_date') // Added thumbnail_url and published_date
+        .not('slug', 'eq', slug) // Exclude the current blog
+        .order('published_date', { ascending: false }) // Fetch the latest blogs
         .limit(5);
 
       if (error) {
         console.error('Error fetching fallback blogs:', error.message);
       } else {
-        console.log('Fallback articles:', fallbackData); 
         setRelatedBlogs(fallbackData);
       }
     };
@@ -79,9 +77,44 @@ const ReadBlog = () => {
     fetchBlogBySlug();
   }, [slug]);
 
+  // Stick suggested articles to top after scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      const suggestedSection = document.querySelector('.suggested-articles');
+      const scrollPosition = window.scrollY;
+
+      if (suggestedSection) {
+        if (scrollPosition > 300) {
+          suggestedSection.classList.add('sticky');
+        } else {
+          suggestedSection.classList.remove('sticky');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Initialize Google Auto Ads
+    const initializeAds = () => {
+      const script = document.createElement('script');
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+      script.async = true;
+      script.setAttribute('data-ad-client', 'ca-pub-9887409333966239');
+      document.body.appendChild(script);
+    };
+
+    initializeAds(); // Load the Auto Ads script when the component is mounted
+  }, []);
+
   if (loading) {
     return (
       <div className="read-blog-container">
+        {/* Skeleton loaders for UX */}
         <div className="skeleton-header"></div>
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-paragraph"></div>
@@ -99,6 +132,7 @@ const ReadBlog = () => {
 
   return (
     <div className="read-blog-container">
+      {/* SEO Meta Tags */}
       <Helmet>
         <title>{blog.title}</title>
         <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
@@ -106,18 +140,50 @@ const ReadBlog = () => {
         <meta name="author" content={blog.author} />
         <meta property="og:title" content={blog.title} />
         <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-        <meta property="og:image" content={blog.thumbnail_url} />
+        <meta property="og:image" content={blog.thumbnail_url } />
         <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
         <meta property="og:type" content="article" />
         <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": blog.title,
+            "image": blog.thumbnail_url || 'https://via.placeholder.com/300',
+            "author": {
+              "@type": "Person",
+              "name": blog.author
+            },
+            "datePublished": blog.published_date,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Sangeet Lyrics Central",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://pandeykapil.com.np/logo.png"
+              }
+            },
+            "description": blog.excerpt || 'Read our latest blog on important topics',
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://pandeykapil.com.np/blogs/${slug}`
+            }
+          })}
+        </script>
+
+        {/* Google Auto Ads Script */}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239" crossorigin="anonymous"></script>
       </Helmet>
 
+      {/* Breadcrumb always at top */}
       <nav className="breadcrumb" aria-label="breadcrumb">
         <Link to="/">Home</Link> / <Link to="/blogs">Blogs</Link> / {blog.title}
       </nav>
 
+      {/* Blog Layout */}
       <div className="blog-layout">
         <div className="blog-content">
+          {/* Blog Header */}
           <header className="blog-header">
             <h1>{blog.title}</h1>
             <p className="blog-meta">
@@ -126,6 +192,7 @@ const ReadBlog = () => {
             </p>
           </header>
 
+          {/* Blog Image */}
           <img
             src={blog.thumbnail_url || 'https://via.placeholder.com/300'}
             alt={blog.title}
@@ -133,35 +200,35 @@ const ReadBlog = () => {
             loading="lazy"
           />
 
+          {/* Blog HTML Content */}
           <div
             className="blog-html-content"
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             aria-label="Blog content"
           ></div>
 
-          {/* Google Auto Ads Integration */}
-          <div className="ad-space">
-            <ins className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="4756859110"
-              data-ad-format="auto"
-              data-full-width-responsive="true"></ins>
-            <script>
-              {(window.adsbygoogle = window.adsbygoogle || []).push({})}
-            </script>
-          </div>
-
+          {/* Social Share */}
           <div className="social-share">
-            <a href={`https://twitter.com/intent/tweet?url=${currentUrl}`} target="_blank" rel="noopener noreferrer" className="twitter-share">
+            <a
+              href={`https://twitter.com/intent/tweet?url=${window.location.href}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="twitter-share"
+            >
               <FaTwitter className="social-icon" /> Share on Twitter
             </a>
-            <a href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`} target="_blank" rel="noopener noreferrer" className="facebook-share">
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="facebook-share"
+            >
               <FaFacebook className="social-icon" /> Share on Facebook
             </a>
           </div>
         </div>
 
+        {/* Suggested Articles */}
         <aside className="suggested-articles">
           <h3>Suggested Articles</h3>
           <Suspense fallback={<div>Loading related articles...</div>}>

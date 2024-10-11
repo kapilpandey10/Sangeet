@@ -57,6 +57,19 @@ const LyricsList = () => {
     fetchLyrics();
   }, []);
 
+  useEffect(() => {
+    // Initialize Google Auto Ads
+    const initializeAds = () => {
+      const script = document.createElement('script');
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+      script.async = true;
+      script.setAttribute('data-ad-client', 'ca-pub-9887409333966239');
+      document.body.appendChild(script);
+    };
+
+    initializeAds(); // Load the Auto Ads script when the component is mounted
+  }, []);
+
   const getYearRanges = (years) => {
     const ranges = [
       { label: '1970-1980', min: 1970, max: 1980 },
@@ -178,6 +191,11 @@ const LyricsList = () => {
         <button onClick={() => setVisibleArtists((prev) => prev + 10)} className="view-more-button">
           Load More
         </button>
+      </div>
+
+      {/* Placeholder for Google Auto Ads */}
+      <div className="google-auto-ads">
+        {/* Google Ads can be inserted here */}
       </div>
     </div>
   );

@@ -74,13 +74,22 @@ const HomePage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Initialize Google Auto Ads
+    const initializeAds = () => {
+      const script = document.createElement('script');
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+      script.async = true;
+      script.setAttribute('data-ad-client', 'ca-pub-9887409333966239');
+      document.body.appendChild(script);
+    };
+
+    initializeAds(); // Load the Auto Ads script when the component is mounted
+  }, []);
+
   const getRandomLyrics = (allLyrics, limit) => {
     const shuffled = allLyrics.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
-  };
-
-  const formatTitleForURL = (title) => {
-    return title.replace(/\s+/g, '_').toLowerCase();
   };
 
   return (
@@ -91,7 +100,6 @@ const HomePage = () => {
         <meta name="keywords" content="Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali lyrics collection, latest Nepali songs, Nepali artists" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://pandeykapil.com.np/" />
-        {/* Add JSON-LD structured data here if necessary */}
       </Helmet>
 
       {/* Hero Slider */}
@@ -138,6 +146,19 @@ const HomePage = () => {
             </div>
           </section>
 
+          {/* Ad between Lyrics and YouTube Video */}
+          <div className="ad-container scroll-animated fade-in">
+            <ins className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="4756859110"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
+
           {/* YouTube Video Section */}
           <div className="homeytvideo scroll-animated fade-in-up">
             <Suspense fallback={<div className="skeleton-yt-video"></div>}>
@@ -156,21 +177,21 @@ const HomePage = () => {
               </div>
             </div>
           )}
+
+          {/* Another Ad after Featured Artist Section */}
+          <div className="ad-container scroll-animated fade-in">
+            <ins className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="4756859110"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
         </>
       )}
-
-      {/* AdSense */}
-      <div className="ad-container scroll-animated fade-in">
-        <ins className="adsbygoogle"
-          style={{ display: 'block' }}
-          data-ad-client="ca-pub-9887409333966239"
-          data-ad-slot="4756859110"
-          data-ad-format="auto"
-          data-full-width-responsive="true"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
 
       {/* Include HotNews component */}
       <HotNews />

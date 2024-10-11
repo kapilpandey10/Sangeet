@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom'; // To handle navigation to /lyrics/{title_artist}
+import { useNavigate } from 'react-router-dom'; // To handle navigation
 import '../style/HomeYTVideo.css'; // You can create this CSS file for styling
 
 const HomeYTVideo = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [lyricsData, setLyricsData] = useState(null); // Store the title, artist, and other data
+  const [lyricsData, setLyricsData] = useState(null); // Store the title, artist, and slug
   const navigate = useNavigate(); // React Router hook to handle navigation
 
   // Function to fetch a video based on the current 5-minute interval
@@ -17,7 +17,7 @@ const HomeYTVideo = () => {
       // Fetch the list of approved videos with a non-null `music_url`
       const { data: lyricsWithVideos, error } = await supabase
         .from('lyrics')
-        .select('title, artist, music_url') // Fetch the title and artist
+        .select('title, artist, music_url, slug') // Fetch the title, artist, and slug
         .not('music_url', 'is', null)
         .eq('status', 'approved');
 
@@ -34,7 +34,7 @@ const HomeYTVideo = () => {
         const selectedVideoData = lyricsWithVideos[intervalIndex];
 
         setVideoUrl(selectedVideoData.music_url);
-        setLyricsData(selectedVideoData); // Set the title and artist data
+        setLyricsData(selectedVideoData); // Set the title, artist, and slug data
       } else {
         throw new Error('No videos found');
       }
@@ -112,18 +112,11 @@ const HomeYTVideo = () => {
   const minutesLeft = Math.floor(timeLeft / 60);
   const secondsLeft = timeLeft % 60;
 
-  // Generate a slug for the title
-  const generateSlug = (title) => {
-    // Replace spaces with underscores, but keep dashes
-    return title.replace(/\s+/g, '_');
-  };
-
-  // Handle the navigation to the lyrics page using the title with underscores
+  // Handle the navigation to the lyrics page using the `slug` from the database
   const handleViewLyricsClick = () => {
     if (lyricsData) {
-      const { title } = lyricsData;
-      const slug = generateSlug(title); // Generate the slug based on the title
-      navigate(`/lyrics/${slug}`); // Navigate to the specific lyrics page
+      const { slug } = lyricsData;
+      navigate(`/lyrics/${slug}`); // Use the slug directly for navigation
     }
   };
 

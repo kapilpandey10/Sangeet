@@ -8,7 +8,6 @@ import FloatingModal from './FloatingModal';
 import '../style/ViewLyrics.css';
 import HotNews from './hotnews'; // Import the HotNews component
 
-
 const ViewLyrics = () => {
   const { slug } = useParams(); // Get slug from URL
   const [lyric, setLyric] = useState(null);
@@ -20,11 +19,10 @@ const ViewLyrics = () => {
   useEffect(() => {
     const fetchLyric = async () => {
       try {
-        // Use the slug to fetch lyrics
         const { data, error } = await supabase
           .from('lyrics')
           .select('*')
-          .eq('slug', slug) // Query by slug instead of title
+          .eq('slug', slug)
           .single();
 
         if (error || !data) {
@@ -40,20 +38,18 @@ const ViewLyrics = () => {
       }
     };
 
-    // Function to fetch 5 random lyrics
     const fetchRandomLyrics = async () => {
       try {
         const { data: randomLyrics, error } = await supabase
           .from('lyrics')
           .select('*')
-          .neq('slug', slug) // Exclude the current lyric by its slug
+          .neq('slug', slug)
           .limit(10); // Fetch more than 5 to ensure randomness
 
         if (error) {
           throw new Error('Failed to fetch random lyrics.');
         }
 
-        // Randomly select 5 lyrics
         const shuffledLyrics = randomLyrics.sort(() => 0.5 - Math.random()).slice(0, 5);
         setRelatedLyrics(shuffledLyrics);
       } catch (error) {
@@ -64,17 +60,27 @@ const ViewLyrics = () => {
     fetchLyric();
   }, [slug]);
 
-  // Redirect to 404 page if there's an error (e.g., lyrics not found)
+  // Load Google Ads script when component mounts
+  useEffect(() => {
+    const loadAds = () => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        console.error('Ads failed to load', e);
+      }
+    };
+
+    loadAds(); // Load ads when the component is mounted
+  }, []);
+
   if (error) {
-    return <Navigate to="/404" />; // Use Navigate instead of Redirect
+    return <Navigate to="/404" />;
   }
 
-  // Toggle between Original and English Lyrics
   const handleToggleLanguage = () => {
     setIsEnglish(!isEnglish);
   };
   
-  // Extract YouTube video ID from a URL
   const extractYouTubeId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const matches = url.match(regex);
@@ -84,9 +90,11 @@ const ViewLyrics = () => {
   if (loading) {
     return (
       <div className="skeleton-loader">
-        {/* Skeleton loader for the page */}
+        <div className="skeleton-title"></div>
+        <div className="skeleton-title"></div>
         <div className="skeleton-title"></div>
         <div className="skeleton-text"></div>
+        <div className="skeleton-video"></div>
         <div className="skeleton-text"></div>
         <div className="skeleton-video"></div>
       </div>
@@ -95,29 +103,25 @@ const ViewLyrics = () => {
 
   return (
     <div className="view-lyrics-page">
-      {/* SEO Optimization and Rich Snippets */}
-
       <Helmet>
-  <title>{lyric.title} Lyrics - by {lyric.artist}: Sangeet Lyrics Central</title>
-  <meta name="description" content={`Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
-  <script type="application/ld+json">
-    {JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "MusicComposition",
-      "name": lyric.title,
-      "composer": lyric.artist,
-      "inLanguage": lyric.language,
-      "datePublished": new Date(lyric.published_date).toISOString(),
-      "url": `https://pandeykapil.com.np/lyrics/${slug}`,
-      "description": `Read the lyrics of ${lyric.title} by ${lyric.artist}.`,
-    })}
-  </script>
-</Helmet>
-
+        <title>{lyric.title} Lyrics - by {lyric.artist}: Sangeet Lyrics Central</title>
+        <meta name="description" content={`Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "MusicComposition",
+            "name": lyric.title,
+            "composer": lyric.artist,
+            "inLanguage": lyric.language,
+            "datePublished": new Date(lyric.published_date).toISOString(),
+            "url": `https://pandeykapil.com.np/lyrics/${slug}`,
+            "description": `Read the lyrics of ${lyric.title} by ${lyric.artist}.`,
+          })}
+        </script>
+      </Helmet>
 
       <div className="lyrics-content">
         <div className="main-lyrics">
-          {/* Breadcrumb */}
           <nav className="breadcrumb">
             <Link to="/">Home</Link> / <Link to="/lyrics-list">Lyrics List</Link> / {lyric.title}
           </nav>
@@ -126,23 +130,20 @@ const ViewLyrics = () => {
           <p><strong>Artist:</strong> {lyric.artist}</p>
           <p><strong>Release Year:</strong> {new Date(lyric.published_date).getFullYear()}</p>
           <p><strong>Added By:</strong> {lyric.added_by}</p>
-          <FloatingModal /> {/* Modal will appear automatically */}
+          <FloatingModal />
 
           {lyric.status === 'approved' && <Verified />}
 
-          {/* Toggle Button */}
           <button onClick={handleToggleLanguage} className="toggle-button">
             {isEnglish ? 'View Original Lyrics' : 'View English Lyrics'}
           </button>
 
-          {/* Display Lyrics: Either Original or English */}
           <pre className="lyrics-text">
             {isEnglish 
               ? (lyric.english_lyrics ? lyric.english_lyrics : 'Admin will soon put English lyrics for this song.') 
               : lyric.lyrics}
           </pre>
 
-          {/* YouTube Video Embed */}
           {lyric.music_url && (
             <div className="music-video">
               <iframe
@@ -157,7 +158,6 @@ const ViewLyrics = () => {
             </div>
           )}
 
-          {/* Social Media Share Buttons */}
           <div className="social-share-buttons">
             <a
               href={`https://twitter.com/intent/tweet?text=Check out these lyrics: ${lyric.title} - ${lyric.artist} &url=https://pandeykapil.com.np/lyrics/${slug}`}
@@ -185,13 +185,12 @@ const ViewLyrics = () => {
 
         </div>
 
-        {/* Related Lyrics */}
         <aside className="related-lyrics">
           <h3>More Songs You Might Like</h3>
           <div className="related-lyrics-grid">
             {relatedLyrics.map((relatedLyric) => (
               <Link
-                to={`/lyrics/${relatedLyric.slug}`} // Use slug for related lyrics
+                to={`/lyrics/${relatedLyric.slug}`}
                 key={relatedLyric.id}
                 className="related-lyric-item"
               >
@@ -204,11 +203,18 @@ const ViewLyrics = () => {
                 </div>
               </Link>
             ))}
-
           </div>
         </aside>
       </div>
-     
+
+      {/* Google Auto Ads Integration */}
+      <div className="google-ads">
+        <ins className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+          data-ad-slot="3428921840"
+          data-ad-format="autorelaxed"></ins>
+      </div>
 
     </div>
   );

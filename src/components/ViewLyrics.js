@@ -105,7 +105,7 @@ const ViewLyrics = () => {
     <div className="view-lyrics-page">
       <Helmet>
         <title>{lyric.title} Lyrics - by {lyric.artist}: Sangeet Lyrics Central</title>
-        <meta name="description" content={`Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
+        <meta name="description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -115,7 +115,7 @@ const ViewLyrics = () => {
             "inLanguage": lyric.language,
             "datePublished": new Date(lyric.published_date).toISOString(),
             "url": `https://pandeykapil.com.np/lyrics/${slug}`,
-            "description": `Read the lyrics of ${lyric.title} by ${lyric.artist}.`,
+            "description": lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist}.`,
           })}
         </script>
       </Helmet>

@@ -21,6 +21,7 @@ const AddLyrics = () => {
   const [message, setMessage] = useState('');
   const [addedBy, setAddedBy] = useState('');
   const [language, setLanguage] = useState('');
+  const [description, setdescription] = useState('');
 
   useEffect(() => {
     document.title = "Add Song Lyrics | Contribute to Sangeet Lyrics Central";
@@ -53,7 +54,7 @@ const AddLyrics = () => {
       // Direct video ID entered
       videoId = url;
     } else {
-      setVideoError('Please enter a valid YouTube Video URL or ID.');
+      setVideoError('Please enter a valid YouTube Video URL.');
       return null;
     }
 
@@ -132,6 +133,7 @@ const AddLyrics = () => {
             status: 'pending',
             added_by: addedBy,
             language: language,
+            description: description
           }
         ]);
 
@@ -143,6 +145,7 @@ const AddLyrics = () => {
       setArtists([{ name: '', suggestions: [] }]);
       setWriter('');
       setLyrics('');
+      setdescription('');
       setEnglishLyrics(''); // Clear English lyrics field after submission
       setReleaseYear('');
       setVideoUrl('');
@@ -245,7 +248,17 @@ const AddLyrics = () => {
             required
           />
         </div>
-
+        <div className="form-group">
+          <label htmlFor="description">Description</label>
+          <input
+            type="text"
+            id="description"
+            value={description}
+            onChange={(e) => setdescription(e.target.value)}
+            required
+            placeholder='Please enter the description of music for SEO purpose.'
+          />
+        </div>
         <div className="form-group">
           <label htmlFor="language">Language</label>
           <input
@@ -256,6 +269,7 @@ const AddLyrics = () => {
             required
           />
         </div>
+
 
         <div className="form-group">
           <label htmlFor="releaseYear">Release Year</label>
@@ -271,7 +285,7 @@ const AddLyrics = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="videoUrl">YouTube Video URL or ID</label>
+          <label htmlFor="videoUrl">YouTube Video URL</label>
           <input
             type="text"
             id="videoUrl"
@@ -281,13 +295,14 @@ const AddLyrics = () => {
             placeholder="Enter YouTube Video URL or ID"
           />
           {videoError && <p className="error-message">{videoError}</p>}
-          <small>Example: https://www.youtube.com/watch?v=MqFycWPbwmQ or MqFycWPbwmQ</small>
+          <small>Example: https://youtu.be/HPyexZrhmu0</small>
         </div>
 
         <div className="form-group">
           <label htmlFor="addedBy">Your Name</label>
           <input
             type="text"
+
             id="addedBy"
             value={addedBy}
             onChange={(e) => setAddedBy(e.target.value)}

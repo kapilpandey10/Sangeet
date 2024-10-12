@@ -58,7 +58,7 @@ const LyricsList = () => {
   }, []);
 
   useEffect(() => {
-    // Initialize Google Auto Ads
+    // Initialize Google AdSense
     const initializeAds = () => {
       const script = document.createElement('script');
       script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
@@ -128,6 +128,19 @@ const LyricsList = () => {
     <div className="lyrics-list-container">
       <h1>Music Library</h1>
 
+      {/* Square Ad 1 */}
+      <div className="square-ad">
+        <ins className="adsbygoogle"
+             style={{ display: 'block' }}
+             data-ad-client="ca-pub-9887409333966239"
+             data-ad-slot="1039665871"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+
       {/* Search and filter inputs */}
       <div className="search-filter-container">
         <input
@@ -138,6 +151,19 @@ const LyricsList = () => {
           className="search-input"
         />
 
+        {/* Square Ad 2 */}
+        <div className="square-ad">
+          <ins className="adsbygoogle"
+               style={{ display: 'block' }}
+               data-ad-client="ca-pub-9887409333966239"
+               data-ad-slot="1039665871"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+
         {/* Filter by language */}
         <select value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
           <option value="all">All Languages</option>
@@ -147,6 +173,19 @@ const LyricsList = () => {
             </option>
           ))}
         </select>
+
+        {/* Square Ad 3 */}
+        <div className="square-ad">
+          <ins className="adsbygoogle"
+               style={{ display: 'block' }}
+               data-ad-client="ca-pub-9887409333966239"
+               data-ad-slot="1039665871"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
 
         {/* Filter by year */}
         <select
@@ -169,13 +208,26 @@ const LyricsList = () => {
       {Object.keys(filteredLyrics).slice(0, visibleArtists).map((artist, index) => (
         <div key={artist} className="artist-section">
           <h2>{artist}</h2>
+
+          {/* Square Ad 4 */}
+          <div className="square-ad">
+            <ins className="adsbygoogle"
+                 style={{ display: 'block' }}
+                 data-ad-client="ca-pub-9887409333966239"
+                 data-ad-slot="1039665871"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
+
           <div className="lyrics-grid">
             {filteredLyrics[artist].map((lyric) => (
               <div key={lyric.slug} className="lyric-card">
                 <div className="lyric-card-content">
                   <h3>{lyric.title}</h3>
                   <p className="small-text">Published: {new Date(lyric.published_date).getFullYear()}</p>
-                  {/* Use the slug for the Link */}
                   <Link to={`/lyrics/${lyric.slug}`} className="view-lyrics-button">
                     View Lyrics
                   </Link>
@@ -193,10 +245,32 @@ const LyricsList = () => {
         </button>
       </div>
 
-      {/* Placeholder for Google Auto Ads */}
-      <div className="google-auto-ads">
-        {/* Google Ads can be inserted here */}
+      {/* Square Ad 5 */}
+      <div className="square-ad">
+        <ins className="adsbygoogle"
+             style={{ display: 'block' }}
+             data-ad-client="ca-pub-9887409333966239"
+             data-ad-slot="1039665871"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
       </div>
+
+      {/* Square Ad 6 */}
+      <div className="square-ad">
+        <ins className="adsbygoogle"
+             style={{ display: 'block' }}
+             data-ad-client="ca-pub-9887409333966239"
+             data-ad-slot="1039665871"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+
     </div>
   );
 };

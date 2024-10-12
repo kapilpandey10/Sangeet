@@ -72,10 +72,23 @@ const BlogHomepage = () => {
 
   const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags)));
 
+  useEffect(() => {
+    // Initialize Google AdSense
+    const loadAdSense = () => {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        console.error('AdSense failed to load', e);
+      }
+    };
+
+    loadAdSense(); // Call the function after the component is mounted
+  }, []);
+
   return (
     <div className="blog-homepage-container">
       <Helmet>
-        <title>Latest Blogs - My Blog Site</title>
+        <title>News and Blogs - Sangeet Lyrics Central</title>
         <meta name="description" content="Explore the latest blogs on various topics from Sangeet Lyrics Central." />
         <link rel="canonical" href="https://pandeykapil.com.np/blogs" />
         <meta property="og:title" content="Sangeet Lyrics Central - Blogs" />
@@ -178,6 +191,17 @@ const BlogHomepage = () => {
               Load More
             </button>
           )}
+
+          {/* Insert Google Square Ad */}
+          <div className="ad-container">
+            <ins className="adsbygoogle"
+                 style={{ display: 'block' }}
+                 data-ad-client="ca-pub-9887409333966239"
+                 data-ad-slot="1039665871"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+          </div>
+
         </>
       )}
 

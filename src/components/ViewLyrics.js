@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom'; // Use Navigate instead of Redirect
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { FaMusic, FaTwitter, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { Helmet } from 'react-helmet';
 import Verified from './verified';
 import FloatingModal from './FloatingModal';
 import '../style/ViewLyrics.css';
-import HotNews from './hotnews'; // Import the HotNews component
+import HotNews from './hotnews';
 
 const ViewLyrics = () => {
   const { slug } = useParams(); // Get slug from URL
@@ -80,7 +80,7 @@ const ViewLyrics = () => {
   const handleToggleLanguage = () => {
     setIsEnglish(!isEnglish);
   };
-  
+
   const extractYouTubeId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const matches = url.match(regex);
@@ -104,8 +104,18 @@ const ViewLyrics = () => {
   return (
     <div className="view-lyrics-page">
       <Helmet>
+        {/* Page title and dynamic Open Graph tags */}
         <title>{lyric.title} Lyrics - by {lyric.artist}: Sangeet Lyrics Central</title>
         <meta name="description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
+        
+        {/* Open Graph meta tags */}
+        <meta property="og:title" content={`${lyric.title} Lyrics by ${lyric.artist}`} />
+        <meta property="og:description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist}.`} />
+        <meta property="og:image" content={lyric.thumbnail_url || 'https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp'} />
+        <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${slug}`} />
+        <meta property="og:type" content="music.song" />
+
+        {/* Structured Data */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -182,7 +192,6 @@ const ViewLyrics = () => {
             </a>
           </div>
           <HotNews />
-
         </div>
 
         <aside className="related-lyrics">
@@ -215,7 +224,6 @@ const ViewLyrics = () => {
           data-ad-slot="3428921840"
           data-ad-format="autorelaxed"></ins>
       </div>
-
     </div>
   );
 };

@@ -15,10 +15,11 @@ const ReadBlog = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [currentUrl, setCurrentUrl] = useState('');
 
+  // Set current URL for sharing
   useEffect(() => {
     setCurrentUrl(window.location.href);
   }, []);
-    
+
   // Fetch blog details by slug
   useEffect(() => {
     const fetchBlogBySlug = async () => {
@@ -33,10 +34,10 @@ const ReadBlog = () => {
         console.error('Error fetching blog:', error.message);
       } else {
         setBlog(blogData);
+        // Fetch related blogs based on tags or fallback blogs
         if (blogData.tags && blogData.tags.length > 0) {
           fetchRelatedBlogs(blogData.tags);
         } else {
-          // Fetch other blogs if no tags available
           fetchFallbackBlogs();
         }
       }
@@ -47,9 +48,9 @@ const ReadBlog = () => {
     const fetchRelatedBlogs = async (tags) => {
       const { data: relatedData, error } = await supabase
         .from('blogs')
-        .select('title, slug, thumbnail_url, published_date') // Added thumbnail_url and published_date
+        .select('title, slug, thumbnail_url, published_date')
         .not('slug', 'eq', slug) // Exclude the current blog
-        .ilike('tags', `%${tags.join('%')}%`) // Match tags, ensure correct format
+        .ilike('tags', `%${tags.join('%')}%`) // Match tags
         .limit(5);
 
       if (error || relatedData.length === 0) {
@@ -59,11 +60,12 @@ const ReadBlog = () => {
       }
     };
 
+    // Fetch fallback blogs if no related blogs are found by tags
     const fetchFallbackBlogs = async () => {
       const { data: fallbackData, error } = await supabase
         .from('blogs')
-        .select('title, slug, thumbnail_url, published_date') // Added thumbnail_url and published_date
-        .not('slug', 'eq', slug) // Exclude the current blog
+        .select('title, slug, thumbnail_url, published_date')
+        .not('slug', 'eq', slug)
         .order('published_date', { ascending: false }) // Fetch the latest blogs
         .limit(5);
 
@@ -98,8 +100,8 @@ const ReadBlog = () => {
     };
   }, []);
 
+  // Initialize Google Auto Ads
   useEffect(() => {
-    // Initialize Google Auto Ads
     const initializeAds = () => {
       const script = document.createElement('script');
       script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
@@ -114,7 +116,7 @@ const ReadBlog = () => {
   if (loading) {
     return (
       <div className="read-blog-container">
-        {/* Skeleton loaders for UX */}
+        {/* Skeleton loaders for UX while data is being fetched */}
         <div className="skeleton-header"></div>
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-paragraph"></div>
@@ -127,7 +129,7 @@ const ReadBlog = () => {
     return <div>Blog not found</div>;
   }
 
-  // Sanitize the blog content
+  // Sanitize the blog content to avoid XSS attacks
   const sanitizedContent = DOMPurify.sanitize(blog.content);
 
   return (
@@ -138,12 +140,15 @@ const ReadBlog = () => {
         <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
         <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
         <meta name="author" content={blog.author} />
+
+        {/* Open Graph meta tags for social sharing */}
         <meta property="og:title" content={blog.title} />
         <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-        <meta property="og:image" content={blog.thumbnail_url } />
+        <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
         <meta property="og:type" content="article" />
-        <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+
+        {/* JSON-LD structured data for SEO */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -160,7 +165,7 @@ const ReadBlog = () => {
               "name": "Sangeet Lyrics Central",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://pandeykapil.com.np/logo.png"
+                "url": "https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp"
               }
             },
             "description": blog.excerpt || 'Read our latest blog on important topics',
@@ -175,7 +180,7 @@ const ReadBlog = () => {
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239" crossorigin="anonymous"></script>
       </Helmet>
 
-      {/* Breadcrumb always at top */}
+      {/* Breadcrumb for navigation */}
       <nav className="breadcrumb" aria-label="breadcrumb">
         <Link to="/">Home</Link> / <Link to="/blogs">Blogs</Link> / {blog.title}
       </nav>
@@ -207,10 +212,10 @@ const ReadBlog = () => {
             aria-label="Blog content"
           ></div>
 
-          {/* Social Share */}
+          {/* Social Share Buttons */}
           <div className="social-share">
             <a
-              href={`https://twitter.com/intent/tweet?url=${window.location.href}`}
+              href={`https://twitter.com/intent/tweet?url=${currentUrl}`}
               target="_blank"
               rel="noopener noreferrer"
               className="twitter-share"
@@ -218,7 +223,7 @@ const ReadBlog = () => {
               <FaTwitter className="social-icon" /> Share on Twitter
             </a>
             <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
+              href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
               target="_blank"
               rel="noopener noreferrer"
               className="facebook-share"
@@ -257,6 +262,15 @@ const ReadBlog = () => {
             </ul>
           </Suspense>
         </aside>
+      </div>
+
+      {/* Google Ads Integration */}
+      <div className="google-ads">
+        <ins className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+          data-ad-slot="3428921840"
+          data-ad-format="autorelaxed"></ins>
       </div>
     </div>
   );

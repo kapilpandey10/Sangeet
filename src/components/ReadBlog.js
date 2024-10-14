@@ -136,30 +136,32 @@ const ReadBlog = () => {
     <div className="read-blog-container">
       {/* SEO Meta Tags */}
       <Helmet>
-        <title>{blog.title}</title>
-        <meta name="description" content={blog.excerpt || 'Read our latest blog on important topics'} />
-        <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
-        <meta name="author" content={blog.author} />
+  <title>{blog.title}</title>
+  <meta name="description" content={blog.excerpt || 'Read this blog post on important topics'} />
+  <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
+  <meta name="author" content={blog.author} />
 
-        {/* Open Graph meta tags for social sharing */}
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-        <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
-        <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
-        <meta property="og:type" content="article" />
-        <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+  {/* Correct Canonical URL */}
+  <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
 
+  {/* Open Graph Meta Tags */}
+  <meta property="og:title" content={blog.title} />
+  <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
+  <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+  <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+  <meta property="og:type" content="article" />
+</Helmet>
 
 
         {/* Google Auto Ads Script */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239" crossorigin="anonymous"></script>
-      </Helmet>
+   
 
       {/* Breadcrumb for navigation */}
       <nav className="breadcrumb" aria-label="breadcrumb">
         <Link to="/">Home</Link> / <Link to="/blogs">Blogs</Link> / {blog.title}
       </nav>
-
+     
       {/* Blog Layout */}
       <div className="blog-layout">
         <div className="blog-content">

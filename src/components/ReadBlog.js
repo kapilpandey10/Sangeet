@@ -147,6 +147,8 @@ const ReadBlog = () => {
         <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
         <meta property="og:type" content="article" />
+        <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+
 
         {/* JSON-LD structured data for SEO */}
         <script type="application/ld+json">

@@ -150,33 +150,6 @@ const ReadBlog = () => {
         <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
 
 
-        {/* JSON-LD structured data for SEO */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            "headline": blog.title,
-            "image": blog.thumbnail_url || 'https://via.placeholder.com/300',
-            "author": {
-              "@type": "Person",
-              "name": blog.author
-            },
-            "datePublished": blog.published_date,
-            "publisher": {
-              "@type": "Organization",
-              "name": "Sangeet Lyrics Central",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp"
-              }
-            },
-            "description": blog.excerpt || 'Read our latest blog on important topics',
-            "mainEntityOfPage": {
-              "@type": "WebPage",
-              "@id": `https://pandeykapil.com.np/blogs/${slug}`
-            }
-          })}
-        </script>
 
         {/* Google Auto Ads Script */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239" crossorigin="anonymous"></script>

@@ -114,6 +114,7 @@ const ViewLyrics = () => {
         <meta property="og:image" content={lyric.thumbnail_url || 'https://pandeykapil.com.np/static/media/logo.8eba7158a30d9326a117.webp'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${slug}`} />
         <meta property="og:type" content="music.song" />
+        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${slug}`} />
 
         {/* Structured Data */}
         <script type="application/ld+json">

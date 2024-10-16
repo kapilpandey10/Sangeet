@@ -6,37 +6,48 @@ const useDisableShortcuts = () => {
   useEffect(() => {
     const handleContextMenu = (e) => {
       e.preventDefault();
-      setShowWarning(true); // Show the warning modal on right-click
+      setShowWarning(true); // Show the warning modal on right-click or long-press
     };
 
     const handleKeyDown = (e) => {
       // Disable common DevTools shortcuts for Windows and macOS
-      // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U for Windows
-      // Prevent Cmd+Option+I, Cmd+Option+J, Cmd+Shift+C for macOS
       if (
         e.keyCode === 123 || // F12 (Windows)
         (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I or Ctrl+Shift+J (Windows)
-        (e.ctrlKey && e.keyCode === 85) || // Ctrl+U (Windows - View Page Source)
+        (e.ctrlKey && e.keyCode === 85) || // Ctrl+U (Windows)
         (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74)) || // Cmd+Option+I or Cmd+Option+J (macOS)
         (e.metaKey && e.shiftKey && e.keyCode === 67) || // Cmd+Shift+C (macOS)
         (e.metaKey && e.keyCode === 85) || // Cmd+U (macOS)
         (e.metaKey && e.shiftKey && e.keyCode === 73) // Cmd+Shift+I (Safari)
       ) {
         e.preventDefault();
-        setShowWarning(true); // Show the warning modal on key shortcuts
+        setShowWarning(true);
       }
     };
 
-    document.addEventListener('contextmenu', handleContextMenu); // Disable right-click
-    document.addEventListener('keydown', handleKeyDown); // Disable shortcuts
+    const handleTouchCallout = (e) => {
+      // Prevent long-press in mobile browsers
+      e.preventDefault();
+      setShowWarning(true);
+    };
+
+    // Disable right-click (desktop and mobile long press)
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    // Disable long press in mobile
+    document.addEventListener('touchstart', handleTouchCallout);
+
+    // Disable key shortcuts (Windows/macOS)
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('touchstart', handleTouchCallout);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
-  return [showWarning, setShowWarning]; // Return both showWarning state and setter
+  return [showWarning, setShowWarning];
 };
 
 export default useDisableShortcuts;

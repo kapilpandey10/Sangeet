@@ -35,9 +35,10 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
   );
+  
   const location = useLocation();
-  const isDevToolsOpen = useDetectDevTools(); // Use DevTools detection
-  const [showWarning, setShowWarning] = useDisableShortcuts(); // Use right-click and shortcuts disable hook
+  const isDevToolsOpen = useDetectDevTools(); // DevTools detection hook
+  const [showWarning, setShowWarning] = useDisableShortcuts(); // Disable right-click/shortcuts hook
 
   // Track page views on route changes
   useEffect(() => {
@@ -46,7 +47,7 @@ function App() {
     }
   }, [location]);
 
-  // Ensure authentication state is saved
+  // Manage authentication state and persist it
   useEffect(() => {
     if (isAuthenticated) {
       localStorage.setItem('isAuthenticated', 'true');
@@ -57,7 +58,7 @@ function App() {
 
   return (
     <>
-      {/* Show Warning Modal if DevTools are open or if right-click/shortcuts used */}
+      {/* Show Warning Modal if DevTools are open or right-click/shortcuts are used */}
       {(isDevToolsOpen || showWarning) && <WarningModal />}
 
       {/* Render the main content of the site */}
@@ -66,8 +67,14 @@ function App() {
       <div className="main-content">
         <Routes>
           {/* Admin login and dashboard */}
-          <Route path="/1234/secret" element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/admin/*" element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} />
+          <Route 
+            path="/1234/secret" 
+            element={<AdminLogin setIsAuthenticated={setIsAuthenticated} />} 
+          />
+          <Route 
+            path="/admin/*" 
+            element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/1234/secret" replace />} 
+          />
 
           {/* Public routes */}
           <Route path="/request-reset-code" element={<RequestResetCode />} />
@@ -84,16 +91,17 @@ function App() {
           <Route path="/filetransfer" element={<FileTransfer />} />
           <Route path="/sendimage" element={<SendImage />} />
           <Route path="/receiveimg" element={<ReceiveImage />} />
-        
+          
           {/* Add Blog functionality */}
           <Route path="/addblog" element={<AddBlog />} />
 
-          {/* Blog Homepage to display all blogs */}
+          {/* Blog Homepage */}
           <Route path="/Blogs" element={<BlogHomepage />} />
           <Route path="/greetings" element={<Greeting />} />
           <Route path="/create-card" element={<CreateCard />} />
           <Route path="/cards/:recipient" element={<ViewCard />} />
 
+          {/* Artist list route */}
           <Route path="/artistbio" element={<Artistlist />} />
 
           {/* Catch-all route */}

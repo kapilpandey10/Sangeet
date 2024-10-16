@@ -105,8 +105,8 @@ const ViewLyrics = () => {
     <div className="view-lyrics-page">
       <Helmet>
         {/* Page title and dynamic Open Graph tags */}
-        <title>{lyric.title} Lyrics - by {lyric.artist}: Sangeet Lyrics Central</title>
-        <meta name="description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist} on Sangeet Lyrics Central.`} />
+        <title>{lyric.title} Lyrics - by {lyric.artist}: Dynabeat</title>
+        <meta name="description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist} on Dynabeat.`} />
         
         {/* Open Graph meta tags */}
         <meta property="og:title" content={`${lyric.title} Lyrics by ${lyric.artist}`} />

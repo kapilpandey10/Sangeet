@@ -88,26 +88,26 @@ const BlogHomepage = () => {
   return (
     <div className="blog-homepage-container">
       <Helmet>
-        <title>News and Blogs - Sangeet Lyrics Central</title>
-        <meta name="description" content="Explore the latest blogs on various topics from Sangeet Lyrics Central." />
+        <title>News and Blogs - Dynabeat</title>
+        <meta name="description" content="Explore the latest blogs on various topics from Dynabeat." />
         <link rel="canonical" href="https://pandeykapil.com.np/blogs" />
-        <meta property="og:title" content="Sangeet Lyrics Central - Blogs" />
+        <meta property="og:title" content="Dynabeat - Blogs" />
         <meta property="og:description" content="Explore the latest blogs on various topics." />
         <meta property="og:url" content="https://pandeykapil.com.np/blogs" />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Blog",
-            "headline": "Sangeet Lyrics Central - Latest Blogs",
+            "headline": "Dynabeat - Latest Blogs",
             "url": "https://pandeykapil.com.np/blogs",
             "author": {
               "@type": "Organization",
-              "name": "Sangeet Lyrics Central"
+              "name": "Dynabeat"
             },
-            "description": "Explore the latest blogs on various topics from Sangeet Lyrics Central.",
+            "description": "Explore the latest blogs on various topics from Dynabeat.",
             "publisher": {
               "@type": "Organization",
-              "name": "Sangeet Lyrics Central",
+              "name": "Dynabeat",
               "logo": {
                 "@type": "ImageObject",
                 "url": "https://pandeykapil.com.np/logo.png"

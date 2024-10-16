@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
     <div className="policy-container">
       <h1>Privacy Policy</h1>
       <p>
-        At Sangit, we are committed to protecting your privacy. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of your information.
+        At Dynabeat, we are committed to protecting your privacy. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of your information.
       </p>
       <h2>Information We Collect</h2>
       <p>
@@ -29,7 +29,7 @@ const PrivacyPolicy = () => {
       </p>
       <h2>Contact Us</h2>
       <p>
-        If you have any questions about this Privacy Policy, please contact us at [Your Contact Information].
+        If you have any questions about this Privacy Policy, please contact us at Kapilpandey2068@gmail.com.
       </p>
     </div>
   );

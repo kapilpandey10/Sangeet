@@ -37,7 +37,7 @@ const ContactUs = () => {
   return (
     <div className="contact-us-container">
       <h1>Contact Us</h1>
-      <p>If you have any questions, feedback, or need support, feel free to reach out to the Sangeet Lyrics Central team using the form below. We are here to help you with any queries related to Nepali songs and lyrics.</p>
+      <p>If you have any questions, feedback, or need support, feel free to reach out to the DynaBeat team using the form below. We are here to help you with any queries related to Nepali songs and lyrics.</p>
 
       {/* Contact Form */}
       <form onSubmit={handleSubmit}>

@@ -16,7 +16,7 @@ const HomePage = () => {
 
   useEffect(() => {
     // Set SEO meta tags using Helmet
-    document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
+    document.title = 'Dynabeat | Nepali Music Digital Library for Song Lyrics';
 
     // Fetch all data from Supabase
     const fetchAllData = async () => {
@@ -95,9 +95,8 @@ const HomePage = () => {
   return (
     <div className="homepage-container">
       <Helmet>
-        <title>Sangeet Lyrics Central | Nepali Music Digital Library</title>
-        <meta name="description" content="Discover the latest Nepali music lyrics, including popular and classic hits. Sangeet Lyrics Central offers a vast collection of Nepali music lyrics." />
-        <meta name="keywords" content="Sangeet lyrics Central, Nepali music, Nepali music lyrics, git sangit, Nepali lyrics collection, latest Nepali songs, Nepali artists" />
+        <title>DynaBeat | Nepali Music Digital Library</title>
+        <meta name="description" content="Discover the latest Nepali music lyrics, including popular and classic hits. Dynabeat offers a vast collection of Nepali music lyrics." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://pandeykapil.com.np/" />
       </Helmet>
@@ -109,7 +108,7 @@ const HomePage = () => {
         </div>
       </Suspense>
 
-      <h1 className="scroll-animated fade-in-up">Welcome to Sangeet Lyrics Central</h1>
+      <h1 className="scroll-animated fade-in-up">Welcome to DynaBeat</h1>
       <p className="scroll-animated fade-in-up">Your ultimate destination for Nepali music lyrics, spanning all genres and eras.</p>
 
       {loading ? (

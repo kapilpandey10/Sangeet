@@ -17,7 +17,8 @@ const LyricsList = () => {
   const loadMoreRef = useRef(null);
 
   useEffect(() => {
-    document.title = 'Sangeet Lyrics Central | Nepali Music Digital Library for Song Lyrics';
+    document.title = 'Dynabeat | Nepali Music Digital Library for Song Lyrics';
+
 
     const fetchLyrics = async () => {
       try {

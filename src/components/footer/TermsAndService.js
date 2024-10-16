@@ -5,7 +5,7 @@ const TermsAndService = () => {
     <div className="terms-container">
       <h1>Terms and Conditions</h1>
       <p>
-        Welcome to Sangit. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions.
+        Welcome to Dynabeat. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions.
       </p>
       <h2>Use of the Website</h2>
       <p>
@@ -13,11 +13,11 @@ const TermsAndService = () => {
       </p>
       <h2>Intellectual Property</h2>
       <p>
-        The content, logos, and other materials on this website are owned by Sangit and are protected by intellectual property laws. You may not reproduce, distribute, or otherwise use any content without our express permission.
+        The content, logos, and other materials on this website are not owned by Dynabeat and are protected by intellectual property laws. You may not reproduce, distribute, or otherwise use any content without our express permission.
       </p>
       <h2>Limitation of Liability</h2>
       <p>
-        Sangit is not liable for any damages that may arise from the use of this website or the information contained within it.
+      Dynabeat is not liable for any damages that may arise from the use of this website or the information contained within it.
       </p>
       <h2>Changes to the Terms</h2>
       <p>
@@ -25,11 +25,11 @@ const TermsAndService = () => {
       </p>
       <h2>Governing Law</h2>
       <p>
-        These terms and conditions are governed by the laws of [Your Jurisdiction].
+        These terms and conditions are governed by the laws of Australia.
       </p>
       <h2>Contact Us</h2>
       <p>
-        If you have any questions about these Terms and Conditions, please contact us at [Your Contact Information].
+        If you have any questions about these Terms and Conditions, please contact us at Kapilpandey2068@gmail.com.
       </p>
     </div>
   );

@@ -47,7 +47,7 @@ const FeaturedArtistCard = () => {
     if (artist) {
       const metaDescription = document.createElement('meta');
       metaDescription.name = 'description';
-      metaDescription.content = `Learn more about ${artist.name}, a featured artist at Sangeet Lyrics Central. Discover their music, bio, and more.`;
+      metaDescription.content = `Learn more about ${artist.name}, a featured artist at Dynabeats. Discover their music, bio, and more.`;
       document.head.appendChild(metaDescription);
 
       const metaKeywords = document.createElement('meta');

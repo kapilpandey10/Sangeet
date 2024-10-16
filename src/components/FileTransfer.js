@@ -41,7 +41,7 @@ const FileTransfer = () => {
     <div className="file-transfer-container">
       {/* Dynamic SEO with Helmet */}
       <Helmet>
-        <title>File Transfer - Seamless Image Sharing from Sangeet Lyrics Central</title>
+        <title>File Transfer - Seamless Image Sharing from DynaBeat</title>
         <meta name="description" content="Transfer your images easily with our Send and Receive feature. A simple and fast way to share files." />
         <meta name="keywords" content="file transfer, image sharing, send files, receive files, seamless file transfer" />
         <meta property="og:title" content="File Transfer - Seamless Image Sharing" />

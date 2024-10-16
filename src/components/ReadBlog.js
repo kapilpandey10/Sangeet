@@ -6,13 +6,71 @@ import '../style/ReadBlog.css';
 import { Helmet } from 'react-helmet'; // For SEO
 import { FaTwitter, FaFacebook } from 'react-icons/fa';
 
-// Lazy load the RelatedBlogs component
+// Related Blogs Component (Lazy-loaded)
+const RelatedBlogs = ({ tags, slug }) => {
+  const [relatedBlogs, setRelatedBlogs] = useState([]);
+
+  useEffect(() => {
+    const fetchRelatedBlogs = async () => {
+      const { data: relatedData, error } = await supabase
+        .from('blogs')
+        .select('title, slug, thumbnail_url, published_date')
+        .not('slug', 'eq', slug) // Exclude current blog
+        .ilike('tags', `%${tags.join('%')}%`) // Match tags
+        .limit(5);
+
+      if (error || relatedData.length === 0) {
+        // Fetch fallback blogs if no related blogs found
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('blogs')
+          .select('title, slug, thumbnail_url, published_date')
+          .not('slug', 'eq', slug)
+          .order('published_date', { ascending: false })
+          .limit(5);
+        if (!fallbackError) setRelatedBlogs(fallbackData);
+      } else {
+        setRelatedBlogs(relatedData);
+      }
+    };
+    if (tags && tags.length > 0) {
+      fetchRelatedBlogs();
+    }
+  }, [tags, slug]);
+
+  return (
+    <aside className="suggested-articles">
+      <h3>Suggested Articles</h3>
+      <ul>
+        {relatedBlogs.length > 0 ? (
+          relatedBlogs.map((related) => (
+            <li key={related.slug} className="related-article">
+              <Link to={`/blogs/${related.slug}`}>
+                <img
+                  src={related.thumbnail_url || 'https://via.placeholder.com/150'}
+                  alt={related.title}
+                  className="related-article-thumbnail"
+                />
+                <div className="related-article-info">
+                  <h4>{related.title}</h4>
+                  <p className="related-article-date">
+                    {new Date(related.published_date).toLocaleDateString()}
+                  </p>
+                </div>
+              </Link>
+            </li>
+          ))
+        ) : (
+          <li>No related articles found.</li>
+        )}
+      </ul>
+    </aside>
+  );
+};
 
 const ReadBlog = () => {
-  const { slug } = useParams(); // Extract slug from URL params
-  const [blog, setBlog] = useState(null); // Blog content
-  const [relatedBlogs, setRelatedBlogs] = useState([]); // Related blog articles
-  const [loading, setLoading] = useState(true); // Loading state
+  const { slug } = useParams();
+  const [blog, setBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [currentUrl, setCurrentUrl] = useState('');
 
   // Set current URL for sharing
@@ -32,73 +90,14 @@ const ReadBlog = () => {
 
       if (error) {
         console.error('Error fetching blog:', error.message);
+        setBlog(null);
       } else {
         setBlog(blogData);
-        // Fetch related blogs based on tags or fallback blogs
-        if (blogData.tags && blogData.tags.length > 0) {
-          fetchRelatedBlogs(blogData.tags);
-        } else {
-          fetchFallbackBlogs();
-        }
       }
       setLoading(false);
     };
-
-    // Fetch related blog articles based on tags
-    const fetchRelatedBlogs = async (tags) => {
-      const { data: relatedData, error } = await supabase
-        .from('blogs')
-        .select('title, slug, thumbnail_url, published_date')
-        .not('slug', 'eq', slug) // Exclude the current blog
-        .ilike('tags', `%${tags.join('%')}%`) // Match tags
-        .limit(5);
-
-      if (error || relatedData.length === 0) {
-        fetchFallbackBlogs(); // Fetch fallback blogs if no related blogs by tags
-      } else {
-        setRelatedBlogs(relatedData);
-      }
-    };
-
-    // Fetch fallback blogs if no related blogs are found by tags
-    const fetchFallbackBlogs = async () => {
-      const { data: fallbackData, error } = await supabase
-        .from('blogs')
-        .select('title, slug, thumbnail_url, published_date')
-        .not('slug', 'eq', slug)
-        .order('published_date', { ascending: false }) // Fetch the latest blogs
-        .limit(5);
-
-      if (error) {
-        console.error('Error fetching fallback blogs:', error.message);
-      } else {
-        setRelatedBlogs(fallbackData);
-      }
-    };
-
     fetchBlogBySlug();
   }, [slug]);
-
-  // Stick suggested articles to top after scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      const suggestedSection = document.querySelector('.suggested-articles');
-      const scrollPosition = window.scrollY;
-
-      if (suggestedSection) {
-        if (scrollPosition > 300) {
-          suggestedSection.classList.add('sticky');
-        } else {
-          suggestedSection.classList.remove('sticky');
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   // Initialize Google Auto Ads
   useEffect(() => {
@@ -110,13 +109,13 @@ const ReadBlog = () => {
       document.body.appendChild(script);
     };
 
-    initializeAds(); // Load the Auto Ads script when the component is mounted
+    initializeAds();
   }, []);
 
   if (loading) {
     return (
       <div className="read-blog-container">
-        {/* Skeleton loaders for UX while data is being fetched */}
+        {/* Skeleton Loaders */}
         <div className="skeleton-header"></div>
         <div className="skeleton-paragraph"></div>
         <div className="skeleton-paragraph"></div>
@@ -126,42 +125,47 @@ const ReadBlog = () => {
   }
 
   if (!blog) {
-    return <div>Blog not found</div>;
+    return (
+      <div className="error-container">
+        <h2>Blog not found</h2>
+        <Link to="/blogs">Back to blogs</Link>
+      </div>
+    );
   }
 
-  // Sanitize the blog content to avoid XSS attacks
+  // Sanitize blog content to avoid XSS attacks
   const sanitizedContent = DOMPurify.sanitize(blog.content);
 
   return (
     <div className="read-blog-container">
       {/* SEO Meta Tags */}
       <Helmet>
-  <title>{blog.title}</title>
-  <meta name="description" content={blog.excerpt || 'Read this blog post on important topics'} />
-  <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
-  <meta name="author" content={blog.author} />
-
-  {/* Correct Canonical URL */}
-  <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
-
-  {/* Open Graph Meta Tags */}
-  <meta property="og:title" content={blog.title} />
-  <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
-  <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
-  <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
-  <meta property="og:type" content="article" />
-</Helmet>
-
-
-        {/* Google Auto Ads Script */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239" crossorigin="anonymous"></script>
-   
+        <title>{blog.title}</title>
+        <meta
+          name="description"
+          content={blog.excerpt || 'Read this blog post on important topics'}
+        />
+        <meta
+          name="keywords"
+          content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`}
+        />
+        <meta name="author" content={blog.author} />
+        <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content={blog.title} />
+        <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'}/>
+        <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+        <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
+        <meta property="og:type" content="article" />
+      </Helmet>
+ 
+  
 
       {/* Breadcrumb for navigation */}
       <nav className="breadcrumb" aria-label="breadcrumb">
         <Link to="/">Home</Link> / <Link to="/blogs">Blogs</Link> / {blog.title}
       </nav>
-     
+
       {/* Blog Layout */}
       <div className="blog-layout">
         <div className="blog-content">
@@ -211,43 +215,20 @@ const ReadBlog = () => {
         </div>
 
         {/* Suggested Articles */}
-        <aside className="suggested-articles">
-          <h3>Suggested Articles</h3>
-          <Suspense fallback={<div>Loading related articles...</div>}>
-            <ul>
-              {relatedBlogs.length > 0 ? (
-                relatedBlogs.map((related) => (
-                  <li key={related.slug} className="related-article">
-                    <Link to={`/blogs/${related.slug}`}>
-                      <img
-                        src={related.thumbnail_url || 'https://via.placeholder.com/150'}
-                        alt={related.title}
-                        className="related-article-thumbnail"
-                      />
-                      <div className="related-article-info">
-                        <h4>{related.title}</h4>
-                        <p className="related-article-date">
-                          {new Date(related.published_date).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </Link>
-                  </li>
-                ))
-              ) : (
-                <li>No related articles found.</li>
-              )}
-            </ul>
-          </Suspense>
-        </aside>
+        <Suspense fallback={<div>Loading related articles...</div>}>
+          <RelatedBlogs tags={blog.tags} slug={slug} />
+        </Suspense>
       </div>
 
       {/* Google Ads Integration */}
       <div className="google-ads">
-        <ins className="adsbygoogle"
+        <ins
+          className="adsbygoogle"
           style={{ display: 'block' }}
           data-ad-client="ca-pub-9887409333966239"
           data-ad-slot="3428921840"
-          data-ad-format="autorelaxed"></ins>
+          data-ad-format="autorelaxed"
+        ></ins>
       </div>
     </div>
   );

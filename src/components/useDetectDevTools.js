@@ -3,7 +3,17 @@ import { useEffect, useState } from 'react';
 const useDetectDevTools = () => {
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
 
+  // Utility to detect mobile devices
+  const isMobileDevice = () => {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  };
+
   useEffect(() => {
+    // Skip detection if it's a mobile device
+    if (isMobileDevice()) {
+      return;
+    }
+
     const threshold = 160; // Approx height/width of DevTools pane
 
     const checkDevTools = () => {

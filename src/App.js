@@ -35,10 +35,13 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
   );
-  
   const location = useLocation();
-  const isDevToolsOpen = useDetectDevTools(); // DevTools detection hook
-  const [showWarning, setShowWarning] = useDisableShortcuts(); // Disable right-click/shortcuts hook
+  
+  // DevTools detection
+  const isDevToolsOpen = useDetectDevTools(); 
+  
+  // Hook for blocking shortcuts and right-click, while avoiding issues on mobile
+  const [showWarning, setShowWarning] = useDisableShortcuts();
 
   // Track page views on route changes
   useEffect(() => {
@@ -47,7 +50,7 @@ function App() {
     }
   }, [location]);
 
-  // Manage authentication state and persist it
+  // Persist authentication state
   useEffect(() => {
     if (isAuthenticated) {
       localStorage.setItem('isAuthenticated', 'true');
@@ -58,7 +61,7 @@ function App() {
 
   return (
     <>
-      {/* Show Warning Modal if DevTools are open or right-click/shortcuts are used */}
+      {/* Show Warning Modal if DevTools are open or if right-click/shortcuts are used */}
       {(isDevToolsOpen || showWarning) && <WarningModal />}
 
       {/* Render the main content of the site */}
@@ -91,11 +94,11 @@ function App() {
           <Route path="/filetransfer" element={<FileTransfer />} />
           <Route path="/sendimage" element={<SendImage />} />
           <Route path="/receiveimg" element={<ReceiveImage />} />
-          
+
           {/* Add Blog functionality */}
           <Route path="/addblog" element={<AddBlog />} />
 
-          {/* Blog Homepage */}
+          {/* Blog Homepage to display all blogs */}
           <Route path="/Blogs" element={<BlogHomepage />} />
           <Route path="/greetings" element={<Greeting />} />
           <Route path="/create-card" element={<CreateCard />} />

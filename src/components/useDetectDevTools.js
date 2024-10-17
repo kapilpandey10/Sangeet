@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
+import MobileDetect from 'mobile-detect';
 
 const useDetectDevTools = () => {
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
 
-  // Utility to detect mobile devices
+  // Utility to detect mobile devices using mobile-detect package
   const isMobileDevice = () => {
-    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const md = new MobileDetect(window.navigator.userAgent);
+    const isMobile = !!md.mobile();
     console.log(`Device detected as mobile: ${isMobile}`);
     return isMobile;
   };

@@ -37,10 +37,10 @@ function App() {
   );
   const location = useLocation();
   
-  // DevTools detection
-  const isDevToolsOpen = useDetectDevTools(); 
+  // DevTools detection (apply only on desktop)
+  const isDevToolsOpen = useDetectDevTools();
   
-  // Hook for blocking shortcuts and right-click, while avoiding issues on mobile
+  // Hook for blocking shortcuts and right-click (apply only on desktop)
   const [showWarning, setShowWarning] = useDisableShortcuts();
 
   // Track page views on route changes

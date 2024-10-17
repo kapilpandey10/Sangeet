@@ -3,40 +3,40 @@ import { useEffect, useState } from 'react';
 const useDisableShortcuts = () => {
   const [showWarning, setShowWarning] = useState(false);
 
-  // Utility to detect mobile devices
-  const isMobileDevice = () => {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // Utility to detect if the device is mobile
+  const isDesktopDevice = () => {
+    return !/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   };
 
   useEffect(() => {
-    if (isMobileDevice()) {
-      // If it's a mobile device, do nothing to avoid blocking interaction
-      return;
+    // Run only if the device is a desktop/laptop
+    if (!isDesktopDevice()) {
+      console.log('Skipping DevTools detection on mobile');
+      return; // Exit early if on a mobile device
     }
 
     const handleContextMenu = (e) => {
-      // Prevent right-click menu on desktop devices
       e.preventDefault();
-      setShowWarning(true);
+      setShowWarning(true); // Show the warning modal when right-click is used
     };
 
     const handleKeyDown = (e) => {
-      // Block DevTools shortcuts only on desktop devices
+      // Block DevTools shortcuts on desktop devices only
       if (
-        e.keyCode === 123 || // F12 (Windows)
+        e.keyCode === 123 || // F12 (Windows/Chrome DevTools)
         (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I or Ctrl+Shift+J
-        (e.ctrlKey && e.keyCode === 85) || // Ctrl+U (Windows)
+        (e.ctrlKey && e.keyCode === 85) || // Ctrl+U (View Source on Windows)
         (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74)) || // Cmd+Option+I or Cmd+Option+J (macOS)
-        (e.metaKey && e.shiftKey && e.keyCode === 67) || // Cmd+Shift+C (macOS)
-        (e.metaKey && e.keyCode === 85) // Cmd+U (macOS)
+        (e.metaKey && e.shiftKey && e.keyCode === 67) || // Cmd+Shift+C (Inspect Element on macOS)
+        (e.metaKey && e.keyCode === 85) // Cmd+U (View Source on macOS)
       ) {
         e.preventDefault();
-        setShowWarning(true);
+        setShowWarning(true); // Show warning when DevTools shortcuts are used
       }
     };
 
-    document.addEventListener('contextmenu', handleContextMenu); // Prevent right-click
-    document.addEventListener('keydown', handleKeyDown); // Prevent shortcuts
+    document.addEventListener('contextmenu', handleContextMenu); // Block right-click
+    document.addEventListener('keydown', handleKeyDown); // Block keyboard shortcuts
 
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);

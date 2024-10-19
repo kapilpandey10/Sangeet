@@ -36,7 +36,7 @@ const generateSitemap = async () => {
 
     // Generate dynamic URLs for lyrics
     const lyricsUrls = lyrics.map((lyric) => ({
-      loc: `https://pandeykapil.com.np/lyrics/${lyric.slug}`,
+      loc: `https://www.pandeykapil.com.np/lyrics/${lyric.slug}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.8',
@@ -44,7 +44,7 @@ const generateSitemap = async () => {
 
     // Generate dynamic URLs for blogs
     const blogUrls = blogs.map((blog) => ({
-      loc: `https://pandeykapil.com.np/blogs/${blog.slug}`,
+      loc: `https://www.pandeykapil.com.np/blogs/${blog.slug}`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
       priority: '0.8',
@@ -52,8 +52,8 @@ const generateSitemap = async () => {
 
     // Static URLs stored in a config file or array
     const staticUrls = [
-      { loc: 'https://pandeykapil.com.np/', lastmod: new Date().toISOString(), changefreq: 'daily', priority: '1.0' },
-      { loc: 'https://pandeykapil.com.np/contactus', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
+      { loc: 'https://www.pandeykapil.com.np/', lastmod: new Date().toISOString(), changefreq: 'daily', priority: '1.0' },
+      { loc: 'https://www.pandeykapil.com.np/contactus', lastmod: new Date().toISOString(), changefreq: 'monthly', priority: '0.5' },
       // Add other static URLs as needed
     ];
 
@@ -91,7 +91,7 @@ const generateSitemap = async () => {
 app.get('/generate-sitemap', async (req, res) => {
   const result = await generateSitemap();
   if (result) {
-    res.status(200).send('Sitemap generated and saved successfully. Check it at https://pandeykapil.com.np/sitemap.xml');
+    res.status(200).send('Sitemap generated and saved successfully. Check it at https://www.pandeykapil.com.np/sitemap.xml');
   } else {
     res.status(500).send('Error generating sitemap.');
   }

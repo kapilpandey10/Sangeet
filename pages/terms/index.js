@@ -6,7 +6,7 @@ const TermsAndService = () => {
       <p>
         Welcome to Dynabeat. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions.
       </p>
-      <h2>Use of the Website</h2>
+      <h2>Use of the Website:</h2>
       <p>
         You agree to use this website only for lawful purposes and in a way that does not infringe the rights of others or restrict their use and enjoyment of the website.
       </p>

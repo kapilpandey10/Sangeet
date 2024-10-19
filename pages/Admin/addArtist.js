@@ -1,7 +1,7 @@
 // pages/Admin/AddArtist.js
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import styles from './style/AddArtist.module.css';
+import styles from './style/addArtist.module.css';
 
 // Access environment variables (use NEXT_PUBLIC_ prefix)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

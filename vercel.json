@@ -1,5 +1,9 @@
 {
     "rewrites": [
-      { "source": "/(.*)", "destination": "/" }
+      {
+        "source": "/lyrics/:slug*",
+        "destination": "/lyrics/:slug*"
+      }
     ]
   }
+  

@@ -11,7 +11,7 @@
 
 .breadcrumb {
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: 22px;
 }
 
 .breadcrumb a {
@@ -417,7 +417,5 @@
     width: 100%;
   }
 
-  .suggestedArticles {
-    display: none; /* Hide suggested articles on smaller screens */
-  }
+ 
 }

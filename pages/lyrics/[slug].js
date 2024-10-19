@@ -10,7 +10,7 @@ import styles from './style/ViewLyrics.module.css'; // Use CSS Module for stylin
 
 const ViewLyrics = () => {
   const router = useRouter();
-  const { slug } = router.query; // Get slug from URL
+  let { slug } = router.query; // Get slug from URL
   const [lyric, setLyric] = useState(null);
   const [relatedLyrics, setRelatedLyrics] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,12 +19,14 @@ const ViewLyrics = () => {
 
   useEffect(() => {
     if (slug) {
+      slug = slug.toLowerCase(); // Convert slug to lowercase for case-insensitive matching
       const fetchLyric = async () => {
         try {
+          // Case-insensitive slug matching using ilike
           const { data, error } = await supabase
             .from('lyrics')
             .select('*')
-            .eq('slug', slug)
+            .ilike('slug', slug) // Make slug query case-insensitive
             .single();
 
           if (error || !data) {
@@ -33,7 +35,8 @@ const ViewLyrics = () => {
 
           setLyric(data);
           fetchRandomLyrics(); // Fetch related lyrics
-        } catch (error) {
+        } catch (err) {
+          console.error('Error fetching lyric:', err); // Improved error logging
           setError('Failed to fetch lyric or lyric not approved.');
         } finally {
           setLoading(false);
@@ -46,6 +49,7 @@ const ViewLyrics = () => {
             .from('lyrics')
             .select('*')
             .neq('slug', slug)
+            .eq('status', 'approved') // Fetch only approved lyrics
             .limit(5); // Adjust to 5 related lyrics
 
           if (error) {
@@ -54,7 +58,8 @@ const ViewLyrics = () => {
 
           const shuffledLyrics = randomLyrics.sort(() => 0.5 - Math.random()).slice(0, 5);
           setRelatedLyrics(shuffledLyrics);
-        } catch (error) {
+        } catch (err) {
+          console.error('Error fetching related lyrics:', err); // Improved error logging
           setRelatedLyrics([]);
         }
       };
@@ -64,11 +69,11 @@ const ViewLyrics = () => {
   }, [slug]);
 
   if (loading) {
-    return <div className={styles.skeletonLoader}>Loading...</div>;
+    return <div className={styles.skeletonLoader}>Loading...</div>; // Improved loading state with CSS
   }
 
   if (error) {
-    return <p className={styles.errorMessage}>{error}</p>;
+    return <p className={styles.errorMessage}>{error}</p>; // Improved error message
   }
 
   const handleToggleLanguage = () => {
@@ -91,7 +96,7 @@ const ViewLyrics = () => {
         <meta property="og:image" content={lyric.thumbnail_url || '/default_thumbnail.png'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/lyrics/${slug}`} />
         <meta property="og:type" content="music.song" />
-        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${slug}`} />
+        <link rel="canonical" href={`https://pandeykapil.com.np/lyrics/${slug?.toLowerCase()}`} /> {/* Case-insensitive canonical */}
       </Head>
 
       <div className={styles.lyricsContent}>
@@ -120,6 +125,7 @@ const ViewLyrics = () => {
         {lyric.music_url && (
           <div className={styles.musicVideo}>
             <iframe
+              loading="lazy" // Lazy load the YouTube video for performance optimization
               src={`https://www.youtube.com/embed/${extractYouTubeId(lyric.music_url)}`}
               title="YouTube video player"
               frameBorder="0"

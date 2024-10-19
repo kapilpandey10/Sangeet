@@ -1,0 +1,91 @@
+/* Container */
+.policy-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  line-height: 1.7;
+}
+
+/* Heading Styles */
+.policy-container h1 {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.policy-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  color: #1abc9c;
+  border-left: 4px solid #1abc9c;
+  padding-left: 15px;
+  font-weight: 600;
+}
+
+/* Paragraph Styles */
+.policy-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  color: #666;
+  text-align: justify;
+}
+
+/* Links */
+.policy-container a {
+  color: #1abc9c;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.policy-container a:hover {
+  color: #3498db;
+}
+
+/* Hover Effects for Headings */
+.policy-container h1:hover, 
+.policy-container h2:hover {
+  color: #3498db;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .policy-container {
+    padding: 20px;
+  }
+
+  .policy-container h1 {
+    font-size: 2.2rem;
+  }
+
+  .policy-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .policy-container p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .policy-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .policy-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .policy-container p {
+    font-size: 0.95rem;
+  }
+}

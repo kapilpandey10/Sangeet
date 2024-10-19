@@ -1,0 +1,172 @@
+/* Container for the entire Messages section */
+.messagesContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.messageList {
+  flex-basis: 30%;
+  max-height: 600px;
+  overflow-y: auto;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.messageContent {
+  flex-basis: 65%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.messageList ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.messageItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #fff;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.messageItem:hover {
+  background-color: #f0f0f0;
+}
+
+.newMessage {
+  border-left: 5px solid #4caf50;
+}
+
+.messageProfile p {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.newBadge {
+  font-size: 0.9rem;
+  background-color: #4caf50;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 12px;
+}
+
+.deleteButton {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+  background-color: #c0392b;
+}
+
+.messageBubble {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.messageHeader h3 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.messageTimestamp {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.messageBubble p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .messagesContainer {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .messageList {
+    flex-basis: 100%;
+    max-height: 400px;
+  }
+
+  .messageContent {
+    flex-basis: 100%;
+    margin-top: 20px;
+  }
+
+  .messageItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .deleteButton {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messagesContainer {
+    padding: 10px;
+  }
+
+  .messageList {
+    max-height: 300px;
+  }
+
+  .messageProfile p {
+    font-size: 0.9rem;
+  }
+
+  .messageBubble p {
+    font-size: 1rem;
+  }
+
+  .newBadge {
+    font-size: 0.8rem;
+  }
+
+  .deleteButton {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,81 @@
+/* General Footer Styles */
+.footer {
+  background-color: #2c3e50;
+  color: #ffffff;
+  padding: 20px 0;
+}
+
+.footerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footerContainer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.footerLinks {
+  margin-top: 10px;
+}
+
+.footerLinks a {
+  color: #ffffff;
+  margin: 0 10px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.footerLinks a:hover {
+  color: #1abc9c;
+}
+
+.socialLinks {
+  margin-top: 20px;
+}
+
+.socialLinks a {
+  margin: 0 10px;
+  font-size: 1.8rem;
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+
+.socialLinks a:hover {
+  color: #1abc9c;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .footerContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footerLinks {
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .socialLinks {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footerLinks a {
+    display: block;
+    margin: 10px 0;
+    font-size: 0.9rem;
+  }
+
+  .socialLinks a {
+    font-size: 1.5rem;
+  }
+}

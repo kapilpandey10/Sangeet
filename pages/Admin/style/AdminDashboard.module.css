@@ -1,0 +1,129 @@
+/* General layout */
+.adminDashboard {
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.topNav {
+  background-color: #fff;
+  padding: 15px 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navList {
+  list-style: none;
+  display: flex;
+  gap: 40px;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.navItem {
+  position: relative;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.navItem:hover {
+  color: #0056b3;
+}
+
+/* Dropdown menu stays visible when hovering over both the nav item and dropdown */
+.navItem:hover .dropdownMenu,
+.dropdownMenu:hover {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Dropdown menu container */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  min-width: 180px;
+}
+
+.dropdownMenu li {
+  padding: 10px 20px;
+  color: #333;
+  white-space: nowrap;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdownMenu li:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.caretIcon {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.navItem:hover .caretIcon {
+  transform: rotate(180deg);
+}
+
+/* Main content */
+.mainContent {
+  padding: 40px;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .navList {
+    gap: 20px;
+    font-size: 0.9rem;
+  }
+
+  .dropdownMenu {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navList {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mainContent {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navList {
+    font-size: 0.8rem;
+  }
+
+  .dropdownMenu {
+    min-width: 130px;
+  }
+}

@@ -1,0 +1,248 @@
+/* General page container */
+.homepageContainer {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+/* Scroll Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* General scroll animations */
+.scrollAnimated {
+  opacity: 0;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fadeInUp {
+  animation: fadeInUp 1s forwards;
+}
+
+.fadeIn {
+  animation: fadeIn 1s forwards;
+}
+
+/* Page heading */
+.heading {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 40px 0 20px;
+}
+
+/* Page description */
+.description {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 40px;
+}
+
+/* Hero Slider container */
+
+/* Lyrics Section */
+.lyricsBar {
+  background-color: #f9f9f9;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+.lyricsBar h2 {
+  text-align: center;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+/* Lyrics card container */
+.lyricsHorizontalBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Styling for each lyric card */
+.lyricItem {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 23%;
+  text-align: center;
+}
+
+.lyricItem:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Title and artist styling */
+.lyricItem h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.lyricItem p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* Link styling */
+.lyricItem a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #6a0dad;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.lyricItem a:hover {
+  color: #8b008b;
+}
+
+/* View All button styling */
+.viewAll {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.viewAll a {
+  font-size: 1rem;
+  color: #6a0dad;
+  text-decoration: none;
+}
+
+.viewAll a:hover {
+  color: #8b008b;
+  text-decoration: underline;
+}
+
+/* Featured Artist Section */
+.featuredArtistSection {
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.featuredArtistTitle {
+  text-align: center;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+.featuredArtistContainer {
+  display: flex;
+  justify-content: center;
+}
+
+/* Skeleton Loader for placeholder loading states */
+.skeletonLoader {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.skeletonTitle {
+  width: 60%;
+  height: 24px;
+  margin-bottom: 16px;
+  background-color: #e0e0e0;
+}
+
+.skeletonLyricsItem,
+.skeletonYTVideo {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 10px;
+  background-color: #e0e0e0;
+}
+
+/* Google AdSense Styling */
+.adsbygoogle {
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .lyricItem {
+    width: 45%;
+  }
+
+  .featuredArtistContainer {
+    flex-direction: column;
+  }
+
+  .hero-slider {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .lyricItem {
+    width: 100%;
+  }
+
+  .hero-slider {
+    height: 300px;
+  }
+
+  .prev, .next {
+    font-size: 1.5rem;
+  }
+
+  .slide-content h1 {
+    font-size: 2rem;
+  }
+
+  .slide-content p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-slider {
+    height: 250px;
+  }
+
+  .slide-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .slide-content p {
+    font-size: 0.9rem;
+  }
+
+  .prev, .next {
+    font-size: 1.2rem;
+  }
+}

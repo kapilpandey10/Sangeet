@@ -1,0 +1,146 @@
+/* General Slider Styles */
+.heroSlider {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Slide container */
+.slider {
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Slide styling */
+.slide {
+  position: relative;
+  min-width: 100%;
+  height: 600px; /* Set your desired height */
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Image Styling */
+.sliderImage {
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Content overlay on slides */
+.slideContent {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  right: 50px;
+  color: white;
+  z-index: 2;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6); /* Add a background for better readability */
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.slideContent h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0 0 10px;
+}
+
+.slideContent p {
+  font-size: 1.5rem;
+}
+
+/* Responsive Adjustments for Text */
+@media (max-width: 768px) {
+  .slideContent h1 {
+    font-size: 2rem;
+  }
+
+  .slideContent p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .slideContent h1 {
+    font-size: 1.5rem;
+  }
+
+  .slideContent p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Navigation Buttons */
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  z-index: 10;
+  border-radius: 50%;
+}
+
+.prev {
+  left: 20px; /* Position the previous button */
+}
+
+.next {
+  right: 20px; /* Position the next button */
+}
+
+.prev:hover, .next:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Pagination Dots */
+.dots {
+  text-align: center;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+}
+
+.dot {
+  height: 12px;
+  width: 12px;
+  margin: 0 5px;
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: white;
+}
+
+/* Responsive slider height for mobile */
+@media (max-width: 768px) {
+  .slide {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .slide {
+    height: 300px;
+  }
+}

@@ -1,0 +1,196 @@
+.manageLyricsContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f7f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.searchBox {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #2c3e50;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.searchBox:focus {
+  border-color: #1abc9c;
+}
+
+.message {
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.message.error {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.lyricsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lyricsItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.lyricsItem:hover {
+  transform: scale(1.02);
+}
+
+.lyricsItemContent {
+  flex-grow: 1;
+}
+
+.lyricsItem h3 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin: 0 0 5px;
+}
+
+.lyricsItem p {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin: 3px 0;
+}
+
+.iconButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.iconButton {
+  background-color: #3498db;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.iconButton.deleteButton {
+  background-color: #e74c3c;
+}
+
+.iconButton:hover {
+  background-color: #2980b9;
+}
+
+.iconButton.deleteButton:hover {
+  background-color: #c0392b;
+}
+
+.editLyricForm {
+  flex-basis: 70%;
+  padding: 20px;
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.editLyricForm h2 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.editLyricForm form {
+  display: flex;
+  flex-direction: column;
+}
+
+.editLyricForm label {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #34495e;
+}
+
+.editLyricForm input,
+.editLyricForm textarea {
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #bdc3c7;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+
+.editLyricForm input:focus,
+.editLyricForm textarea:focus {
+  border-color: #1abc9c;
+}
+
+.editLyricForm textarea {
+  resize: none;
+  height: 150px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.saveButton {
+  background-color: #2ecc71;
+}
+
+.saveButton:hover {
+  background-color: #27ae60;
+}
+
+.cancelButton {
+  background-color: #e74c3c;
+}
+
+.cancelButton:hover {
+  background-color: #c0392b;
+}
+
+@media (max-width: 768px) {
+  .lyricsItem {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .iconButtons {
+      margin-top: 10px;
+  }
+
+  .editLyricForm {
+      width: 100%;
+  }
+}

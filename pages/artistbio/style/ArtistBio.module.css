@@ -1,0 +1,92 @@
+.artistBioPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: Arial, sans-serif;
+}
+
+.artistName {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.artistImage {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 30px;
+}
+
+.artistBio {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.artistVideo {
+  margin-top: 30px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.relatedArtistsSection {
+  margin-top: 60px;
+}
+
+.relatedArtistsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.relatedArtistCard {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.relatedArtistCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.relatedArtistImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 5px solid #f0f0f0;
+}
+
+.artistDescription {
+  padding: 15px;
+  font-size: 1rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .artistBioPage {
+    padding: 20px;
+  }
+
+  .artistName {
+    font-size: 2rem;
+  }
+
+  .artistBio {
+    font-size: 1rem;
+  }
+
+  .relatedArtistCard {
+    font-size: 0.9rem;
+  }
+}

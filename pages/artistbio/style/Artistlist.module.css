@@ -1,0 +1,109 @@
+/* Container for the entire artist list */
+.artistListContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f3f3f3;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* History Section */
+.historySection {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.historyTitle {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #2d2d2d;
+  margin-bottom: 30px;
+}
+
+.radioNepalLogo {
+  max-width: 30%;
+  height: auto;
+  border-radius: 15px;
+  margin-bottom: 30px;
+}
+
+.historyText {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+/* Artist Cards Section */
+.artistList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.artistCard {
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.artistCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.artistImage {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-bottom: 5px solid #eaeaea;
+}
+
+.artistName {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.artistBio {
+  font-size: 1rem;
+  color: #777;
+  line-height: 1.5;
+}
+
+.readMore {
+  display: inline-block;
+  margin-top: 10px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.readMore:hover {
+  color: #0056b3;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .historyTitle {
+    font-size: 2rem;
+  }
+
+  .historyText {
+    font-size: 1rem;
+  }
+
+  .artistName {
+    font-size: 1.5rem;
+  }
+
+  .artistBio {
+    font-size: 0.9rem;
+  }
+}

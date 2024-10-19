@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Use Next.js Router instead of react-router
+import { useRouter } from 'next/router'; // Use Next.js Router
 import Link from 'next/link'; // Import Link from Next.js
 import { supabase } from '../../supabaseClient';
 import DOMPurify from 'dompurify';
 import styles from './style/ReadBlog.module.css'; // Adjust to your CSS path
-import { Helmet } from 'react-helmet'; // For SEO
+import Head from 'next/head'; // Use next/head for SEO
 import { FaTwitter, FaFacebook } from 'react-icons/fa';
 
 // Related Blogs Component
@@ -126,7 +126,8 @@ const ReadBlog = () => {
 
   return (
     <div className={styles.readBlogContainer}>
-      <Helmet>
+      {/* SEO Metadata */}
+      <Head>
         <title>{blog.title}</title>
         <meta
           name="description"
@@ -138,13 +139,23 @@ const ReadBlog = () => {
         />
         <meta name="author" content={blog.author} />
         <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
+
+        {/* Open Graph (OG) tags for social media sharing */}
         <meta property="og:title" content={blog.title} />
         <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
         <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
         <meta property="og:type" content="article" />
-      </Helmet>
+        <meta property="og:site_name" content="PandeyKapil Blogs" />
 
+        {/* Twitter Card data */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={blog.title} />
+        <meta name="twitter:description" content={blog.excerpt || 'Read this blog post on important topics'} />
+        <meta name="twitter:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
+      </Head>
+
+      {/* Blog Content */}
       <nav className={styles.breadcrumb} aria-label="breadcrumb">
         <Link href="/">Home</Link> / <Link href="/blogs">Blogs</Link> / {blog.title}
       </nav>

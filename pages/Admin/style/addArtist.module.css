@@ -1,0 +1,66 @@
+/* Styles for AddArtist component */
+
+.addArtistContainer {
+  max-width: 900px;
+  margin: 20px auto 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+}
+
+.input,
+.textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.button {
+  padding: 10px 15px;
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.button:hover {
+  background-color: #16a085;
+}
+
+.successMessage {
+  color: green;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.errorMessage {
+  color: red;
+  text-align: center;
+  margin-bottom: 15px;
+}

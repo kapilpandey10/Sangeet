@@ -1,0 +1,57 @@
+.confirmModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6); /* Dimmed background */
+  z-index: 9999; /* Make sure it's above other content */
+}
+
+.confirmModalContent {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.confirmModalActions {
+  margin-top: 20px;
+}
+
+.confirmModalButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0 10px;
+}
+
+.confirmModalButton.confirm {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.confirmModalButton.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .confirmModalContent {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .confirmModalButton {
+    margin: 5px;
+    width: 100%;
+  }
+}

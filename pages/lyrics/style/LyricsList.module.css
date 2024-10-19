@@ -1,0 +1,227 @@
+/* LyricsList.module.css */
+
+/* Skeleton loader animation */
+@keyframes skeleton-loading {
+  0% {
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #f0f0f0;
+  }
+  100% {
+    background-color: #e0e0e0;
+  }
+}
+
+.skeleton-loader {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.skeleton-title, .skeleton-text, .skeleton-box, .skeleton-card {
+  animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 24px;
+  margin-bottom: 16px;
+}
+
+.skeleton-text {
+  width: 80%;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-box, .skeleton-card {
+  height: 150px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Lyrics List Container */
+.lyricsListContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Search Filter Container */
+.searchFilterContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+/* Search input styles */
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Dropdown styling for language and year */
+.selectDropdown {
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selectDropdown:hover,
+.selectDropdown:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.selectDropdown option {
+  padding: 10px;
+  font-size: 1rem;
+}
+
+/* Ensure dropdown width matches */
+.selectDropdown {
+  width: auto;
+  min-width: 150px;
+  text-align: center;
+}
+
+/* Artist section styles */
+.artistSection {
+  margin-bottom: 50px;
+}
+
+.artistSection h2 {
+  font-size: 2.2rem;
+  color: #007bff;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 1px;
+}
+
+/* Lyrics grid layout */
+.lyricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 50px;
+  justify-items: center;
+}
+
+/* Lyric card styling */
+.lyricCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 280px;
+}
+
+.lyricCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.lyricCardContent h3 {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.lyricCardContent p {
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+/* View lyrics button */
+.viewLyricsButton {
+  display: inline-block;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.viewLyricsButton:hover {
+  background-color: #0056b3;
+}
+
+/* View more button styles */
+.viewMoreContainer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.viewMoreButton {
+  background-color: #28a745;
+  color: #fff;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.viewMoreButton:hover {
+  background-color: #218838;
+}
+
+/* Responsive adjustments for tablets */
+@media (max-width: 768px) {
+  .searchFilterContainer {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .searchInput, .selectDropdown {
+    width: 45%;
+  }
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 480px) {
+  .searchFilterContainer {
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .searchInput, .selectDropdown {
+    width: 40%;
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .lyricsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}

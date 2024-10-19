@@ -1,0 +1,92 @@
+/* Container */
+.terms-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  line-height: 1.7;
+}
+
+/* Headings */
+.terms-container h1 {
+  font-size: 2.6rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.terms-container h2 {
+  font-size: 1.8rem;
+  margin-top: 30px;
+  color: #3498db;
+  border-left: 4px solid #3498db;
+  padding-left: 15px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+/* Paragraphs */
+.terms-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  color: #666;
+  text-align: justify;
+}
+
+/* Links */
+.terms-container a {
+  color: #1abc9c;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.terms-container a:hover {
+  color: #3498db;
+}
+
+/* Hover Effects for Headings */
+.terms-container h1:hover,
+.terms-container h2:hover {
+  color: #2c3e50;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .terms-container {
+    padding: 20px;
+  }
+
+  .terms-container h1 {
+    font-size: 2.2rem;
+  }
+
+  .terms-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .terms-container p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .terms-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .terms-container p {
+    font-size: 0.95rem;
+  }
+}

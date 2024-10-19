@@ -1,0 +1,176 @@
+/* Overall page container */
+.contactUsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.contactUsContainer h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Intro text below the title */
+.contactUsContainer .introText {
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  color: #666;
+  margin-bottom: 30px;
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Contact form container */
+.contactForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* Label styling */
+.contactForm label {
+  font-size: 1rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Input and textarea styling */
+.contactForm input, .contactForm textarea {
+  padding: 15px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.contactForm input:focus, .contactForm textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+/* Button styling */
+.contactForm button {
+  padding: 15px;
+  font-size: 1.2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+}
+
+.contactForm button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Status message styling */
+.statusMessage {
+  font-size: 1rem;
+  margin-top: 15px;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.statusMessage.success {
+  background-color: #28a745;
+}
+
+.statusMessage.error {
+  background-color: #dc3545;
+}
+
+/* Team section styling */
+.teamSection {
+  margin-top: 50px;
+  text-align: center;
+}
+
+.teamSection h2 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.teamMembers {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.teamMember {
+  max-width: 250px;
+  text-align: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.teamPhoto {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.teamMember h3 {
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+  color: #2c3e50;
+}
+
+.teamMember p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .contactUsContainer {
+    padding: 20px;
+  }
+
+  .contactForm input, .contactForm textarea {
+    font-size: 0.9rem;
+  }
+
+  .teamSection {
+    margin-top: 30px;
+  }
+
+  .teamMembers {
+    flex-direction: column;
+  }
+
+  .teamMember {
+    max-width: 100%;
+  }
+
+  .contactForm button {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contactForm button {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,185 @@
+/* General page styles */
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  perspective: 1000px; /* Perspective for 3D effect */
+}
+
+.loginBox {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 50px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform-style: preserve-3d;
+  animation: fadeIn 1s ease-out forwards, float 4s ease-in-out infinite;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+}
+
+.loginBox:hover {
+  transform: rotateY(8deg) rotateX(5deg) translateZ(10px); /* 3D hover effect */
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: scale(0.9) rotateY(-10deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Login form elements */
+.loginTitle {
+  font-size: 32px;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputField:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  background-color: #fff;
+  outline: none;
+}
+
+.passwordInputContainer {
+  position: relative;
+  width: 100%;
+}
+
+.togglePassword {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+  transition: color 0.3s ease;
+}
+
+.togglePassword:hover {
+  color: #007bff;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 123, 255, 0.4);
+}
+
+.submitButton:active {
+  transform: translateY(0px);
+  box-shadow: 0 5px 10px rgba(0, 123, 255, 0.1);
+}
+
+.forgotPasswordLink {
+  color: #007bff;
+  margin-top: 20px;
+  display: block;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.forgotPasswordLink:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.errorMessage {
+  color: #ff4d4f;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Add 3D depth effect to the login box */
+.loginBox::before,
+.loginBox::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  transform: rotateY(4deg) rotateX(2deg);
+  border-radius: 16px;
+}
+
+.loginBox::after {
+  transform: rotateY(-4deg) rotateX(-2deg);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .loginBox {
+    padding: 30px;
+    width: 90%;
+  }
+
+  .loginTitle {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginBox {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .loginTitle {
+    font-size: 22px;
+  }
+
+  .inputField, .submitButton {
+    font-size: 16px;
+  }
+}

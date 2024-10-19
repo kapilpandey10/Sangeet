@@ -1,0 +1,148 @@
+/* ApproveLyrics.module.css */
+.approveLyricsContainer {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.message {
+  text-align: center;
+  color: green;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 40px;
+}
+
+.pendingLyrics {
+  width: 30%;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 15px;
+  border-right: 1px solid #ddd;
+}
+
+.lyricItem {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.lyricItem:hover {
+  transform: translateY(-5px);
+}
+
+.lyricItem h3 {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.lyricItem p {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.lyricItem button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.lyricItem button:hover {
+  background-color: #45a049;
+}
+
+.lyricDetails {
+  width: 65%;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.editField {
+  margin-bottom: 20px;
+}
+
+.editField label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #444;
+  display: block;
+}
+
+.editField input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.youtubeVideoSection {
+  margin-top: 20px;
+}
+
+.youtubeVideoSection iframe {
+  border-radius: 10px;
+  border: none;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.approveBtn,
+.rejectBtn {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.approveBtn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.rejectBtn {
+  background-color: #f44336;
+  color: white;
+}
+
+.approveBtn:hover {
+  background-color: #45a049;
+}
+
+.rejectBtn:hover {
+  background-color: #d32f2f;
+}

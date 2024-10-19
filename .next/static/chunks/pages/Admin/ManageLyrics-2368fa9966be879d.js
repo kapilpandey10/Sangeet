@@ -1,1 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[369],{8621:function(n,_,u){(window.__NEXT_P=window.__NEXT_P||[]).push(["/Admin/ManageLyrics",function(){return u(466)}])}},function(n){n.O(0,[372,466,888,774,179],function(){return n(n.s=8621)}),_N_E=n.O()}]);

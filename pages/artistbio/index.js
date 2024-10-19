@@ -51,7 +51,7 @@ const Artistlist = () => {
           <br/><br/>
           Artists like <strong>Narayan Gopal</strong>, who is often referred to as the "Tragedy King" of Nepali music, and <strong>Laxmi Prasad Devkota</strong>, a legendary poet and writer, emerged from this era and became iconic figures in Nepali culture.
           <br/><br/>
-          In the modern era, new artists such as <strong>Anju Panta</strong> and <strong>Pashupati Sharma</strong> have continued to build on this legacy.
+          In the modern times, new artists such as <strong>Anju Panta</strong> and <strong>Pashupati Sharma</strong> have continued to build on this legacy.
         </p>
       </section>
 

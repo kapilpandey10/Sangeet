@@ -1,4 +1,4 @@
-.modal-overlay {
+.modaloverlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     z-index: 1000;
   }
   
-  .modal-content {
+  .modalcontent {
     background: linear-gradient(135deg, #ff5f6d, #ffc371); /* Gradient background */
     padding: 30px;
     border-radius: 10px;
@@ -21,20 +21,20 @@
     animation: slideDown 0.5s ease-out; /* Slide down animation */
   }
   
-  .modal-content h2 {
+  .modalcontent h2 {
     font-size: 2rem;
     margin-bottom: 10px;
     color: #fff;
   }
   
-  .modal-content p {
+  .modalcontent p {
     font-size: 1.2rem;
     margin-bottom: 20px;
     color: #fff;
 
   }
   
-  .modal-content button {
+  .modalcontent button {
     background-color: #fff;
     color: #ff5f6d;
     border: none;
@@ -45,7 +45,7 @@
     transition: background-color 0.3s ease;
   }
   
-  .modal-content button:hover {
+  .modalcontent button:hover {
     background-color: #ffc371;
   }
   

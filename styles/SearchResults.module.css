@@ -1,178 +1,189 @@
-/* Container for the search results */
-.search-results-container {
-  width: 100%; /* Full width */
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 20px 10px; /* Reduced padding */
+/* File: styles/SearchResults.module.css */
+
+/* General container styles */
+.searchContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading for the page */
+.heading {
   text-align: center;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-/* Heading styling */
-.search-results-container h2 {
-  font-size: 24px; /* Slightly smaller title */
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-/* Search form styling */
-.search-form {
+/* Form styles */
+.searchForm {
   display: flex;
   justify-content: center;
-  flex-direction: column; /* Stack input and button */
-  width: 100%;
+  margin-bottom: 30px;
 }
 
-/* Search input styling */
-.search-input {
-  width: 100%; /* Full width */
-  padding: 12px; /* Reduced padding */
-  font-size: 16px; /* Slightly smaller font */
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  margin-bottom: 8px;
+/* Search input field */
+.searchInput {
+  padding: 10px;
+  font-size: 1.1rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  width: 70%;
+  max-width: 400px;
+  transition: border-color 0.3s ease;
 }
 
-.search-input:focus {
+.searchInput:focus {
+  border-color: #3498db;
   outline: none;
-  border-color: #3f51b5;
-  box-shadow: 0px 0px 6px rgba(63, 81, 181, 0.5); /* Slightly smaller shadow */
 }
 
-/* Search button styling */
-.search-button {
-  width: 100%; /* Full width */
-  background-color: #3f51b5;
+/* Search button */
+.searchButton {
+  padding: 10px 20px;
+  background-color: #3498db;
   color: white;
   border: none;
-  padding: 12px; /* Reduced padding */
-  font-size: 16px; /* Match the input font size */
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.search-button:hover {
-  background-color: #303f9f;
-}
-
-/* Results Section */
-.results-section {
-  margin-top: 20px; /* Reduced margin */
-  text-align: left;
-}
-
-.results-section h3 {
-  font-size: 20px; /* Slightly smaller heading */
-  margin-bottom: 10px;
-}
-
-/* Music Results Styling */
-.music-results ul {
-  list-style: none;
-  padding: 0;
-}
-
-.music-link {
-  display: flex;
-  align-items: center;
-  background-color: #f8f8f8;
-  padding: 10px; /* Reduced padding */
-  margin-bottom: 10px; /* Reduced margin */
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  text-decoration: none;
-  color: #3f51b5;
-  transition: background-color 0.3s ease;
-}
-
-.music-link:hover {
-  background-color: #ececec;
-}
-
-.music-icon {
-  font-size: 20px; /* Slightly smaller icon */
-  margin-right: 8px;
-}
-
-/* Blog Results Styling */
-.blog-results ul {
-  list-style: none;
-  padding: 0;
-}
-
-.blog-item {
-  display: flex;
-  align-items: flex-start;
-  background-color: #f8f8f8;
-  padding: 10px; /* Reduced padding */
-  margin-bottom: 10px; /* Reduced margin */
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
-}
-
-.blog-link {
-  display: flex;
-  align-items: flex-start;
-  text-decoration: none;
-  color: #3f51b5;
-  width: 100%;
-  flex-wrap: wrap; /* Allows content to wrap on smaller screens */
-}
-
-.blog-link:hover {
-  background-color: #ececec;
-}
-
-/* Blog Thumbnail */
-.blog-thumbnail {
-  width: 80px; /* Reduced size */
-  height: 80px;
-  object-fit: cover;
   border-radius: 4px;
-  margin-right: 10px;
+  font-size: 1.1rem;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Blog Details */
-.blog-details {
-  flex-grow: 1;
-  width: calc(100% - 80px); /* Adjusted based on thumbnail size */
+.searchButton:hover {
+  background-color: #2980b9;
 }
 
-.blog-details strong {
-  font-size: 16px;
-  color: #3f51b5;
+.searchButton:disabled {
+  background-color: #7fb3d5;
+  cursor: not-allowed;
 }
 
-.blog-details p {
-  font-size: 14px;
-  color: #757575;
+/* Error message */
+.errorMessage {
+  color: red;
+  text-align: center;
+  margin-top: 20px;
 }
 
-/* Responsive Design */
+/* Results container */
+.resultsContainer {
+  margin-top: 40px;
+}
+
+/* Section heading for results */
+.resultsContainer h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+/* List styles for displaying results */
+.resultsList {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Individual result item styles */
+.resultItem {
+  background-color: white;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 15px;
+  transition: box-shadow 0.3s ease;
+}
+
+.resultItem:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resultItem h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.resultItem p {
+  margin: 5px 0;
+  color: #777;
+}
+
+/* Result link */
+.resultLink {
+  display: inline-block;
+  margin-top: 10px;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.resultLink:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}
+
+/* Responsive Styles */
+
+/* Medium-sized devices */
 @media (max-width: 768px) {
-  .music-link, .blog-item {
+  .searchInput {
+    width: 60%;
+  }
+
+  .heading {
+    font-size: 1.75rem;
+  }
+
+  .searchButton {
+    font-size: 1rem;
+  }
+
+  .resultsContainer h2 {
+    font-size: 1.3rem;
+  }
+
+  .resultItem h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Small-sized devices */
+@media (max-width: 480px) {
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .searchForm {
     flex-direction: column;
-    align-items: flex-start;
   }
 
-  .music-icon {
-    font-size: 18px;
-  }
-
-  .blog-thumbnail {
+  .searchInput {
+    width: 100%;
+    font-size: 1rem;
     margin-bottom: 10px;
   }
 
-  .blog-details strong {
-    font-size: 14px;
+  .searchButton {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
   }
 
-  .blog-details p {
-    font-size: 12px;
+  .resultsContainer h2 {
+    font-size: 1.2rem;
+  }
+
+  .resultItem h3 {
+    font-size: 1rem;
+  }
+
+  .resultLink {
+    font-size: 0.9rem;
   }
 }

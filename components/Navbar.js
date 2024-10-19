@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import Image from 'next/image';
-import logo from '../public/logo/logo.webp';  // Ensure the logo is in the public folder
+import { useRouter } from 'next/router'; // Import useRouter for navigation
+import logo from '../public/logo/logo.webp'; // Ensure the logo is in the public folder
 import styles from './style/Navbar.module.css'; // Assuming you have a CSS module for styles
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter(); // Use Next.js useRouter hook
 
   useEffect(() => {
     setIsClient(true);
@@ -36,6 +38,11 @@ const Navbar = () => {
   if (!isClient) {
     return null; // Don't render until after client-side hydration
   }
+
+  // Navigate to searchresults page
+  const handleSearchClick = () => {
+    router.push('/searchresults'); // Redirect to searchresults page
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -66,7 +73,8 @@ const Navbar = () => {
           </div>
         </div>
 
-        <button className={styles.searchIcon} aria-label="Search">
+        {/* Search Icon, navigate to searchresults page when clicked */}
+        <button className={styles.searchIcon} aria-label="Search" onClick={handleSearchClick}>
           <FaSearch />
         </button>
       </div>

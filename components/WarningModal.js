@@ -1,10 +1,10 @@
 import React from 'react';
-import './style/WarningModal.module.css'; // Import the CSS for the modal
+import styles from './style/WarningModal.module.css'; // Import the CSS for the modal
 
 const WarningModal = () => {
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className={styles.modaloverlay}>
+      <div className={styles.modalcontent}>
         <h2>Warning!</h2>
         <p>This site is protected from inspection.</p>
         <button onClick={() => window.location.reload()}>Close </button>

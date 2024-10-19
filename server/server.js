@@ -76,7 +76,7 @@ const generateSitemap = async () => {
       </urlset>`;
 
     // Dynamic path for the sitemap
-    const sitemapPath = path.resolve(__dirname, '../public/sitemap.xml');
+    const sitemapPath = path.resolve(__dirname, '../build/sitemap.xml');
     await fs.writeFile(sitemapPath, sitemap);
 
     console.log('Sitemap generated successfully!');

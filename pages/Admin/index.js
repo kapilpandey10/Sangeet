@@ -32,7 +32,7 @@ const AdminDashboard = () => {
       if (session) {
         setSession(session);
       } else {
-        router.push('/admin-login'); // Redirect to login
+        router.push('/login'); // Redirect to login
       }
       setLoading(false);
     };

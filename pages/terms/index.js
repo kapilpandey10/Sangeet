@@ -1,7 +1,7 @@
-import './style/PrivacyPolicy.module.css';
+import styles from './style/PrivacyPolicy.module.css';
 const TermsAndService = () => {
   return (
-    <div className="terms-container">
+    <div className={styles.termscontainer}>
       <h1>Terms and Conditions</h1>
       <p>
         Welcome to Dynabeat. By accessing and using this website, you agree to comply with and be bound by the following terms and conditions.

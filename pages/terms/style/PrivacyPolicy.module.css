@@ -1,5 +1,5 @@
 /* Container */
-.terms-container {
+.termscontainer {
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -12,7 +12,7 @@
 }
 
 /* Headings */
-.terms-container h1 {
+.termscontainer h1 {
   font-size: 2.6rem;
   margin-bottom: 20px;
   color: #2c3e50;
@@ -21,7 +21,7 @@
   letter-spacing: 1px;
 }
 
-.terms-container h2 {
+.termscontainer h2 {
   font-size: 1.8rem;
   margin-top: 30px;
   color: #3498db;
@@ -32,7 +32,7 @@
 }
 
 /* Paragraphs */
-.terms-container p {
+.termscontainer p {
   font-size: 1.1rem;
   margin-bottom: 20px;
   color: #666;
@@ -40,19 +40,19 @@
 }
 
 /* Links */
-.terms-container a {
+.termscontainer a {
   color: #1abc9c;
   text-decoration: underline;
   transition: color 0.3s ease;
 }
 
-.terms-container a:hover {
+.termscontainer a:hover {
   color: #3498db;
 }
 
 /* Hover Effects for Headings */
-.terms-container h1:hover,
-.terms-container h2:hover {
+.termscontainer h1:hover,
+.termscontainer h2:hover {
   color: #2c3e50;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -60,33 +60,33 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .terms-container {
+  .termscontainer {
     padding: 20px;
   }
 
-  .terms-container h1 {
+  .termscontainer h1 {
     font-size: 2.2rem;
   }
 
-  .terms-container h2 {
+  .termscontainer h2 {
     font-size: 1.6rem;
   }
 
-  .terms-container p {
+  .termscontainer p {
     font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .terms-container h1 {
+  .termscontainer h1 {
     font-size: 1.8rem;
   }
 
-  .terms-container h2 {
+  .termscontainer h2 {
     font-size: 1.4rem;
   }
 
-  .terms-container p {
+  .termscontainer p {
     font-size: 0.95rem;
   }
 }

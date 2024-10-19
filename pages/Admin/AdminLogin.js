@@ -62,7 +62,7 @@ const AdminLogin = () => {
 
     // Set local auth state and navigate
     setIsAuthenticated(true);
-    router.push('/admin');
+    router.push('/Admin');
   };
 
   // Handle password reset

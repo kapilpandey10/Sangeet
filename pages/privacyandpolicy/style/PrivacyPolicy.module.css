@@ -1,5 +1,5 @@
 /* Container */
-.policy-container {
+.policycontainer {
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -12,7 +12,7 @@
 }
 
 /* Heading Styles */
-.policy-container h1 {
+.policycontainer h1 {
   font-size: 2.8rem;
   margin-bottom: 20px;
   color: #2c3e50;
@@ -21,7 +21,7 @@
   letter-spacing: 1px;
 }
 
-.policy-container h2 {
+.policycontainer h2 {
   font-size: 1.8rem;
   margin-top: 30px;
   color: #1abc9c;
@@ -31,7 +31,7 @@
 }
 
 /* Paragraph Styles */
-.policy-container p {
+.policycontainer p {
   font-size: 1.1rem;
   margin-bottom: 20px;
   color: #666;
@@ -39,19 +39,19 @@
 }
 
 /* Links */
-.policy-container a {
+.policycontainer a {
   color: #1abc9c;
   text-decoration: underline;
   transition: color 0.3s ease;
 }
 
-.policy-container a:hover {
+.policycontainer a:hover {
   color: #3498db;
 }
 
 /* Hover Effects for Headings */
-.policy-container h1:hover, 
-.policy-container h2:hover {
+.policycontainer h1:hover, 
+.policycontainer h2:hover {
   color: #3498db;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -59,33 +59,33 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .policy-container {
+  .policycontainer {
     padding: 20px;
   }
 
-  .policy-container h1 {
+  .policycontainer h1 {
     font-size: 2.2rem;
   }
 
-  .policy-container h2 {
+  .policycontainer h2 {
     font-size: 1.6rem;
   }
 
-  .policy-container p {
+  .policycontainer p {
     font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .policy-container h1 {
+  .policycontainer h1 {
     font-size: 1.8rem;
   }
 
-  .policy-container h2 {
+  .policycontainer h2 {
     font-size: 1.4rem;
   }
 
-  .policy-container p {
+  .policycontainer p {
     font-size: 0.95rem;
   }
 }

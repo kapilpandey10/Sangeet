@@ -1,7 +1,7 @@
-import './style/PrivacyPolicy.module.css';
+import styles from './style/PrivacyPolicy.module.css';
 const PrivacyPolicy = () => {
   return (
-    <div className="policy-container">
+    <div className={ styles.policycontainer}>
       <h1>Privacy Policy</h1>
       <p>
         At Dynabeat, we are committed to protecting your privacy. This Privacy Policy outlines our practices regarding the collection, use, and disclosure of your information.

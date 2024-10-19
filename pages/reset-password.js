@@ -1,26 +1,33 @@
-// File: src/components/ResetPassword.js
+// File: pages/reset-password.js
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient'; // Import your Supabase client
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router'; // Use Next.js useRouter
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter(); // Next.js router
 
   // Extract the token from the URL when the user visits the page
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('access_token');
-    if (token) {
-      // Supabase automatically takes care of the token internally
-      supabase.auth.setSession(token); // Set the token in Supabase's session
+    const { access_token } = router.query; // Extract the access_token from query params
+
+    if (access_token) {
+      // Supabase takes care of setting the session with the token
+      supabase.auth.setSession(access_token)
+        .then(({ error }) => {
+          if (error) {
+            setStatus('Invalid or expired reset token.');
+          }
+        });
     } else {
+      // If no token is found, redirect or show an error message
       setStatus('Invalid or missing reset token.');
+      router.push('/'); // Optionally redirect to home or an error page
     }
-  }, []);
+  }, [router.query]);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
@@ -49,7 +56,7 @@ const ResetPassword = () => {
     } else {
       setStatus('Password reset successfully! Redirecting to login...');
       setTimeout(() => {
-        navigate('/login'); // Redirect to login page after 2 seconds
+        router.push('/login'); // Redirect to login page after 2 seconds
       }, 2000);
     }
   };
@@ -58,31 +65,33 @@ const ResetPassword = () => {
     <div>
       <h1>Reset Password</h1>
       {status && <p>{status}</p>}
-      <form onSubmit={handlePasswordReset}>
-        <label>New Password:</label>
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Enter your new password"
-          required
-          disabled={loading}
-        />
+      {status === '' && ( // Only show the form if there is no error status
+        <form onSubmit={handlePasswordReset}>
+          <label>New Password:</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Enter your new password"
+            required
+            disabled={loading}
+          />
 
-        <label>Confirm Password:</label>
-        <input
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirm your new password"
-          required
-          disabled={loading}
-        />
+          <label>Confirm Password:</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm your new password"
+            required
+            disabled={loading}
+          />
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Resetting...' : 'Reset Password'}
-        </button>
-      </form>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Resetting...' : 'Reset Password'}
+          </button>
+        </form>
+      )}
     </div>
   );
 };

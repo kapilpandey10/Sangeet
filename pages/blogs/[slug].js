@@ -76,7 +76,7 @@ const ReadBlog = () => {
   const [currentUrl, setCurrentUrl] = useState('');
 
   useEffect(() => {
-    setCurrentUrl(window.location.href);
+    setCurrentUrl(window.location.href); // Set the current page URL for social sharing
   }, []);
 
   useEffect(() => {
@@ -122,6 +122,7 @@ const ReadBlog = () => {
     );
   }
 
+  // Sanitize blog content
   const sanitizedContent = DOMPurify.sanitize(blog.content);
 
   return (
@@ -129,19 +130,13 @@ const ReadBlog = () => {
       {/* SEO Metadata */}
       <Head>
         <title>{blog.title}</title>
-        <meta
-          name="description"
-          content={blog.excerpt || 'Read this blog post on important topics'}
-        />
-        <meta
-          name="keywords"
-          content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`}
-        />
+        <meta name="description" content={blog.excerpt || 'Read this blog post on important topics'} />
+        <meta name="keywords" content={`Blog, ${blog.title}, ${blog.author}, ${blog.tags.join(', ')}`} />
         <meta name="author" content={blog.author} />
         <link rel="canonical" href={`https://pandeykapil.com.np/blogs/${slug}`} />
 
         {/* Open Graph (OG) tags for social media sharing */}
-        <meta property="og:title" content={blog.title} />
+        <meta property="og:title" content={blog.title || 'PandeyKapil Blog'} />
         <meta property="og:description" content={blog.excerpt || 'Read this blog post on important topics'} />
         <meta property="og:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
         <meta property="og:url" content={`https://pandeykapil.com.np/blogs/${slug}`} />
@@ -150,7 +145,7 @@ const ReadBlog = () => {
 
         {/* Twitter Card data */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
+        <meta name="twitter:title" content={blog.title || 'PandeyKapil Blog'} />
         <meta name="twitter:description" content={blog.excerpt || 'Read this blog post on important topics'} />
         <meta name="twitter:image" content={blog.thumbnail_url || 'https://via.placeholder.com/300'} />
       </Head>

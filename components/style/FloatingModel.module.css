@@ -1,75 +1,74 @@
 /* Main modal container - centered */
-.floating-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
+.floatingModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 90px;
+  border-radius: 8px;
+  background-color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index to make sure it's on top */
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* Show modal with fade-in effect */
+.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1); /* Appear in full size */
+}
+
+/* Hide modal with fade-out effect */
+.hide {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9); /* Scale down slightly */
+}
+
+/* Modal content */
+.modalContent {
+  position: relative;
+  text-align: center; /* Center text */
+}
+
+/* Close (X) button */
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  color: #999;
+}
+
+/* Close button hover effect */
+.closeButton:hover {
+  color: #333;
+}
+
+/* Highlight YouTube text in red */
+.highlight {
+  color: red;
+  font-weight: bold;
+}
+
+/* Responsive modal size for smaller screens */
+@media (max-width: 768px) {
+  .floatingModal {
+    width: 250px;
     height: 90px;
-    border-radius: 8px;
-   background-color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* High z-index to make sure it's on top */
-    opacity: 0; /* Initially hidden */
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   }
-  
-  /* Show modal with fade-in effect */
-  .floating-modal.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1); /* Appear in full size */
+}
+
+@media (max-width: 480px) {
+  .floatingModal {
+    width: 200px;
+    height: 80px;
   }
-  
-  /* Hide modal with fade-out effect */
-  .floating-modal.hide {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9); /* Scale down slightly */
-  }
-  
-  /* Modal content */
-  .modal-content {
-    position: relative;
-    text-align: center; /* Center text */
-  }
-  
-  /* Close (X) button */
-  .close-button {
-    background: none;
-    border: none;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    color: #999;
-  }
-  
-  /* Close button hover effect */
-  .close-button:hover {
-    color: #333;
-  }
-  
-  /* Highlight YouTube text in red */
-  .highlight {
-    color: red;
-    font-weight: bold;
-  }
-  
-  /* Responsive modal size for smaller screens */
-  @media (max-width: 768px) {
-    .floating-modal {
-      width: 250px;
-      height: 90px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .floating-modal {
-      width: 200px;
-      height: 80px;
-    }
-  }
-  
+}

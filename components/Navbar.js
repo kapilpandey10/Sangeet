@@ -39,7 +39,7 @@ const Navbar = () => {
     return null; // Don't render until after client-side hydration
   }
 
-  // Navigate to searchresults page
+  // Navigate to search results page
   const handleSearchClick = () => {
     router.push('/searchresults'); // Redirect to searchresults page
   };
@@ -47,6 +47,7 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContainer}>
+        {/* Hamburger Menu for mobile */}
         <button
           className={`${styles.mobileMenuIcon} ${isMobileMenuOpen ? styles.open : ''}`}
           onClick={toggleMobileMenu}
@@ -56,13 +57,17 @@ const Navbar = () => {
           {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
+        {/* Logo and Brand Name */}
         <div className={styles.logoBrandContainer}>
-          <Image src={logo} alt="Logo" className={styles.navbarLogo} />
-          <Link href="/" className={styles.brandName}>
-            Dyna<span className={styles.highlight}>Beat</span>
+          <Link href="/" className={styles.brandLink}>
+            <Image src={logo} alt="Logo" className={styles.navbarLogo} priority />
+            <span className={styles.brandName}>
+              Dyna<span className={styles.highlight}>Beat</span>
+            </span>
           </Link>
         </div>
 
+        {/* Navigation Links */}
         <div className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileActive : ''}`} ref={mobileMenuRef}>
           <div className={styles.navLinks}>
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>

@@ -1,4 +1,4 @@
-
+/* General Navbar Styles */
 .navbar {
   background-color: #34495e; /* Dark background */
   padding: 15px 20px;
@@ -23,7 +23,7 @@
   display: none;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #fff;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -41,8 +41,8 @@
 }
 
 .navbarLogo {
-  width: 35px; /* Small responsive size for logo */
-  height: 35px;
+  width: 40px; /* Adjusted for better visibility */
+  height: 40px;
   margin-right: 8px;
 }
 
@@ -55,6 +55,12 @@
 
 .highlight {
   color: #1abc9c;
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 /* Nav Links */
@@ -98,7 +104,7 @@
 }
 
 /* Adjustments for mobile */
-@media (max-width: 750px) {
+@media (max-width: 768px) {
   .navbarContainer {
     justify-content: space-between;
   }
@@ -108,7 +114,7 @@
     display: block;
   }
 
-  /* Brand Name stays centered */
+  /* Center logo and brand name */
   .logoBrandContainer {
     position: absolute;
     left: 50%;
@@ -128,6 +134,7 @@
     align-items: center;
     padding: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    z-index: 998;
   }
 
   .navMenu.mobileActive {
@@ -145,6 +152,8 @@
     padding: 15px 0;
     width: 100%;
     text-align: center;
+    color: white;
+    text-transform: uppercase;
   }
 }
 
@@ -157,5 +166,26 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Responsive navbar and button adjustments */
+@media (max-width: 480px) {
+  .navLinks a {
+    font-size: 1.1rem;
+    padding: 10px 0;
+  }
+
+  .searchIcon {
+    font-size: 1.3rem;
+  }
+
+  .mobileMenuIcon {
+    font-size: 2rem;
+  }
+
+  .logoBrandContainer {
+    left: 45%;
+    transform: translateX(-50%);
   }
 }

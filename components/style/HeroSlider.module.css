@@ -13,13 +13,14 @@
 .slider {
   display: flex;
   transition: transform 0.6s ease-in-out;
+  height: 100%;
 }
 
 /* Slide styling */
 .slide {
   position: relative;
   min-width: 100%;
-  height: 600px; /* Set your desired height */
+  height: 600px; /* Default desktop height */
   opacity: 0;
   transition: opacity 0.6s ease-in-out;
 }
@@ -34,26 +35,29 @@
 .sliderImage {
   object-fit: cover;
   border-radius: 12px;
+  width: 100%;
+  height: 100%; /* Ensures full height image display */
 }
 
 /* Content overlay on slides */
 .slideContent {
   position: absolute;
-  bottom: 50px;
-  left: 50px;
-  right: 50px;
+  bottom: 30px;
+  left: 20px;
+  right: 20px;
   color: white;
   z-index: 2;
   text-align: center;
-  background: rgba(0, 0, 0, 0.6); /* Add a background for better readability */
+  background: rgba(0, 0, 0, 0.6); /* Background for readability */
   padding: 20px;
   border-radius: 12px;
 }
 
+/* Headings and paragraph styling */
 .slideContent h1 {
   font-size: 3rem;
   font-weight: bold;
-  margin: 0 0 10px;
+  margin-bottom: 10px;
 }
 
 .slideContent p {
@@ -63,21 +67,31 @@
 /* Responsive Adjustments for Text */
 @media (max-width: 768px) {
   .slideContent h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .slideContent p {
-    font-size: 1rem;
+    font-size: 1.2rem;
+  }
+
+  /* Adjust slider height for smaller screens */
+  .slide {
+    height: 400px;
   }
 }
 
 @media (max-width: 480px) {
   .slideContent h1 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
   .slideContent p {
-    font-size: 0.9rem;
+    font-size: 1rem;
+  }
+
+  /* Further reduce height for mobile devices */
+  .slide {
+    height: 300px;
   }
 }
 
@@ -94,6 +108,7 @@
   border: none;
   z-index: 10;
   border-radius: 50%;
+  user-select: none;
 }
 
 .prev {
@@ -132,15 +147,35 @@
   background-color: white;
 }
 
-/* Responsive slider height for mobile */
+/* Adjusting spacing on mobile */
 @media (max-width: 768px) {
-  .slide {
-    height: 400px;
+  .prev, .next {
+    font-size: 1.5rem;
+    padding: 8px 12px; /* Reduce button size on smaller screens */
+  }
+
+  .dots {
+    bottom: 15px; /* Adjust dot positioning */
+  }
+
+  .dot {
+    height: 10px;
+    width: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .slide {
-    height: 300px;
+  .prev, .next {
+    font-size: 1.2rem;
+    padding: 6px 10px; /* Further reduce button size for mobile */
+  }
+
+  .dots {
+    bottom: 10px; /* Adjust dot positioning on smaller screens */
+  }
+
+  .dot {
+    height: 8px;
+    width: 8px; /* Smaller dots for mobile */
   }
 }

@@ -163,6 +163,7 @@
 .featuredArtistContainer {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap; /* Ensures proper wrapping on small devices */
 }
 
 /* Skeleton Loader for placeholder loading states */
@@ -209,7 +210,8 @@
 
 @media (max-width: 768px) {
   .lyricItem {
-    width: 100%;
+    width: 100%; /* Ensures lyrics take full width on mobile devices */
+    margin-bottom: 20px; /* Add space between items */
   }
 
   .hero-slider {
@@ -226,6 +228,16 @@
 
   .slide-content p {
     font-size: 1rem;
+  }
+
+  /* Adjusting margins for mobile layout */
+  .lyricsBar {
+    padding: 20px; /* Reduce padding on mobile */
+    margin-top: 20px;
+  }
+
+  .viewAll a {
+    font-size: 0.9rem; /* Slightly smaller text for mobile */
   }
 }
 
@@ -244,5 +256,17 @@
 
   .prev, .next {
     font-size: 1.2rem;
+  }
+
+  .lyricsBar {
+    padding: 15px; /* Further reduce padding for small devices */
+  }
+
+  .lyricItem {
+    margin-bottom: 15px; /* Reduce the space between lyric cards */
+  }
+  .homepageContainer{
+    width: 100%;
+    margin-top: 10px;
   }
 }

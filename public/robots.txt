@@ -7,6 +7,7 @@ Allow: /terms
 Allow: /lyrics/
 Allow: /blogs/
 Allow: /privacyandpolicy
-Allow: /filetransfer
+Allow: /
+
 
 Sitemap: https://pandeykapil.com.np/sitemap.xml

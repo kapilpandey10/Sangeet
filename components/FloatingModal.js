@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './style/FloatingModel.module.css'; // We'll create this CSS for styling
+import styles from './style/FloatingModel.module.css'; // CSS module import for Next.js
 
 const FloatingModal = () => {
   const [showModal, setShowModal] = useState(false); // Modal is hidden by default
@@ -38,12 +38,12 @@ const FloatingModal = () => {
   if (!showModal) return null; // Don't render if modal is closed
 
   return (
-    <div className={`floating-modal ${showModal ? 'show' : 'hide'}`}>
-      <div className="modal-content">
-        <button className="close-button" onClick={handleClose}>X</button>
+    <div className={`${styles.floatingModal} ${showModal ? styles.show : styles.hide}`}>
+      <div className={styles.modalContent}>
+        <button className={styles.closeButton} onClick={handleClose}>X</button>
         <p>
           Scroll down to play Music on{' '}
-          <span className="highlight">YouTube</span>.
+          <span className={styles.highlight}>YouTube</span>.
         </p>
       </div>
     </div>

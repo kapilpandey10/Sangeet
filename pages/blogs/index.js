@@ -118,7 +118,7 @@ const BlogHomepage = () => {
 
       {loading ? (
         <div className={styles.skeletonContainer}>
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 5 }).map((_, index) => (
             <div className={styles.skeletonCard} key={index}></div>
           ))}
         </div>

@@ -1,6 +1,4 @@
-// pages/lyrics/index.js
-
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
 import Link from 'next/link'; // Use Next.js Link for routing
 import styles from './style/LyricsList.module.css'; // Use CSS Module for styling
@@ -103,8 +101,10 @@ const LyricsList = () => {
   const renderSkeletonLoader = () => (
     <div className={styles.skeletonLoader}>
       <div className={styles.skeletonTitle}></div>
+      <p></p>
       <div className={styles.skeletonCard}></div>
       <div className={styles.skeletonCard}></div>
+      <p></p>
       <div className={styles.skeletonCard}></div>
       <div className={styles.skeletonCard}></div>
     </div>

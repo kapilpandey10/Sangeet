@@ -1,37 +1,33 @@
 .backToTop {
   position: fixed;
-  bottom: 60px;
-  right: 20px;
-  display: none; /* Hidden by default */
-  align-items: center;
-  justify-content: center;
+  bottom: 40px;
+  right: 40px;
   width: 50px;
   height: 50px;
-  background-color: #d01e1e;
-  color: #fff;
-  font-size: 30px;
-  cursor: pointer;
+  background-color: #ff0000;
   border-radius: 50%;
-  z-index: 1000;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
   opacity: 0;
-}
-
-.backToTop.show {
-  display: flex; /* Show when 'show' is true */
-  opacity: 1;
-  transform: translateY(0);
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
 .backToTop:hover {
-  background-color: #ff0000;
+  background-color: #c33323;
 }
 
-@media (max-width: 768px) {
-  .backToTop {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    bottom: 20px;
-  }
+.backToTop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.arrowIcon {
+  width: 24px;
+  height: 24px;
+  color: white;
 }

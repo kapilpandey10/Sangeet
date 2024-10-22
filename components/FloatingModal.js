@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import styles from './style/FloatingModel.module.css'; // CSS module import for Next.js
+import { useState, useEffect } from 'react';
+import styles from './style/FloatingModal.module.css'; // CSS module import for Next.js
 
 const FloatingModal = () => {
   const [showModal, setShowModal] = useState(false); // Modal is hidden by default
 
   // Time interval in milliseconds (5 minutes = 300,000 ms)
-  const FIVE_MINUTES = 300000;
+  const FIVE_MINUTES = 30;
 
   useEffect(() => {
-    // Get the last time the modal was shown from localStorage
     const lastShownTime = localStorage.getItem('lastModalShownTime');
     const currentTime = new Date().getTime();
 
-    // If the modal has never been shown, or it has been more than 5 minutes since last shown
+    // Show modal if it's been more than 5 minutes since it was last shown
     if (!lastShownTime || currentTime - lastShownTime > FIVE_MINUTES) {
       setShowModal(true);
       localStorage.setItem('lastModalShownTime', currentTime); // Update last shown time in localStorage
@@ -24,7 +23,7 @@ const FloatingModal = () => {
     if (showModal) {
       const timer = setTimeout(() => {
         setShowModal(false);
-      }, 10000); // 10000 ms = 10 seconds
+      }, 10000); // Close modal after 10 seconds
 
       return () => clearTimeout(timer); // Cleanup timer on unmount
     }
@@ -38,9 +37,11 @@ const FloatingModal = () => {
   if (!showModal) return null; // Don't render if modal is closed
 
   return (
-    <div className={`${styles.floatingModal} ${showModal ? styles.show : styles.hide}`}>
+    <div className={styles.floatingModal}>
       <div className={styles.modalContent}>
-        <button className={styles.closeButton} onClick={handleClose}>X</button>
+        <button className={styles.closeButton} onClick={handleClose}>
+          &times;
+        </button>
         <p>
           Scroll down to play Music on{' '}
           <span className={styles.highlight}>YouTube</span>.

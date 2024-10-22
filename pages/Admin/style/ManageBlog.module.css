@@ -1,0 +1,48 @@
+.manageBlogContainer {
+    padding: 20px;
+  }
+  
+  .blogList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .blogItem {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .published {
+    background-color: #e0f7e9; /* Light green background for published blogs */
+    border-left: 5px solid green; /* Green border for published */
+  }
+  
+  .draft {
+    background-color: #fbe9e9; /* Light red background for draft blogs */
+    border-left: 5px solid red; /* Red border for drafts */
+  }
+  
+  .blogDate {
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  .editButton {
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .editButton:hover {
+    background-color: #005bb5;
+  }
+  
+  .error {
+    color: red;
+  }
+  

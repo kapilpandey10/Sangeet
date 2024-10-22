@@ -1,8 +1,10 @@
 /* General page container */
 .homepageContainer {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   padding: 0 20px;
+  width: 100%; /* Ensure full width on all devices */
+  box-sizing: border-box; /* Include padding in total width */
 }
 
 /* Scroll Animation Keyframes */
@@ -49,23 +51,14 @@
   margin: 40px 0 20px;
 }
 
-/* Page description */
-.description {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  margin-bottom: 40px;
-}
-
-/* Hero Slider container */
-
 /* Lyrics Section */
 .lyricsBar {
   background-color: #f9f9f9;
   padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* Ensure padding is included */
   margin-top: 40px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .lyricsBar h2 {
@@ -83,15 +76,15 @@
   flex-wrap: wrap;
 }
 
-/* Styling for each lyric card */
 .lyricItem {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 23%;
+  width: 23%; /* Responsive width for desktop */
   text-align: center;
+  box-sizing: border-box; /* Include padding in width */
 }
 
 .lyricItem:hover {
@@ -99,7 +92,6 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Title and artist styling */
 .lyricItem h3 {
   font-size: 1.5rem;
   font-weight: bold;
@@ -113,7 +105,6 @@
   margin-bottom: 5px;
 }
 
-/* Link styling */
 .lyricItem a {
   display: inline-block;
   margin-top: 10px;
@@ -163,7 +154,13 @@
 .featuredArtistContainer {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap; /* Ensures proper wrapping on small devices */
+  flex-wrap: wrap;
+}
+
+/* Ad Container */
+.adContainer {
+  margin: 40px 0;
+  text-align: center;
 }
 
 /* Skeleton Loader for placeholder loading states */
@@ -188,85 +185,48 @@
   background-color: #e0e0e0;
 }
 
-/* Google AdSense Styling */
-.adsbygoogle {
-  margin-top: 10px;
-}
-
 /* Responsive Design */
+
+/* For tablets and small screens */
 @media (max-width: 1024px) {
   .lyricItem {
-    width: 45%;
+    width: 45%; /* Adjust for medium screens */
   }
 
   .featuredArtistContainer {
     flex-direction: column;
   }
-
-  .hero-slider {
-    height: 400px;
-  }
 }
 
+/* For mobile screens */
 @media (max-width: 768px) {
   .lyricItem {
-    width: 100%; /* Ensures lyrics take full width on mobile devices */
-    margin-bottom: 20px; /* Add space between items */
-  }
-
-  .hero-slider {
-    height: 300px;
-  }
-
-  .prev, .next {
-    font-size: 1.5rem;
-  }
-
-  .slide-content h1 {
-    font-size: 2rem;
-  }
-
-  .slide-content p {
-    font-size: 1rem;
-  }
-
-  /* Adjusting margins for mobile layout */
-  .lyricsBar {
-    padding: 20px; /* Reduce padding on mobile */
-    margin-top: 20px;
+    width: 100%; /* Take full width on mobile */
+    margin-bottom: 20px;
   }
 
   .viewAll a {
-    font-size: 0.9rem; /* Slightly smaller text for mobile */
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-slider {
-    height: 250px;
-  }
-
-  .slide-content h1 {
-    font-size: 1.5rem;
-  }
-
-  .slide-content p {
     font-size: 0.9rem;
   }
 
-  .prev, .next {
-    font-size: 1.2rem;
+  .lyricsBar, .featuredArtistSection {
+    padding: 20px;
+    margin-top: 20px;
   }
+}
 
-  .lyricsBar {
-    padding: 15px; /* Further reduce padding for small devices */
-  }
-
+/* For very small mobile screens */
+@media (max-width: 480px) {
   .lyricItem {
-    margin-bottom: 15px; /* Reduce the space between lyric cards */
+    margin-bottom: 15px; /* Adjust spacing */
   }
-  .homepageContainer{
+
+  .homepageContainer {
     width: 100%;
     margin-top: 10px;
+  }
+
+  .viewAll a {
+    font-size: 0.8rem;
   }
 }

@@ -1,81 +1,96 @@
-/* General Footer Styles */
 .footer {
-  background-color: #2c3e50;
-  color: #ffffff;
-  padding: 20px 0;
-}
-
-.footerContainer {
+  background-color: #34495e; /* Dark background */
+  padding: 15px 20px;
   display: flex;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
+  width: 100%;
+  position: relative;
 }
 
-.footerContainer p {
-  margin: 0;
-  font-size: 0.9rem;
+/* Social Media Section */
+.socialSection {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
-.footerLinks {
-  margin-top: 10px;
+.socialIcon {
+  font-size: 32px;
+  color: #fff;
+  transition: color 0.3s ease;
 }
 
-.footerLinks a {
+.socialIcon:hover {
+  color: #ff5733;
+}
+
+/* Links Section */
+.linksSection {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.linksSection a {
   color: #ffffff;
-  margin: 0 10px;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 16px;
   transition: color 0.3s ease;
 }
 
-.footerLinks a:hover {
-  color: #1abc9c;
+.linksSection a:hover {
+  color: #ff5733;
 }
 
-.socialLinks {
-  margin-top: 20px;
-}
-
-.socialLinks a {
-  margin: 0 10px;
-  font-size: 1.8rem;
+/* Branding Section */
+.brandingSection {
+  font-size: 14px;
   color: #ffffff;
-  transition: color 0.3s ease;
 }
 
-.socialLinks a:hover {
-  color: #1abc9c;
+.brandingSection .brandName {
+  font-weight: bold;
+  color: #ff5733; /* Highlighted color for the brand name */
 }
 
-/* Responsive Styling */
+/* Responsive Design for Smaller Screens */
 @media (max-width: 768px) {
-  .footerContainer {
-    flex-direction: column;
-    align-items: center;
+  .footer {
+    padding: 30px 15px;
   }
 
-  .footerLinks {
-    margin-top: 15px;
-    text-align: center;
+  .socialIcon {
+    font-size: 28px;
   }
 
-  .socialLinks {
-    margin-top: 15px;
+  .linksSection a {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .footerLinks a {
-    display: block;
-    margin: 10px 0;
-    font-size: 0.9rem;
+  .footer {
+    padding: 20px 10px;
   }
 
-  .socialLinks a {
-    font-size: 1.5rem;
+  .socialIcon {
+    font-size: 24px;
+  }
+
+  .linksSection {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .linksSection a {
+    font-size: 13px;
+  }
+
+  .brandingSection {
+    font-size: 12px;
   }
 }

@@ -45,13 +45,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={styles.navbar}>
+    <nav className={styles.navbar} aria-label="Main Navigation">
       <div className={styles.navbarContainer}>
         {/* Hamburger Menu for mobile */}
         <button
           className={`${styles.mobileMenuIcon} ${isMobileMenuOpen ? styles.open : ''}`}
           onClick={toggleMobileMenu}
           aria-label="Toggle navigation"
+          aria-controls="primary-navigation"
           aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
@@ -68,7 +69,7 @@ const Navbar = () => {
         </div>
 
         {/* Navigation Links */}
-        <div className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileActive : ''}`} ref={mobileMenuRef}>
+        <div className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileActive : ''}`} ref={mobileMenuRef} id="primary-navigation">
           <div className={styles.navLinks}>
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
             <Link href="/lyrics" onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>

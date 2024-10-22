@@ -92,7 +92,7 @@ const ContactUs = () => {
           {/* Kapil Pandey - Admin & CEO */}
           <div className={styles.teamMember}>
             <img
-              src="https://tffwhfvevgjscrhkdmpl.supabase.co/storage/v1/object/sign/Image_url%20generator/382605956_1964574237256792_7040482525584229765_n.jpg?token=..."
+              src="https://tffwhfvevgjscrhkdmpl.supabase.co/storage/v1/object/sign/Image_url%20generator/382605956_1964574237256792_7040482525584229765_n.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJJbWFnZV91cmwgZ2VuZXJhdG9yLzM4MjYwNTk1Nl8xOTY0NTc0MjM3MjU2NzkyXzcwNDA0ODI1MjU1ODQyMjk3NjVfbi5qcGciLCJpYXQiOjE3Mjk0MDk3ODcsImV4cCI6Mjg4OTkzNDU4N30.EMSzi0nM-LolBZBhe00CrWddgh2CkINbiCp1YRXuakA&t=2024-10-20T07%3A36%3A27.667Z"
               alt="Kapil Pandey"
               className={styles.teamPhoto}
             />
@@ -103,7 +103,7 @@ const ContactUs = () => {
           {/* Asish Khanal - Editor & Manager */}
           <div className={styles.teamMember}>
             <img
-              src="https://tffwhfvevgjscrhkdmpl.supabase.co/storage/v1/object/sign/Image_url%20generator/Screenshot%202024-09-19%20at%2010.20.06%20AM.png?token=..."
+              src="https://tffwhfvevgjscrhkdmpl.supabase.co/storage/v1/object/sign/Image_url%20generator/Screenshot%202024-09-19%20at%2010.20.06%20AM.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJJbWFnZV91cmwgZ2VuZXJhdG9yL1NjcmVlbnNob3QgMjAyNC0wOS0xOSBhdCAxMC4yMC4wNiBBTS5wbmciLCJpYXQiOjE3Mjk0MDk4NjUsImV4cCI6NzQwMzcyOTg2NX0.wWM5BwhESGOS3r--PgFXY0x4ohIJ6Rx8M5A_ZOegC7A&t=2024-10-20T07%3A37%3A45.592Z"
               alt="Asish Khanal"
               className={styles.teamPhoto}
             />

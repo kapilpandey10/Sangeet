@@ -1,0 +1,152 @@
+/* Full-page responsive container */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #E5E9F0, #F3F4F6);
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Center content with modern spacing */
+  .content {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  /* Animated sad emoji */
+  .emojiWrapper {
+    margin-bottom: 20px;
+  }
+  
+  .sadEmoji {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    animation: bounce 1s infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  /* Tear drop animation */
+  .tear {
+    position: absolute;
+    animation: dropTear 3s infinite ease-in-out;
+    transform-origin: center;
+  }
+  
+  @keyframes dropTear {
+    0%, 50% {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.5);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(0px) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(20px) scale(1.2);
+    }
+  }
+  
+  /* Eye blink animation */
+  .eye {
+    animation: blink 4s infinite;
+    transform-origin: center;
+  }
+  
+  @keyframes blink {
+    0%, 92%, 100% {
+      r: 4;
+    }
+    93%, 95% {
+      r: 1.5;
+    }
+  }
+  
+  /* Title styling */
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Message styling */
+  .message {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+  }
+  
+  /* Home link button */
+  .homeLink {
+    display: inline-block;
+    background-color: #1da1f2;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .homeLink:hover {
+    background-color: #0d8be0;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .sadEmoji {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .title {
+      font-size: 2rem;
+    }
+  
+    .message {
+      font-size: 1rem;
+    }
+  
+    .homeLink {
+      font-size: 0.9rem;
+      padding: 10px 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sadEmoji {
+      width: 60px;
+      height: 60px;
+    }
+  
+    .title {
+      font-size: 1.8rem;
+    }
+  
+    .message {
+      font-size: 0.9rem;
+    }
+  
+    .homeLink {
+      font-size: 0.85rem;
+      padding: 8px 16px;
+    }
+  }
+  

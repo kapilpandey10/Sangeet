@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import Link from 'next/link'; // Use Next.js Link for routing
-import Head from 'next/head'; // Use Head for SEO in Next.js
-import styles from '../styles/HomePage.module.css'; // Import CSS Module
+import Link from 'next/link';
+import Head from 'next/head';
+import styles from '../styles/HomePage.module.css';
 
 // Use Next.js dynamic import for components
 const HomeYTVideo = dynamic(() => import('./homeytvideo'), { ssr: false });
@@ -15,6 +15,12 @@ const HomePage = () => {
   const [featuredArtist, setFeaturedArtist] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Function to shuffle and return random lyrics
+  const getRandomLyrics = (allLyrics, limit) => {
+    const shuffled = [...allLyrics].sort(() => 0.5 - Math.random()); // Shuffle the lyrics
+    return shuffled.slice(0, limit); // Return a limited number of lyrics (6 in this case)
+  };
+
   // Fetch data for lyrics and artists
   useEffect(() => {
     const fetchAllData = async () => {
@@ -25,8 +31,8 @@ const HomePage = () => {
           .eq('status', 'approved');
 
         if (lyricsError) throw new Error('Error fetching lyrics:', lyricsError.message);
-        
-        setLyrics(allLyrics || []);
+
+        setLyrics(getRandomLyrics(allLyrics, 6)); // Set the initial random 6 lyrics
 
         const { data: artistData, error: artistError } = await supabase
           .from('artists')
@@ -34,7 +40,7 @@ const HomePage = () => {
           .eq('status', 'approved');
 
         if (artistError) throw new Error('Error fetching artists:', artistError.message);
-        
+
         if (artistData && artistData.length > 0) {
           const randomArtist = artistData[Math.floor(Math.random() * artistData.length)];
           setFeaturedArtist(randomArtist);
@@ -47,6 +53,14 @@ const HomePage = () => {
     };
 
     fetchAllData();
+
+    // Set an interval to refresh random lyrics every 2 minutes
+    const intervalId = setInterval(() => {
+      fetchAllData(); // Fetch new random lyrics every 2 minutes
+    }, 120000); // 2 minutes in milliseconds (120,000 ms)
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   // Intersection observer for animation trigger
@@ -81,11 +95,6 @@ const HomePage = () => {
     initializeAds();
   }, []);
 
-  const getRandomLyrics = (allLyrics, limit) => {
-    const shuffled = allLyrics.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, limit);
-  };
-
   return (
     <div className={styles.homepageContainer}>
       <Head>
@@ -118,27 +127,25 @@ const HomePage = () => {
         <>
           {/* Lyrics Section */}
           <section className={`${styles.lyricsBar} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
-  <h2>Featured Nepali Lyrics</h2>
-  <div className={styles.lyricsHorizontalBar}>
-    {lyrics.slice(0, 4).map((lyric, index) => (
-      <div className={`${styles.lyricItem} ${styles[`color${index % 4}`]}`} key={lyric.id}>
-        <h3>{lyric.title}</h3>
-        <p>{lyric.artist}</p>
-        <p>{new Date(lyric.published_date).getFullYear()}</p>
-        <Link href={`/lyrics/${lyric.slug}`} legacyBehavior>
-          <a>Read Lyrics</a>
-        </Link>
-      </div>
-    ))}
-  </div>
-  <div className={styles.viewAll}>
-    <Link href="/lyrics" legacyBehavior>
-      <a>View All Nepali Lyrics</a>
-    </Link>
-  </div>
-</section>
-
-
+            <h2>Featured Music Lyrics</h2>
+            <div className={styles.lyricsHorizontalBar}>
+              {lyrics.map((lyric, index) => (
+                <div className={`${styles.lyricItem} ${styles[`color${index % 6}`]}`} key={lyric.id}>
+                  <h3>{lyric.title}</h3>
+                  <p>{lyric.artist}</p>
+                  <p>{new Date(lyric.published_date).getFullYear()}</p>
+                  <Link href={`/lyrics/${lyric.slug}`} legacyBehavior>
+                    <a>Read Lyrics</a>
+                  </Link>
+                </div>
+              ))}
+            </div>
+            <div className={styles.viewAll}>
+              <Link href="/lyrics" legacyBehavior>
+                <a>View All Nepali Lyrics</a>
+              </Link>
+            </div>
+          </section>
 
           {/* Ad between Lyrics and YouTube Video */}
           <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>

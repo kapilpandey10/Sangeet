@@ -37,7 +37,7 @@ const ViewLyrics = () => {
           fetchRandomLyrics(); // Fetch related lyrics
         } catch (err) {
           console.error('Error fetching lyric:', err); // Improved error logging
-          setError('Failed to fetch lyric or lyric not approved.');
+          setError('Failed to fetch lyric or lyric not approved. Please use the search box from Navbar. I guarantee you will find it.');
         } finally {
           setLoading(false);
         }

@@ -87,23 +87,36 @@ const HomeYTVideo = () => {
   // Render the YouTube embed
   const renderYouTubeEmbed = () => {
     if (!videoUrl) return null;
-
+  
     const videoId = extractYouTubeId(videoUrl);
     if (!videoId) return null;
-
+  
     const embedUrl = `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&controls=1&showinfo=0&autoplay=1&mute=0`;
-
+  
     return (
-      <div className={styles.youtubeVideoSection}>
-        <iframe
-          width="100%"
-          height="600"
-          src={embedUrl}
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+      <div className={styles.youtubeVideoContainer}>
+        <div className={styles.videoWrapper}>
+          <iframe
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+        {/* Add logo overlay and text */}
+        <div className={styles.logoContainer}>
+          <img
+            src="../logo/logo.webp"
+            alt="Logo"
+            className={styles.logoOverlay} // Apply the logo CSS
+          />
+          <p>
+            <span className={styles.brandName}>
+              Dyna<span className={styles.highlight}>Beat</span>
+            </span>
+          </p>
+        </div>
       </div>
     );
   };
@@ -122,7 +135,9 @@ const HomeYTVideo = () => {
 
   return (
     <div className={styles.homeYTVideoContainer}>
-      <h2>New Song in {minutesLeft}:{secondsLeft.toString().padStart(2, '0')} Minutes. Stay Tuned!</h2> {/* Countdown timer displayed */}
+      <h2 className={styles.timerText}>
+        New Song in {minutesLeft}:{secondsLeft.toString().padStart(2, '0')} Minutes. Stay Tuned!
+      </h2>
       {loading ? (
         <p>Loading YouTube video...</p>
       ) : (

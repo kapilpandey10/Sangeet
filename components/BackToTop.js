@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './style/BackToTop.module.css'; // Use CSS module
 
 const BackToTop = () => {
@@ -26,7 +26,22 @@ const BackToTop = () => {
 
   return (
     <div className={`${styles.backToTop} ${show ? styles.show : ''}`} onClick={scrollTop}>
-      ⬆
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={styles.arrowIcon}
+      >
+        <path
+          d="M12 18V6M6 12l6-6 6 6"
+          stroke="currentColor"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import AddBlog from './addBlog'; // Blog component
 
 import styles from './style/AdminDashboard.module.css'; // CSS module for Next.js
 import { useRouter } from 'next/router';
+import ManageBlog from './manageblog';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
@@ -83,6 +84,8 @@ const AdminDashboard = () => {
         return <AddArtist />;
       case 'blog':
         return <AddBlog />;
+        case 'manageblog':
+        return <ManageBlog />;
       default:
         return <ManageLyrics />;
     }
@@ -115,6 +118,7 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('add-artist')}>
                   <FaUserPlus className={styles.icon} /> Add Artist
                 </li>
+                
               </ul>
             )}
           </li>
@@ -145,6 +149,10 @@ const AdminDashboard = () => {
               <ul className={styles.dropdownMenu}>
                 <li onClick={() => setActiveTab('blog')}>
                   <FaNewspaper className={styles.icon} /> Add Blog
+                </li>
+
+                <li onClick={() => setActiveTab('manageblog')}>
+                  <FaEdit className={styles.icon} /> Manage Blog
                 </li>
               </ul>
             )}

@@ -90,7 +90,7 @@ const ViewLyrics = () => {
     <div className={styles.viewLyricsPage}>
       <Head>
         <title>{lyric.title} Lyrics - by {lyric.artist}: Dynabeat</title>
-        <meta name="description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist}.`} />
+        <meta name="description" content={`${lyric.description}` || `Read the lyrics of ${lyric.title} by ${lyric.artist}.`} />
         <meta property="og:title" content={`${lyric.title} Lyrics by ${lyric.artist}`} />
         <meta property="og:description" content={lyric.description || `Read the lyrics of ${lyric.title} by ${lyric.artist}.`} />
         <meta property="og:image" content={lyric.thumbnail_url || '/default_thumbnail.png'} />

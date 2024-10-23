@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient'; // Adjust the path to your Supabase client
+import { FaTrash } from 'react-icons/fa'; // Import trash icon for delete
 import styles from './style/ManageBlog.module.css';
 
 const ManageBlog = () => {
@@ -95,6 +96,20 @@ const ManageBlog = () => {
     }
   };
 
+  const handleDeleteBlog = async (blogId) => {
+    try {
+      const { error } = await supabase.from('blogs').delete().eq('id', blogId);
+      if (error) throw error;
+
+      // Remove the deleted blog from the state
+      setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== blogId));
+      setSuccessMessage('Blog deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      setError('Error deleting blog. Please try again.');
+    }
+  };
+
   const handleEditClick = (blog) => {
     setSelectedBlog(blog);
     setUpdatedTitle(blog.title);
@@ -160,6 +175,13 @@ const ManageBlog = () => {
               onClick={() => toggleBlogStatus(blog.id, blog.status)}
             >
               {blog.status === 'draft' ? 'Publish' : 'Set to Draft'}
+            </button>
+
+            <button
+              className={styles.deleteButton}
+              onClick={() => handleDeleteBlog(blog.id)}
+            >
+              <FaTrash /> Delete
             </button>
           </li>
         ))}

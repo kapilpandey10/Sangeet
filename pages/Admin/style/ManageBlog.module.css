@@ -1,48 +1,156 @@
+/* Main container */
 .manageBlogContainer {
-    padding: 20px;
-  }
-  
-  .blogList {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .blogItem {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  
-  .published {
-    background-color: #e0f7e9; /* Light green background for published blogs */
-    border-left: 5px solid green; /* Green border for published */
-  }
-  
-  .draft {
-    background-color: #fbe9e9; /* Light red background for draft blogs */
-    border-left: 5px solid red; /* Red border for drafts */
-  }
-  
-  .blogDate {
-    font-size: 0.9em;
-    color: #666;
-  }
-  
-  .editButton {
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .editButton:hover {
-    background-color: #005bb5;
-  }
-  
-  .error {
-    color: red;
-  }
-  
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+.blogList {
+  list-style: none;
+  padding: 0;
+}
+
+.blogItem {
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Green for published blogs */
+.published {
+  background-color: #d4edda;
+  border-left: 5px solid #5cb85c;
+}
+
+/* Red for draft blogs */
+.draft {
+  background-color: #f8d7da;
+  border-left: 5px solid #d9534f;
+}
+
+.blogDate {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.editButton,
+.toggleStatusButton {
+  margin-right: 10px;
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggleStatusButton {
+  background-color: #6c757d;
+}
+
+.editButton:hover {
+  background-color: #0056b3;
+}
+
+.toggleStatusButton:hover {
+  background-color: #495057;
+}
+
+/* Success and error messages */
+.success {
+  color: #28a745;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.error {
+  color: #dc3545;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Overlay for form */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.editFormContainer {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Labels and inputs */
+.label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+/* Button group for Save/Cancel buttons */
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.saveButton {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.saveButton:hover {
+  background-color: #218838;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancelButton:hover {
+  background-color: #c82333;
+}

@@ -1,0 +1,170 @@
+.manageArtistContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .heading {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .successMessage, .errorMessage {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .successMessage {
+    color: green;
+  }
+  
+  .errorMessage {
+    color: red;
+  }
+  
+  /* Artist card container */
+  .artistCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .draft {
+    background-color: #ffe6e6;
+    border-left: 5px solid #ff4d4d;
+  }
+  
+  .published {
+    background-color: #e6ffe6;
+    border-left: 5px solid #4dff4d;
+  }
+  
+  .artistInfo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .artistImage {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .artistInfo h3 {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .artistInfo p {
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .editButton, .toggleStatusButton {
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .editButton {
+    background-color: #3498db;
+  }
+  
+  .toggleStatusButton {
+    background-color: #e67e22;
+  }
+  
+  .editButton:hover {
+    background-color: #2980b9;
+  }
+  
+  .toggleStatusButton:hover {
+    background-color: #d35400;
+  }
+  
+  /* Modal styling */
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+  }
+  
+  .modalContent h2 {
+    margin-bottom: 20px;
+  }
+  
+  .modalContent label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .modalContent input, .modalContent textarea, .modalContent select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .modalContent button {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .closeModalButton {
+    background-color: #e74c3c;
+    margin-left: 10px;
+  }
+  
+  .closeModalButton:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 768px) {
+    .artistCard {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .actions {
+      justify-content: flex-end;
+      width: 100%;
+    }
+  }
+  

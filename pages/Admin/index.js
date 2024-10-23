@@ -11,6 +11,7 @@ import AddBlog from './addBlog'; // Blog component
 import styles from './style/AdminDashboard.module.css'; // CSS module for Next.js
 import { useRouter } from 'next/router';
 import ManageBlog from './manageblog';
+import ManageArtist from './ManageArtist';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
@@ -84,8 +85,10 @@ const AdminDashboard = () => {
         return <AddArtist />;
       case 'blog':
         return <AddBlog />;
-        case 'manageblog':
+      case 'manageblog':
         return <ManageBlog />;
+      case 'manage-artist':
+        return <ManageArtist/>
       default:
         return <ManageLyrics />;
     }
@@ -115,16 +118,50 @@ const AdminDashboard = () => {
                 <li onClick={() => setActiveTab('manage')}>
                   <FaEdit className={styles.icon} /> Manage Lyrics
                 </li>
-                <li onClick={() => setActiveTab('add-artist')}>
-                  <FaUserPlus className={styles.icon} /> Add Artist
-                </li>
+                
                 
               </ul>
             )}
           </li>
+ {/* Artist Dropdown */}
+ <li className={styles.navItem}>
+            <span onClick={() => toggleDropdown('artist')}>
+              Artist <FaCaretDown className={styles.caretIcon} />
+            </span>
+            {dropdownOpen.artist && (
+              <ul className={styles.dropdownMenu}>
+                 <li onClick={() => setActiveTab('add-artist')}>
+              <FaUserPlus className={styles.icon} /> Add Artist
+                </li>
 
-          {/* Account Dropdown */}
+              <li onClick={() => setActiveTab('manage-artist')}>
+                  <FaEdit className={styles.icon} /> Manage Artist
+              </li>
+               
+              </ul>
+            )}
+          </li>
+         
+
+          {/* Blog Dropdown */}
           <li className={styles.navItem}>
+            <span onClick={() => toggleDropdown('blog')}>
+              Blog <FaCaretDown className={styles.caretIcon} />
+            </span>
+            {dropdownOpen.blog && (
+              <ul className={styles.dropdownMenu}>
+                <li onClick={() => setActiveTab('blog')}>
+                  <FaNewspaper className={styles.icon} /> Add Blog
+                </li>
+                <li onClick={() => setActiveTab('manageblog')}>
+                  <FaEdit className={styles.icon} /> Manage Blog
+                </li>
+              </ul>
+            )}
+          </li>
+       
+         {/* Account Dropdown */}
+         <li className={styles.navItem}>
             <span onClick={() => toggleDropdown('account')}>
               Account <FaCaretDown className={styles.caretIcon} />
             </span>
@@ -139,25 +176,7 @@ const AdminDashboard = () => {
               </ul>
             )}
           </li>
-
-          {/* Blog Dropdown */}
-          <li className={styles.navItem}>
-            <span onClick={() => toggleDropdown('blog')}>
-              Blog <FaCaretDown className={styles.caretIcon} />
-            </span>
-            {dropdownOpen.blog && (
-              <ul className={styles.dropdownMenu}>
-                <li onClick={() => setActiveTab('blog')}>
-                  <FaNewspaper className={styles.icon} /> Add Blog
-                </li>
-
-                <li onClick={() => setActiveTab('manageblog')}>
-                  <FaEdit className={styles.icon} /> Manage Blog
-                </li>
-              </ul>
-            )}
-          </li>
-        </ul>
+          </ul>
       </nav>
 
       <main className={styles.mainContent}>

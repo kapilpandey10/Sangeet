@@ -125,32 +125,35 @@ const BlogHomepage = () => {
       ) : (
         <>
           <div className={styles.blogGridContainer}>
-            {currentBlogs.length > 0 ? (
-              currentBlogs.map((blog) => (
-                <div className={styles.blogCard} key={blog.id}>
-                  <img
-                    className={styles.blogCardImage}
-                    src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
-                    alt={`${blog.title} thumbnail`}
-                  />
-                  <div className={styles.blogCardContent}>
-                    <h2 className={styles.blogCardTitle}>{blog.title}</h2>
-                    <p className={styles.blogCardAuthor}>
-                      By {blog.author} | {new Date(blog.published_date).toLocaleDateString()}
-                    </p>
-                    <p className={styles.blogCardExcerpt}>
-                      {blog.excerpt.length > 100 ? `${blog.excerpt.substring(0, 100)}...` : blog.excerpt}
-                    </p>
-                    <Link href={`/blogs/${blog.slug}`} legacyBehavior>
-                      <a className={styles.readMoreButton}>Read More</a>
-                    </Link>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className={styles.noBlogsMessage}>No blogs available.</p>
-            )}
-          </div>
+  {currentBlogs.length > 0 ? (
+    currentBlogs.map((blog) => (
+      <div className={styles.blogCard} key={blog.id}>
+        <img
+          className={styles.blogCardImage}
+          src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
+          alt={`${blog.title} thumbnail`}
+        />
+        <div className={styles.blogCardContent}>
+          {/* Link the title directly to the blog page */}
+          <Link href={`/blogs/${blog.slug}`} legacyBehavior>
+            <a className={styles.blogCardTitle}>
+              <h2>{blog.title}</h2>
+            </a>
+          </Link>
+          <p className={styles.blogCardAuthor}>
+            By {blog.author} | {new Date(blog.published_date).toLocaleDateString()}
+          </p>
+          <p className={styles.blogCardExcerpt}>
+            {blog.excerpt.length > 100 ? `${blog.excerpt.substring(0, 100)}...` : blog.excerpt}
+          </p>
+        </div>
+      </div>
+    ))
+  ) : (
+    <p className={styles.noBlogsMessage}>No blogs available.</p>
+  )}
+</div>
+
 
           {filteredBlogs.length > currentBlogs.length && (
             <button className={styles.loadMoreButton} onClick={loadMoreBlogs}>

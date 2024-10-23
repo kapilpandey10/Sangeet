@@ -11,25 +11,28 @@ import { FaTwitter, FaFacebook } from 'react-icons/fa';
 const RelatedBlogs = ({ tags, slug }) => {
   const [relatedBlogs, setRelatedBlogs] = useState([]);
 
-  
-    const fetchRelatedBlogs = async () => {
-      try {
-        // If tags are stored as a string, we need to handle them properly
-        const tagsQuery = tags.map(tag => `%${tag}%`); // Create query pattern for each tag
-    
-        // Query for related blogs that match any of the tags and are published
+  const fetchRelatedBlogs = async () => {
+    try {
+      if (tags) {
+        // Split the tags string by commas into an array
+        const tagArray = tags.split(',').map(tag => tag.trim());
+
+        // Build the query pattern for searching related blogs by tags (using ilike for partial match)
+        const tagsQuery = tagArray.map(tag => `%${tag}%`);
+
+        // Query for related blogs that match any of the tags (with ilike for flexible search) and are published
         const { data: relatedData, error } = await supabase
           .from('blogs')
           .select('title, slug, thumbnail_url, published_date')
           .neq('slug', slug)  // Exclude the current blog
           .eq('status', 'published')  // Only fetch published blogs
-          .or(tagsQuery.map(tag => `tags.ilike.${tag}`).join(',')) // Search for matching tags
+          .or(tagsQuery.map(tag => `tags.ilike.${tag}`).join(','))  // Match any of the tags using ilike
           .limit(7);  // Adjust limit as needed (max 7 blogs)
-    
+
         if (error) {
           console.error('Error fetching related blogs:', error);
         }
-    
+
         if (!relatedData || relatedData.length === 0) {
           // Fallback to latest blogs if no related blogs are found
           const { data: fallbackData, error: fallbackError } = await supabase
@@ -39,51 +42,54 @@ const RelatedBlogs = ({ tags, slug }) => {
             .eq('status', 'published')  // Only fetch published blogs
             .order('published_date', { ascending: false })
             .limit(7);
-    
+
           if (fallbackError) {
             console.error('Error fetching fallback blogs:', fallbackError);
           }
-    
+
           setRelatedBlogs(fallbackData || []);
         } else {
           setRelatedBlogs(relatedData);
         }
-      } catch (err) {
-        console.error('Unexpected error fetching related blogs:', err);
       }
-    };
-    
+    } catch (err) {
+      console.error('Unexpected error fetching related blogs:', err);
+    }
+  };
+
+  // Trigger fetch when tags change or are available
+  useEffect(() => {
     if (tags && tags.length > 0) {
       fetchRelatedBlogs();
     }
-    
-    return (
-      <aside className={styles.suggestedArticles}>
-        <h3>Suggested Articles</h3>
-        <ul>
-          {relatedBlogs.map((related) => (
-            <li key={related.slug} className={styles.relatedArticle}>
-              <Link href={`/blogs/${related.slug}`}>
-                <Image
-                  src={related.thumbnail_url || '/default-thumbnail.jpg'}
-                  alt={related.title}
-                  width={150}
-                  height={150}
-                  className={styles.relatedArticleThumbnail}
-                />
-                <div className={styles.relatedArticleInfo}>
-                  <h4>{related.title}</h4>
-                  <p className={styles.relatedArticleDate}>
-                    {new Date(related.published_date).toLocaleDateString()}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </aside>
-    );
-    
+  }, [tags]);
+
+  return (
+    <aside className={styles.suggestedArticles}>
+      <h3>Suggested Articles</h3>
+      <ul>
+        {relatedBlogs.map((related) => (
+          <li key={related.slug} className={styles.relatedArticle}>
+            <Link href={`/blogs/${related.slug}`}>
+              <Image
+                src={related.thumbnail_url || '/default-thumbnail.jpg'}
+                alt={related.title}
+                width={150}
+                height={150}
+                className={styles.relatedArticleThumbnail}
+              />
+              <div className={styles.relatedArticleInfo}>
+                <h4>{related.title}</h4>
+                <p className={styles.relatedArticleDate}>
+                  {new Date(related.published_date).toLocaleDateString()}
+                </p>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
 };
 
 // Blog Component

@@ -111,7 +111,7 @@
 
 .blogCardTitle {
   font-size: 1.5rem;
-  color: #333;
+  color: #555;
   margin-bottom: 10px;
 }
 
@@ -126,16 +126,12 @@
   color: #555;
 }
 
-.readMoreButton {
-  color: #007bff;
-  font-weight: bold;
-  text-decoration: none;
-  transition: color 0.3s;
+.blogCardTitle:hover {
+  
+  color: #0458ff;
+  
 }
 
-.readMoreButton:hover {
-  color: #0056b3;
-}
 
 .noBlogsMessage {
   text-align: center;

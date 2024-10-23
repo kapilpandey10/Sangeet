@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
-import Styles from './style/AddBlog.module.css'; // Corrected the import statement for CSS module
+import Styles from './style/AddBlog.module.css'; // Import your CSS module for styles
 
 const AddBlog = () => {
   const [title, setTitle] = useState('');
@@ -8,13 +8,26 @@ const AddBlog = () => {
   const [slug, setSlug] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
-  const [imageFile, setImageFile] = useState(null); // File input state for image upload
-  const [tags, setTags] = useState('');
-  const [status, setStatus] = useState('draft'); // Default status is 'draft'
-  const [content, setContent] = useState(''); // Content will hold the HTML content
+  const [imageFile, setImageFile] = useState(null); // For image upload
+  const [selectedTag, setSelectedTag] = useState(''); // Single tag selection (empty by default)
+  const [status, setStatus] = useState('draft'); // Default status
+  const [content, setContent] = useState(''); // Blog content
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [loading, setLoading] = useState(false); // New state for loading animation
+  const [loading, setLoading] = useState(false);
+
+  // Default published date to today's date
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+    setPublishedDate(today);
+  }, []);
+
+  // Common news categories for the dropdown
+  const commonTags = [
+    'Politics', 'Business', 'Technology', 'Health', 'Science',
+    'Sports', 'Entertainment', 'World', 'Environment', 'Lifestyle',
+    'Education', 'Opinion', 'Crime', 'Weather', 'Local'
+  ];
 
   // Handle file selection
   const handleFileSelect = (e) => {
@@ -26,29 +39,27 @@ const AddBlog = () => {
   const uploadImage = async () => {
     if (!imageFile) return null;
 
-    const fileName = `${slug}-${Date.now()}`; // Use slug and timestamp to create a unique file name
+    const fileName = `${slug}-${Date.now()}`;
     const filePath = `thumbnails/${fileName}`;
 
-    // Upload the image to Supabase storage
     const { data, error } = await supabase.storage
-      .from('images') // Replace with your Supabase storage bucket name
+      .from('images')
       .upload(filePath, imageFile);
 
     if (error) {
       throw new Error('Image upload failed: ' + error.message);
     }
 
-    // Get the public URL for the uploaded image
     const { data: urlData, error: urlError } = supabase
       .storage
-      .from('images') // Replace with your Supabase storage bucket name
+      .from('images')
       .getPublicUrl(filePath);
 
     if (urlError) {
       throw new Error('Error getting public URL: ' + urlError.message);
     }
 
-    return urlData.publicUrl; // Return the public URL of the image
+    return urlData.publicUrl;
   };
 
   // Handle form submission
@@ -56,16 +67,14 @@ const AddBlog = () => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
-    setLoading(true); // Start loading animation
+    setLoading(true);
 
     try {
-      // Upload the image and get the public URL if an image is selected
       let imageUrl = '';
       if (imageFile) {
-        imageUrl = await uploadImage(); // Upload the image and get the full public URL
+        imageUrl = await uploadImage();
       }
 
-      // Insert blog details into the blogs table, including the thumbnail URL
       const { data, error } = await supabase.from('blogs').insert([
         {
           title,
@@ -73,43 +82,45 @@ const AddBlog = () => {
           slug,
           excerpt,
           published_date: publishedDate,
-          thumbnail_url: imageUrl, // Store the uploaded image URL in the thumbnail_url column
-          content, // Insert HTML content as a string
+          thumbnail_url: imageUrl,
+          content,
           status,
-          tags: tags.split(','), // Split tags by comma
+          tags: selectedTag, // Save the selected tag
         },
       ]);
 
       if (error) {
         setErrorMessage('Error uploading blog: ' + error.message);
-        setSuccessMessage(null);
       } else {
         setSuccessMessage('Blog added successfully!');
-        setErrorMessage(null);
-
-        // Optionally, reset form fields after successful submission
-        setTitle('');
-        setAuthor('');
-        setSlug('');
-        setExcerpt('');
-        setPublishedDate('');
-        setTags('');
-        setContent(''); // Clear content
-        setStatus('draft');
-        setImageFile(null); // Clear the image file
+        resetForm();
       }
     } catch (error) {
       setErrorMessage(error.message || 'An error occurred while adding the blog.');
-      setSuccessMessage(null);
     } finally {
-      setLoading(false); // Stop loading animation
+      setLoading(false);
     }
   };
 
+  // Reset the form after successful submission
+  const resetForm = () => {
+    setTitle('');
+    setAuthor('');
+    setSlug('');
+    setExcerpt('');
+    setPublishedDate('');
+    setSelectedTag(''); // Clear selected tag
+    setContent('');
+    setStatus('draft');
+    setImageFile(null); // Clear image file
+  };
+
   return (
-    <div className={Styles.addBlogContainer}> {/* Use CSS module class */}
+    <div className={Styles.addBlogContainer}>
       <h2 className={Styles.addBlogTitle}>Add New Blog</h2>
-      <form className={Styles.addBlogForm} onSubmit={handleSubmit}> {/* Applied correct class names */}
+      <form className={Styles.addBlogForm} onSubmit={handleSubmit}>
+        {/* Other form fields */}
+        
         <label>Title:</label>
         <input
           type="text"
@@ -134,35 +145,47 @@ const AddBlog = () => {
           required
         />
 
-        <label>Excerpt (Optional):</label>
+        <label>Excerpt:</label>
         <input
           type="text"
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
+          required
         />
 
-        <label>Published Date (Optional):</label>
+        <label>Published Date:</label>
         <input
           type="date"
           value={publishedDate}
           onChange={(e) => setPublishedDate(e.target.value)}
+          required
         />
 
         {/* Image Upload Section */}
-        <label>Thumbnail Image (Optional):</label>
+        <label>Thumbnail Image:</label>
         <input
           type="file"
           accept=".png,.jpg,.jpeg,.gif,.webp"
           onChange={handleFileSelect}
+          required
         />
         {imageFile && <p>Selected file: {imageFile.name}</p>}
 
-        <label>Tags (comma-separated):</label>
-        <input
-          type="text"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-        />
+        {/* Tags (Dropdown) */}
+        <label>Tags:</label>
+        <select
+          className={Styles.selectTag}
+          value={selectedTag}
+          onChange={(e) => setSelectedTag(e.target.value)}
+          required
+        >
+          <option value="">Select a tag</option>
+          {commonTags.map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
 
         <label>HTML Content:</label>
         <textarea
@@ -183,16 +206,15 @@ const AddBlog = () => {
           {loading ? 'Uploading Blog...' : 'Add Blog'}
         </button>
 
-        {/* Loading animation or message */}
         {loading && (
-          <div className={Styles.loadingAnimation}> {/* Applied proper className */}
+          <div className={Styles.loadingAnimation}>
             <div className={Styles.spinner}></div>
             <p>Uploading blog...</p>
           </div>
         )}
 
-        {errorMessage && <p className={Styles.errorMessage}>{errorMessage}</p>} {/* Applied proper className */}
-        {successMessage && <p className={Styles.successMessage}>{successMessage}</p>} {/* Applied proper className */}
+        {errorMessage && <p className={Styles.errorMessage}>{errorMessage}</p>}
+        {successMessage && <p className={Styles.successMessage}>{successMessage}</p>}
       </form>
     </div>
   );

@@ -109,7 +109,7 @@ const ReadBlog = ({ blog }) => {
 
     const getOgImageUrl = () => {
       if (!blog.thumbnail_url) {
-        return 'https://pandeykapil.com.np/default-og-image.jpg';
+        return 'https://pandeykapil.com.np/logo/logo.webp';
       }
 
       if (isValidUrl(blog.thumbnail_url)) {
@@ -142,8 +142,10 @@ const ReadBlog = ({ blog }) => {
   const sanitizedContent = DOMPurify.sanitize(blog.content, {
     ADD_TAGS: ['iframe'],
     ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
-    ALLOWED_URI_REGEXP: /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//
+   
+    ALLOWED_URI_REGEXP: /^https:\/\/(www\.)?(youtube\.com|youtu\.be|facebook\.com)\// 
   });
+ 
   
   const currentUrl = encodeURI(`https://pandeykapil.com.np/blogs/${blog.slug}`);
 

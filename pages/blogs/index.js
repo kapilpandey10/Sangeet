@@ -11,7 +11,7 @@ const BlogHomepage = () => {
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTag, setSelectedTag] = useState('all');
-  const blogsPerPage = 10;
+  const blogsPerPage = 12;
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -118,7 +118,7 @@ const BlogHomepage = () => {
 
       {loading ? (
         <div className={styles.skeletonContainer}>
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 10 }).map((_, index) => (
             <div className={styles.skeletonCard} key={index}></div>
           ))}
         </div>

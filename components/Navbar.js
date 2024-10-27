@@ -75,6 +75,7 @@ const Navbar = () => {
             <Link href="/lyrics" onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>
             <Link href="/artistbio" onClick={() => setIsMobileMenuOpen(false)}>Artist Bio</Link>
             <Link href="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
+            <Link href="/radio" onClick={() => setIsMobileMenuOpen(false)}>Radio</Link>
             <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Us</Link>
           </div>
         </div>

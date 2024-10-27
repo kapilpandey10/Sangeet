@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
-import { FaCaretDown, FaCheckCircle, FaEdit, FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper } from 'react-icons/fa'; // Icons for menu
+import { FaCaretDown, FaCheckCircle, FaEdit, FaPlus,FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper } from 'react-icons/fa'; // Icons for menu
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
@@ -12,6 +12,7 @@ import styles from './style/AdminDashboard.module.css'; // CSS module for Next.j
 import { useRouter } from 'next/router';
 import ManageBlog from './manageblog';
 import ManageArtist from './ManageArtist';
+import AddRadio from './AddRadio';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
@@ -88,7 +89,9 @@ const AdminDashboard = () => {
       case 'manageblog':
         return <ManageBlog />;
       case 'manage-artist':
-        return <ManageArtist/>
+        return <ManageArtist />
+      case 'add-radio':
+        return <AddRadio />
       default:
         return <ManageLyrics />;
     }
@@ -159,7 +162,24 @@ const AdminDashboard = () => {
               </ul>
             )}
           </li>
-       
+                {/* Radio Dropdown */}
+          <li className={styles.navItem}>
+            <span onClick={() => toggleDropdown('manage')}>
+             Radio <FaCaretDown className={styles.caretIcon} />
+            </span>
+            {dropdownOpen.manage && (
+              <ul className={styles.dropdownMenu}>
+                <li onClick={() => setActiveTab('add-radio')}>
+                  <FaPlus className={styles.icon} /> Add Radio
+                </li>
+                <li onClick={() => setActiveTab('approve')}>
+                  <FaEdit className={styles.icon} />Manage Radio
+                </li>
+              </ul>
+            )}
+          </li>
+
+
          {/* Account Dropdown */}
          <li className={styles.navItem}>
             <span onClick={() => toggleDropdown('account')}>

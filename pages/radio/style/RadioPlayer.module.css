@@ -1,0 +1,224 @@
+.radioPlayerContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Header styles */
+  .stationInfoContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .stationLogo {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .fallbackInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #e0e0e0;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .stationDetails {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+  
+  .stationName {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  
+  .stationFrequency,
+  .stationLocation {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .liveBadge {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .shareButton {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .digitalClock {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Media Controls */
+  .mediaControls {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .controlButton {
+    background-color: #3498db;
+    border: none;
+    border-radius: 50%;
+    padding: 15px;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+  }
+  
+  .controlButton:hover {
+    transform: scale(1.1);
+  }
+  
+  .timeDisplay {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* Volume Controls */
+  .volumeControl {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .volumeSlider {
+    width: 100px;
+  }
+  
+  /* Frequency Box */
+  .frequencyBox {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .frequencyLines {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  
+  .line {
+    width: 2px;
+    height: 30px;
+    background-color: #ccc;
+  }
+  
+  .redLine {
+    width: 3px;
+    height: 40px;
+    background-color: #e74c3c;
+  }
+  
+  /* Suggested Stations */
+  .suggestedStations {
+    margin-top: 30px;
+  }
+  
+  .suggestionsList {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  
+  .suggestionCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .suggestionCard:hover {
+    transform: scale(1.05);
+  }
+  
+  .suggestionLogo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .suggestionInfo {
+    text-align: center;
+  }
+  
+  .suggestionName {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 5px;
+    color: #333;
+  }
+  
+  .suggestionFrequency {
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .stationInfoContainer {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .stationName {
+      font-size: 1.5rem;
+    }
+  
+    .stationFrequency,
+    .stationLocation {
+      font-size: 0.9rem;
+    }
+  }
+  

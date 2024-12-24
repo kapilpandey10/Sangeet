@@ -1,96 +1,64 @@
+/* Footer container */
 .footer {
-  background-color: #34495e; /* Dark background */
-  padding: 15px 20px;
+  background: linear-gradient(90deg, #0047ab, #00bcd4); /* Theme gradient */
+  color: #ffffff;
+  padding: 20px;
   display: flex;
-  justify-content: center;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  position: relative;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Social Media Section */
+/* Social Section */
 .socialSection {
   display: flex;
-  gap: 20px;
   justify-content: center;
-  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .socialIcon {
-  font-size: 32px;
-  color: #fff;
-  transition: color 0.3s ease;
+  font-size: 1.5rem;
+  color: #ffffff;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .socialIcon:hover {
-  color: #ff5733;
+  color: #f44336; /* Accent color for hover */
+  transform: scale(1.2);
 }
 
 /* Links Section */
 .linksSection {
   display: flex;
-  gap: 20px;
-  flex-direction: row;
   justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .linksSection a {
   color: #ffffff;
   text-decoration: none;
-  font-size: 16px;
+  font-weight: 600;
   transition: color 0.3s ease;
 }
 
 .linksSection a:hover {
-  color: #ff5733;
+  color: #00bcd4; /* Secondary color for hover */
 }
 
 /* Branding Section */
 .brandingSection {
-  font-size: 14px;
+  margin-top: 10px;
+}
+
+.brandName {
+  font-weight: bold;
   color: #ffffff;
 }
 
-.brandingSection .brandName {
-  font-weight: bold;
-  color: #ff5733; /* Highlighted color for the brand name */
-}
-
-/* Responsive Design for Smaller Screens */
-@media (max-width: 768px) {
-  .footer {
-    padding: 30px 15px;
-  }
-
-  .socialIcon {
-    font-size: 28px;
-  }
-
-  .linksSection a {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .footer {
-    padding: 20px 10px;
-  }
-
-  .socialIcon {
-    font-size: 24px;
-  }
-
-  .linksSection {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .linksSection a {
-    font-size: 13px;
-  }
-
-  .brandingSection {
-    font-size: 12px;
-  }
+.highlight {
+  color: #f44336; /* Accent color for the brand */
 }

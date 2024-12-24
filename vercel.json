@@ -1,9 +1,12 @@
 {
-    "rewrites": [
-      {
-        "source": "/lyrics/:slug*",
-        "destination": "/lyrics/:slug*"
-      }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/lyrics/:slug*",
+      "destination": "/lyrics/:slug*"
+    },
+    {
+      "source": "/radio/:slug*",
+      "destination": "/radio/:slug*"
+    }
+  ]
+}

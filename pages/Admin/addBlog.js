@@ -1,234 +1,223 @@
-import { useState } from 'react';
-import { supabase } from '../../supabaseClient'; // Ensure your Supabase client is set up correctly
-import styles from './style/AddRadio.module.css'; // Import CSS for styling
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../../supabaseClient';
+import Styles from './style/AddBlog.module.css'; // Import your CSS module for styles
 
-const AddRadio = () => {
-  const [radioName, setRadioName] = useState('');
-  const [streamUrl, setStreamUrl] = useState('');
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
-  const [frequency, setFrequency] = useState('');
-  const [logoFile, setLogoFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [status, setStatus] = useState('Online'); // New status state
+const AddBlog = () => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [slug, setSlug] = useState('');
+  const [excerpt, setExcerpt] = useState('');
+  const [publishedDate, setPublishedDate] = useState('');
+  const [imageFile, setImageFile] = useState(null); // For image upload
+  const [selectedTag, setSelectedTag] = useState(''); // Single tag selection (empty by default)
+  const [status, setStatus] = useState('draft'); // Default status
+  const [content, setContent] = useState(''); // Blog content
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Function to upload image to the bucket and get its URL
-  const uploadLogo = async () => {
-    if (!logoFile) return null;
+  // Default published date to today's date
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+    setPublishedDate(today);
+  }, []);
 
-    try {
-      // Generate a unique file name
-      const fileName = `radio-logo-${Date.now()}-${logoFile.name}`;
-      const filePath = `radio-logo/${fileName}`;
+  // Common news categories for the dropdown
+  const commonTags = [
+    'Politics', 'Business', 'Technology', 'Health', 'Science',
+    'Sports', 'Entertainment', 'World', 'Environment', 'Lifestyle',
+    'Education', 'Opinion', 'Crime', 'Weather', 'Local'
+  ];
 
-      console.log('Attempting to upload to path:', filePath);
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
 
-      // Upload the logo to the bucket
-      const { data, error } = await supabase.storage
-        .from('radio')
-        .upload(filePath, logoFile);
+  // Function to upload image to Supabase storage and return the public URL
+  const uploadImage = async () => {
+    if (!imageFile) return null;
 
-      if (error) {
-        console.error('Upload Error:', error.message);
-        throw new Error('Failed to upload logo. Please check bucket permissions and settings.');
-      }
+    const fileName = `${slug}-${Date.now()}`;
+    const filePath = `thumbnails/${fileName}`;
 
-      console.log('Upload successful. Retrieving public URL...');
+    const { data, error } = await supabase.storage
+      .from('images')
+      .upload(filePath, imageFile);
 
-      // Retrieve the public URL of the uploaded file
-      const { data: publicUrlData, error: urlError } = supabase
-        .storage
-        .from('radio')
-        .getPublicUrl(filePath);
-
-      if (urlError) {
-        console.error('Public URL Retrieval Error:', urlError);
-        throw new Error('Failed to get public URL of logo.');
-      }
-
-      const publicUrl = publicUrlData.publicUrl;
-
-      // Additional debug logs
-      console.log('Public URL retrieval response:', { publicUrl, urlError });
-
-      if (!publicUrl) {
-        console.error('Public URL Retrieval Failed.');
-        throw new Error('Failed to get public URL of logo.');
-      }
-
-      console.log('Successfully retrieved Public URL:', publicUrl);
-      return publicUrl;
-
-    } catch (error) {
-      console.error('Logo Upload Failed:', error);
-      throw error;
+    if (error) {
+      throw new Error('Image upload failed: ' + error.message);
     }
+
+    const { data: urlData, error: urlError } = supabase
+      .storage
+      .from('images')
+      .getPublicUrl(filePath);
+
+    if (urlError) {
+      throw new Error('Error getting public URL: ' + urlError.message);
+    }
+
+    return urlData.publicUrl;
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUploading(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-  
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setLoading(true);
+
     try {
-      // Upload logo and get the URL
-      let logoUrl = '';
-      if (logoFile) {
-        logoUrl = await uploadLogo();
-        if (!logoUrl) {
-          throw new Error('Logo URL could not be retrieved.');
-        }
+      let imageUrl = '';
+      if (imageFile) {
+        imageUrl = await uploadImage();
       }
-  
-      // Debugging: Log the data before attempting the database insert
-      console.log('Data to be inserted:', {
-        radioname: radioName,
-        stream_url: streamUrl,
-        country: country,
-        city: city,
-        frequency: parseFloat(frequency),
-        logo_url: logoUrl,
-        status: status,
-      });
-  
-      // Insert the data into the 'radio' table with lowercase column names
-      const { error: insertError } = await supabase
-        .from('radio')
-        .insert([
-          {
-            radioname: radioName,
-            stream_url: streamUrl,
-            country: country,
-            city: city,
-            frequency: parseFloat(frequency),
-            logo_url: logoUrl,
-            status: status,
-          },
-        ]);
-  
-      if (insertError) {
-        console.error('Insert Error:', insertError);
-        throw new Error('Failed to add radio station. Please check the table schema.');
+
+      const { data, error } = await supabase.from('blogs').insert([
+        {
+          title,
+          author,
+          slug,
+          excerpt,
+          published_date: publishedDate,
+          thumbnail_url: imageUrl,
+          content,
+          status,
+          tags: selectedTag, // Save the selected tag
+        },
+      ]);
+
+      if (error) {
+        setErrorMessage('Error uploading blog: ' + error.message);
+      } else {
+        setSuccessMessage('Blog added successfully!');
+        resetForm();
       }
-  
-      // Reset form and show success message
-      setRadioName('');
-      setStreamUrl('');
-      setCountry('');
-      setCity('');
-      setFrequency('');
-      setLogoFile(null);
-      setStatus('Online');
-      setSuccessMessage('Radio station added successfully!');
-    } catch (err) {
-      console.error('Form Submission Error:', err);
-      setErrorMessage(err.message);
+    } catch (error) {
+      setErrorMessage(error.message || 'An error occurred while adding the blog.');
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   };
-  
 
-  // Handle file change for the logo
-  const handleFileChange = (e) => {
-    setLogoFile(e.target.files[0]);
+  // Reset the form after successful submission
+  const resetForm = () => {
+    setTitle('');
+    setAuthor('');
+    setSlug('');
+    setExcerpt('');
+    setPublishedDate('');
+    setSelectedTag(''); // Clear selected tag
+    setContent('');
+    setStatus('draft');
+    setImageFile(null); // Clear image file
   };
 
   return (
-    <div className={styles.addRadioContainer}>
-      <h2 className={styles.header}>Add a New Radio Station</h2>
-      <form onSubmit={handleSubmit} className={styles.addRadioForm}>
-        {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-        {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
-
-        <label htmlFor="radioName" className={styles.label}>Radio Name</label>
+    <div className={Styles.addBlogContainer}>
+      <h2 className={Styles.addBlogTitle}>Add New Blog</h2>
+      <form className={Styles.addBlogForm} onSubmit={handleSubmit}>
+        {/* Other form fields */}
+        
+        <label>Title:</label>
         <input
-          id="radioName"
           type="text"
-          value={radioName}
-          onChange={(e) => setRadioName(e.target.value)}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           required
-          placeholder="Enter the radio name"
-          className={styles.inputField}
         />
 
-        <label htmlFor="streamUrl" className={styles.label}>Stream URL</label>
+        <label>Author:</label>
         <input
-          id="streamUrl"
-          type="url"
-          value={streamUrl}
-          onChange={(e) => setStreamUrl(e.target.value)}
-          required
-          placeholder="Enter the stream URL"
-          className={styles.inputField}
-        />
-
-        <label htmlFor="country" className={styles.label}>Country</label>
-        <input
-          id="country"
           type="text"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
           required
-          placeholder="Enter the country"
-          className={styles.inputField}
         />
 
-        <label htmlFor="city" className={styles.label}>City</label>
+        <label>Slug (URL-friendly):</label>
         <input
-          id="city"
           type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
           required
-          placeholder="Enter the city"
-          className={styles.inputField}
         />
 
-        <label htmlFor="frequency" className={styles.label}>Frequency (MHz)</label>
+        <label>Excerpt:</label>
         <input
-          id="frequency"
-          type="number"
-          value={frequency}
-          onChange={(e) => setFrequency(e.target.value)}
-          step="0.1"
-          min="80"
-          max="110"
+          type="text"
+          value={excerpt}
+          onChange={(e) => setExcerpt(e.target.value)}
           required
-          placeholder="Enter the frequency"
-          className={styles.inputField}
         />
 
-        <label htmlFor="status" className={styles.label}>Status</label>
+        <label>Published Date:</label>
+        <input
+          type="date"
+          value={publishedDate}
+          onChange={(e) => setPublishedDate(e.target.value)}
+          required
+        />
+
+        {/* Image Upload Section */}
+        <label>Thumbnail Image:</label>
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg,.gif,.webp"
+          onChange={handleFileSelect}
+          required
+        />
+        {imageFile && <p>Selected file: {imageFile.name}</p>}
+
+        {/* Tags (Dropdown) */}
+        <label>Tags:</label>
         <select
-          id="status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className={styles.inputField}
+          className={Styles.selectTag}
+          value={selectedTag}
+          onChange={(e) => setSelectedTag(e.target.value)}
+          required
         >
-          <option value="Online">Online</option>
-          <option value="Offline">Offline</option>
+          <option value="">Select a tag</option>
+          {commonTags.map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
         </select>
 
-        <label htmlFor="logoFile" className={styles.label}>Upload Logo</label>
-        <input
-          id="logoFile"
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className={styles.inputField}
+        <label>HTML Content:</label>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Type your blog content in HTML format here..."
+          rows="10"
+          required
         />
 
-        <button type="submit" disabled={uploading} className={styles.submitButton}>
-          {uploading ? 'Uploading...' : 'Add Radio Station'}
+        <label>Status:</label>
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+        </select>
+
+        <button type="submit" disabled={loading}>
+          {loading ? 'Uploading Blog...' : 'Add Blog'}
         </button>
+
+        {loading && (
+          <div className={Styles.loadingAnimation}>
+            <div className={Styles.spinner}></div>
+            <p>Uploading blog...</p>
+          </div>
+        )}
+
+        {errorMessage && <p className={Styles.errorMessage}>{errorMessage}</p>}
+        {successMessage && <p className={Styles.successMessage}>{successMessage}</p>}
       </form>
     </div>
   );
 };
 
-export default AddRadio;
+export default AddBlog;

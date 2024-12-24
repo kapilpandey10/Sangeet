@@ -1,33 +1,36 @@
+/* components/style/BackToTop.module.css */
+
 .backToTop {
   position: fixed;
   bottom: 40px;
   right: 40px;
+  background-color: #1d4ed8; /* Tailwind's blue-700 equivalent */
+  color: white;
+  border: none;
+  border-radius: 50%;
   width: 50px;
   height: 50px;
-  background-color: #ff0000;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
-.backToTop:hover {
-  background-color: #c33323;
-}
-
-.backToTop.show {
+.show {
   opacity: 1;
   visibility: visible;
+  transform: translateY(0);
+}
+
+.backToTop:hover {
+  background-color: #2563eb; /* Tailwind's blue-600 equivalent */
 }
 
 .arrowIcon {
   width: 24px;
   height: 24px;
-  color: white;
 }

@@ -23,7 +23,9 @@ const AddLyrics = () => {
   const [addedBy, setAddedBy] = useState('');
   const [language, setLanguage] = useState('');
   const [description, setDescription] = useState('');
+  const [thumbnail, setThumbnail] = useState('');
 
+  
   // Set page title
   useEffect(() => {
     document.title = 'Add Song Lyrics | Contribute to dynabyte ';
@@ -71,7 +73,34 @@ const AddLyrics = () => {
     updatedArtists.splice(index, 1);
     setArtists(updatedArtists);
   };
+// Extract YouTube video ID from URL or ID
+const getYouTubeVideoID = (url) => {
+  const urlRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const idRegex = /^[a-zA-Z0-9_-]{11}$/;
 
+  if (urlRegex.test(url)) {
+    const match = url.match(urlRegex);
+    return match ? match[1] : null;
+  } else if (idRegex.test(url)) {
+    return url; // Treat as direct video ID
+  }
+  return null;
+};
+
+// Handle YouTube URL or video ID change
+const handleVideoUrlChange = (e) => {
+  const url = e.target.value;
+  setVideoUrl(url);
+
+  const videoId = getYouTubeVideoID(url);
+  if (videoId) {
+    setThumbnail(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+    setVideoError('');
+  } else {
+    setThumbnail(''); // Clear thumbnail if URL/ID is invalid
+    setVideoError('Please enter a valid YouTube Video URL or ID.');
+  }
+};
   // Fetch artist suggestions from the lyrics table
   const handleArtistChange = async (index, event) => {
     const updatedArtists = [...artists];
@@ -132,6 +161,7 @@ const AddLyrics = () => {
             added_by: addedBy || 'Admin', // Set default to Admin
             language,
             description,
+            thumbnail_url: thumbnail
           },
         ]);
 
@@ -238,7 +268,6 @@ const AddLyrics = () => {
             value={lyrics}
             onChange={(e) => setLyrics(e.target.value)}
             rows={10}
-            required
           />
         </div>
 
@@ -249,7 +278,6 @@ const AddLyrics = () => {
             value={englishLyrics}
             onChange={(e) => setEnglishLyrics(e.target.value)}
             rows={10}
-            required
           />
         </div>
         <div className={styles.formGroup}>
@@ -259,7 +287,6 @@ const AddLyrics = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            required
           />
         </div>
         <div className={styles.formGroup}>
@@ -276,17 +303,26 @@ const AddLyrics = () => {
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="videoUrl">YouTube Video URL/ID</label>
-          <input
-            type="text"
-            id="videoUrl"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="YouTube Video URL or ID"
-            required
-          />
-          {videoError && <p className={styles.error}>{videoError}</p>}
-        </div>
+        <label htmlFor="thumbnail">Thumbnail URL</label>
+        <input
+          id="thumbnail"
+          value={thumbnail}
+          onChange={(e) => setThumbnail(e.target.value)}
+          placeholder="Auto-filled from YouTube URL"
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="videoUrl">YouTube Video URL/ID</label>
+        <input
+          type="text"
+          id="videoUrl"
+          value={videoUrl}
+          onChange={handleVideoUrlChange}
+          placeholder="YouTube Video URL or ID"
+        />
+        {videoError && <p className={styles.error}>{videoError}</p>}
+      </div>
         <div className={styles.formGroup}>
   <label htmlFor="addedBy">Added By</label>
   <input

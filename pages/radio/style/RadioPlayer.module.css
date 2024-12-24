@@ -1,120 +1,304 @@
+/* General Container */
 .radioPlayerContainer {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f7f7f7;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
   }
   
-  /* Header styles */
-  .stationInfoContainer {
+  /* Breadcrumb */
+  .breadcrumb {
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  .breadcrumb a {
+    text-decoration: none;
+    color: #1a73e8;
+    margin-right: 5px;
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Header Section */
+  .header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+  }
+  
+  .logoContainer {
+    display: flex;
+    align-items: center;
   }
   
   .stationLogo {
-    width: 100px;
-    height: 100px;
-    border-radius: 10px;
-    object-fit: cover;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 5px;
   }
   
-  .fallbackInfo {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .fallbackLogo {
+    width: 80px;
+    height: 80px;
     background-color: #e0e0e0;
-    width: 100px;
-    height: 100px;
-    border-radius: 10px;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
   }
   
   .stationDetails {
-    flex-grow: 1;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
   }
   
   .stationName {
-    font-size: 1.8rem;
+    font-size: 1.5em;
     font-weight: bold;
-    color: #333;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
   
   .stationFrequency,
   .stationLocation {
-    font-size: 1rem;
     color: #555;
   }
   
   .liveBadge {
-    display: inline-block;
-    background-color: #e74c3c;
-    color: #fff;
+    background-color: #ff0000;
+    color: white;
     padding: 5px 10px;
     border-radius: 5px;
-    font-size: 0.9rem;
-    margin-top: 5px;
+    font-size: 0.8em;
+    align-self: flex-start;
+  }
+  /* Country Selector */
+.countrySelector {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1em;
   }
   
+  .countryDropdown {
+    padding: 5px 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+/* Frequency Bar */
+.frequencyBarContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    position: relative;
+  }
+/* Scrollable Container for the Frequency Bar */
+/* Scrollable Container for the Frequency Bar */
+.scrollableContainer {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Fixed Red Indicator */
+  .fixedIndicator {
+    position: absolute;
+    height: 100%;
+    width: 4px;
+    background-color: #e74c3c; /* Red color for the indicator */
+    z-index: 2;
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  
+  .frequencyBarContainer {
+    position: relative;
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #333;
+    border-radius: 10px;
+    padding: 10px 0;
+  }
+  
+  .scrollableContainer {
+    width: 100%;
+    overflow-x: scroll;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .frequencyBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+  .frequencyLabels {
+    display: flex;
+    gap: 10px; /* Equal gap between each frequency line */
+    align-items: center;
+  }
+  
+  .frequencyMark {
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+  
+  /* Style for major lines (1 MHz) */
+  .majorLine {
+    height: 40px;
+    width: 2px;
+    background-color: #fff;
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  /* Style for minor lines (0.1 MHz) */
+  .minorLine {
+    height: 20px;
+    width: 1px;
+    background-color: #888;
+    margin-top: 30px;
+  }
+  
+  /* Red marker for the current frequency */
+  .fixedIndicator {
+    position: absolute;
+    height: 100%;
+    width: 4px;
+    background-color: #e74c3c;
+    z-index: 2;
+    top: 0;
+    transition: left 0.3s ease;
+    pointer-events: none;
+  }
+  
+  
+/* Scan Button Styles */
+.scanButton {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+  }
+  
+  .scanButton:hover {
+    background-color: #218838;
+  }
+  
+  .scanning {
+    animation: scanAnimation 2s infinite; /* Add a scanning effect */
+  }
+  
+  /* Scanning animation */
+  @keyframes scanAnimation {
+    0% {
+      background-color: #28a745;
+    }
+    50% {
+      background-color: #218838;
+    }
+    100% {
+      background-color: #28a745;
+    }
+  }
+  
+  
+
+
+  
+
+  
+  /* Horizontal scrolling styling */
+  .scrollableContainer::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .scrollableContainer::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 10px;
+  }
+  
+  .scrollableContainer::-webkit-scrollbar-track {
+    background-color: #333;
+  }
+  
+
+
+  
+  /* Controls */
+  .controlsContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .playPauseButton,
   .shareButton {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     gap: 5px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 5px;
-    font-size: 0.9rem;
   }
   
-  .digitalClock {
-    text-align: center;
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: #333;
+  .playPauseButton:hover,
+  .shareButton:hover {
+    background-color: #1669c7;
   }
   
-  /* Media Controls */
-  .mediaControls {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .controlButton {
-    background-color: #3498db;
-    border: none;
-    border-radius: 50%;
-    padding: 15px;
-    color: white;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: transform 0.2s;
-  }
-  
-  .controlButton:hover {
-    transform: scale(1.1);
-  }
-  
-  .timeDisplay {
-    font-size: 1rem;
-    color: #555;
-  }
-  
-  /* Volume Controls */
   .volumeControl {
     display: flex;
     align-items: center;
@@ -123,56 +307,32 @@
   
   .volumeSlider {
     width: 100px;
-  }
-  
-  /* Frequency Box */
-  .frequencyBox {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-  }
-  
-  .frequencyLines {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-  }
-  
-  .line {
-    width: 2px;
-    height: 30px;
-    background-color: #ccc;
-  }
-  
-  .redLine {
-    width: 3px;
-    height: 40px;
-    background-color: #e74c3c;
+    cursor: pointer;
   }
   
   /* Suggested Stations */
   .suggestedStations {
-    margin-top: 30px;
+    width: 100%;
+    margin-top: 20px;
   }
   
   .suggestionsList {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 15px;
-    overflow-x: auto;
-    padding-bottom: 10px;
   }
   
   .suggestionCard {
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    min-width: 150px;
-    cursor: pointer;
-    transition: transform 0.2s;
+    text-align: center;
   }
   
   .suggestionCard:hover {
@@ -180,45 +340,41 @@
   }
   
   .suggestionLogo {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
+    width: 100%;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 5px;
   }
   
   .suggestionInfo {
-    text-align: center;
+    margin-top: 10px;
   }
   
   .suggestionName {
-    font-size: 1rem;
+    font-size: 1em;
     font-weight: bold;
-    margin-top: 5px;
-    color: #333;
   }
   
-  .suggestionFrequency {
-    font-size: 0.9rem;
-    color: #777;
+  .suggestionFrequency,
+  .suggestionLocation {
+    font-size: 0.9em;
+    color: #666;
   }
   
-  /* Responsive adjustments */
+  /* Responsive Adjustments */
   @media (max-width: 768px) {
-    .stationInfoContainer {
+    .header {
       flex-direction: column;
-      align-items: center;
       text-align: center;
     }
-  }
   
-  @media (max-width: 480px) {
-    .stationName {
-      font-size: 1.5rem;
+    .frequencySlider {
+      width: 100%;
     }
   
-    .stationFrequency,
-    .stationLocation {
-      font-size: 0.9rem;
+    .controlsContainer {
+      flex-direction: column;
+      gap: 10px;
     }
   }
   

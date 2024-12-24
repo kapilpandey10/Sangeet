@@ -1,4 +1,4 @@
-/* Improved Skeleton loader animation */
+/* Improved Skeleton Loader Animation */
 @keyframes skeleton-loading {
   0% {
     background-color: #e0e0e0;
@@ -11,7 +11,7 @@
   }
 }
 
-/* Skeleton container for loading cards */
+/* Skeleton Loader Styles */
 .skeletonLoader {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -20,7 +20,6 @@
   margin-bottom: 30px;
 }
 
-/* Skeleton title (animated) */
 .skeletonTitle {
   width: 60%;
   height: 24px;
@@ -31,7 +30,6 @@
   border-radius: 4px;
 }
 
-/* Skeleton card (animated) */
 .skeletonCard {
   height: 150px;
   background: linear-gradient(90deg, #e0e0e0, #f0f0f0, #e0e0e0);
@@ -45,7 +43,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Skeleton card content */
 .skeletonCardContent {
   display: flex;
   flex-direction: column;
@@ -78,6 +75,13 @@
   text-align: center;
 }
 
+/* No lyrics message */
+.noLyricsMessage {
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 20px;
+}
+
 /* Search Filter Container */
 .searchFilterContainer {
   display: flex;
@@ -88,7 +92,6 @@
   flex-wrap: wrap;
 }
 
-/* Search input styles */
 .searchInput {
   width: 100%;
   max-width: 400px;
@@ -130,13 +133,6 @@
   font-size: 1rem;
 }
 
-.selectDropdown {
-  width: auto;
-  min-width: 150px;
-  text-align: center;
-}
-
-/* Artist section styles */
 .artistSection {
   margin-bottom: 50px;
 }
@@ -150,7 +146,7 @@
   letter-spacing: 1px;
 }
 
-/* Lyrics grid layout */
+/* Lyrics Grid Layout */
 .lyricsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -158,11 +154,11 @@
   justify-items: center;
 }
 
-/* Lyric card styling */
+/* Lyric Card Styling */
 .lyricCard {
   background-color: #fff;
   border-radius: 12px;
-  padding: 20px;
+  padding: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
@@ -172,6 +168,18 @@
 .lyricCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.lyricCardContent {
+  padding: 15px;
 }
 
 .lyricCardContent h3 {
@@ -187,7 +195,7 @@
   margin-bottom: 20px;
 }
 
-/* View lyrics button */
+/* View Lyrics Button */
 .viewLyricsButton {
   display: inline-block;
   background-color: #007bff;
@@ -203,7 +211,7 @@
   background-color: #0056b3;
 }
 
-/* View more button styles */
+/* View More Button */
 .viewMoreContainer {
   text-align: center;
   margin-top: 30px;
@@ -224,7 +232,9 @@
   background-color: #218838;
 }
 
-/* Responsive adjustments for tablets */
+/* Responsive Styles */
+
+/* Tablet */
 @media (max-width: 768px) {
   .searchFilterContainer {
     flex-direction: row;
@@ -234,9 +244,17 @@
   .searchInput, .selectDropdown {
     width: 45%;
   }
+
+  .artistSection h2 {
+    font-size: 1.8rem;
+  }
+
+  .lyricsGrid {
+    gap: 30px;
+  }
 }
 
-/* Responsive adjustments for mobile devices */
+/* Mobile */
 @media (max-width: 480px) {
   .searchFilterContainer {
     flex-direction: row;
@@ -251,5 +269,22 @@
 
   .lyricsGrid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+
+  .thumbnailImage {
+    height: 100px;
+  }
+
+  .artistSection h2 {
+    font-size: 1.6rem;
+  }
+
+  .skeletonCard {
+    height: 120px;
+  }
+
+  .skeletonTitle {
+    height: 20px;
   }
 }

@@ -1,122 +1,194 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../../supabaseClient';
+import Head from 'next/head';
 import styles from './style/RadioPlayer.module.css';
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaBackward, FaForward, FaShareAlt } from 'react-icons/fa';
+import {
+  FaPlay,
+  FaPause,
+  FaShareAlt,
+  FaVolumeUp,
+  FaVolumeMute,
+  FaSpinner,
+  FaSearch,
+  FaRandom,  // Random icon import
+} from 'react-icons/fa';
 
 const RadioPlayer = () => {
   const router = useRouter();
   const { slug } = router.query;
   const [radioStation, setRadioStation] = useState(null);
   const [suggestedStations, setSuggestedStations] = useState([]);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState('All');
+  const [isPlaying, setIsPlaying] = useState(true); // Default to true for auto-play
   const [volume, setVolume] = useState(0.5);
+  const [scanning, setScanning] = useState(false); // State to handle scanning effect
   const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [noStationsMessage, setNoStationsMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [localTime, setLocalTime] = useState(new Date());
-  const [isLive, setIsLive] = useState(true);
   const audioRef = useRef(null);
 
-  // Fetch the radio station data based on the slug from Supabase
-  const fetchRadioStation = async () => {
-    if (!slug) return;
+  <Head>
+  <title>{radioStation ? `${radioStation.radioname} - Listen Live` : 'Radio Player'} | Your Website Name</title>
+  <meta
+    name="description"
+    content={
+      radioStation
+        ? `Listen to ${radioStation.radioname} broadcasting from ${radioStation.city}, ${radioStation.country}. Tune in for great music and shows!`
+        : 'Enjoy our live radio player and explore various radio stations worldwide.'
+    }
+  />
+  <meta name="keywords" content={radioStation ? `${radioStation.radioname}, ${radioStation.country} radio, live radio, online streaming` : 'live radio, online radio stations, music, streaming'} />
+  <meta property="og:title" content={radioStation ? `${radioStation.radioname} - Live Stream` : 'Radio Player'} />
+  <meta property="og:description" content={`Listen to ${radioStation ? radioStation.radioname : 'your favorite radio stations'} from ${radioStation ? `${radioStation.city}, ${radioStation.country}` : 'around the world'}.`} />
+  <meta property="og:image" content={radioStation?.logo_url || 'default-image-url'} />
+  <meta property="og:url" content={`https://pandeykapil.com.np/radio/${slug}`} />
+  <meta property="og:type" content="website" />
+</Head>
 
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('radio')
-        .select('*')
-        .eq('slug', slug)
-        .single();
+{/* Page content */}
+<nav className={styles.breadcrumb}>
+  <a href="/">Home</a> &gt; <a href="/radio">Radio</a> &gt; {radioStation?.radioname || 'Station'}
+</nav>
 
-      if (error || !data) {
-        console.error('Error fetching radio station:', error || 'No data found');
-        setErrorMessage('Could not load the radio station. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      setRadioStation(data);
-      setErrorMessage('');
-
-      const { data: suggestions, error: suggestionsError } = await supabase
-        .from('radio')
-        .select('slug, logo_url, radioname, frequency, city')
-        .eq('city', data.city)
-        .neq('slug', slug)
-        .limit(4);
-
-      if (!suggestionsError) setSuggestedStations(suggestions || []);
-
-      setLoading(false);
-    } catch (err) {
-      console.error('Unexpected error:', err);
-      setErrorMessage('Unexpected error occurred. Please try again later.');
-      setLoading(false);
+  // Function to play audio
+  const playAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play().catch((err) => {
+        console.warn('Auto-play failed, user interaction needed:', err);
+      });
     }
   };
 
-  // Fetch radio station when the slug changes
+ // Function to scan and play a random radio station from the selected country
+const scanStationFromCountry = async () => {
+  setScanning(true); // Start scanning animation
+  setLoading(true);
+  setNoStationsMessage(''); // Clear any previous error messages
+
+  try {
+    // Simulate scanning effect with a timeout before fetching the station
+    setTimeout(async () => {
+      // Fetch stations only from the selected country
+      const { data, error } = await supabase
+        .from('radio')
+        .select('*')
+        .eq('country', selectedCountry);
+
+      if (!error && data.length > 0) {
+        // Pick a random station from the fetched country data
+        const randomIndex = Math.floor(Math.random() * data.length);
+        const randomStation = data[randomIndex];
+
+        setRadioStation(randomStation);
+        router.push(`/radio/${randomStation.slug}`);
+        playAudio();
+      } else {
+        setNoStationsMessage('No stations available in this country.');
+      }
+      
+      setScanning(false); // Stop scanning animation
+    }, 2000); // Delay of 2 seconds for the scanning effect
+  } catch (err) {
+    console.error('Error fetching random station:', err);
+    setNoStationsMessage('No stations available in this country.');
+    setScanning(false); // Stop scanning animation
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // Fetch available countries for filtering
   useEffect(() => {
-    fetchRadioStation();
-  }, [slug]);
+    const fetchCountries = async () => {
+      try {
+        const { data, error } = await supabase.from('radio').select('country');
 
-  // Initialize the audio player and handle events
-  useEffect(() => {
-    if (audioRef.current) {
-      const handleLoadedMetadata = () => {
-        const audioDuration = audioRef.current.duration || 0;
-        setDuration(audioDuration);
-      };
-
-      const handleTimeUpdate = () => {
-        const time = audioRef.current?.currentTime || 0;
-        setCurrentTime(time);
-
-        if (time < duration - 5) {
-          setIsLive(false);
+        if (!error && data) {
+          const uniqueCountries = [...new Set(data.map((item) => item.country))];
+          setCountries(['All', ...uniqueCountries]);
         }
-      };
+      } catch (err) {
+        console.error('Error fetching countries:', err);
+      }
+    };
 
-      // Set the initial volume
-      audioRef.current.volume = volume;
-
-      // Attach event listeners
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-
-      // Attempt to autoplay
-      const attemptAutoplay = async () => {
-        try {
-          await audioRef.current.play();
-          setIsPlaying(true);
-        } catch (error) {
-          console.warn('Autoplay failed, manual interaction needed:', error);
-          setIsPlaying(false);
-        }
-      };
-
-      attemptAutoplay();
-
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-          audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-        }
-      };
-    }
-  }, [volume, duration]);
-
-  // Update local time every second
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLocalTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
+    fetchCountries();
   }, []);
+
+  // Fetch the radio station data based on the slug
+  useEffect(() => {
+    const fetchRadioStation = async () => {
+      if (!slug) {
+        // If no slug is provided, fetch a random station from the selected country
+        fetchRandomStation(selectedCountry);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.from('radio').select('*').eq('slug', slug).single();
+
+        if (error || !data) {
+          console.error('Error fetching radio station:', error || 'No data found');
+        } else {
+          setRadioStation(data);
+          fetchSuggestedStations(data.city, slug, selectedCountry);
+          autoPlayAudio();
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRadioStation();
+  }, [slug, selectedCountry]);
+
+  // Fetch random station from the selected country
+  
+
+  // Fetch suggested stations based on city and country
+  const fetchSuggestedStations = async (city, excludeSlug, country) => {
+    try {
+      const query = supabase
+        .from('radio')
+        .select('slug, logo_url, radioname, frequency, city, country')
+        .eq('city', city)
+        .neq('slug', excludeSlug);
+
+      const { data, error } = await query;
+
+      // If no city-specific stations are available, get random stations from the country
+      if (!error && data.length === 0) {
+        const fallback = await supabase
+          .from('radio')
+          .select('slug, logo_url, radioname, frequency, city, country')
+          .eq('country', country)
+          .limit(10);
+
+        if (!fallback.error && fallback.data) {
+          setSuggestedStations(fallback.data);
+        }
+      } else {
+        setSuggestedStations(data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching suggested stations:', err);
+    }
+  };
+
+  // Auto-play audio on page load
+  const autoPlayAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play().catch((err) => {
+        console.warn('Auto-play failed, user interaction needed:', err);
+        setIsPlaying(false);
+      });
+    }
+  };
 
   // Toggle play/pause
   const togglePlay = () => {
@@ -130,146 +202,162 @@ const RadioPlayer = () => {
     }
   };
 
-  // Rewind audio by 5 seconds
-  const rewind5Seconds = () => {
-    if (audioRef.current) {
-      const newTime = Math.max(0, audioRef.current.currentTime - 5);
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-      setIsLive(false);
-    }
-  };
-
-  // Forward audio by 5 seconds
-  const forward5Seconds = () => {
-    if (audioRef.current) {
-      const newTime = Math.min(duration, audioRef.current.currentTime + 5);
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-
-      if (newTime >= duration - 5) {
-        setIsLive(true);
-      }
-    }
-  };
-
-  // Handle volume change and mute toggle
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    if (!isNaN(newVolume) && newVolume >= 0 && newVolume <= 1) {
-      setVolume(newVolume);
-      setIsMuted(newVolume === 0);
-      if (audioRef.current) {
-        audioRef.current.volume = newVolume;
-      }
-    }
-  };
-
-  const toggleMute = () => {
-    if (audioRef.current) {
-      setIsMuted(!isMuted);
-      const newVolume = isMuted ? 0.5 : 0;
-      setVolume(newVolume);
-      audioRef.current.volume = newVolume;
-    }
-  };
-
-  // Format time to MM:SS
-  const formatTime = (time) => {
-    if (!isFinite(time) || time < 0) return '0:00';
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
-
-  // Share radio station
+  // Function to share the radio station
   const shareRadioStation = () => {
     if (navigator.share) {
-      navigator.share({
-        title: radioStation.radioname,
-        text: `Check out this radio station: ${radioStation.radioname}`,
-        url: window.location.href,
-      }).catch((error) => console.error('Error sharing:', error));
+      navigator
+        .share({
+          title: radioStation?.radioname || 'Radio Station',
+          text: `Check out this radio station: ${radioStation?.radioname || 'Tune in to the best radio'}`,
+          url: window.location.href,
+        })
+        .catch((error) => console.error('Error sharing:', error));
     } else {
       alert('Sharing not supported on this browser.');
     }
   };
 
+  // Handle country selection
+  const handleCountryChange = (event) => {
+    const newCountry = event.target.value;
+    setSelectedCountry(newCountry);
+    fetchRandomStation(newCountry);
+  };
+
+  // Handle volume change
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+      setVolume(newVolume);
+      setIsMuted(newVolume === 0);
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      const newVolume = isMuted ? 0.5 : 0;
+      setVolume(newVolume);
+      audioRef.current.volume = newVolume;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const playRandomStationFromCountry = async () => {
+    setLoading(true);
+    setNoStationsMessage(''); // Clear any previous error messages
+  
+    try {
+      // Fetch all stations from the selected country
+      const { data, error } = await supabase
+      .from('radio')
+      .select('*')
+      .eq('country', selectedCountry)
+      .order('random()') // This line shuffles the result server-side
+      .limit(1); // Limit to 1 random station
+    
+  
+      if (!error && data.length > 0) {
+        // Pick a truly random station from the fetched data
+        const randomIndex = Math.floor(Math.random() * data.length);
+        const randomStation = data[randomIndex];
+        
+        setRadioStation(randomStation);
+        setFrequency(parseFloat(randomStation.frequency) || 100.0);
+        router.push(`/radio/${randomStation.slug}`);
+        playAudio();
+      } else {
+        setNoStationsMessage('No stations available in this country.');
+      }
+    } catch (err) {
+      console.error('Error fetching random station:', err);
+      setNoStationsMessage('No stations available in this country.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return (
     <div className={styles.radioPlayerContainer}>
-      {loading && <div className={styles.loadingSpinner}>Loading...</div>}
-      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+      {/* Breadcrumb Navigation */}
+      <nav className={styles.breadcrumb}>
+        <a href="/">Home</a> &gt; <a href="/radio">Radio</a> &gt; {radioStation?.radioname || 'Station'}
+      </nav>
+
+      {/* Country Selector */}
+      <div className={styles.countrySelector}>
+        <label htmlFor="country">Choose a Country:</label>
+        <select
+          id="country"
+          value={selectedCountry}
+          onChange={handleCountryChange}
+          className={styles.countryDropdown}
+        >
+          {countries.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {loading && (
+        <div className={styles.loadingSpinner}>
+          <FaSpinner className={styles.spinnerIcon} spin />
+        </div>
+      )}
 
       {radioStation && !loading && (
         <>
-          {/* Station Info */}
-          <div className={styles.stationInfoContainer}>
-            {radioStation.logo_url ? (
-              <img
-                src={radioStation.logo_url}
-                alt={`${radioStation.radioname} Logo`}
-                className={styles.stationLogo}
-              />
-            ) : (
-              <div className={styles.fallbackInfo}>
-                <p className={styles.stationFallback}>{radioStation.frequency || 'Online Only'}</p>
-                <p className={styles.stationCity}>{radioStation.city}, {radioStation.country}</p>
-              </div>
-            )}
+          {/* Radio Station Header */}
+          <div className={styles.header}>
+            <div className={styles.logoContainer}>
+              {radioStation.logo_url ? (
+                <img
+                  src={radioStation.logo_url}
+                  alt={`${radioStation.radioname} Logo`}
+                  className={styles.stationLogo}
+                />
+              ) : (
+                <div className={styles.fallbackLogo}>No Logo</div>
+              )}
+            </div>
             <div className={styles.stationDetails}>
               <h2 className={styles.stationName}>{radioStation.radioname}</h2>
-              <p className={styles.stationFrequency}>{radioStation.frequency || 'Online Only'}</p>
-              <p className={styles.stationLocation}>{radioStation.city}, {radioStation.country}</p>
-              {isLive && <span className={styles.liveBadge}>Live</span>}
-              <button onClick={shareRadioStation} className={styles.shareButton}>
-                <FaShareAlt /> Share
-              </button>
+              <p className={styles.stationFrequency}>
+                {radioStation.frequency ? `${radioStation.frequency} MHz` : 'Online Only'}
+              </p>
+              <p className={styles.stationLocation}>
+                {radioStation.city}, {radioStation.country}
+              </p>
+              <div className={styles.liveBadge}>Live</div>
             </div>
           </div>
 
-          {/* Digital Clock */}
-          <div className={styles.digitalClock}>
-            Local Time: {localTime.toLocaleTimeString()}
-          </div>
-
-          {/* Media Player Controls */}
-          <div className={styles.mediaControls}>
-            <button
-              onClick={rewind5Seconds}
-              className={`${styles.controlButton} ${styles.rewindButton}`}
-              aria-label="Rewind 5 seconds"
-            >
-              <FaBackward />
-            </button>
-
+          {/* Play/Pause, Random, Volume, and Share Controls */}
+          <div className={styles.controlsContainer}>
             <button
               onClick={togglePlay}
-              className={`${styles.controlButton} ${styles.playPauseButton}`}
+              className={styles.playPauseButton}
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? <FaPause /> : <FaPlay />}
             </button>
-
             <button
-              onClick={forward5Seconds}
-              className={`${styles.controlButton} ${styles.forwardButton}`}
-              aria-label="Forward 5 seconds"
-            >
-              <FaForward />
-            </button>
+  onClick={scanStationFromCountry}
+  className={`${styles.scanButton} ${scanning ? styles.scanning : ''}`}
+  aria-label="Scan for Random Station in Country"
+>
+  <FaSearch /> {/* Scan Icon */}
+</button>
 
-            {/* Time Display */}
-            <div className={styles.timeDisplay}>
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </div>
 
-            {/* Volume Controls */}
+              
             <div className={styles.volumeControl}>
-              <button onClick={toggleMute} className={styles.muteButton} aria-label="Mute">
+              <button onClick={toggleMute} aria-label="Mute">
                 {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
               </button>
               <input
-                id="volume-slider"
                 type="range"
                 min="0"
                 max="1"
@@ -280,31 +368,15 @@ const RadioPlayer = () => {
                 aria-label="Volume Control"
               />
             </div>
-
-            <audio
-              ref={audioRef}
-              src={radioStation?.stream_url}
-              volume={volume}
-              preload="metadata"
-            />
+            <button
+              onClick={shareRadioStation}
+              className={styles.shareButton}
+              aria-label="Share"
+            >
+              <FaShareAlt /> 
+            </button>
+            <audio ref={audioRef} src={radioStation?.stream_url} preload="metadata" autoPlay />
           </div>
-
-          {/* Frequency Selector */}
-          {radioStation.frequency && (
-            <div className={styles.frequencyBox}>
-              <div className={styles.frequencyLines}>
-                {Array.from({ length: 23 }, (_, i) => {
-                  const freq = 88 + i * 1;
-                  return (
-                    <div
-                      key={freq}
-                      className={freq === radioStation.frequency ? styles.redLine : styles.line}
-                    ></div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
           {/* Suggested Stations */}
           <div className={styles.suggestedStations}>
@@ -323,7 +395,12 @@ const RadioPlayer = () => {
                   />
                   <div className={styles.suggestionInfo}>
                     <h4 className={styles.suggestionName}>{station.radioname}</h4>
-                    <p className={styles.suggestionFrequency}>{station.frequency || 'Online Only'}</p>
+                    <p className={styles.suggestionFrequency}>
+                      {station.frequency ? `${station.frequency} MHz` : 'Online Only'}
+                    </p>
+                    <p className={styles.suggestionLocation}>
+                      {station.city}, {station.country}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -331,8 +408,14 @@ const RadioPlayer = () => {
           </div>
         </>
       )}
+
+      {/* Message if no stations are found */}
+      {noStationsMessage && (
+        <div className={styles.noStationsMessage}>{noStationsMessage}</div>
+      )}
     </div>
   );
 };
 
 export default RadioPlayer;
+

@@ -7,6 +7,8 @@
   box-sizing: border-box; /* Include padding in total width */
 }
 
+
+
 /* Scroll Animation Keyframes */
 @keyframes fadeInUp {
   from {
@@ -229,4 +231,58 @@
   .viewAll a {
     font-size: 0.8rem;
   }
+}
+/* Thumbnail base style */
+.thumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 4 px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Small screens (mobile) */
+@media only screen and (max-width: 600px) {
+  .thumbnail {
+    width: 250px;
+    height: 120px;
+  }
+}
+
+/* Medium screens (tablet) */
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  .thumbnail {
+    width: 200px;
+    height: 110px;
+  }
+}
+
+/* Large screens (desktop) */
+@media only screen and (min-width: 1025px) {
+  .thumbnail {
+    width: 200px;
+    height: 150px;
+  }
+}
+
+
+
+/* Song Title Base Style */
+.songTitle a {
+  font-weight: bold;
+  color: #333; /* Default color for the title */
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.1s ease; /* Smooth transitions */
+}
+
+/* Hover Effect */
+.songTitle a:hover {
+  color: #6a0dad; /* Change color on hover */
+  text-decoration: underline; /* Optional underline on hover */
+}
+
+/* Press (Active) Effect */
+.songTitle a:active {
+  transform: scale(0.98); /* Slightly shrink when pressed */
+  color: #4b0082; /* Darker color on press */
 }

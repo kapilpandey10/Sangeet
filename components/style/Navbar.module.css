@@ -1,13 +1,13 @@
 /* General Navbar Styles */
 .navbar {
-  background-color: #34495e; /* Dark background */
+  background: linear-gradient(90deg, #0047ab, #00bcd4); /* Theme gradient */
   padding: 15px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   position: relative;
-  z-index: 999; /* Ensure it stays on top */
+  z-index: 999;
 }
 
 .navbarContainer {
@@ -18,30 +18,36 @@
   align-items: center;
 }
 
+.activeLink {
+  color: #00bcd4; /* Theme highlight */
+  font-weight: bold;
+  border-bottom: 2px solid #00bcd4;
+}
+
 /* Hamburger Menu for mobile */
 .mobileMenuIcon {
   display: none;
   background: none;
   border: none;
   font-size: 1.8rem;
-  color: #fff;
+  color: #ffffff;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
 
 .mobileMenuIcon.open {
-  transform: rotate(90deg); /* Rotate animation for the X icon */
+  transform: rotate(90deg);
 }
 
 /* Logo and Brand Name */
 .logoBrandContainer {
   display: flex;
   align-items: center;
-  transition: opacity 0.4s ease; /* For fading out the logo */
+  transition: opacity 0.4s ease;
 }
 
 .navbarLogo {
-  width: 40px; /* Adjusted for better visibility */
+  width: 40px;
   height: 40px;
   margin-right: 8px;
 }
@@ -49,12 +55,12 @@
 .brandName {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
 }
 
 .highlight {
-  color: #1abc9c;
+  color: #f44336; /* Accent color */
 }
 
 .brandLink {
@@ -72,7 +78,7 @@
 }
 
 .navLinks a {
-  color: #fff;
+  color: #ffffff;
   font-size: 1rem;
   padding: 0 20px;
   text-decoration: none;
@@ -81,12 +87,7 @@
 }
 
 .navLinks a:hover {
-  color: #1abc9c;
-}
-
-.navLinks a.active {
-  color: #1abc9c;
-  border-bottom: 2px solid #1abc9c; /* Active link styling */
+  color: #00bcd4;
 }
 
 /* Search Icon */
@@ -94,13 +95,13 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #fff;
+  color: #ffffff;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .searchIcon:hover {
-  color: #1abc9c;
+  color: #00bcd4;
 }
 
 /* Adjustments for mobile */
@@ -109,12 +110,10 @@
     justify-content: space-between;
   }
 
-  /* Hamburger Menu displayed on mobile */
   .mobileMenuIcon {
     display: block;
   }
 
-  /* Center logo and brand name */
   .logoBrandContainer {
     position: absolute;
     left: 50%;
@@ -122,14 +121,13 @@
     text-align: center;
   }
 
-  /* Hide nav links initially on mobile */
   .navMenu {
     display: none;
     position: absolute;
     top: 80px;
     left: 0;
     width: 100%;
-    background-color: #34495e;
+    background: linear-gradient(90deg, #0047ab, #00bcd4);
     flex-direction: column;
     align-items: center;
     padding: 10px;
@@ -139,7 +137,7 @@
 
   .navMenu.mobileActive {
     display: flex;
-    animation: fadeIn 0.3s ease; /* Add animation for smooth appearance */
+    animation: fadeIn 0.3s ease;
   }
 
   .navLinks {
@@ -157,7 +155,6 @@
   }
 }
 
-/* Animation for Menu Appearance */
 @keyframes fadeIn {
   from {
     opacity: 0;

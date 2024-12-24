@@ -1,73 +1,17 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
-import Link from 'next/link'; // Use Next.js Link for routing
-import styles from './style/LyricsList.module.css'; // Use CSS Module for styling
+import Link from 'next/link';
+import styles from './style/LyricsList.module.css';
 
-const LyricsList = () => {
-  const [lyricsByArtist, setLyricsByArtist] = useState({});
+const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
+  const [lyricsByArtist, setLyricsByArtist] = useState(initialLyrics || {});
   const [searchQuery, setSearchQuery] = useState('');
   const [languageFilter, setLanguageFilter] = useState('all');
   const [yearFilter, setYearFilter] = useState('all');
-  const [availableLanguages, setAvailableLanguages] = useState([]);
-  const [availableYearRanges, setAvailableYearRanges] = useState([]);
-  const [loading, setLoading] = useState(true); // Set loading state
-  const [error, setError] = useState(null);
-  const [visibleArtists, setVisibleArtists] = useState(10); // For "Load More" functionality
-
+  const [availableLanguages] = useState(initialLanguages);
+  const [availableYearRanges] = useState(initialYearRanges);
+  const [visibleArtists, setVisibleArtists] = useState(10);
   const loadMoreRef = useRef(null);
-
-  useEffect(() => {
-    document.title = 'Dynabeat | Nepali Music Digital Library for Song Lyrics';
-
-    const fetchLyrics = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('lyrics')
-          .select('title, artist, published_date, slug, language, added_by, status')
-          .eq('status', 'approved')
-          .order('published_date', { ascending: false });
-
-        if (error) throw error;
-
-        const groupedByArtist = data.reduce((result, lyric) => {
-          const artists = lyric.artist.split(',').map((artist) => artist.trim());
-          artists.forEach((artist) => {
-            if (!result[artist]) result[artist] = [];
-            result[artist].push(lyric);
-          });
-          return result;
-        }, {});
-
-        setLyricsByArtist(groupedByArtist);
-
-        const languages = [...new Set(data.map((lyric) => lyric.language.trim().toLowerCase()))];
-        setAvailableLanguages(languages);
-
-        const years = data.map((lyric) => new Date(lyric.published_date).getFullYear());
-        const yearRanges = getYearRanges(years);
-        setAvailableYearRanges(yearRanges);
-      } catch (error) {
-        console.error('Error fetching lyrics:', error.message);
-        setError('Failed to load lyrics.');
-      } finally {
-        setLoading(false); // Set loading to false after fetching data
-      }
-    };
-
-    fetchLyrics();
-  }, []);
-
-  const getYearRanges = (years) => {
-    const ranges = [
-      { label: '1970-1980', min: 1970, max: 1980 },
-      { label: '1980-1990', min: 1980, max: 1990 },
-      { label: '1990-2000', min: 1990, max: 2000 },
-      { label: '2000-2010', min: 2000, max: 2010 },
-      { label: '2010-2020', min: 2010, max: 2020 },
-      { label: '2020-present', min: 2020, max: new Date().getFullYear() },
-    ];
-    return ranges.filter((range) => years.some((year) => year >= range.min && year < range.max));
-  };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
@@ -97,38 +41,11 @@ const LyricsList = () => {
     return filtered;
   }, {});
 
-  // Render the skeleton loader while loading
-  const renderSkeletonLoader = () => (
-    <div className={styles.skeletonLoader}>
-      <div className={styles.skeletonTitle}></div>
-      <p></p>
-      <div className={styles.skeletonCard}></div>
-      <div className={styles.skeletonCard}></div>
-      <p></p>
-      <div className={styles.skeletonCard}></div>
-      <div className={styles.skeletonCard}></div>
-    </div>
-  );
-
-  if (loading) return renderSkeletonLoader(); // Render skeleton loader during loading
-  if (error) return <p className={styles.errorMessage}>{error}</p>;
+  const hasMoreLyrics = Object.keys(filteredLyrics).length > visibleArtists;
 
   return (
     <div className={styles.lyricsListContainer}>
       <h1>Music Library</h1>
-
-      {/* Square Ad */}
-      <div className={styles.squareAd}>
-        <ins className="adsbygoogle"
-             style={{ display: 'block' }}
-             data-ad-client="ca-pub-9887409333966239"
-             data-ad-slot="1039665871"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
 
       {/* Search and filter inputs */}
       <div className={styles.searchFilterContainer}>
@@ -173,48 +90,103 @@ const LyricsList = () => {
       </div>
 
       {/* Display filtered results */}
-      {Object.keys(filteredLyrics).slice(0, visibleArtists).map((artist) => (
-        <div key={artist} className={styles.artistSection}>
-          <h2>{artist}</h2>
+      {Object.keys(filteredLyrics).length > 0 ? (
+        Object.keys(filteredLyrics).slice(0, visibleArtists).map((artist) => (
+          <div key={artist} className={styles.artistSection}>
+            <h2>{artist}</h2>
 
-          <div className={styles.lyricsGrid}>
-            {filteredLyrics[artist].map((lyric) => (
-              <div key={lyric.slug} className={styles.lyricCard}>
-                <div className={styles.lyricCardContent}>
-                  <h3>{lyric.title}</h3>
-                  <p className={styles.smallText}>Published: {new Date(lyric.published_date).getFullYear()}</p>
-                  <Link href={`/lyrics/${lyric.slug}`} className={styles.viewLyricsButton}>
-                    View Lyrics
-                  </Link>
+            <div className={styles.lyricsGrid}>
+              {filteredLyrics[artist].map((lyric) => (
+                <div key={lyric.slug} className={styles.lyricCard}>
+                  {lyric.thumbnail_url && (
+                    <img
+                      src={lyric.thumbnail_url}
+                      alt={`${lyric.title} thumbnail`}
+                      className={styles.thumbnailImage}
+                    />
+                  )}
+                  <div className={styles.lyricCardContent}>
+                    <h3>{lyric.title}</h3>
+                    <p className={styles.smallText}>Published: {new Date(lyric.published_date).getFullYear()}</p>
+                    <Link href={`/lyrics/${lyric.slug}`} className={styles.viewLyricsButton}>
+                      View Lyrics
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p className={styles.noLyricsMessage}>
+          No lyrics available at the moment. The admin will add these lyrics shortly. You can help by submitting the lyrics. Please contact us.
+        </p>
+      )}
 
       {/* Load More Button */}
-      <div ref={loadMoreRef} className={styles.viewMoreContainer}>
-        <button onClick={() => setVisibleArtists((prev) => prev + 10)} className={styles.viewMoreButton}>
-          Load More
-        </button>
-      </div>
-
-      {/* Additional Ads */}
-      <div className={styles.squareAd}>
-        <ins className="adsbygoogle"
-             style={{ display: 'block' }}
-             data-ad-client="ca-pub-9887409333966239"
-             data-ad-slot="1039665871"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      </div>
-
+      {hasMoreLyrics && (
+        <div ref={loadMoreRef} className={styles.viewMoreContainer}>
+          <button onClick={() => setVisibleArtists((prev) => prev + 10)} className={styles.viewMoreButton}>
+            Load More
+          </button>
+        </div>
+      )}
     </div>
   );
+};
+
+export const getServerSideProps = async () => {
+  const getYearRanges = (years) => {
+    const ranges = [
+      { label: '1970-1980', min: 1970, max: 1980 },
+      { label: '1980-1990', min: 1980, max: 1990 },
+      { label: '1990-2000', min: 1990, max: 2000 },
+      { label: '2000-2010', min: 2000, max: 2010 },
+      { label: '2010-2020', min: 2010, max: 2020 },
+      { label: '2020-present', min: 2020, max: new Date().getFullYear() },
+    ];
+    return ranges.filter((range) => years.some((year) => year >= range.min && year < range.max));
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from('lyrics')
+      .select('title, artist, published_date, slug, language, thumbnail_url, added_by, status')
+      .eq('status', 'approved')
+      .order('published_date', { ascending: false });
+
+    if (error) throw error;
+
+    const groupedByArtist = data.reduce((result, lyric) => {
+      const artists = lyric.artist.split(',').map((artist) => artist.trim());
+      artists.forEach((artist) => {
+        if (!result[artist]) result[artist] = [];
+        result[artist].push(lyric);
+      });
+      return result;
+    }, {});
+
+    const languages = [...new Set(data.map((lyric) => lyric.language.trim().toLowerCase()))];
+    const years = data.map((lyric) => new Date(lyric.published_date).getFullYear());
+    const yearRanges = getYearRanges(years);
+
+    return {
+      props: {
+        initialLyrics: groupedByArtist,
+        initialLanguages: languages,
+        initialYearRanges: yearRanges,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching lyrics:', error.message);
+    return {
+      props: {
+        initialLyrics: {},
+        initialLanguages: [],
+        initialYearRanges: [],
+      },
+    };
+  }
 };
 
 export default LyricsList;

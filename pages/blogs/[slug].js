@@ -142,11 +142,9 @@ const ReadBlog = ({ blog }) => {
   const sanitizedContent = DOMPurify.sanitize(blog.content, {
     ADD_TAGS: ['iframe'],
     ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
-   
-    ALLOWED_URI_REGEXP: /^https:\/\/(www\.)?(youtube\.com|youtu\.be|facebook\.com)\// 
+    ALLOWED_URI_REGEXP: /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//
   });
- 
-  
+
   const currentUrl = encodeURI(`https://pandeykapil.com.np/blogs/${blog.slug}`);
 
   // Truncate meta description to avoid breaking words
@@ -158,7 +156,7 @@ const ReadBlog = ({ blog }) => {
   };
 
   return (
-    <div className={styles.readBlogContainer}>
+    <>
       <Head>
         <title>{`${blog.title} - DynaBeats`}</title>
         <meta name="description" content={truncateText(blog.excerpt || `Read about ${blog.title} on DynaBeats Blog`, 155)} />
@@ -182,108 +180,92 @@ const ReadBlog = ({ blog }) => {
 
         {/* Structured Data - JSON-LD for SEO */}
         <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          "headline": blog.title,
-          "image": ogImageUrl,
-          "author": {
-            "@type": "Person",
-            "name": blog.author
-          },
-          "datePublished": blog.published_date,
-          "dateModified": blog.updated_date || blog.published_date,
-          "description": blog.excerpt,
-          "mainEntityOfPage": currentUrl,
-          "publisher": {
-            "@type": "Organization",
-            "name": "DynaBeats",
-            "logo": {
-              "@type": "ImageObject",
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": blog.title,
+            "image": ogImageUrl,
+            "author": {
+              "@type": "Person",
+              "name": blog.author
+            },
+            "datePublished": blog.published_date,
+            "dateModified": blog.updated_date || blog.published_date,
+            "description": blog.excerpt,
+            "mainEntityOfPage": currentUrl,
+            "publisher": {
+              "@type": "Organization",
+              "name": "DynaBeats",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://pandeykapil.com.np/logo.png"
+              }
             }
-          }
-        })}
+          })}
         </script>
       </Head>
+      <div className={styles.readBlogContainer}>
+        {/* Blog Content */}
+        <nav className={styles.breadcrumb} aria-label="breadcrumb">
+          <Link href="/">Home</Link> / <Link href="/blogs">Blogs</Link> / {blog.title}
+        </nav>
 
-      {/* Blog Content */}
-      <nav className={styles.breadcrumb} aria-label="breadcrumb">
-        <Link href="/">Home</Link> / <Link href="/blogs">Blogs</Link> / {blog.title}
-      </nav>
+        <div className={styles.blogLayout}>
+          <div className={styles.blogContent}>
+            <header className={styles.blogHeader}>
+              <h1>{blog.title}</h1>
+              <p className={styles.blogMeta}>
+                Written by <span>{blog.author || 'Unknown'}</span> on{' '}
+                <span>{new Date(blog.published_date).toLocaleDateString()}</span>
+              </p>
+            </header>
 
-      <div className={styles.blogLayout}>
-        <div className={styles.blogContent}>
-          <header className={styles.blogHeader}>
-            <h1>{blog.title}</h1>
-            <p className={styles.blogMeta}>
-              Written by <span>{blog.author || 'Unknown'}</span> on{' '}
-              <span>{new Date(blog.published_date).toLocaleDateString()}</span>
-            </p>
-          </header>
+            {ogImageDimensions.width && ogImageDimensions.height && (
+              <Image
+                src={ogImageUrl}
+                alt={blog.title}
+                width={ogImageDimensions.width}
+                height={ogImageDimensions.height}
+                className={styles.blogImage}
+                priority
+              />
+            )}
 
-          {ogImageDimensions.width && ogImageDimensions.height && (
-            <Image
-              src={ogImageUrl}
-              alt={blog.title}
-              width={ogImageDimensions.width}
-              height={ogImageDimensions.height}
-              className={styles.blogImage}
-              priority
+            <div
+              className={styles.blogHtmlContent}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+              aria-label="Blog content"
             />
-          )}
 
-          <div
-            className={styles.blogHtmlContent}
-            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-            aria-label="Blog content"
-          />
-
-          <div className={styles.socialShare}>
-            <a
-              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.twitterShare}
-            >
-              <FaTwitter className={styles.socialIcon} /> Share on Twitter
-            </a>
-            <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.facebookShare}
-            >
-              <FaFacebook className={styles.socialIcon} /> Share on Facebook
-            </a>
+            <div className={styles.socialShare}>
+              <a
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.twitterShare}
+              >
+                <FaTwitter className={styles.socialIcon} /> Share on Twitter
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.facebookShare}
+              >
+                <FaFacebook className={styles.socialIcon} /> Share on Facebook
+              </a>
+            </div>
           </div>
-        </div>
 
-        <RelatedBlogs tags={blog.tags} slug={blog.slug} />
+          <RelatedBlogs tags={blog.tags} slug={blog.slug} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
-// Use getStaticPaths to define dynamic routes for SSG
-export async function getStaticPaths() {
-  const { data: blogs, error } = await supabase
-    .from('blogs')
-    .select('slug');
-
-  if (error) {
-    console.error('Error fetching blog paths:', error);
-    return { paths: [], fallback: 'blocking' };
-  }
-
-  const paths = blogs.map((blog) => ({
-    params: { slug: blog.slug },
-  }));
-
-  return { paths, fallback: 'blocking' };
-}
-
-// Fetch the blog data at build time
-export async function getStaticProps({ params }) {
+// Fetch the blog data on each request
+export async function getServerSideProps({ params }) {
   const { slug } = params;
   const { data: blog, error } = await supabase
     .from('blogs')
@@ -301,7 +283,6 @@ export async function getStaticProps({ params }) {
     props: {
       blog,
     },
-    revalidate: 10, // Revalidate the page every 10 seconds (ISR)
   };
 }
 

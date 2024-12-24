@@ -1,181 +1,325 @@
-/* General Slider Styles */
-.heroSlider {
+/* Wrapper for padding and centering */
+.sliderHeroSliderWrapper {
+  padding: 10px;
+  margin: 0 auto;
+  max-width: 1200px;
+  width: calc(100% - 20px);
+}
+
+/* Main slider container */
+.sliderHeroSlider {
   position: relative;
   width: 100%;
-  max-width: 1200px;
-margin-top: 10px;
   overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Slide container */
-.slider {
+.sliderContainer {
   display: flex;
   transition: transform 0.6s ease-in-out;
   height: 100%;
 }
 
-/* Slide styling */
-.slide {
+.sliderSlide {
   position: relative;
   min-width: 100%;
-  height: 600px; /* Default desktop height */
+  height: 500px; /* Adjusted for medium-sized screens */
   opacity: 0;
   transition: opacity 0.6s ease-in-out;
 }
 
-.slide.active {
+.sliderActive {
   opacity: 1;
-  position: relative;
   z-index: 1;
 }
 
-/* Image Styling */
 .sliderImage {
-  object-fit: cover;
   border-radius: 12px;
   width: 100%;
-  height: 100%; /* Ensures full height image display */
+  height: 100%;
 }
 
-/* Content overlay on slides */
-.slideContent {
+.sliderGradientOverlay {
   position: absolute;
-  bottom: 30px;
-  left: 20px;
-  right: 20px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(168, 168, 168, 0.3), rgba(0, 0, 0, 0.7));
+  border-radius: 12px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sliderContent {
+  position: absolute;
+  bottom: 20px;
+  left: 15px;
+  right: 15px;
   color: white;
   z-index: 2;
   text-align: center;
-  background: rgba(0, 0, 0, 0.6); /* Background for readability */
-  padding: 20px;
-  border-radius: 12px;
+  animation: slideUp 1s ease-out;
 }
 
-/* Headings and paragraph styling */
-.slideContent h1 {
-  font-size: 3rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+.sliderTitle {
+  font-size: 2rem;
+  margin: 0;
 }
 
-.slideContent p {
-  font-size: 1.5rem;
+.sliderSubtitle {
+  font-size: 1.2rem;
+  margin: 0;
 }
 
-/* Responsive Adjustments for Text */
-@media (max-width: 768px) {
-  .slideContent h1 {
-    font-size: 2.2rem;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-
-  .slideContent p {
-    font-size: 1.2rem;
-  }
-
-  /* Adjust slider height for smaller screens */
-  .slide {
-    height: 400px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width: 480px) {
-  .slideContent h1 {
-    font-size: 1.8rem;
-  }
-
-  .slideContent p {
-    font-size: 1rem;
-  }
-
-  /* Further reduce height for mobile devices */
-  .slide {
-    height: 300px;
-  }
+.sliderInfoIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
 }
 
-/* Navigation Buttons */
-.prev, .next {
+.sliderInfoIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Previous and Next buttons */
+.sliderPrev,
+.sliderNext {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 2rem;
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 10px 15px;
-  cursor: pointer;
+  background: rgba(0, 0, 0, 0.6);
   border: none;
-  z-index: 10;
+  color: white;
+  padding: 15px;
+  cursor: pointer;
   border-radius: 50%;
-  user-select: none;
+  z-index: 3;
 }
 
-.prev {
-  left: 20px; /* Position the previous button */
+.sliderPrev {
+  left: 10px;
 }
 
-.next {
-  right: 20px; /* Position the next button */
+.sliderNext {
+  right: 10px;
 }
 
-.prev:hover, .next:hover {
+.sliderPrev:hover,
+.sliderNext:hover {
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Pagination Dots */
-.dots {
-  text-align: center;
+/* Read More */
+.sliderReadMore {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 15;
+  top: 50px;
+  right: 50px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  opacity: 0;
+  animation: fadeInOut 3s ease-in-out forwards;
 }
 
-.dot {
-  height: 12px;
-  width: 12px;
-  margin: 0 5px;
-  display: inline-block;
-  background-color: rgba(255, 255, 255, 0.5);
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Thumbnail indicators */
+.sliderDots {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.sliderDot {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  margin: 0 5px;
+  background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
 }
 
-.dot.active {
-  background-color: white;
+.sliderActiveDot {
+  border: 2px solid white;
 }
 
-/* Adjusting spacing on mobile */
+/* Description Overlay */
+.sliderDescriptionOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.sliderDescriptionContent {
+  background: #222;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 95%;
+  max-height: 80%;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.sliderDescriptionContent h2 {
+  margin-bottom: 15px;
+  font-size: 1.6rem;
+}
+
+.sliderDescriptionContent p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.sliderCloseButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.sliderCloseButton:hover {
+  color: #ccc;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .prev, .next {
+  .sliderSlide {
+    height: 350px;
+  }
+
+  .sliderContent {
+    bottom: 15px;
+    padding: 10px;
+  }
+
+  .sliderTitle {
+    font-size: 1.6rem;
+  }
+
+  .sliderSubtitle {
+    font-size: 1rem;
+  }
+
+  .sliderDescriptionContent h2 {
+    font-size: 1.4rem;
+  }
+
+  .sliderDescriptionContent p {
+    font-size: 0.9rem;
+  }
+
+  .sliderCloseButton {
     font-size: 1.5rem;
-    padding: 8px 12px; /* Reduce button size on smaller screens */
   }
 
-  .dots {
-    bottom: 15px; /* Adjust dot positioning */
+  .sliderReadMore {
+    top: 40px;
+    right: 30px;
+    font-size: 0.8rem;
   }
 
-  .dot {
-    height: 10px;
-    width: 10px;
+  .sliderPrev,
+  .sliderNext {
+    padding: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .prev, .next {
+  .sliderSlide {
+    height: 250px;
+  }
+
+  .sliderContent {
+    bottom: 10px;
+    padding: 8px;
+  }
+
+  .sliderInfoIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sliderDescriptionContent {
+    padding: 15px;
+    max-height: 75%;
+  }
+
+  .sliderTitle {
+    font-size: 1.4rem;
+  }
+
+  .sliderSubtitle {
+    font-size: 0.9rem;
+  }
+
+  .sliderDescriptionContent h2 {
     font-size: 1.2rem;
-    padding: 6px 10px; /* Further reduce button size for mobile */
   }
 
-  .dots {
-    bottom: 10px; /* Adjust dot positioning on smaller screens */
+  .sliderDescriptionContent p {
+    font-size: 0.8rem;
   }
 
-  .dot {
-    height: 8px;
-    width: 8px; /* Smaller dots for mobile */
+  .sliderReadMore {
+    top: 30px;
+    right: 20px;
+    font-size: 0.7rem;
+  }
+
+  .sliderPrev,
+  .sliderNext {
+    padding: 8px;
   }
 }

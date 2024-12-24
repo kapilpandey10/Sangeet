@@ -4,12 +4,14 @@ import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import '../styles/globals.css';  // Ensure the path is correct
 
+
 const Navbar = dynamic(() => import('../components/Navbar'));
 const Footer = dynamic(() => import('../components/Footer'));
 const BackToTop = dynamic(() => import('../components/BackToTop'), { ssr: false });
 const WarningModal = dynamic(() => import('../components/WarningModal'), { ssr: false });
-import useDetectDevTools from '../components/useDetectDevTools';
-import useDisableShortcuts from '../components/useDisableShortcuts';
+
+import Onscreen from '../components/Onscreen';
+
 
 // Google Analytics tracking ID
 const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_TRACKING_ID;
@@ -46,12 +48,6 @@ function MyApp({ Component, pageProps }) {
     }
   }, [router.events]);
 
-  // Detect if DevTools are open
-  const isDevToolsOpen = useDetectDevTools();
-
-  // Handle blocking shortcuts and right-click
-  const [showWarning, setShowWarning] = useDisableShortcuts();
-
   // Avoid rendering content until client-side hydration is complete
   if (!isClient) {
     return <div className="loading-spinner">Loading...</div>; // Add a loading indicator for hydration
@@ -72,10 +68,8 @@ function MyApp({ Component, pageProps }) {
         {/* Preload important fonts */}
         <link rel="preload" href="/fonts/custom-font.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
       </Head>
-
-      {/* Show Warning Modal if DevTools are open or if right-click/shortcuts are used */}
-      {(isDevToolsOpen || showWarning) && <WarningModal />}
-
+      <Onscreen />
+     
       {/* Navbar component displayed on all pages */}
       <Navbar />
 

@@ -18,42 +18,46 @@ const RadioList = () => {
   const fetchRadioStations = async () => {
     setLoading(true);
     try {
-      // Fetch only stations with status 'online'
       const { data, error } = await supabase
         .from('radio')
         .select('id, slug, logo_url, radioname, frequency, city, country, status')
         .eq('status', 'online');
-
+  
       if (error) {
         console.error('Error fetching radio stations:', error);
         setLoading(false);
         return;
       }
-
-      // Extract unique countries for the country filter dropdown
+  
+      console.log('Fetched Radio Stations:', data); // Debugging: Check if cities are present
+  
       const uniqueCountries = ['All', ...new Set(data.map((station) => station.country))];
-
+  
       setStations(data);
       setFilteredStations(data);
       setCountries(uniqueCountries);
+
+      // Initialize cities for 'All' countries when stations are fetched
+      updateCityFilter('All', data);
       setLoading(false);
     } catch (err) {
       console.error('Unexpected error:', err);
       setLoading(false);
     }
   };
-
-  // Update cities based on the selected country
-  const updateCityFilter = (country) => {
+  
+  // Update cities based on the selected country and available stations
+  const updateCityFilter = (country, data = stations) => {
     if (country === 'All') {
-      // Show cities from all countries if 'All' is selected
-      const allCities = ['All', ...new Set(stations.map((station) => station.city))];
+      const allCities = ['All', ...new Set(data.map((station) => station.city).filter(city => city))];
+      console.log('All Cities:', allCities); // Debugging
       setCities(allCities);
     } else {
-      // Filter cities based on the selected country
-      const filteredCities = ['All', ...new Set(stations
+      const filteredCities = ['All', ...new Set(data
         .filter((station) => station.country === country)
-        .map((station) => station.city))];
+        .map((station) => station.city)
+        .filter(city => city))];
+      console.log('Filtered Cities:', filteredCities); // Debugging
       setCities(filteredCities);
     }
   };
@@ -66,7 +70,7 @@ const RadioList = () => {
     updateCityFilter(selected); // Update the city filter options based on the selected country
     filterStations(selected, 'All', searchQuery);
   };
-
+  
   // Handle city filter change
   const handleCityChange = (event) => {
     const selected = event.target.value;

@@ -22,13 +22,25 @@ export const getServerSideProps = async ({ res }) => {
     console.log('Fetching lyrics...');
     const { data: lyrics, error: lyricsError } = await supabase
       .from('lyrics')
-      .select('slug, created_at');  // Use created_at instead of updated_at
+      .select('slug, created_at');
 
     if (lyricsError || !lyrics) {
       console.error('Error fetching lyrics:', lyricsError);
       return { notFound: true }; // Return 404 if no lyrics
     }
     console.log('Lyrics fetched:', lyrics);
+
+    // Fetch radio stations from Supabase
+    console.log('Fetching radio stations...');
+    const { data: radioStations, error: radioError } = await supabase
+      .from('radio')
+      .select('slug'); // Adjust the selection if needed
+
+    if (radioError || !radioStations) {
+      console.error('Error fetching radio stations:', radioError);
+      return { notFound: true }; // Return 404 if no radio stations
+    }
+    console.log('Radio stations fetched:', radioStations);
 
     // Set base URL for the sitemap
     const baseUrl = 'https://www.pandeykapil.com.np'; // Replace with your actual domain
@@ -59,6 +71,17 @@ export const getServerSideProps = async ({ res }) => {
           <url>
             <loc>${baseUrl}/lyrics/${lyric.slug}</loc>
             <lastmod>${lyric.created_at ? new Date(lyric.created_at).toISOString() : new Date().toISOString()}</lastmod>
+            <changefreq>weekly</changefreq>
+            <priority>0.8</priority>
+          </url>`
+          )
+          .join('')}
+        ${radioStations
+          .map(
+            (station) => `
+          <url>
+            <loc>${baseUrl}/radio/${station.slug}</loc>
+            <lastmod>${new Date().toISOString()}</lastmod> <!-- Using current date as a fallback -->
             <changefreq>weekly</changefreq>
             <priority>0.8</priority>
           </url>`

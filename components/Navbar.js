@@ -71,12 +71,12 @@ const Navbar = () => {
         {/* Navigation Links */}
         <div className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileActive : ''}`} ref={mobileMenuRef} id="primary-navigation">
           <div className={styles.navLinks}>
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
-            <Link href="/lyrics" onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>
-            <Link href="/artistbio" onClick={() => setIsMobileMenuOpen(false)}>Artist Bio</Link>
-            <Link href="/blogs" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
-            <Link href="/radio" onClick={() => setIsMobileMenuOpen(false)}>Radio</Link>
-            <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact Us</Link>
+            <Link href="/" className={router.pathname === '/' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+            <Link href="/lyrics" className={router.pathname === '/lyrics' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>
+            <Link href="/artistbio" className={router.pathname === '/artistbio' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Artist Bio</Link>
+            <Link href="/blogs" className={router.pathname === '/blogs' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
+            <Link href="/radio" className={router.pathname === '/radio' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Radio</Link>
+            <Link href="/contact" className={router.pathname === '/contact' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Contact Us</Link>
           </div>
         </div>
 

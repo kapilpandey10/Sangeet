@@ -10,59 +10,7 @@ const HomeYTVideo = dynamic(() => import('./homeytvideo'), { ssr: false });
 const FeaturedArtistCard = dynamic(() => import('./FeaturedArtistCard'), { ssr: false });
 const HeroSlider = dynamic(() => import('../components/HeroSlider'), { ssr: false });
 
-const HomePage = () => {
-  const [lyrics, setLyrics] = useState([]);
-  const [featuredArtist, setFeaturedArtist] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Function to shuffle and return random lyrics
-  const getRandomLyrics = (allLyrics, limit) => {
-    const shuffled = [...allLyrics].sort(() => 0.5 - Math.random()); // Shuffle the lyrics
-    return shuffled.slice(0, limit); // Return a limited number of lyrics (6 in this case)
-  };
-
-  // Fetch data for lyrics and artists
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        const { data: allLyrics, error: lyricsError } = await supabase
-          .from('lyrics')
-          .select('id, title, artist, published_date, slug')
-          .eq('status', 'approved');
-
-        if (lyricsError) throw new Error('Error fetching lyrics:', lyricsError.message);
-
-        setLyrics(getRandomLyrics(allLyrics, 6)); // Set the initial random 6 lyrics
-
-        const { data: artistData, error: artistError } = await supabase
-          .from('artists')
-          .select('*')
-          .eq('status', 'approved');
-
-        if (artistError) throw new Error('Error fetching artists:', artistError.message);
-
-        if (artistData && artistData.length > 0) {
-          const randomArtist = artistData[Math.floor(Math.random() * artistData.length)];
-          setFeaturedArtist(randomArtist);
-        }
-      } catch (error) {
-        console.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllData();
-
-    // Set an interval to refresh random lyrics every 2 minutes
-    const intervalId = setInterval(() => {
-      fetchAllData(); // Fetch new random lyrics every 2 minutes
-    }, 120000); // 2 minutes in milliseconds (120,000 ms)
-
-    // Cleanup the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []);
-
+const HomePage = ({ lyrics, featuredArtist }) => {
   // Intersection observer for animation trigger
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -97,12 +45,22 @@ const HomePage = () => {
 
   return (
     <div className={styles.homepageContainer}>
-      <Head>
-        <title>DynaBeat | Nepali Music Digital Library</title>
-        <meta name="description" content="Discover the latest Nepali music lyrics, including popular and classic hits. Dynabeat offers a vast collection of Nepali music lyrics." />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://pandeykapil.com.np/" />
-      </Head>
+     <Head>
+  <title>DynaBeat | Nepali Music Digital Library</title>
+  <meta name="description" content="Discover the latest Nepali music lyrics, including popular and classic hits. Dynabeat offers a vast collection of Nepali music lyrics." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://pandeykapil.com.np/" />
+  
+  {/* Open Graph Metadata */}
+  <meta property="og:title" content="DynaBeat | Nepali Music Digital Library" />
+  <meta property="og:description" content="Discover the latest Nepali music lyrics, including popular and classic hits. Dynabeat offers a vast collection of Nepali music lyrics." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pandeykapil.com.np/" />
+  <meta property="og:image" content="https://pandeykapil.com.np/logo/logo.webp" />
+  <meta property="og:image:alt" content="DynaBeat Logo" />
+  <meta property="og:site_name" content="DynaBeat" />
+</Head>
+
 
       {/* Hero Slider */}
       <div className={`${styles.scrollAnimated} ${styles.fadeIn}`}>
@@ -110,91 +68,127 @@ const HomePage = () => {
       </div>
 
       <h1 className={styles.heading}>Welcome to DynaBeat</h1>
-    
-      {loading ? (
-        <>
-          {/* Skeleton for Lyrics Section */}
-          <div className={styles.skeletonLoader}>
-            <div className={styles.skeletonTitle}></div>
-            <div className={styles.skeletonLyricsItem}></div>
-            <div className={styles.skeletonLyricsItem}></div>
+
+      <section className={`${styles.lyricsBar} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
+  <h2>Featured Music Lyrics</h2>
+  <div className={styles.lyricsHorizontalBar}>
+    {lyrics.map((lyric, index) => (
+      <div className={`${styles.lyricItem} ${styles[`color${index % 6}`]}`} key={lyric.id}>
+        {/* Display Thumbnail or Fallback */}
+        {lyric.thumbnail_url ? (
+          <img src={lyric.thumbnail_url} alt={`${lyric.title} thumbnail`} className={styles.thumbnail} />
+        ) : (
+          <img src="/path/to/fallback-image.jpg" alt="No Thumbnail Available" className={styles.thumbnail} />
+        )}
+        <h3 className={styles.songTitle}>
+  <Link href={`/lyrics/${lyric.slug}`} legacyBehavior>
+    <a>{lyric.title}</a>
+  </Link>
+</h3>
+
+        <p>{lyric.artist}</p>
+        <p>{new Date(lyric.published_date).getFullYear()}</p>
+        
+      </div>
+    ))}
+  </div>
+  <div className={styles.viewAll}>
+    <Link href="/lyrics" legacyBehavior>
+      <a>View All Nepali Lyrics</a>
+    </Link>
+  </div>
+</section>
+
+
+
+      {/* Ad between Lyrics and YouTube Video */}
+      <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+          data-ad-slot="4756859110"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({ });
+        </script>
+      </div>
+
+      {/* YouTube Video Section */}
+      <div className={`${styles.homeytvideo} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
+        <HomeYTVideo />
+      </div>
+
+      {/* Featured Artist Section */}
+      {featuredArtist && (
+        <div className={`${styles.featuredArtistSection} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
+          <h2 className={styles.featuredArtistTitle}>Featured Nepali Artist</h2>
+          <div className={styles.featuredArtistContainer}>
+            <FeaturedArtistCard artist={featuredArtist} />
           </div>
-
-          {/* Skeleton for YouTube Video */}
-          <div className={styles.skeletonYTVideo}></div>
-        </>
-      ) : (
-        <>
-          {/* Lyrics Section */}
-          <section className={`${styles.lyricsBar} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
-            <h2>Featured Music Lyrics</h2>
-            <div className={styles.lyricsHorizontalBar}>
-              {lyrics.map((lyric, index) => (
-                <div className={`${styles.lyricItem} ${styles[`color${index % 6}`]}`} key={lyric.id}>
-                  <h3>{lyric.title}</h3>
-                  <p>{lyric.artist}</p>
-                  <p>{new Date(lyric.published_date).getFullYear()}</p>
-                  <Link href={`/lyrics/${lyric.slug}`} legacyBehavior>
-                    <a>Read Lyrics</a>
-                  </Link>
-                </div>
-              ))}
-            </div>
-            <div className={styles.viewAll}>
-              <Link href="/lyrics" legacyBehavior>
-                <a>View All Nepali Lyrics</a>
-              </Link>
-            </div>
-          </section>
-
-          {/* Ad between Lyrics and YouTube Video */}
-          <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>
-            <ins
-              className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="4756859110"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            ></ins>
-            <script>
-              (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-          </div>
-
-          {/* YouTube Video Section */}
-          <div className={`${styles.homeytvideo} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
-            <HomeYTVideo />
-          </div>
-
-          {/* Featured Artist Section */}
-          {featuredArtist && (
-            <div className={`${styles.featuredArtistSection} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
-              <h2 className={styles.featuredArtistTitle}>Featured Nepali Artist</h2>
-              <div className={styles.featuredArtistContainer}>
-                <FeaturedArtistCard artist={featuredArtist} />
-              </div>
-            </div>
-          )}
-
-          {/* Another Ad after Featured Artist Section */}
-          <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>
-            <ins
-              className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="4756859110"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            ></ins>
-            <script>
-              (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-          </div>
-        </>
+        </div>
       )}
+
+      {/* Another Ad after Featured Artist Section */}
+      <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client="ca-pub-9887409333966239"
+          data-ad-slot="4756859110"
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        ></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({ });
+        </script>
+      </div>
     </div>
   );
+};
+
+export const getServerSideProps = async () => {
+  const getRandomLyrics = (allLyrics, limit) => {
+    const shuffled = [...allLyrics].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, limit);
+  };
+
+  try {
+    const { data: allLyrics, error: lyricsError } = await supabase
+      .from('lyrics')
+      .select('id, title, artist, published_date, slug, thumbnail_url')
+      .eq('status', 'approved');
+
+    if (lyricsError) throw new Error('Error fetching lyrics:', lyricsError.message);
+
+    const lyrics = getRandomLyrics(allLyrics, 6);
+
+    const { data: artistData, error: artistError } = await supabase
+      .from('artists')
+      .select('*')
+      .eq('status', 'approved');
+
+    if (artistError) throw new Error('Error fetching artists:', artistError.message);
+
+    const featuredArtist = artistData.length > 0 ? artistData[Math.floor(Math.random() * artistData.length)] : null;
+
+    return {
+      props: {
+        lyrics,
+        featuredArtist,
+      },
+    };
+  } catch (error) {
+    console.error(error.message);
+    return {
+      props: {
+        lyrics: [],
+        featuredArtist: null,
+      },
+    };
+  }
 };
 
 export default HomePage;

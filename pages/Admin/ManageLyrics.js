@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { FaEdit, FaTrashAlt, FaSave, FaTimes } from 'react-icons/fa';
-import ConfirmMsg from '../../components/ConfirmMsg'; // Import the confirmation modal
-import styles from './style/ManageLyrics.module.css'; // Use CSS modules
+import ConfirmMsg from '../../components/ConfirmMsg';
+import styles from './style/ManageLyrics.module.css';
 
 // Access environment variables with NEXT_PUBLIC prefix for Next.js
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -32,7 +32,7 @@ const ManageLyrics = () => {
         
         if (error) throw error;
         setLyrics(data || []);
-        setFilteredLyrics(data || []); // Initial filtered lyrics
+        setFilteredLyrics(data || []);
       } catch (error) {
         console.error('Error fetching lyrics:', error);
         setLyrics([]);
@@ -48,7 +48,6 @@ const ManageLyrics = () => {
       const { error } = await supabase.from('lyrics').delete().eq('id', id);
       if (error) throw error;
 
-      // Update the lyrics state
       setLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
       setFilteredLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
       setMessageType('success');
@@ -57,7 +56,7 @@ const ManageLyrics = () => {
       setMessageType('error');
       setMessage('Failed to delete the lyrics. Please try again.');
     } finally {
-      setShowConfirm(false); // Close the modal after deletion
+      setShowConfirm(false);
     }
   };
 
@@ -65,27 +64,37 @@ const ManageLyrics = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { id, title, artist, lyrics, lyrics_writer, published_date, music_url, added_by } = editLyric;
+      const { id, title, artist, lyrics, lyrics_writer, published_date, music_url, added_by, thumbnail_url } = editLyric;
       const { error } = await supabase
         .from('lyrics')
-        .update({ title, artist, lyrics, lyrics_writer, published_date, music_url, added_by })
+        .update({ 
+          title, 
+          artist, 
+          lyrics, 
+          lyrics_writer, 
+          published_date, 
+          music_url, 
+          added_by, 
+          thumbnail_url
+        })
         .eq('id', id);
 
       if (error) throw error;
 
-      // Update lyrics list
       setLyrics((prevLyrics) =>
         prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
       );
       setFilteredLyrics((prevLyrics) =>
         prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
       );
-      setEditLyric(null); // Close the editing form
+      setEditLyric(null);
       setMessageType('success');
       setMessage('Lyrics updated successfully!');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       setMessageType('error');
       setMessage('Failed to update the lyrics. Please try again.');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
@@ -96,29 +105,55 @@ const ManageLyrics = () => {
 
   // Handle delete button click
   const handleDeleteClick = (lyric) => {
-    setLyricToDelete(lyric); // Set the lyric to delete
-    setShowConfirm(true); // Show the confirmation modal
+    setLyricToDelete(lyric);
+    setShowConfirm(true);
   };
 
   // Confirm delete
   const handleConfirmDelete = () => {
     if (lyricToDelete) {
-      handleDelete(lyricToDelete.id); // Proceed with deletion
+      handleDelete(lyricToDelete.id);
     }
   };
 
   // Cancel delete
   const handleCancelDelete = () => {
-    setShowConfirm(false); // Close modal without deleting
-    setLyricToDelete(null); // Reset lyric to delete
+    setShowConfirm(false);
+    setLyricToDelete(null);
+  };
+
+  // Extract YouTube video ID
+  const getYouTubeVideoID = (url) => {
+    const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
   };
 
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditLyric({ ...editLyric, [name]: value });
+    
+    setEditLyric((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  
+    // If the music_url field changes, update the thumbnail_url automatically
+    if (name === 'music_url') {
+      const videoID = getYouTubeVideoID(value);
+      if (videoID) {
+        setEditLyric((prevState) => ({
+          ...prevState,
+          thumbnail_url: `https://img.youtube.com/vi/${videoID}/maxresdefault.jpg`
+        }));
+      } else {
+        setEditLyric((prevState) => ({
+          ...prevState,
+          thumbnail_url: '' // Clear the thumbnail_url if video ID is invalid
+        }));
+      }
+    }
   };
-
   // Handle search input
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -203,6 +238,19 @@ const ManageLyrics = () => {
                         required
                       />
                     </label>
+
+                    <label>
+                      Thumbnail URL:
+                      <input
+                        type="text"
+                        name="thumbnail_url"
+                        value={editLyric.thumbnail_url} 
+                        onChange={handleChange}
+                        required
+                        readOnly
+                      />
+                    </label>
+
                     <label>
                       Lyrics Writer:
                       <input
@@ -218,7 +266,6 @@ const ManageLyrics = () => {
                         name="lyrics"
                         value={editLyric.lyrics}
                         onChange={handleChange}
-                        required
                         rows={5}
                       />
                     </label>
@@ -271,11 +318,12 @@ const ManageLyrics = () => {
       {/* ConfirmMsg modal, shown only when showConfirm is true */}
       {showConfirm && (
         <ConfirmMsg
-          show={showConfirm}  // Determines whether to show the modal
-          onConfirm={handleConfirmDelete}  // Function to execute if the user confirms deletion
-          onCancel={handleCancelDelete}  // Function to execute if the user cancels deletion
-          message="Are you sure you want to delete this lyric?" // Custom message in the modal 
-        /> )}
+          show={showConfirm}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          message="Are you sure you want to delete this lyric?"
+        />
+      )}
     </div> 
   );
 };

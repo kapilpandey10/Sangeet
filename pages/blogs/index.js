@@ -12,7 +12,6 @@ const BlogHomepage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTag, setSelectedTag] = useState('all');
   const blogsPerPage = 12;
-
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
@@ -22,20 +21,26 @@ const BlogHomepage = () => {
           .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
           .eq('status', 'published')
           .order('published_date', { ascending: false });
-
-        if (error) throw error;
-
+  
+        if (error) {
+          console.error('Error fetching blogs:', error.message);
+          return;
+        }
+  
+        console.log('Fetched blogs:', data); // Check the fetched data structure
+  
         setBlogs(data);
         setFilteredBlogs(data);
       } catch (error) {
-        console.error('Error fetching blogs:', error.message);
+        console.error('Error fetching blogs:', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchBlogs();
   }, []);
+  
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase();
@@ -43,11 +48,12 @@ const BlogHomepage = () => {
       blogs.filter((blog) =>
         blog.title.toLowerCase().includes(lowercasedQuery) ||
         blog.author.toLowerCase().includes(lowercasedQuery) ||
-        blog.tags.some((tag) => tag.toLowerCase().includes(lowercasedQuery)) ||
+        (Array.isArray(blog.tags) && blog.tags.some((tag) => tag.toLowerCase().includes(lowercasedQuery))) ||
         blog.content.toLowerCase().includes(lowercasedQuery)
       )
     );
   }, [searchQuery, blogs]);
+  
 
   useEffect(() => {
     if (selectedTag === 'all') {

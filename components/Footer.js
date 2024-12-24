@@ -7,10 +7,20 @@ const Footer = () => {
     <footer className={styles.footer}>
       {/* Social Media Links */}
       <div className={styles.socialSection}>
-        <a href="https://www.facebook.com/Burn2VLOG" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://www.facebook.com/Burn2VLOG"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook"
+        >
           <FaFacebook className={styles.socialIcon} />
         </a>
-        <a href="https://www.youtube.com/@BornToVlog" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://www.youtube.com/@BornToVlog"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="YouTube"
+        >
           <FaYoutube className={styles.socialIcon} />
         </a>
       </div>
@@ -24,7 +34,9 @@ const Footer = () => {
 
       {/* Branding Section */}
       <div className={styles.brandingSection}>
-        <p>&copy; 2024 <span className={styles.brandName}>Dynabeat</span>. All rights reserved.</p>
+        <p>
+          &copy; 2024 <span className={styles.brandName}>Dyna<span className={styles.highlight}>Beat</span></span>. All rights reserved.
+        </p>
       </div>
     </footer>
   );

@@ -4,6 +4,8 @@ import { supabase } from '../supabaseClient';
 import Link from 'next/link';
 import Head from 'next/head';
 import styles from '../styles/HomePage.module.css';
+import MonetagAd from "../components/MonetagAd";
+
 
 // Use Next.js dynamic import for components
 const HomeYTVideo = dynamic(() => import('./homeytvideo'), { ssr: false });
@@ -121,17 +123,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
       </section>
 
       {/* Ad between Lyrics and YouTube Video */}
-      <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>
-        <ins
-          className="adsbygoogle"
-          style={{ display: 'block' }}
-          data-ad-client="ca-pub-9887409333966239"
-          data-ad-slot="4756859110"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        ></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-      </div>
+      <MonetagAd />
 
       {/* YouTube Video Section */}
       <div className={`${styles.homeytvideo} ${styles.scrollAnimated} ${styles.fadeInUp}`}>

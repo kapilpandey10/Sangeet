@@ -9,6 +9,7 @@ import Head from 'next/head';
 import Verified from './verified';
 import FloatingModal from '../../components/FloatingModal';
 import styles from './style/ViewLyrics.module.css';
+import MonetagAd from "../../components/MonetagAd";
 
 const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   const [isEnglish, setIsEnglish] = useState(true);
@@ -199,18 +200,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
         </pre>
 
         {/* Middle Ad */}
-        {isMounted && (
-          <div className={styles.adContainer}>
-            <ins
-              className="adsbygoogle"
-              style={{ display: 'block', minHeight: '50px' }}
-              data-ad-client="ca-pub-9887409333966239"
-              data-ad-slot="4756859110"  // Replace with your middle ad slot ID
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            ></ins>
-          </div>
-        )}
+       <MonetagAd/>
 
         {youtubeId && (
           <div ref={youtubeRef} className={styles.musicVideo}>
@@ -293,6 +283,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           <h3>No related songs found.</h3>
         </aside>
       )}
+       <MonetagAd/>
 
       {/* Bottom Ad */}
       {isMounted && (

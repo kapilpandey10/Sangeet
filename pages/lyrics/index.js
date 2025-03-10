@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { supabase } from '../../supabaseClient';
 import Link from 'next/link';
 import styles from './style/LyricsList.module.css';
+import MonetagAd from "../../components/MonetagAd";
 
 const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
   const [lyricsByArtist, setLyricsByArtist] = useState(initialLyrics || {});
@@ -88,6 +89,7 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
           ))}
         </select>
       </div>
+      <MonetagAd/>
 
       {/* Display filtered results */}
       {Object.keys(filteredLyrics).length > 0 ? (
@@ -122,7 +124,7 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
           No lyrics available at the moment. The admin will add these lyrics shortly. You can help by submitting the lyrics. Please contact us.
         </p>
       )}
-
+<MonetagAd/>
       {/* Load More Button */}
       {hasMoreLyrics && (
         <div ref={loadMoreRef} className={styles.viewMoreContainer}>

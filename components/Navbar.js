@@ -72,7 +72,7 @@ const Navbar = () => {
         <div className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileActive : ''}`} ref={mobileMenuRef} id="primary-navigation">
           <div className={styles.navLinks}>
             <Link href="/" className={router.pathname === '/' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
-            <Link href="/lyrics" className={router.pathname === '/lyrics' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>
+            <Link href="/viewlyrics" className={router.pathname === '/viewlyrics' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>
             <Link href="/artistbio" className={router.pathname === '/artistbio' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Artist Bio</Link>
             <Link href="/blogs" className={router.pathname === '/blogs' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
             <Link href="/radio" className={router.pathname === '/radio' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Radio</Link>

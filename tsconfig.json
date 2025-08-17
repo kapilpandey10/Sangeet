@@ -22,7 +22,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "components/BackToTop.js", "pages/lyrics/index.jtsx", "components/HeroSlider.js", "pages/lyrics/index.js"  ],
+, "components/BackToTop.js", "pages/viewlyrics/index.jtsx", "components/HeroSlider.js", "pages/viewlyrics/index.js"  ],
   "exclude": [
     "node_modules"
   ]

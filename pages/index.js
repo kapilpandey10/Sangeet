@@ -1,11 +1,13 @@
+// File: pages/index.jsx
+
 import dynamic from 'next/dynamic';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import Link from 'next/link';
 import Head from 'next/head';
+import Image from 'next/image';
+import Script from 'next/script';
 import styles from '../styles/HomePage.module.css';
-import MonetagAd from "../components/MonetagAd";
-
 
 // Use Next.js dynamic import for components
 const HomeYTVideo = dynamic(() => import('./homeytvideo'), { ssr: false });
@@ -32,19 +34,6 @@ const HomePage = ({ lyrics, featuredArtist }) => {
     };
   }, []);
 
-  // Initialize Google Ads
-  useEffect(() => {
-    const initializeAds = () => {
-      const script = document.createElement('script');
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-      script.async = true;
-      script.setAttribute('data-ad-client', 'ca-pub-9887409333966239');
-      document.body.appendChild(script);
-    };
-
-    initializeAds();
-  }, []);
-
   return (
     <div className={styles.homepageContainer}>
       <Head>
@@ -62,7 +51,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
           content="82v2jn8h0hodfxbj21rlnxos5ocy4o"
         />
 
-        {/* Open Graph Metadata */}
+        {/* Open Graph Metadata with specified width and height */}
         <meta property="og:title" content="DynaBeat | Nepali Music Digital Library" />
         <meta
           property="og:description"
@@ -71,9 +60,19 @@ const HomePage = ({ lyrics, featuredArtist }) => {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pandeykapil.com.np/" />
         <meta property="og:image" content="https://pandeykapil.com.np/logo/logo.webp" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="DynaBeat Logo" />
         <meta property="og:site_name" content="DynaBeat" />
       </Head>
+
+      {/* Google AdSense Script - Use Next.js Script component */}
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9887409333966239"
+        crossOrigin="anonymous"
+        strategy="lazyOnload"
+      />
 
       {/* Hero Slider */}
       <div className={`${styles.scrollAnimated} ${styles.fadeIn}`}>
@@ -91,39 +90,35 @@ const HomePage = ({ lyrics, featuredArtist }) => {
               className={`${styles.lyricItem} ${styles[`color${index % 6}`]}`}
               key={lyric.id}
             >
-              {/* Thumbnail or Fallback */}
-              {lyric.thumbnail_url ? (
-                <img
-                  src={lyric.thumbnail_url}
+              {/* Use Next.js Image component for image optimization */}
+              <div className={styles.thumbnailWrapper}>
+                <Image
+                  src={lyric.thumbnail_url?.trim() || '/path/to/fallback-image.jpg'}
                   alt={`${lyric.title} thumbnail`}
                   className={styles.thumbnail}
+                  width={150} // Define width
+                  height={150} // Define height
+                  layout="responsive" // Can be 'intrinsic', 'fixed', 'fill', 'responsive'
                 />
-              ) : (
-                <img
-                  src="/path/to/fallback-image.jpg"
-                  alt="No Thumbnail Available"
-                  className={styles.thumbnail}
-                />
-              )}
+              </div>
               <h3 className={styles.songTitle}>
-                <Link href={`/lyrics/${lyric.slug}`} legacyBehavior>
-                  <a>{lyric.title}</a>
+                <Link href={`/viewlyrics/${lyric.slug}`}>
+                  {lyric.title}
                 </Link>
               </h3>
               <p>{lyric.artist}</p>
-              <p>{new Date(lyric.published_date).getFullYear()}</p>
+              <p>{lyric.published_date ? new Date(lyric.published_date).getFullYear() : 'N/A'}</p>
             </div>
           ))}
         </div>
         <div className={styles.viewAll}>
-          <Link href="/lyrics" legacyBehavior>
-            <a>View All Nepali Lyrics</a>
+          <Link href="/lyrics">
+            View All Nepali Lyrics
           </Link>
         </div>
       </section>
 
       {/* Ad between Lyrics and YouTube Video */}
-      <MonetagAd />
 
       {/* YouTube Video Section */}
       <div className={`${styles.homeytvideo} ${styles.scrollAnimated} ${styles.fadeInUp}`}>
@@ -140,7 +135,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
         </div>
       )}
 
-      {/* Another Ad after Featured Artist Section */}
+      {/* AdSense Ad - Using ins tag with a key to force re-render if needed */}
       <div className={`${styles.adContainer} ${styles.scrollAnimated} ${styles.fadeIn}`}>
         <ins
           className="adsbygoogle"
@@ -150,7 +145,12 @@ const HomePage = ({ lyrics, featuredArtist }) => {
           data-ad-format="auto"
           data-full-width-responsive="true"
         ></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        {/*
+          The script tag for adsbygoogle is now in the Head component.
+          You can use useEffect with a state to push the ad, but the Script component
+          is generally preferred for initial loading. A simple data-ad-slot will
+          work with the main script.
+        */}
       </div>
     </div>
   );

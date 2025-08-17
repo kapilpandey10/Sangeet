@@ -1,380 +1,968 @@
-/* General Container */
+/* RadioPlayer.module.css - Enhanced Radio Player Styles */
+
 .radioPlayerContainer {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  /* Breadcrumb */
-  .breadcrumb {
-    width: 100%;
-    margin-bottom: 20px;
-    font-size: 0.9em;
-    color: #666;
-  }
-  
-  .breadcrumb a {
-    text-decoration: none;
-    color: #1a73e8;
-    margin-right: 5px;
-  }
-  
-  .breadcrumb a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Header Section */
-  .header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
-    gap: 20px;
-  }
-  
-  .logoContainer {
-    display: flex;
-    align-items: center;
-  }
-  
-  .stationLogo {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    border-radius: 5px;
-  }
-  
-  .fallbackLogo {
-    width: 80px;
-    height: 80px;
-    background-color: #e0e0e0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-  }
-  
-  .stationDetails {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  
-  .stationName {
-    font-size: 1.5em;
-    font-weight: bold;
-  }
-  
-  .stationFrequency,
-  .stationLocation {
-    color: #555;
-  }
-  
-  .liveBadge {
-    background-color: #ff0000;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.8em;
-    align-self: flex-start;
-  }
-  /* Country Selector */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.radioPlayerContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.radioPlayerContainer > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Enhanced Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  opacity: 0.8;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.breadcrumb a {
+  color: #4ecdc4;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 15px;
+}
+
+.breadcrumb a:hover {
+  background: rgba(78, 205, 196, 0.1);
+  color: #ffffff;
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.currentPage {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Status Bar */
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(90deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+  border-radius: 15px;
+  margin-bottom: 25px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.statusLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.liveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #ff6b6b;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  background: #ff6b6b;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.currentTime {
+  font-family: 'JetBrains Mono', monospace;
+  color: #4ecdc4;
+  font-weight: 500;
+  padding: 5px 12px;
+  background: rgba(78, 205, 196, 0.1);
+  border-radius: 20px;
+}
+
+.statusRight {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.signalStrength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4ecdc4;
+}
+
+.signalBars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.signalBar {
+  width: 3px;
+  height: 10px;
+  background: rgba(78, 205, 196, 0.3);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.signalBar:nth-child(2) { height: 12px; }
+.signalBar:nth-child(3) { height: 14px; }
+.signalBar:nth-child(4) { height: 16px; }
+.signalBar:nth-child(5) { height: 18px; }
+
+.signalBar.active {
+  background: #4ecdc4;
+  box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+}
+
+.bufferingIcon {
+  color: #ffd93d;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Country Selector */
 .countrySelector {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    font-size: 1em;
-  }
-  
-  .countryDropdown {
-    padding: 5px 10px;
-    font-size: 1em;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
 
-/* Frequency Bar */
-.frequencyBarContainer {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-    position: relative;
-  }
-/* Scrollable Container for the Frequency Bar */
-/* Scrollable Container for the Frequency Bar */
-.scrollableContainer {
-    width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    overflow-y: hidden;
-    padding-bottom: 10px;
-    white-space: nowrap;
-    scrollbar-width: thin;
-    position: relative;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-  }
-  
-  /* Fixed Red Indicator */
-  .fixedIndicator {
-    position: absolute;
-    height: 100%;
-    width: 4px;
-    background-color: #e74c3c; /* Red color for the indicator */
-    z-index: 2;
-    left: 50%; /* Center it horizontally */
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-  
-  .frequencyBarContainer {
-    position: relative;
-    width: 100%;
-    overflow-x: scroll;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #333;
-    border-radius: 10px;
-    padding: 10px 0;
-  }
-  
-  .scrollableContainer {
-    width: 100%;
-    overflow-x: scroll;
-    white-space: nowrap;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .frequencyBar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    position: relative;
-  }
-  
-  .frequencyLabels {
-    display: flex;
-    gap: 10px; /* Equal gap between each frequency line */
-    align-items: center;
-  }
-  
-  .frequencyMark {
-    display: inline-block;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.2s ease;
-  }
-  
-  /* Style for major lines (1 MHz) */
-  .majorLine {
-    height: 40px;
-    width: 2px;
-    background-color: #fff;
-    margin-top: 20px;
-    font-size: 1.5rem;
-    color: #fff;
-    font-weight: bold;
-  }
-  
-  /* Style for minor lines (0.1 MHz) */
-  .minorLine {
-    height: 20px;
-    width: 1px;
-    background-color: #888;
-    margin-top: 30px;
-  }
-  
-  /* Red marker for the current frequency */
-  .fixedIndicator {
-    position: absolute;
-    height: 100%;
-    width: 4px;
-    background-color: #e74c3c;
-    z-index: 2;
-    top: 0;
-    transition: left 0.3s ease;
-    pointer-events: none;
-  }
-  
-  
-/* Scan Button Styles */
-.scanButton {
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 10px;
-  }
-  
-  .scanButton:hover {
-    background-color: #218838;
-  }
-  
-  .scanning {
-    animation: scanAnimation 2s infinite; /* Add a scanning effect */
-  }
-  
-  /* Scanning animation */
-  @keyframes scanAnimation {
-    0% {
-      background-color: #28a745;
-    }
-    50% {
-      background-color: #218838;
-    }
-    100% {
-      background-color: #28a745;
-    }
-  }
-  
-  
+.globeIcon {
+  color: #4ecdc4;
+  font-size: 18px;
+}
 
+.countrySelector label {
+  font-weight: 500;
+  color: #ffffff;
+}
 
-  
+.countryDropdown {
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  min-width: 200px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
 
-  
-  /* Horizontal scrolling styling */
-  .scrollableContainer::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  .scrollableContainer::-webkit-scrollbar-thumb {
-    background-color: #666;
-    border-radius: 10px;
-  }
-  
-  .scrollableContainer::-webkit-scrollbar-track {
-    background-color: #333;
-  }
-  
+.countryDropdown:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+}
 
+.countryDropdown option {
+  background: #1a1a2e;
+  color: #ffffff;
+}
 
-  
-  /* Controls */
-  .controlsContainer {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.radioAnimation {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.radioWaves {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.wave {
+  position: absolute;
+  border: 2px solid #4ecdc4;
+  border-radius: 50%;
+  opacity: 0;
+  animation: wave 2s linear infinite;
+}
+
+.wave:nth-child(1) { animation-delay: 0s; }
+.wave:nth-child(2) { animation-delay: 0.5s; }
+.wave:nth-child(3) { animation-delay: 1s; }
+
+@keyframes wave {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
-  
-  .playPauseButton,
-  .shareButton {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 1em;
-    cursor: pointer;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .playPauseButton:hover,
-  .shareButton:hover {
-    background-color: #1669c7;
-  }
-  
-  .volumeControl {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .volumeSlider {
+  100% {
     width: 100px;
-    cursor: pointer;
+    height: 100px;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    transform: translate(0, 0);
   }
-  
-  /* Suggested Stations */
-  .suggestedStations {
-    width: 100%;
-    margin-top: 20px;
+}
+
+.towerIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  color: #ff6b6b;
+  z-index: 2;
+}
+
+.loadingText {
+  font-size: 18px;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.frequencyDisplay {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  color: #4ecdc4;
+  font-weight: 600;
+  padding: 10px 20px;
+  background: rgba(78, 205, 196, 0.1);
+  border-radius: 25px;
+  border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+/* Main Radio Player */
+.radioPlayer {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 20px;
+  padding: 30px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Station Header */
+.stationHeader {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.stationVisual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.logoContainer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.stationLogo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.logoContainer:hover .stationLogo {
+  transform: scale(1.05);
+}
+
+.fallbackLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  font-size: 40px;
+  color: #ffffff;
+}
+
+.playingAnimation {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.equalizer {
+  display: flex;
+  gap: 2px;
+  align-items: end;
+  height: 20px;
+}
+
+.bar {
+  width: 3px;
+  background: #4ecdc4;
+  border-radius: 2px;
+  animation: equalizer 0.8s ease-in-out infinite alternate;
+}
+
+.bar:nth-child(1) { animation-delay: 0s; }
+.bar:nth-child(2) { animation-delay: 0.1s; }
+.bar:nth-child(3) { animation-delay: 0.2s; }
+.bar:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes equalizer {
+  0% { height: 5px; }
+  100% { height: 20px; }
+}
+
+.frequencyTuner {
+  width: 120px;
+}
+
+.tunerDisplay {
+  text-align: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.frequency {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffd93d;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.tunerLine {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #4ecdc4 50%, transparent 100%);
+  border-radius: 1px;
+}
+
+.stationInfo {
+  flex: 1;
+}
+
+.stationName {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  background: linear-gradient(135deg, #ffffff, #4ecdc4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.locationInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.stationMeta {
+  display: flex;
+  gap: 10px;
+}
+
+.onAirBadge,
+.readyBadge,
+.errorBadge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.onAirBadge {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: #ffffff;
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.readyBadge {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: #ffffff;
+  box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+}
+
+.errorBadge {
+  background: linear-gradient(135deg, #ffd93d, #ffcd02);
+  color: #1a1a2e;
+  box-shadow: 0 5px 15px rgba(255, 217, 61, 0.4);
+}
+
+.likeButton {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.likeButton:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.likeButton.liked {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Controls Container */
+.controlsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mainControls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.playPauseButton {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playPauseButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 35px rgba(78, 205, 196, 0.6);
+}
+
+.playPauseButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.scanButton,
+.shareButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.scanButton:hover,
+.shareButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.scanButton.scanning {
+  animation: scanPulse 1s ease-in-out infinite;
+  color: #ffd93d;
+  border-color: #ffd93d;
+}
+
+@keyframes scanPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.volumeSection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.muteButton {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.muteButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #4ecdc4;
+  color: #4ecdc4;
+}
+
+.volumeSliderContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.volumeSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #4ecdc4;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(78, 205, 196, 0.4);
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #4ecdc4;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(78, 205, 196, 0.4);
+}
+
+.volumeValue {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 35px;
+  text-align: right;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Suggested Stations */
+.suggestedSection {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #ffffff;
+}
+
+.stationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stationCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.stationCard:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cardImageContainer {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardImageFallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.cardContent {
+  color: #ffffff;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: #ffffff;
+}
+
+.cardFrequency {
+  font-size: 12px;
+  color: #4ecdc4;
+  margin: 0 0 5px 0;
+  font-weight: 500;
+}
+
+.cardLocation {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Share Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.shareModal {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.shareModal h3 {
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.shareButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.shareButtons button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.facebookShare {
+  background: #1877f2;
+  color: #ffffff;
+}
+
+.twitterShare {
+  background: #1da1f2;
+  color: #ffffff;
+}
+
+.whatsappShare {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.telegramShare {
+  background: #0088cc;
+  color: #ffffff;
+}
+
+.shareButtons button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.copySection {
+  text-align: center;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+}
+
+.copyButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.closeModal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.closeModal:hover {
+  color: #ffffff;
+}
+
+/* Message Container */
+.messageContainer {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.noStationsMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.noStationsMessage svg {
+  font-size: 48px;
+  color: #4ecdc4;
+  opacity: 0.7;
+}
+
+.noStationsMessage p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.retryButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  border: none;
+  border-radius: 25px;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .radioPlayerContainer {
+    margin: 10px;
+    padding: 15px;
+    border-radius: 15px;
   }
-  
-  .suggestionsList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-  }
-  
-  .suggestionCard {
-    background-color: #ffffff;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-    display: flex;
+
+  .stationHeader {
     flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .stationVisual {
+    flex-direction: row;
     align-items: center;
+  }
+
+  .logoContainer {
+    width: 80px;
+    height: 80px;
+  }
+
+  .stationName {
+    font-size: 24px;
+  }
+
+  .controlsContainer {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .mainControls {
+    order: 1;
+  }
+
+  .volumeSection {
+    order: 2;
+  }
+
+  .stationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .shareButtons {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusBar {
+    flex-direction: column;
+    gap: 10px;
     text-align: center;
   }
-  
-  .suggestionCard:hover {
-    transform: scale(1.05);
+
+  .countrySelector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
-  
-  .suggestionLogo {
+
+  .countryDropdown {
     width: 100%;
-    height: 80px;
-    object-fit: contain;
-    border-radius: 5px;
+    min-width: auto;
   }
-  
-  .suggestionInfo {
-    margin-top: 10px;
+
+  .volumeSlider {
+    width: 80px;
   }
-  
-  .suggestionName {
-    font-size: 1em;
-    font-weight: bold;
-  }
-  
-  .suggestionFrequency,
-  .suggestionLocation {
-    font-size: 0.9em;
-    color: #666;
-  }
-  
-  /* Responsive Adjustments */
-  @media (max-width: 768px) {
-    .header {
-      flex-direction: column;
-      text-align: center;
-    }
-  
-    .frequencySlider {
-      width: 100%;
-    }
-  
-    .controlsContainer {
-      flex-direction: column;
-      gap: 10px;
-    }
-  }
-  
+}

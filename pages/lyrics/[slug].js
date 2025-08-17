@@ -55,7 +55,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
     "byArtist": {
       "@type": "MusicGroup",
       "name": lyric.artist,
-      "url": lyric.artist_url || "https://pandeykapil.com.np/lyrics"
+      "url": lyric.artist_url || "https://pandeykapil.com.np/viewlyrics"
     },
     "inLanguage": isEnglish ? "en" : (lyric.language || "en"),
     "lyrics": {
@@ -174,6 +174,17 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
               : lyric.lyrics}
           </pre>
 
+          {/* AdSense Ad Placement within the content */}
+          <div className={styles.adContentContainer}>
+            <ins
+              className="adsbygoogle"
+              style={{ display: 'block', minHeight: '50px' }}
+              data-ad-client="ca-pub-9887409333966239"
+              data-ad-slot="9311234567" // Use a unique ad slot ID
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            ></ins>
+          </div>
 
           {youtubeId && (
             <div ref={youtubeRef} className={styles.musicVideo}>

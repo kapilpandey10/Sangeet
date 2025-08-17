@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Script from 'next/script';
 import styles from './style/LyricsList.module.css';
 
+// Component for the main page
 const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
   const [lyricsByArtist, setLyricsByArtist] = useState(initialLyrics || {});
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,7 +19,7 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
   const [visibleArtists, setVisibleArtists] = useState(10);
   const loadMoreRef = useRef(null);
 
-  // Effect to handle "Load More" visibility
+  // Corrected useEffect with an empty dependency array for the IntersectionObserver
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -38,7 +39,7 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
         observer.unobserve(loadMoreRef.current);
       }
     };
-  }, [hasMoreLyrics]);
+  }, []); // Empty dependency array ensures this effect runs only once on mount.
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
@@ -70,12 +71,40 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
 
   const hasMoreLyrics = Object.keys(filteredLyrics).length > visibleArtists;
 
+  const pageTitle = "Music Library - Dynabeat: Explore Nepali Lyrics";
+  const pageDescription = "Explore and read lyrics from our extensive music library, searchable by artist, song title, and more. Find classic and new songs by your favorite Nepali artists.";
+  const canonicalUrl = "https://pandeykapil.com.np/lyrics";
+
   return (
     <>
       <Head>
-        <title>Music Library - Dynabeat</title>
-        <meta name="description" content="Explore and read lyrics from our extensive music library, searchable by artist, song title, and more." />
-        <link rel="canonical" href="https://pandeykapil.com.np/lyrics" />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* JSON-LD Schema for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "MusicPlaylist",
+              "name": pageTitle,
+              "description": pageDescription,
+              "url": canonicalUrl,
+              "image": "https://pandeykapil.com.np/images/logo.png", // Replace with your actual logo
+              "creator": {
+                "@type": "Person",
+                "name": "Dynabeat"
+              },
+              "numTracks": Object.values(initialLyrics).flat().length,
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": canonicalUrl
+              }
+            })
+          }}
+        />
       </Head>
 
       <Script
@@ -85,86 +114,104 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
         strategy="lazyOnload"
       />
 
-      <div className={styles.lyricsListContainer}>
-        <h1>Music Library</h1>
+      <main className={styles.lyricsListContainer}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Dynabeat Music Library</h1>
+          <p className={styles.subtitle}>Discover lyrics, artists, and music across different eras.</p>
+        </div>
 
         {/* Search and filter inputs */}
         <div className={styles.searchFilterContainer}>
           <input
             type="text"
-            placeholder="Search by artist, lyrics, or writer..."
+            placeholder="Search by artist or song title..."
             value={searchQuery}
             onChange={handleSearch}
             className={styles.searchInput}
           />
 
           {/* Filter by language */}
-          <select
-            value={languageFilter}
-            onChange={(e) => setLanguageFilter(e.target.value)}
-            className={styles.selectDropdown}
-          >
-            <option value="all">All Languages</option>
-            {availableLanguages.map((lang, idx) => (
-              <option key={idx} value={lang}>
-                {lang.charAt(0).toUpperCase() + lang.slice(1)}
-              </option>
-            ))}
-          </select>
+          <div className={styles.filterGroup}>
+            <label htmlFor="language-filter" className={styles.filterLabel}>Language:</label>
+            <select
+              id="language-filter"
+              value={languageFilter}
+              onChange={(e) => setLanguageFilter(e.target.value)}
+              className={styles.selectDropdown}
+            >
+              <option value="all">All</option>
+              {availableLanguages.map((lang, idx) => (
+                <option key={idx} value={lang}>
+                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Filter by year */}
-          <select
-            value={yearFilter === 'all' ? 'all' : yearFilter.label}
-            onChange={(e) => {
-              const selectedRange = availableYearRanges.find((range) => range.label === e.target.value);
-              setYearFilter(selectedRange || 'all');
-            }}
-            className={styles.selectDropdown}
-          >
-            <option value="all">All Years</option>
-            {availableYearRanges.map((range, idx) => (
-              <option key={idx} value={range.label}>
-                {range.label}
-              </option>
-            ))}
-          </select>
+          <div className={styles.filterGroup}>
+            <label htmlFor="year-filter" className={styles.filterLabel}>Year:</label>
+            <select
+              id="year-filter"
+              value={yearFilter === 'all' ? 'all' : yearFilter.label}
+              onChange={(e) => {
+                const selectedRange = availableYearRanges.find((range) => range.label === e.target.value);
+                setYearFilter(selectedRange || 'all');
+              }}
+              className={styles.selectDropdown}
+            >
+              <option value="all">All</option>
+              {availableYearRanges.map((range, idx) => (
+                <option key={idx} value={range.label}>
+                  {range.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Display filtered results */}
         {Object.keys(filteredLyrics).length > 0 ? (
-          Object.keys(filteredLyrics).slice(0, visibleArtists).map((artist) => (
-            <div key={artist} className={styles.artistSection}>
-              <h2>{artist}</h2>
-
-              <div className={styles.lyricsGrid}>
-                {filteredLyrics[artist].map((lyric) => (
-                  <div key={lyric.slug} className={styles.lyricCard}>
-                    {lyric.thumbnail_url && (
-                      <Image
-                        src={lyric.thumbnail_url.trim()} // Corrected with .trim()
-                        alt={`${lyric.title} thumbnail`}
-                        className={styles.thumbnail}
-                        width={150}
-                        height={150}
-                        loading="lazy"
-                      />
-                    )}
-                    <div className={styles.lyricCardContent}>
-                      <h3>{lyric.title}</h3>
-                      <p className={styles.smallText}>Published: {lyric.published_date ? new Date(lyric.published_date).getFullYear() : 'N/A'}</p>
-                      <Link href={`/viewlyrics/${lyric.slug}`} className={styles.viewLyricsButton}>
-                        View Lyrics
-                      </Link>
+          <section className={styles.contentSection}>
+            {Object.keys(filteredLyrics).slice(0, visibleArtists).map((artist) => (
+              <div key={artist} className={styles.artistSection}>
+                <h2 className={styles.artistTitle}>{artist}</h2>
+                <div className={styles.lyricsGrid}>
+                  {filteredLyrics[artist].map((lyric) => (
+                    <div key={lyric.slug} className={styles.lyricCard}>
+                      {lyric.thumbnail_url && (
+                        <Image
+                          src={lyric.thumbnail_url.trim()}
+                          alt={`${lyric.title} thumbnail`}
+                          className={styles.thumbnail}
+                          width={150}
+                          height={150}
+                          loading="lazy"
+                        />
+                      )}
+                      <div className={styles.lyricCardContent}>
+                        <h3 className={styles.songTitle}>{lyric.title}</h3>
+                        <p className={styles.smallText}>
+                          <span className={styles.infoLabel}>Published:</span>{" "}
+                          {lyric.published_date ? new Date(lyric.published_date).getFullYear() : 'N/A'}
+                        </p>
+                        <Link href={`/viewlyrics/${lyric.slug}`} className={styles.viewLyricsButton}>
+                          View Lyrics
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </section>
         ) : (
-          <p className={styles.noLyricsMessage}>
-            No lyrics available at the moment. The admin will add these lyrics shortly. You can help by submitting the lyrics. Please contact us.
-          </p>
+          <div className={styles.noLyricsMessage}>
+            <p>
+              No lyrics available at the moment for your selected filters. The admin will add these lyrics shortly.
+            </p>
+            <p>You can help by submitting lyrics. Please contact us.</p>
+          </div>
         )}
 
         {/* "Load More" functionality with a button */}
@@ -178,12 +225,12 @@ const LyricsList = ({ initialLyrics, initialLanguages, initialYearRanges }) => {
             </button>
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 };
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const getYearRanges = (years) => {
     const ranges = [
       { label: '1970-1980', min: 1970, max: 1980 },
@@ -191,7 +238,7 @@ export const getServerSideProps = async () => {
       { label: '1990-2000', min: 1990, max: 2000 },
       { label: '2000-2010', min: 2000, max: 2010 },
       { label: '2010-2020', min: 2010, max: 2020 },
-      { label: '2020-present', min: 2020, max: new Date().getFullYear() + 1 }, // Added +1 to include the current year
+      { label: '2020-present', min: 2020, max: new Date().getFullYear() + 1 },
     ];
     return ranges.filter((range) => years.some((year) => year >= range.min && year < range.max));
   };
@@ -214,7 +261,7 @@ export const getServerSideProps = async () => {
       return result;
     }, {});
 
-    const languages = [...new Set(data.map((lyric) => lyric.language.trim().toLowerCase()))];
+    const languages = [...new Set(data.map((lyric) => lyric.language.trim().toLowerCase()))].sort();
     const years = data.map((lyric) => new Date(lyric.published_date).getFullYear());
     const yearRanges = getYearRanges(years);
 
@@ -224,6 +271,8 @@ export const getServerSideProps = async () => {
         initialLanguages: languages,
         initialYearRanges: yearRanges,
       },
+      // ISR - Revalidate the page every 60 seconds
+      revalidate: 60,
     };
   } catch (error) {
     console.error('Error fetching lyrics:', error.message);
@@ -233,6 +282,7 @@ export const getServerSideProps = async () => {
         initialLanguages: [],
         initialYearRanges: [],
       },
+      revalidate: 60,
     };
   }
 };

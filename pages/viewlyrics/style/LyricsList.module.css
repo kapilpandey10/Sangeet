@@ -1,290 +1,200 @@
-/* Improved Skeleton Loader Animation */
-@keyframes skeleton-loading {
-  0% {
-    background-color: #e0e0e0;
-  }
-  50% {
-    background-color: #f0f0f0;
-  }
-  100% {
-    background-color: #e0e0e0;
-  }
-}
+/* File: style/LyricsList.module.css */
 
-/* Skeleton Loader Styles */
-.skeletonLoader {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  width: 100%;
-  margin-bottom: 30px;
-}
-
-.skeletonTitle {
-  width: 60%;
-  height: 24px;
-  margin: 0 auto 16px auto;
-  background: linear-gradient(90deg, #e0e0e0, #f0f0f0, #e0e0e0);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite ease-in-out;
-  border-radius: 4px;
-}
-
-.skeletonCard {
-  height: 150px;
-  background: linear-gradient(90deg, #e0e0e0, #f0f0f0, #e0e0e0);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite ease-in-out;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.skeletonCardContent {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.skeletonText {
-  height: 16px;
-  background: linear-gradient(90deg, #e0e0e0, #f0f0f0, #e0e0e0);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite ease-in-out;
-  border-radius: 4px;
-}
-
-.skeletonButton {
-  width: 50%;
-  height: 36px;
-  margin-top: 10px;
-  background: linear-gradient(90deg, #e0e0e0, #f0f0f0, #e0e0e0);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite ease-in-out;
-  border-radius: 8px;
-}
-
-/* Lyrics List Container */
 .lyricsListContainer {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+}
+
+.header {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
-/* No lyrics message */
-.noLyricsMessage {
-  font-size: 1.2rem;
-  color: #555;
-  margin-top: 20px;
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
 }
 
-/* Search Filter Container */
+.subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin-top: 0.5rem;
+}
+
 .searchFilterContainer {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 768px) {
+  .searchFilterContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 .searchInput {
-  width: 100%;
-  max-width: 400px;
-  padding: 12px;
-  font-size: 1.1rem;
+  flex-grow: 1;
+  padding: 0.75rem;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  outline: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
 }
 
 .searchInput:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-}
-
-/* Dropdown styling for language and year */
-.selectDropdown {
-  padding: 12px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
   outline: none;
-  background-color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-.selectDropdown:hover,
-.selectDropdown:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.selectDropdown option {
-  padding: 10px;
+.filterLabel {
   font-size: 1rem;
+  color: #555;
+  white-space: nowrap;
+}
+
+.selectDropdown {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.contentSection {
+  margin-top: 2rem;
 }
 
 .artistSection {
-  margin-bottom: 50px;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
 }
 
-.artistSection h2 {
-  font-size: 2.2rem;
-  color: #007bff;
-  margin-bottom: 20px;
-  font-weight: 600;
-  text-transform: capitalize;
-  letter-spacing: 1px;
+.artistTitle {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #3498db;
+  padding-left: 1rem;
 }
 
-/* Lyrics Grid Layout */
 .lyricsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 50px;
-  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
 }
 
-/* Lyric Card Styling */
 .lyricCard {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
-  max-width: 280px;
+  display: flex;
+  flex-direction: column;
 }
 
 .lyricCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.thumbnailImage {
+.thumbnail {
   width: 100%;
-  height: 150px;
+  height: auto;
   object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .lyricCardContent {
-  padding: 15px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
-.lyricCardContent h3 {
-  font-size: 1.4rem;
-  color: #333;
-  margin-bottom: 10px;
-  font-weight: 500;
+.songTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #34495e;
+  margin: 0 0 0.5rem;
 }
 
-.lyricCardContent p {
-  color: #777;
+.smallText {
   font-size: 0.9rem;
-  margin-bottom: 20px;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
 }
 
-/* View Lyrics Button */
+.infoLabel {
+  font-weight: 600;
+  color: #555;
+}
+
 .viewLyricsButton {
   display: inline-block;
-  background-color: #007bff;
+  background-color: #3498db;
   color: #fff;
-  padding: 10px 20px;
-  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
   text-decoration: none;
-  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
   transition: background-color 0.3s ease;
+  margin-top: auto; /* Pushes the button to the bottom */
 }
 
 .viewLyricsButton:hover {
-  background-color: #0056b3;
+  background-color: #2980b9;
 }
 
-/* View More Button */
+.noLyricsMessage {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
 .viewMoreContainer {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 2rem;
 }
 
 .viewMoreButton {
-  background-color: #28a745;
+  background-color: #f39c12;
   color: #fff;
-  padding: 12px 30px;
+  padding: 1rem 2rem;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .viewMoreButton:hover {
-  background-color: #218838;
-}
-
-/* Responsive Styles */
-
-/* Tablet */
-@media (max-width: 768px) {
-  .searchFilterContainer {
-    flex-direction: row;
-    gap: 10px;
-  }
-
-  .searchInput, .selectDropdown {
-    width: 45%;
-  }
-
-  .artistSection h2 {
-    font-size: 1.8rem;
-  }
-
-  .lyricsGrid {
-    gap: 30px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .searchFilterContainer {
-    flex-direction: row;
-    gap: 5px;
-  }
-
-  .searchInput, .selectDropdown {
-    width: 40%;
-    padding: 8px;
-    font-size: 0.9rem;
-  }
-
-  .lyricsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
-  }
-
-  .thumbnailImage {
-    height: 100px;
-  }
-
-  .artistSection h2 {
-    font-size: 1.6rem;
-  }
-
-  .skeletonCard {
-    height: 120px;
-  }
-
-  .skeletonTitle {
-    height: 20px;
-  }
+  background-color: #e67e22;
 }

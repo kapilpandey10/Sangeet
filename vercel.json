@@ -1,7 +1,7 @@
 {
   "redirects": [
     {
-      "source": "/:slug",
+      "source": "/lyrics/:slug",
       "destination": "/viewlyrics/:slug",
       "permanent": true
     }

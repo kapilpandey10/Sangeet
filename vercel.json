@@ -1,9 +1,12 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/lyrics/:slug*",
-      "destination": "/lyrics/:slug*"
-    },
+      "source": "/:slug",
+      "destination": "/viewlyrics/:slug",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
     {
       "source": "/radio/:slug*",
       "destination": "/radio/:slug*"

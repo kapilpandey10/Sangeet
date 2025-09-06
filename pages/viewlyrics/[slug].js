@@ -187,13 +187,14 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           </div>
 
           {youtubeId && (
-            <div ref={youtubeRef} className={styles.musicVideo}>
+            <div ref={youtubeRef} className={styles.musicVideoContainer}>
               <iframe
                 loading="lazy"
                 src={`https://www.youtube.com/embed/${youtubeId}`}
                 title={`${lyric.title} Music Video`}
                 allowFullScreen
               ></iframe>
+              <div className={styles.youtubeOverlay}></div>
             </div>
           )}
 

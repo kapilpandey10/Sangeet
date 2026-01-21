@@ -18,11 +18,23 @@ module.exports = {
   
   // Replace the following functions with your actual data-fetching logic:
   
-  async function fetchRadioPages() {
-    const res = await fetch('https://tffwhfvevgjscrhkdmpl.supabase.co/radio');
-    const data = await res.json();
-    return data.map((item) => `/radio/${item.slug}`);
+// Replace your existing mapping logic with this safe version
+const fetchRadioPages = async () => {
+  const { data, error } = await supabase.from('radio').select('slug');
+
+  // Check if data is missing or not an array
+  if (error || !Array.isArray(data)) {
+    console.error("Sitemap Fetch Error:", error);
+    return []; 
   }
+
+  return data.map((station) => ({
+    loc: `/radio/${station.slug}`,
+    changefreq: 'daily',
+    priority: 0.7,
+    lastmod: new Date().toISOString(),
+  }));
+};
   
   async function fetchBlogPages() {
     const res = await fetch('https://tffwhfvevgjscrhkdmpl.supabase.co/blogs');

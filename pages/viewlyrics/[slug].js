@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
-import Script from 'next/script';
 import { supabase } from '../../supabaseClient';
 import { FaTwitter, FaFacebook, FaWhatsapp, FaArrowLeft, FaLanguage } from 'react-icons/fa';
 import Verified from './verified';
@@ -15,7 +14,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   const youtubeRef = useRef(null);
 
   useEffect(() => {
-    // Reveal animation logic
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) entry.target.classList.add(styles.active);
@@ -38,19 +36,16 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
         <meta name="description" content={`Read the original and English lyrics for ${lyric.title} by ${lyric.artist}.`} />
       </Head>
 
-      {/* Dynamic Immersive Background */}
       <div className={styles.bgBlur} style={{ backgroundImage: `url(${thumbnailUrl})` }}></div>
       <div className={styles.bgOverlay}></div>
 
       <main className={styles.contentWrapper}>
-        {/* Navigation / Breadcrumb */}
         <nav className={styles.topNav}>
           <Link href="/viewlyrics" className={styles.backLink}>
             <FaArrowLeft /> All Lyrics
           </Link>
         </nav>
 
-        {/* Hero Section */}
         <section className={`${styles.heroSection} ${styles.reveal}`}>
           <div className={styles.heroMain}>
             <div className={styles.imageWrapper}>
@@ -80,7 +75,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           </div>
         </section>
 
-        {/* Lyrics Display - The Glass Panel */}
         <section className={`${styles.lyricsSection} ${styles.reveal}`}>
           <div className={styles.glassPanel}>
             <div className={styles.panelHeader}>
@@ -92,16 +86,11 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           </div>
         </section>
 
-<<<<<<< HEAD
-          {youtubeId && (
-            <div ref={youtubeRef} className={styles.musicVideoContainer}>
-=======
-        {/* Video Section */}
+        {/* Video Section - Fixed Merge Conflict Here */}
         {youtubeId && (
           <section className={`${styles.videoSection} ${styles.reveal}`}>
             <h3 className={styles.sectionLabel}>Official Music Video</h3>
-            <div className={styles.videoWrapper}>
->>>>>>> 33442c1 (Update: Advanced Blog Homepage and Search UI)
+            <div className={styles.videoWrapper} ref={youtubeRef}>
               <iframe
                 src={`https://www.youtube.com/embed/${youtubeId}`}
                 title="Music Video"
@@ -112,14 +101,12 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           </section>
         )}
 
-        {/* Social Sharing */}
         <div className={styles.shareBar}>
            <a href={`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} target="_blank" rel="noreferrer"><FaFacebook /></a>
            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} target="_blank" rel="noreferrer"><FaTwitter /></a>
            <a href={`whatsapp://send?text=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`} target="_blank" rel="noreferrer"><FaWhatsapp /></a>
         </div>
 
-        {/* Related Songs - Modern Horizontal Scroll */}
         <section className={`${styles.relatedSection} ${styles.reveal}`}>
           <h3 className={styles.sectionLabel}>Similar Tracks</h3>
           <div className={styles.relatedGrid}>
@@ -143,10 +130,8 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   );
 };
 
-// ... (keep getServerSideProps exactly as it is in your original file)
 export const getServerSideProps = async (context) => {
   const { slug } = context.params;
-
   try {
     const { data: lyric, error } = await supabase
       .from('lyrics')
@@ -156,49 +141,34 @@ export const getServerSideProps = async (context) => {
       .single();
 
     if (error || !lyric) {
-      console.warn('Lyric fetch failed for slug:', slug, 'Error:', error);
       return {
         props: {
           lyric: null,
           relatedLyrics: [],
           slug,
-          error: 'Failed to fetch lyric or lyric not approved. Please use the search box from Navbar. I guarantee you will find it.',
+          error: 'Lyric not found.',
         },
       };
     }
 
-    const { data: relatedLyrics, error: relatedError } = await supabase
+    const { data: relatedLyrics } = await supabase
       .from('lyrics')
       .select('id, title, artist, thumbnail_url, slug')
       .neq('slug', slug.toLowerCase())
       .eq('status', 'approved')
-      .limit(10);
-
-    if (relatedError) {
-      console.warn('Error fetching related lyrics:', relatedError.message || relatedError);
-    }
-
-    const shuffledLyrics = relatedLyrics
-      ? relatedLyrics.sort(() => 0.5 - Math.random()).slice(0, 5)
-      : [];
+      .limit(5);
 
     return {
       props: {
         lyric,
-        relatedLyrics: shuffledLyrics,
+        relatedLyrics: relatedLyrics || [],
         slug,
         error: null,
       },
     };
   } catch (error) {
-    console.error('An unexpected error occurred in getServerSideProps:', error);
     return {
-      props: {
-        lyric: null,
-        relatedLyrics: [],
-        slug,
-        error: 'An unexpected error occurred. Please try again later or search for the song.',
-      },
+      props: { lyric: null, relatedLyrics: [], slug, error: 'Server error.' },
     };
   }
 };

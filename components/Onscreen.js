@@ -1,55 +1,50 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '../supabaseClient'; // Adjust the import based on your project structure
-import styles from './style/Onscreen.module.css'; // Create a CSS module for styling
+import { supabase } from '../supabaseClient';
+import { FaTimes, FaMusic, FaArrowRight, FaClock } from 'react-icons/fa';
+import styles from './style/Onscreen.module.css';
 
 const Onscreen = () => {
   const [lyric, setLyric] = useState(null);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const [currentTime, setCurrentTime] = useState('');
   const router = useRouter();
 
-  // Function to fetch a random lyric
+  // 1. Fetch random lyric
   const fetchRandomLyric = async () => {
     const { data, error } = await supabase
       .from('lyrics')
-      .select('id, title, slug, thumbnail_url,artist, lyrics_writer')
+      .select('id, title, slug, thumbnail_url, artist, lyrics_writer')
       .eq('status', 'approved');
 
-    if (error) {
-      console.error('Error fetching lyrics:', error);
-      return;
-    }
-
-    if (data.length > 0) {
+    if (!error && data.length > 0) {
       const randomIndex = Math.floor(Math.random() * data.length);
       setLyric(data[randomIndex]);
     }
   };
+
+  // 2. Navigation logic
   const handleExploreNow = () => {
-    setTimeout(() => {
-      setVisible(false);
-      router.push(`/lyrics/${lyric.slug}`);
-    }, 1000); // Duration matches the CSS animation
+    setVisible(false);
+    router.push(`/viewlyrics/${lyric.slug}`);
   };
 
   useEffect(() => {
-    // Fetch a random lyric on component mount
     fetchRandomLyric();
+    
+    // Live clock for the "Advanced" feel
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }, 1000);
 
-    // Set up interval to fetch a new lyric every minute
-    const interval = setInterval(() => {
-      fetchRandomLyric();
-    }, 60000); // 60000 ms = 1 minute
-
-    // Clear interval on component unmount
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, []);
 
-  // Determine if the component should be visible based on the current route
+  // 3. Visibility logic (Homepage only)
   useEffect(() => {
-    const path = router.pathname;
-    if (path === '/' || path.startsWith('/lyrics/')) {
-      setVisible(true);
+    if (router.pathname === '/') {
+      const timer = setTimeout(() => setVisible(true), 1500); // Slight delay for better UX
+      return () => clearTimeout(timer);
     } else {
       setVisible(false);
     }
@@ -58,20 +53,33 @@ const Onscreen = () => {
   if (!lyric || !visible) return null;
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.banner}>
-        <button className={styles.closeButton} onClick={() => setVisible(false)}>
-          &times;
+    <div className={styles.overlayContainer}>
+      <div className={styles.glassBanner}>
+        <button className={styles.closeBtn} onClick={() => setVisible(false)}>
+          <FaTimes />
         </button>
-        <h3>Available now</h3><br></br>
-        <img src={lyric.thumbnail_url} alt={lyric.title} className={styles.thumbnail} />
-        <h3>{lyric.title}</h3>
-        <h4>Artist: {lyric.artist}</h4>
-        <p><h4>Lyrics :{lyric.lyrics_writer}</h4></p>
-        <button className={styles.readNowButton} onClick={handleExploreNow}>
-          Explore Now
+
+        <div className={styles.badgeRow}>
+          <span className={styles.liveBadge}>LIVE NOW</span>
+          <span className={styles.timeBadge}><FaClock /> {currentTime}</span>
+        </div>
+
+        <div className={styles.contentLayout}>
+          <div className={styles.imageBox}>
+            <img src={lyric.thumbnail_url || '/logo/logo.webp'} alt={lyric.title} />
+          </div>
+          
+          <div className={styles.textDetails}>
+            <div className={styles.categoryLabel}><FaMusic /> Featured Lyrics</div>
+            <h3 className={styles.songTitle}>{lyric.title}</h3>
+            <p className={styles.artistName}>by {lyric.artist}</p>
+            <p className={styles.writerName}>Written by: {lyric.lyrics_writer || 'DynaBeat Team'}</p>
+          </div>
+        </div>
+
+        <button className={styles.actionBtn} onClick={handleExploreNow}>
+          Explore Now <FaArrowRight />
         </button>
-        
       </div>
     </div>
   );

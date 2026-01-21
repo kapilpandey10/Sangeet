@@ -1,89 +1,155 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import Image from 'next/image';
-import { useRouter } from 'next/router'; // Import useRouter for navigation
-import logo from '../public/logo/logo.webp'; // Ensure the logo is in the public folder
-import styles from './style/Navbar.module.css'; // Assuming you have a CSS module for styles
+import { useRouter } from 'next/router';
+import { FaSearch, FaBars, FaTimes, FaBroadcastTower } from 'react-icons/fa';
+import logo from '../public/logo/logo.webp';
+import styles from './style/Navbar.module.css';
 
 const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const mobileMenuRef = useRef(null);
-  const [isClient, setIsClient] = useState(false);
-  const router = useRouter(); // Use Next.js useRouter hook
+  const router = useRouter();
+  const menuRef = useRef(null);
 
+  /* ---------------- Scroll effect ---------------- */
   useEffect(() => {
-    setIsClient(true);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleClickOutside = (e) => {
-    if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
-      setIsMobileMenuOpen(false);
-    }
-  };
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
+  /* ---------------- Close menu on route change ---------------- */
   useEffect(() => {
-    if (isClient) {
+    setIsMobileMenuOpen(false);
+  }, [router.pathname]);
+
+  /* ---------------- Lock body scroll when mobile menu open ---------------- */
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+  }, [isMobileMenuOpen]);
+
+  /* ---------------- ESC key close ---------------- */
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  /* ---------------- Click outside close ---------------- */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
     }
-  }, [isClient]);
 
-  if (!isClient) {
-    return null; // Don't render until after client-side hydration
-  }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
-  // Navigate to search results page
-  const handleSearchClick = () => {
-    router.push('/searchresults'); // Redirect to searchresults page
-  };
+  /* ---------------- Active link helper ---------------- */
+  const isActive = useCallback(
+    (path) => (router.pathname === path ? styles.active : ''),
+    [router.pathname]
+  );
 
   return (
-    <nav className={styles.navbar} aria-label="Main Navigation">
-      <div className={styles.navbarContainer}>
-        {/* Hamburger Menu for mobile */}
+    <nav
+      className={`${styles.navContainer} ${isScrolled ? styles.scrolled : ''}`}
+      aria-label="Main Navigation"
+    >
+      <div className={styles.navInner} ref={menuRef}>
+
+        {/* Mobile Toggle */}
         <button
-          className={`${styles.mobileMenuIcon} ${isMobileMenuOpen ? styles.open : ''}`}
-          onClick={toggleMobileMenu}
-          aria-label="Toggle navigation"
-          aria-controls="primary-navigation"
+          className={styles.mobileToggle}
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          aria-label="Toggle Menu"
           aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* Logo and Brand Name */}
-        <div className={styles.logoBrandContainer}>
-          <Link href="/" className={styles.brandLink}>
-            <Image src={logo} alt="Logo" className={styles.navbarLogo} priority />
-            <span className={styles.brandName}>
-              Dyna<span className={styles.highlight}>Beat</span>
-            </span>
+        {/* Logo */}
+        <Link href="/" className={styles.logoLink}>
+          <Image
+            src={logo}
+            alt="DynaBeat Logo"
+            className={styles.navLogo}
+            priority
+          />
+          <span className={styles.brandName}>
+            Dyna<span className={styles.brandAccent}>Beat</span>
+          </span>
+        </Link>
+
+        {/* Navigation Links */}
+        <div
+          className={`${styles.navLinks} ${
+            isMobileMenuOpen ? styles.mobileActive : ''
+          }`}
+        >
+          <Link href="/viewlyrics" className={isActive('/viewlyrics')}>
+            Lyrics
+          </Link>
+
+          <Link href="/artistbio" className={isActive('/artistbio')}>
+            Artists
+          </Link>
+
+          <Link href="/blogs" className={isActive('/blogs')}>
+            Blog
+          </Link>
+
+          <Link href="/radio" className={styles.specialLink}>
+            <FaBroadcastTower />
+            <span>Live Radio</span>
+          </Link>
+
+          {/* Mobile only */}
+          <Link href="/contact" className={styles.mobileOnlyLink}>
+            Get in Touch
           </Link>
         </div>
 
-        {/* Navigation Links */}
-        <div className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileActive : ''}`} ref={mobileMenuRef} id="primary-navigation">
-          <div className={styles.navLinks}>
-            <Link href="/" className={router.pathname === '/' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
-            <Link href="/viewlyrics" className={router.pathname === '/viewlyrics' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Music Lyrics</Link>
-            <Link href="/artistbio" className={router.pathname === '/artistbio' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Artist Bio</Link>
-            <Link href="/blogs" className={router.pathname === '/blogs' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
-            <Link href="/radio" className={router.pathname === '/radio' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Radio</Link>
-            <Link href="/contact" className={router.pathname === '/contact' ? styles.activeLink : ''} onClick={() => setIsMobileMenuOpen(false)}>Contact Us</Link>
-          </div>
+        {/* Desktop Actions */}
+        <div className={styles.navActions}>
+          <button
+            className={styles.searchBtn}
+            onClick={() => router.push('/searchresults')}
+            aria-label="Search"
+          >
+            <FaSearch />
+          </button>
+
+          <Link href="/contact" className={styles.contactBtn}>
+            Get in Touch
+          </Link>
         </div>
 
-        {/* Search Icon, navigate to searchresults page when clicked */}
-        <button className={styles.searchIcon} aria-label="Search" onClick={handleSearchClick}>
+        {/* Mobile Search */}
+        <button
+          className={styles.mobileSearchBtn}
+          onClick={() => router.push('/searchresults')}
+          aria-label="Search"
+        >
           <FaSearch />
         </button>
+
       </div>
     </nav>
   );

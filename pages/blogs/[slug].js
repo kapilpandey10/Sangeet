@@ -1,279 +1,156 @@
-// pages/blogs/[slug].js
-// -------------------------------------------------------------------
-// FULLY UPDATED VERSION WITH IMPROVED SEO, PERFORMANCE, AND DYNAMIC FEATURES
-// -------------------------------------------------------------------
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
 import { supabase } from '../../supabaseClient';
 import DOMPurify from 'dompurify';
+import { FaTwitter, FaFacebook, FaClock, FaEye, FaArrowLeft, FaShareAlt, FaCalendarAlt } from 'react-icons/fa';
 import styles from './style/ReadBlog.module.css';
-import { FaTwitter, FaFacebook } from 'react-icons/fa';
 
-// -------------------------------------------------------------------
-// COMPONENT: RelatedBlogs
-// Fetches and displays related articles based on tags.
-// -------------------------------------------------------------------
-const RelatedBlogs = ({ tags, slug }) => {
-  const [relatedBlogs, setRelatedBlogs] = useState([]);
-  const [visibleBlogs, setVisibleBlogs] = useState(5);
+const ReadBlog = ({ blog, relatedBlogs = [] }) => {
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [viewCount, setViewCount] = useState(blog?.views || 0);
 
-  const fetchRelatedBlogs = async () => {
-    console.log('RelatedBlogs::fetchRelatedBlogs => Starting...');
-    try {
-      if (tags) {
-        const tagArray = tags.split(',').map((tag) => tag.trim());
-        const tagsQuery = tagArray.map((tag) => `%${tag}%`);
-
-        const { data: relatedData, error } = await supabase
-          .from('blogs')
-          .select('title, slug, thumbnail_url, published_date')
-          .neq('slug', slug)
-          .eq('status', 'published')
-          .or(tagsQuery.map((tag) => `tags.ilike.${tag}`).join(','))
-          .limit(7);
-
-        if (error) throw new Error(error.message);
-
-        if (!relatedData || relatedData.length === 0) {
-          console.log('Fetching fallback blogs...');
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from('blogs')
-            .select('title, slug, thumbnail_url, published_date')
-            .neq('slug', slug)
-            .eq('status', 'published')
-            .order('published_date', { ascending: false })
-            .limit(7);
-
-          if (fallbackError) throw new Error(fallbackError.message);
-          setRelatedBlogs(fallbackData || []);
-        } else {
-          setRelatedBlogs(relatedData);
-        }
+  // 1. Interactive: Reading Progress Bar
+  useEffect(() => {
+    const updateProgress = () => {
+      const currentProgress = window.scrollY;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight > 0) {
+        setReadingProgress(Number((currentProgress / scrollHeight).toFixed(2)) * 100);
       }
-    } catch (err) {
-      console.error('Error fetching related blogs:', err);
+    };
+    window.addEventListener('scroll', updateProgress);
+    return () => window.removeEventListener('scroll', updateProgress);
+  }, []);
+
+  // 2. Database Action: Increment Views
+  useEffect(() => {
+    if (blog?.id) {
+      const incrementViews = async () => {
+        const { data, error } = await supabase.rpc('increment_blog_views', { blog_id: blog.id });
+        if (!error && data) setViewCount(data);
+      };
+      incrementViews();
     }
-  };
+  }, [blog?.id]);
 
-  useEffect(() => {
-    if (tags && tags.length > 0) fetchRelatedBlogs();
-  }, [tags]);
+  if (!blog) return <div className={styles.errorContainer}><h2>Story not found.</h2><Link href="/blogs">Back to Blogs</Link></div>;
 
-  const loadMore = () => setVisibleBlogs((prev) => prev + 5);
+  const readTime = Math.ceil((blog.content || "").split(' ').length / 200);
+  const currentUrl = `https://pandeykapil.com.np/blogs/${blog.slug}`;
 
-  return (
-    <aside className={styles.suggestedArticles}>
-      <h3>Suggested Articles</h3>
-      <ul>
-        {relatedBlogs.slice(0, visibleBlogs).map((related) => (
-          <li key={related.slug} className={styles.relatedArticle}>
-            <Link href={`/blogs/${related.slug}`}>
-              <Image
-                src={related.thumbnail_url || '/default-thumbnail.jpg'}
-                alt={`Thumbnail for ${related.title}`}
-                width={150}
-                height={150}
-                className={styles.relatedArticleThumbnail}
-                loading="lazy"
-              />
-              <div className={styles.relatedArticleInfo}>
-                <h4>{related.title}</h4>
-                <p className={styles.relatedArticleDate}>
-                  {new Date(related.published_date).toLocaleDateString()}
-                </p>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {relatedBlogs.length > visibleBlogs && (
-        <button onClick={loadMore} className={styles.loadMoreButton}>
-          Load More
-        </button>
-      )}
-    </aside>
-  );
-};
-
-// -------------------------------------------------------------------
-// COMPONENT: ReadBlog
-// Main component that displays the single blog post in detail.
-// -------------------------------------------------------------------
-const ReadBlog = ({ blog }) => {
-  const [ogImageUrl, setOgImageUrl] = useState('');
-  const [ogImageDimensions, setOgImageDimensions] = useState({ width: null, height: null });
-
-  useEffect(() => {
-    const isValidUrl = (string) => {
-      try {
-        new URL(string);
-        return true;
-      } catch {
-        return false;
-      }
-    };
-
-    const getOgImageUrl = () => {
-      if (!blog?.thumbnail_url) return 'https://pandeykapil.com.np/logo/logo.webp';
-      if (isValidUrl(blog.thumbnail_url)) return blog.thumbnail_url;
-      return `https://pandeykapil.com.np${blog.thumbnail_url}`;
-    };
-
-    const url = getOgImageUrl();
-    setOgImageUrl(url);
-
-    const img = new window.Image();
-    img.onload = () => setOgImageDimensions({ width: img.width, height: img.height });
-    img.src = url;
-  }, [blog?.thumbnail_url]);
-
-  if (!blog) {
-    return (
-      <div className={styles.errorContainer}>
-        <h2>Blog not found</h2>
-        <Link href="/blogs">Back to blogs</Link>
-      </div>
-    );
-  }
-
-  const sanitizedContent = DOMPurify.sanitize(blog.content, {
+  // Sanitize Content for Security
+  const sanitizedContent = typeof window !== 'undefined' ? DOMPurify.sanitize(blog.content, {
     ADD_TAGS: ['iframe'],
     ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
-    ALLOWED_URI_REGEXP: /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//,
-  });
-
-  const currentUrl = encodeURI(`https://pandeykapil.com.np/blogs/${blog.slug}`);
-
-  const truncateText = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength).split(' ').slice(0, -1).join(' ') + '...';
-    }
-    return text;
-  };
+  }) : blog.content;
 
   return (
-    <>
+    <div className={styles.pageWrapper}>
       <Head>
-        <title>{`${blog.title} - DynaBeats`}</title>
-        <meta name="description" content={truncateText(blog.excerpt || `Read about ${blog.title} on DynaBeats Blog`, 155)} />
-        <meta name="author" content={blog.author || 'Unknown'} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="canonical" href={currentUrl} />
-        <meta property="og:title" content={`${blog.title} | DynaBeats Blog`} />
-        <meta property="og:description" content={blog.excerpt || `Read about ${blog.title} on DynaBeats Blog`} />
-        <meta property="og:image" content={ogImageUrl} />
-        {ogImageDimensions.width && ogImageDimensions.height && (
-          <>
-            <meta property="og:image:width" content={ogImageDimensions.width.toString()} />
-            <meta property="og:image:height" content={ogImageDimensions.height.toString()} />
-          </>
-        )}
-        <meta property="og:url" content={currentUrl} />
+        <title>{`${blog.title} | DynaBeat Stories`}</title>
+        <meta name="description" content={blog.excerpt || "Read the latest Nepali music news on DynaBeat."} />
+        <meta property="og:image" content={blog.thumbnail_url || '/logo/logo.webp'} />
         <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="DynaBeats Blog" />
-        <meta property="og:locale" content="en_US" />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: blog.title,
-            image: ogImageUrl,
-            author: {
-              '@type': 'Person',
-              name: blog.author,
-            },
-            datePublished: blog.published_date,
-            dateModified: blog.updated_date || blog.published_date,
-            description: blog.excerpt,
-            mainEntityOfPage: currentUrl,
-            publisher: {
-              '@type': 'Organization',
-              name: 'DynaBeats',
-              logo: {
-                '@type': 'ImageObject',
-                url: 'https://pandeykapil.com.np/logo.png',
-              },
-            },
-          })}
-        </script>
       </Head>
 
-      <div className={styles.readBlogContainer}>
-        <nav className={styles.breadcrumb} aria-label="breadcrumb">
-          <Link href="/">Home</Link> / <Link href="/blogs">Blogs</Link> / {blog.title}
-        </nav>
+      {/* Modern Top Progress Bar */}
+      <div className={styles.progressContainer}>
+        <div className={styles.progressBar} style={{ width: `${readingProgress}%` }}></div>
+      </div>
 
-        <div className={styles.blogLayout}>
-          <div className={styles.blogContent}>
-            <header className={styles.blogHeader}>
-              <h1>{blog.title}</h1>
-              <p className={styles.blogMeta}>
-                Written by <span>{blog.author || 'Unknown'}</span> on{' '}
-                <span>{new Date(blog.published_date).toLocaleDateString()}</span>
-                {blog.updated_date && (
-                  <> • Last updated on <span>{new Date(blog.updated_date).toLocaleDateString()}</span></>
-                )}
-              </p>
-            </header>
+      <main className={styles.readBlogContainer}>
+        <Link href="/blogs" className={styles.backBtn}><FaArrowLeft /> Back to Newsroom</Link>
 
-            {ogImageDimensions.width && ogImageDimensions.height && (
-              <Image
-                src={ogImageUrl}
-                alt={blog.title}
-                width={ogImageDimensions.width}
-                height={ogImageDimensions.height}
-                className={styles.blogImage}
-                priority
-              />
-            )}
-
-            <div
-              className={styles.blogHtmlContent}
-              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-              aria-label="Blog content"
-            />
-
-            <div className={styles.socialShare}>
-              <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.twitterShare}
-              >
-                <FaTwitter className={styles.socialIcon} /> Share on Twitter
-              </a>
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.facebookShare}
-              >
-                <FaFacebook className={styles.socialIcon} /> Share on Facebook
-              </a>
+        <header className={styles.articleHeader}>
+          <div className={styles.categoryBadge}>Inside Music</div>
+          <h1 className={styles.mainTitle}>{blog.title}</h1>
+          
+          <div className={styles.authorBar}>
+            <div className={styles.authorInfo}>
+              <strong>{blog.author || 'DynaBeat Editor'}</strong>
+              <span><FaCalendarAlt /> {new Date(blog.published_date).toLocaleDateString()}</span>
+            </div>
+            <div className={styles.statsRow}>
+              <span><FaClock /> {readTime} min read</span>
+              <span><FaEye /> {viewCount} views</span>
             </div>
           </div>
+        </header>
 
-          <RelatedBlogs tags={blog.tags} slug={blog.slug} />
+        <div className={styles.heroImageBox}>
+          <Image 
+            src={blog.thumbnail_url || '/logo/logo.webp'} 
+            alt={blog.title} 
+            fill 
+            className={styles.heroImage}
+            priority 
+          />
         </div>
-      </div>
-    </>
+
+        <div className={styles.layoutBody}>
+          <article className={styles.mainContent}>
+            <div 
+              className={styles.blogHtmlContent}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+            />
+            
+            <div className={styles.shareSection}>
+               <h3>Enjoyed this story? Share the beat.</h3>
+               <div className={styles.shareBtns}>
+                 <a href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`} target="_blank" className={styles.fbBtn}><FaFacebook /> Facebook</a>
+                 <a href={`https://twitter.com/intent/tweet?url=${currentUrl}`} target="_blank" className={styles.twBtn}><FaTwitter /> Twitter</a>
+               </div>
+            </div>
+          </article>
+
+          {/* Fixed Related Sidebar */}
+          <aside className={styles.sidebar}>
+            <h3>More Headlines</h3>
+            <div className={styles.relatedGrid}>
+              {relatedBlogs.length > 0 ? relatedBlogs.map((item) => (
+                <Link href={`/blogs/${item.slug}`} key={item.id} className={styles.sideCard}>
+                   <div className={styles.sideThumb}>
+                     <Image src={item.thumbnail_url || '/logo/logo.webp'} alt={item.title} fill />
+                   </div>
+                   <h4>{item.title}</h4>
+                </Link>
+              )) : <p>No related stories yet.</p>}
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
   );
 };
 
 export async function getServerSideProps({ params }) {
   const { slug } = params;
 
+  // 1. Fetch the main blog story
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
     .eq('slug', slug)
     .single();
-
+  
   if (error || !blog) return { notFound: true };
 
-  return { props: { blog } };
+  // 2. Fetch related blogs for the sidebar
+  const { data: relatedBlogs } = await supabase
+    .from('blogs')
+    .select('id, title, slug, thumbnail_url')
+    .neq('id', blog.id) // Don't show the current post
+    .limit(4);
+
+  return { 
+    props: { 
+      blog, 
+      relatedBlogs: relatedBlogs || [] // Fallback to empty array to prevent .map() error
+    } 
+  };
 }
 
 export default ReadBlog;

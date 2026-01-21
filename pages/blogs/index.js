@@ -1,175 +1,113 @@
-import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import Link from 'next/link';
 import Head from 'next/head';
+import Image from 'next/image';
+import { FaCalendarAlt, FaUser, FaArrowRight, FaNewspaper, FaClock } from 'react-icons/fa';
 import styles from './style/BlogHomepage.module.css';
 
-const BlogHomepage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedTag, setSelectedTag] = useState('all');
-  const blogsPerPage = 12;
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('blogs')
-          .select('id, title, author, excerpt, slug, thumbnail_url, tags, published_date, content')
-          .eq('status', 'published')
-          .order('published_date', { ascending: false });
-  
-        if (error) {
-          console.error('Error fetching blogs:', error.message);
-          return;
-        }
-  
-        console.log('Fetched blogs:', data); // Check the fetched data structure
-  
-        setBlogs(data);
-        setFilteredBlogs(data);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchBlogs();
-  }, []);
-  
-
-  useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    setFilteredBlogs(
-      blogs.filter((blog) =>
-        blog.title.toLowerCase().includes(lowercasedQuery) ||
-        blog.author.toLowerCase().includes(lowercasedQuery) ||
-        (Array.isArray(blog.tags) && blog.tags.some((tag) => tag.toLowerCase().includes(lowercasedQuery))) ||
-        blog.content.toLowerCase().includes(lowercasedQuery)
-      )
-    );
-  }, [searchQuery, blogs]);
-  
-
-  useEffect(() => {
-    if (selectedTag === 'all') {
-      setFilteredBlogs(blogs);
-    } else {
-      setFilteredBlogs(blogs.filter((blog) => blog.tags.includes(selectedTag)));
+const BlogHomepage = ({ blogs = [] }) => {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "DynaBeat Music & Culture",
+    "description": "Latest news and deep dives into Nepali music culture.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "DynaBeat",
+      "logo": "https://pandeykapil.com.np/logo/logo.webp"
     }
-  }, [selectedTag, blogs]);
-
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
-
-  const loadMoreBlogs = () => setCurrentPage((prevPage) => prevPage + 1);
-
-  const handleTagClick = (tag) => {
-    setSelectedTag(tag);
-    setCurrentPage(1);
   };
 
-  const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags)));
+  const hasBlogs = blogs && blogs.length > 0;
+  const featuredBlog = hasBlogs ? blogs[0] : null;
+  const regularBlogs = hasBlogs ? blogs.slice(1) : [];
 
   return (
-    <div className={styles.blogHomepageContainer}>
+    <div className={styles.blogContainer}>
       <Head>
-        <title>News and Blogs - Dynabeat</title>
-        <meta name="description" content="Explore the latest blogs on various topics from Dynabeat." />
-        <link rel="canonical" href="https://pandeykapil.com.np/blogs" />
+        <title>DynaStories | Nepali Music News</title>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </Head>
 
-      <h1 className={styles.blogHomepageTitle}>Latest Blogs</h1>
+      <header className={styles.blogHeader}>
+        <h1 className={styles.mainTitle}>Dyna<span>Stories</span></h1>
+        <p className={styles.subSubtitle}>The Pulse of Nepali Music Culture</p>
+      </header>
 
-      <div className={styles.searchBarContainer}>
-        <input
-          type="text"
-          className={styles.searchBar}
-          placeholder="Search by title, author, or tags..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          aria-label="Search blogs"
-        />
-        {searchQuery && (
-          <p className={styles.searchResultsInfo}>
-            {filteredBlogs.length} articles found for "{searchQuery}"
-          </p>
+      <main className={styles.blogMain}>
+        {/* FEATURED SPOTLIGHT */}
+        {featuredBlog ? (
+          <section className={styles.featuredSection}>
+            <Link href={`/blogs/${featuredBlog.slug}`} className={styles.featuredCard}>
+              <div className={styles.featuredImage}>
+                <Image 
+                  src={featuredBlog.thumbnail_url || '/logo/logo.webp'} 
+                  alt={featuredBlog.title}
+                  fill
+                  priority
+                />
+                <span className={styles.categoryBadge}>Featured Story</span>
+              </div>
+              <div className={styles.featuredContent}>
+                <div className={styles.metaRow}>
+                  <span><FaCalendarAlt /> {new Date(featuredBlog.created_at).toLocaleDateString()}</span>
+                  <span><FaUser /> {featuredBlog.author}</span>
+                </div>
+                <h2>{featuredBlog.title}</h2>
+                {/* Use the dedicated 'excerpt' column to avoid raw HTML */}
+                <p>{featuredBlog.excerpt || "Read the latest update from DynaBeat."}</p>
+                <span className={styles.readMore}>Read Full Story <FaArrowRight /></span>
+              </div>
+            </Link>
+          </section>
+        ) : (
+          <p className={styles.noData}>No featured stories available at the moment.</p>
         )}
-      </div>
 
-      <section className={styles.tagFilterSection}>
-        <ul className={styles.tagList} aria-label="Filter by tags">
-          <li
-            className={`${styles.tagItem} ${selectedTag === 'all' ? styles.activeTag : ''}`}
-            onClick={() => handleTagClick('all')}
-          >
-            All
-          </li>
-          {allTags.map((tag) => (
-            <li
-              key={tag}
-              className={`${styles.tagItem} ${selectedTag === tag ? styles.activeTag : ''}`}
-              onClick={() => handleTagClick(tag)}
-            >
-              {tag.charAt(0).toUpperCase() + tag.slice(1)}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {loading ? (
-        <div className={styles.skeletonContainer}>
-          {Array.from({ length: 10 }).map((_, index) => (
-            <div className={styles.skeletonCard} key={index}></div>
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className={styles.blogGridContainer}>
-  {currentBlogs.length > 0 ? (
-    currentBlogs.map((blog) => (
-      <div className={styles.blogCard} key={blog.id}>
-        <img
-          className={styles.blogCardImage}
-          src={blog.thumbnail_url || 'https://via.placeholder.com/200'}
-          alt={`${blog.title} thumbnail`}
-        />
-        <div className={styles.blogCardContent}>
-          {/* Link the title directly to the blog page */}
-          <Link href={`/blogs/${blog.slug}`} legacyBehavior>
-            <a className={styles.blogCardTitle}>
-              <h2>{blog.title}</h2>
-            </a>
-          </Link>
-          <p className={styles.blogCardAuthor}>
-            By {blog.author} | {new Date(blog.published_date).toLocaleDateString()}
-          </p>
-          <p className={styles.blogCardExcerpt}>
-            {blog.excerpt.length > 100 ? `${blog.excerpt.substring(0, 100)}...` : blog.excerpt}
-          </p>
-        </div>
-      </div>
-    ))
-  ) : (
-    <p className={styles.noBlogsMessage}>No blogs available.</p>
-  )}
-</div>
-
-
-          {filteredBlogs.length > currentBlogs.length && (
-            <button className={styles.loadMoreButton} onClick={loadMoreBlogs}>
-              Load More
-            </button>
-          )}
-        </>
-      )}
+        {/* HEADLINES GRID */}
+        <section className={styles.newsGridSection}>
+          <div className={styles.sectionHeader}>
+            <h3><FaClock /> Recent Headlines</h3>
+            <div className={styles.divider}></div>
+          </div>
+          
+          <div className={styles.blogsGrid}>
+            {regularBlogs.map((blog) => (
+              <Link href={`/blogs/${blog.slug}`} key={blog.id} className={styles.newsCard}>
+                <div className={styles.cardThumb}>
+                  <Image 
+                    src={blog.thumbnail_url || '/logo/logo.webp'} 
+                    alt={blog.title}
+                    fill
+                  />
+                </div>
+                <div className={styles.cardInfo}>
+                  <span className={styles.cardDate}>{new Date(blog.created_at).toLocaleDateString()}</span>
+                  <h4>{blog.title}</h4>
+                  {/* Use 'excerpt' here as well to keep the card clean */}
+                  <p>{blog.excerpt ? blog.excerpt.substring(0, 100) + '...' : ''}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
+};
+
+export const getServerSideProps = async () => {
+  try {
+    const { data: blogs, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { props: { blogs: blogs || [] } };
+  } catch (error) {
+    return { props: { blogs: [] } };
+  }
 };
 
 export default BlogHomepage;

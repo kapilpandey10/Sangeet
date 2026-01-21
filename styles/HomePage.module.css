@@ -1,288 +1,281 @@
-/* General page container */
+/* File: styles/HomePage.module.css */
+
+/* --- Root & Base Styles --- */
 .homepageContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  width: 100%; /* Ensure full width on all devices */
-  box-sizing: border-box; /* Include padding in total width */
-}
-
-
-
-/* Scroll Animation Keyframes */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* General scroll animations */
-.scrollAnimated {
-  opacity: 0;
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.fadeInUp {
-  animation: fadeInUp 1s forwards;
-}
-
-.fadeIn {
-  animation: fadeIn 1s forwards;
-}
-
-/* Page heading */
-.heading {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin: 40px 0 20px;
-}
-
-/* Lyrics Section */
-.lyricsBar {
-  background-color: #f9f9f9;
-  padding: 40px;
-  border-radius: 10px;
-  box-sizing: border-box; /* Ensure padding is included */
-  margin-top: 40px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.lyricsBar h2 {
-  text-align: center;
-  font-size: 2rem;
-  color: #2c3e50;
-  margin-bottom: 30px;
-}
-
-/* Lyrics card container */
-.lyricsHorizontalBar {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.lyricItem {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 23%; /* Responsive width for desktop */
-  text-align: center;
-  box-sizing: border-box; /* Include padding in width */
-}
-
-.lyricItem:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.lyricItem h3 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #000;
-  margin-bottom: 10px;
-}
-
-.lyricItem p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 5px;
-}
-
-.lyricItem a {
-  display: inline-block;
-  margin-top: 10px;
-  color: #6a0dad;
-  font-weight: bold;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.lyricItem a:hover {
-  color: #8b008b;
-}
-
-/* View All button styling */
-.viewAll {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.viewAll a {
-  font-size: 1rem;
-  color: #6a0dad;
-  text-decoration: none;
-}
-
-.viewAll a:hover {
-  color: #8b008b;
-  text-decoration: underline;
-}
-
-/* Featured Artist Section */
-.featuredArtistSection {
-  margin-top: 50px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.featuredArtistTitle {
-  text-align: center;
-  font-size: 2rem;
-  color: #2c3e50;
-  margin-bottom: 30px;
-}
-
-.featuredArtistContainer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* Ad Container */
-.adContainer {
-  margin: 40px 0;
-  text-align: center;
-}
-
-/* Skeleton Loader for placeholder loading states */
-.skeletonLoader {
-  display: inline-block;
+  background-color: #000000; /* Deep black theme */
+  color: #ffffff;
+  min-height: 100vh;
   width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* --- Hero Section & Advanced Layout --- */
+.heroSection {
+  position: relative;
+  height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Hero Section Typography */
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: radial-gradient(circle at center, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+}
+
+.mainTitle {
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 950;
+  letter-spacing: -4px;
+  margin: 0;
+}
+
+.mainTitle span {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.4));
+}
+
+/* Glassmorphic Grid Cards */
+.newsGrid, .lyricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 1300px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+}
+
+.newsCard, .glassCard {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: 0.4s;
+  text-decoration: none;
+}
+
+.newsCard:hover, .glassCard:hover {
+  transform: translateY(-10px);
+  border-color: var(--neon-pink);
+  box-shadow: 0 20px 40px rgba(255, 0, 255, 0.15);
+}
+
+.newsThumbBox { position: relative; height: 220px; width: 100%; }
+.newsInfo { padding: 25px; }
+
+/* SEO Article Section */
+.seoArticle {
+  background: var(--bg-dark-grey);
+  padding: 100px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.seoInner { max-width: 900px; margin: 0 auto; line-height: 1.8; color: var(--text-grey); }
+.seoInner h2 { color: var(--text-white); margin-bottom: 25px; }
+.seoInner strong { color: var(--neon-pink); }
+
+/* Mobile Adaptability */
+@media (max-width: 1024px) {
+  .newsGrid, .lyricsGrid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .newsGrid, .lyricsGrid { grid-template-columns: 1fr; }
+  .mainTitle { letter-spacing: -1.5px; }
+}
+
+.heroOverlay {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 900px;
+  padding: 0 20px;
+}
+
+
+
+.mainTitle span {
+  background: linear-gradient(90deg, #ff00ff, #ffff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.4));
+}
+
+.advancedSubtitle {
+  font-size: 1.1rem;
+  color: #888;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 15px;
+  font-weight: 700;
+}
+
+.subSubtitle {
+  font-size: 1.4rem;
+  color: #888;
+  font-weight: 500;
+  margin-bottom: 40px;
+}
+
+/* --- SEO Article & Advanced Content --- */
+.seoArticle {
+  background-color: #050505;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 80px 20px;
+  color: #777;
+  line-height: 1.8;
+  margin-top: 60px;
+}
+
+.seoInner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.seoInner h2, .seoInner h3 {
+  color: #fff;
+  font-weight: 800;
   margin-bottom: 20px;
 }
 
-.skeletonTitle {
-  width: 60%;
-  height: 24px;
-  margin-bottom: 16px;
-  background-color: #e0e0e0;
+.seoInner strong {
+  color: #ff00ff; /* Pink accent for SEO keywords */
 }
 
-.skeletonLyricsItem,
-.skeletonYTVideo {
+/* --- Lyrics Grid & Glass Cards --- */
+.section {
+  max-width: 1300px;
+  margin: 0 auto 80px;
+  padding: 0 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.lyricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.glassCard {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-decoration: none;
+}
+
+.glassCard:hover {
+  transform: translateY(-12px);
+  border-color: #ff00ff;
+  box-shadow: 0 20px 40px rgba(255, 0, 255, 0.15);
+}
+
+.imageContainer {
+  position: relative;
   width: 100%;
-  height: 150px;
-  margin-bottom: 10px;
-  background-color: #e0e0e0;
+  height: 220px;
 }
 
-/* Responsive Design */
+.cardImage {
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
 
-/* For tablets and small screens */
+.glassCard:hover .cardImage {
+  transform: scale(1.1);
+}
+
+.cardDetails {
+  padding: 25px;
+  position: relative;
+}
+
+.songTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.artistName {
+  color: #ff00ff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.yearBadge {
+  position: absolute;
+  top: -15px;
+  right: 25px;
+  background: linear-gradient(90deg, #ff00ff, #ffff00);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+/* --- Animations --- */
+.scrollAnimated {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Mobile Responsiveness --- */
 @media (max-width: 1024px) {
-  .lyricItem {
-    width: 45%; /* Adjust for medium screens */
-  }
-
-  .featuredArtistContainer {
-    flex-direction: column;
-  }
+  .mainTitle { font-size: 3.5rem; }
+  .lyricsGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* For mobile screens */
 @media (max-width: 768px) {
-  .lyricItem {
-    width: 100%; /* Take full width on mobile */
+  .mainTitle { font-size: 2.8rem; letter-spacing: -1.5px; }
+  .subSubtitle { font-size: 1.1rem; }
+  .lyricsGrid { grid-template-columns: 1fr; }
+  .sectionTitle { font-size: 1.8rem; }
+  
+  .glassCard {
     margin-bottom: 20px;
   }
-
-  .viewAll a {
-    font-size: 0.9rem;
-  }
-
-  .lyricsBar, .featuredArtistSection {
-    padding: 20px;
-    margin-top: 20px;
-  }
 }
 
-/* For very small mobile screens */
 @media (max-width: 480px) {
-  .lyricItem {
-    margin-bottom: 15px; /* Adjust spacing */
-  }
-
-  .homepageContainer {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .viewAll a {
-    font-size: 0.8rem;
-  }
-}
-/* Thumbnail base style */
-.thumbnail {
-  width: 100%;
-  height: auto;
-  border-radius: 4 px;
-  object-fit: cover;
-  margin-bottom: 10px;
-}
-
-/* Small screens (mobile) */
-@media only screen and (max-width: 600px) {
-  .thumbnail {
-    width: 250px;
-    height: 120px;
-  }
-}
-
-/* Medium screens (tablet) */
-@media only screen and (min-width: 601px) and (max-width: 1024px) {
-  .thumbnail {
-    width: 200px;
-    height: 110px;
-  }
-}
-
-/* Large screens (desktop) */
-@media only screen and (min-width: 1025px) {
-  .thumbnail {
-    width: 200px;
-    height: 150px;
-  }
-}
-
-
-
-/* Song Title Base Style */
-.songTitle a {
-  font-weight: bold;
-  color: #333; /* Default color for the title */
-  text-decoration: none;
-  transition: color 0.3s ease, transform 0.1s ease; /* Smooth transitions */
-}
-
-/* Hover Effect */
-.songTitle a:hover {
-  color: #6a0dad; /* Change color on hover */
-  text-decoration: underline; /* Optional underline on hover */
-}
-
-/* Press (Active) Effect */
-.songTitle a:active {
-  transform: scale(0.98); /* Slightly shrink when pressed */
-  color: #4b0082; /* Darker color on press */
+  .heroWrapper { padding-top: 40px; }
+  .mainTitle { font-size: 2.2rem; }
+  .imageContainer { height: 200px; }
 }

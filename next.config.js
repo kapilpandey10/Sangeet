@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your other configurations here (if any)
   reactStrictMode: true,
-  
   images: {
     remotePatterns: [
       {
@@ -25,7 +23,6 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'i.imghippo.com',
       },
-      // You can add more hostnames here as needed
     ],
   },
 };

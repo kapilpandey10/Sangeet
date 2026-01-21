@@ -1,98 +1,257 @@
 /* File: style/ViewLyrics.module.css */
 
-/* --- General Page & Typography --- */
-.viewLyricsPage {
-  max-width: 1200px;
-  margin: auto;
-  padding: 1.5rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #2c3e50; /* Dark charcoal for excellent readability */
-  background-color: #f8f9fa; /* Very light gray background */
-}
-
-/* --- Breadcrumb (Improved) --- */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #7f8c8d; /* Muted gray for subtlety */
-  margin-bottom: 2rem;
-}
-
-.breadcrumb a {
-  text-decoration: none;
-  color: #3498db; /* Primary blue for links */
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.breadcrumb a:hover {
-  color: #2980b9;
-  text-decoration: underline;
-}
-
-.breadcrumb span {
-  margin: 0 0.5rem;
-  color: #bdc3c7; /* Lighter gray for separators */
-}
-
-/* --- Lyrics Header (Refined Layout) --- */
-.lyricsHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 2.5rem;
-  padding: 1.5rem;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.thumbnail {
-  border-radius: 8px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  width: 180px; /* Consistent thumbnail size */
-  height: 180px; /* Consistent thumbnail size */
-  object-fit: cover;
-  margin-bottom: 1.5rem;
-}
-
-.lyricsHeader h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 0.5rem;
-  line-height: 1.2;
-}
-
-.lyricsHeader p {
-  font-size: 1rem;
-  color: #7f8c8d;
-  margin: 0.25rem 0;
-}
-
-.verified {
-  margin-top: 1rem;
-}
-
-/* --- Language Toggle Button --- */
-.toggleButton {
-  background-color: #3498db;
+.pageContainer {
+  position: relative;
+  min-height: 100vh;
+  background: #050505;
   color: #fff;
+  overflow-x: hidden;
+}
+
+/* Immersive Background Logic */
+.bgBlur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(80px) saturate(1.5);
+  opacity: 0.35;
+  z-index: 0;
+  transform: scale(1.1); /* Prevents white edges from blur */
+}
+
+.bgOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 0%, #050505 90%);
+  z-index: 1;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 8rem 2rem 4rem;
+}
+
+/* Hero Styles */
+.heroSection {
+  margin-bottom: 4rem;
+}
+
+.heroMain {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+.imageWrapper {
+  flex-shrink: 0;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.mainThumb {
+  object-fit: cover;
+}
+
+.songTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(to right, #fff, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.artistName {
+  font-size: 1.4rem;
+  color: #ff0055;
+  font-weight: 600;
+}
+
+/* Glass Lyrics Panel */
+.glassPanel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 40px;
+  padding: 3rem;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+}
+
+.panelHeader {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  color: #777;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 1rem;
+}
+
+.lyricsBody {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  line-height: 2;
+  color: #eee;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+/* Buttons */
+.toggleBtn {
+  background: #fff;
+  color: #000;
   border: none;
-  padding: 0.8rem 2rem;
+  padding: 0.8rem 1.5rem;
   border-radius: 50px;
-  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.toggleBtn:hover {
+  background: #ff0055;
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+/* Video Wrapper */
+.videoWrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: 30px;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.videoWrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Related Grid */
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.smallCard {
+  background: rgba(255,255,255,0.03);
+  border-radius: 20px;
+  padding: 10px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.smallCard:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.smallThumb {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Reveal Animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: 1s ease;
+}
+
+.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .heroMain { flex-direction: column; text-align: center; }
+  .songTitle { font-size: 2.5rem; }
+  .glassPanel { padding: 1.5rem; border-radius: 25px; }
+  .lyricsBody { font-size: 1.1rem; }
+}
+/* File: pages/viewlyrics/style/ViewLyrics.module.css */
+.viewLyricsPage {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  padding: 2rem 1rem;
+}
+
+.lyricsHeader {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.lyricsText {
+  background: var(--bg-card);
+  color: #1f2937;
+  padding: 3rem;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  line-height: 2;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  white-space: pre-wrap;
+  font-family: inherit; /* Removing mono-space for cleaner feel */
+}
+
+.toggleButton {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  display: block;
-  margin: 0 auto 2.5rem;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 2rem;
+  transition: opacity 0.2s;
 }
 
 .toggleButton:hover {
+<<<<<<< HEAD
   background-color: #2980b9;
   transform: translateY(-2px);
 }
@@ -276,3 +435,7 @@
   background-color: transparent; /* It's invisible, but it blocks events */
   pointer-events: auto; /* This makes the div intercept pointer events */
 }
+=======
+  opacity: 0.9;
+}
+>>>>>>> 33442c1 (Update: Advanced Blog Homepage and Search UI)

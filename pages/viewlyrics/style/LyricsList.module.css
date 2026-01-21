@@ -1,200 +1,163 @@
-/* File: style/LyricsList.module.css */
-
-.lyricsListContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #333;
+.libraryContainer {
+  background-color: #f8fafc;
+  min-height: 100vh;
 }
 
-.header {
+.heroSection {
+  background: #ffffff;
+  padding: 8rem 2rem 4rem;
+  border-bottom: 1px solid #e2e8f0;
   text-align: center;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -2px;
   margin-bottom: 2rem;
 }
 
-.title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin: 0;
+.heroTitle span { color: #6366f1; }
+
+.searchWrapper {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.subtitle {
+.searchIcon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
+
+.searchWrapper input {
+  width: 100%;
+  padding: 1.2rem 1.2rem 1.2rem 4rem;
+  border-radius: 100px;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
   font-size: 1.1rem;
-  color: #7f8c8d;
-  margin-top: 0.5rem;
-}
-
-.searchFilterContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  background-color: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-@media (min-width: 768px) {
-  .searchFilterContainer {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
-.searchInput {
-  flex-grow: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.searchInput:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  transition: 0.3s;
 }
 
-.filterGroup {
+.searchWrapper input:focus {
+  background: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.2);
+}
+
+.mainContent {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.sectionArea {
+  margin-bottom: 4rem;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
 }
 
-.filterLabel {
-  font-size: 1rem;
-  color: #555;
-  white-space: nowrap;
-}
-
-.selectDropdown {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.contentSection {
-  margin-top: 2rem;
-}
-
-.artistSection {
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #eee;
-}
-
-.artistTitle {
-  font-size: 2rem;
-  color: #2c3e50;
-  margin-bottom: 1.5rem;
-  border-left: 4px solid #3498db;
-  padding-left: 1rem;
-}
-
-.lyricsGrid {
+.spotifyGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
 }
 
-.lyricCard {
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+.musicCard {
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.thumbBox {
+  position: relative;
+  aspect-ratio: 1/1;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.lyricCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.thumbnail {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.lyricCardContent {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.songTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #34495e;
-  margin: 0 0 0.5rem;
-}
-
-.smallText {
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   margin-bottom: 1rem;
 }
 
-.infoLabel {
-  font-weight: 600;
-  color: #555;
+.cardImg { object-fit: cover; transition: 0.5s; }
+
+.playBtn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 45px;
+  height: 45px;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: 0.3s;
 }
 
-.viewLyricsButton {
-  display: inline-block;
-  background-color: #3498db;
-  color: #fff;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
+.musicCard:hover .playBtn { opacity: 1; transform: translateY(0); }
+
+.songTitle { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0; }
+.artistName { font-size: 0.9rem; color: #64748b; margin-top: 0.3rem; }
+
+.horizontalScroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.compactRow {
+  flex-shrink: 0;
+  width: 280px;
+  background: #fff;
+  padding: 0.8rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #e2e8f0;
   text-decoration: none;
+}
+
+.miniThumb { border-radius: 6px; object-fit: cover; }
+.miniInfo h4 { margin: 0; font-size: 1rem; }
+.miniInfo p { margin: 0; color: #64748b; font-size: 0.8rem; }
+
+.noResults {
+  grid-column: 1 / -1;
   text-align: center;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  margin-top: auto; /* Pushes the button to the bottom */
+  padding: 3rem;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px dashed #cbd5e1;
 }
 
-.viewLyricsButton:hover {
-  background-color: #2980b9;
-}
-
-.noLyricsMessage {
-  text-align: center;
-  font-size: 1.1rem;
-  color: #7f8c8d;
-  padding: 2rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-}
-
-.viewMoreContainer {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.viewMoreButton {
-  background-color: #f39c12;
+.googleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #1e293b;
   color: #fff;
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.viewMoreButton:hover {
-  background-color: #e67e22;
+  padding: 0.8rem 1.5rem;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 1rem;
 }

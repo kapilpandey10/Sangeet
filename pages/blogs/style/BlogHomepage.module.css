@@ -1,176 +1,139 @@
-/* BlogHomepage.module.css - Responsive Design */
-
-.blogHomepageContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  font-family: 'Arial, sans-serif';
+.blogContainer {
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  padding: 120px 20px 80px;
 }
 
-.blogHomepageTitle {
+.blogHeader {
   text-align: center;
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 80px;
 }
 
-.searchBarContainer {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 30px;
-}
-
-.searchBar {
-  width: 60%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-.searchResultsInfo {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 1rem;
-  color: #555;
-}
-
-.tagFilterSection {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.tagList {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  list-style: none;
-  padding: 0;
+.mainTitle {
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 950;
+  letter-spacing: -4px;
   margin: 0;
 }
 
-.tagItem {
-  padding: 8px 15px;
-  border: 1px solid #007bff;
-  border-radius: 50px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  color: #007bff;
-  background-color: #fff;
+.mainTitle span {
+  background: linear-gradient(90deg, #ff00ff, #ffff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.4));
 }
 
-.tagItem:hover,
-.activeTag {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.skeletonContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.skeletonCard {
-  height: 250px;
-  background-color: #e0e0e0;
-  border-radius: 10px;
-}
-
-.blogGridContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-bottom: 40px;
-}
-
-.blogCard {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.3s ease;
-}
-
-.blogCard:hover {
-  transform: translateY(-5px);
-}
-
-.blogCardImage {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.blogCardContent {
-  padding: 20px;
-}
-
-.blogCardTitle {
-  font-size: 1.5rem;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.blogCardAuthor {
-  font-size: 0.9rem;
+.subSubtitle {
   color: #888;
-  margin-bottom: 15px;
-}
-
-.blogCardExcerpt {
-  font-size: 1rem;
-  color: #555;
-}
-
-.blogCardTitle:hover {
-  
-  color: #0458ff;
-  
-}
-
-
-.noBlogsMessage {
-  text-align: center;
   font-size: 1.2rem;
-  color: #666;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 15px;
 }
 
-.loadMoreButton {
-  display: block;
-  margin: 0 auto;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s;
+/* Featured Story Spotlight */
+.featuredSection {
+  max-width: 1300px;
+  margin: 0 auto 100px;
 }
 
-.loadMoreButton:hover {
-  background-color: #0056b3;
+.featuredCard {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  background: rgba(15, 15, 15, 0.8);
+  border-radius: 40px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+  transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .blogCardContent {
-    padding: 15px;
-  }
+.featuredCard:hover {
+  transform: translateY(-15px);
+  border-color: #ff00ff;
+  box-shadow: 0 30px 60px rgba(255, 0, 255, 0.15);
+}
 
-  .blogCardTitle {
-    font-size: 1.2rem;
-  }
+.featuredImage { position: relative; height: 550px; }
+.heroImg { object-fit: cover; }
 
-  .blogCardExcerpt {
-    font-size: 0.9rem;
-  }
+.categoryBadge {
+  position: absolute;
+  top: 30px; left: 30px;
+  background: #ff00ff;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-weight: 900;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
 
-  .searchBar {
-    width: 90%;
-  }
+.featuredContent {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.metaRow { display: flex; gap: 25px; color: #ff00ff; font-weight: 800; margin-bottom: 25px; }
+
+.featuredContent h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 25px;
+}
+
+.featuredContent p { color: #aaa; line-height: 1.8; font-size: 1.1rem; margin-bottom: 40px; }
+
+.readMore {
+  background: linear-gradient(90deg, #ff00ff, #ffff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Headlines Grid */
+.newsGridSection { max-width: 1300px; margin: 0 auto; }
+.sectionHeader { display: flex; align-items: center; gap: 25px; margin-bottom: 50px; }
+.sectionHeader h3 { font-size: 1.8rem; font-weight: 800; white-space: nowrap; }
+.divider { height: 1px; background: rgba(255, 255, 255, 0.1); width: 100%; }
+
+.blogsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 40px;
+}
+
+.newsCard {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.newsCard:hover { border-color: #ff00ff; transform: scale(1.03); }
+.cardThumb { position: relative; height: 240px; }
+.cardInfo { padding: 30px; }
+.cardDate { color: #ff00ff; font-weight: 800; margin-bottom: 12px; display: block; }
+.cardInfo h4 { font-size: 1.4rem; color: #fff; margin-bottom: 12px; line-height: 1.3; }
+.cardInfo p { color: #777; font-size: 0.95rem; line-height: 1.6; }
+
+/* Mobile Optimization */
+@media (max-width: 1100px) {
+  .featuredCard { grid-template-columns: 1fr; }
+  .featuredImage { height: 400px; }
+}
+
+@media (max-width: 640px) {
+  .blogsGrid { grid-template-columns: 1fr; }
+  .featuredContent { padding: 30px; }
 }

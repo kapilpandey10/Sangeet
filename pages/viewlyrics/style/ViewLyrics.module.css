@@ -251,12 +251,10 @@
 }
 
 .toggleButton:hover {
-<<<<<<< HEAD
   background-color: #2980b9;
   transform: translateY(-2px);
 }
 
-/* --- Lyrics Text & Music Video --- */
 .lyricsText {
   white-space: pre-wrap;
   font-family: 'Roboto Mono', monospace;
@@ -435,7 +433,4 @@
   background-color: transparent; /* It's invisible, but it blocks events */
   pointer-events: auto; /* This makes the div intercept pointer events */
 }
-=======
-  opacity: 0.9;
-}
->>>>>>> 33442c1 (Update: Advanced Blog Homepage and Search UI)
+

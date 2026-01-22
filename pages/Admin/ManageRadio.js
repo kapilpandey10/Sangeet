@@ -115,16 +115,17 @@ const ManageRadio = () => {
                 <h3>Broadcast Inspector</h3>
                 <div className={styles.inspectorActions}>
                   {/* Status Toggle Button */}
-                  <button 
-                    type="button" 
-                    className={editStation.status === 'Online' ? styles.btnOnline : styles.btnOffline}
-                    onClick={() => setEditStation({
-                      ...editStation, 
-                      status: editStation.status === 'Online' ? 'Offline' : 'Online'
-                    })}
-                  >
-                    {editStation.status === 'Online' ? <><FaPlay /> Online</> : <><FaStop /> Offline</>}
-                  </button>
+                  {/* Status Toggle Button */}
+<button 
+  type="button" 
+  className={editStation.status === 'Online' ? styles.btnOnline : styles.btnOffline}
+  onClick={() => setEditStation({
+    ...editStation, 
+    status: editStation.status === 'Online' ? 'Offline' : 'Online'
+  })}
+>
+  {editStation.status === 'Online' ? <><FaPlay /> Online</> : <><FaStop /> Offline</>}
+</button>
 
                   <button type="button" className={styles.btnDelete} onClick={() => { setStationToDelete(editStation); setShowConfirm(true); }}>
                     <FaTrashAlt />

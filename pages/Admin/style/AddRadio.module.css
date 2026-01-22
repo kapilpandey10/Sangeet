@@ -130,3 +130,52 @@
 
 /* Invert colors when hovering over the strong tag inside li */
 .suggestionList li:hover span { color: #fff; }
+.searchRow {
+  display: flex;
+  gap: 10px;
+}
+
+.magicBtn {
+  background: #ff00ff;
+  border: none;
+  color: #fff;
+  padding: 0 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.magicBtn:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+.apiResults {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+}
+
+.apiResults li {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #111;
+  transition: 0.2s;
+}
+
+.apiResults li:hover { background: #111; }
+
+.apiResults li img {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  background: #000;
+}
+
+.apiResults li strong { font-size: 0.8rem; color: #fff; display: block; }
+.apiResults li p { font-size: 0.65rem; color: #555; }

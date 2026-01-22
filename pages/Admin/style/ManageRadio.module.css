@@ -66,11 +66,19 @@
 
 /* Action Buttons */
 .btnOnline, .btnOffline { padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; font-size: 0.75rem; text-transform: uppercase; transition: 0.3s; }
-.btnOnline { background: rgba(0, 255, 0, 0.1); color: #00ff00; border: 1px solid #00ff00; }
-.btnOffline { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444; }
+.btnOnline { 
+  background: rgba(0, 255, 0, 0.1); 
+  color: #00ff00; 
+  border: 1px solid #00ff00; 
+}
+.btnOffline { 
+  background: rgba(255, 68, 68, 0.1); 
+  color: #ff4444; 
+  border: 1px solid #ff4444; 
+}
 
 .btnSave { background: #fff; color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
 .btnDelete { background: rgba(255, 0, 0, 0.05); color: #ff3b3b; border: 1px solid #ff3b3b; padding: 12px 20px; border-radius: 8px; cursor: pointer; }
 
 .noirToast { position: absolute; top: 20px; right: 20px; background: #fff; color: #000; padding: 10px 25px; border-radius: 8px; font-weight: 900; z-index: 100; }
-.emptyInspector { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #111; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+.emptyInspector { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }

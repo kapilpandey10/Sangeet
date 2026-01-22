@@ -1,158 +1,65 @@
-.applePage {
-  background: #ffffff;
+.noirPage {
+  background-color: #050505; /* Deep Obsidian Base */
   min-height: 100vh;
-  padding-top: 80px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #ffffff;
+  padding-bottom: 50px;
+  margin-top: 40px;
 }
 
-.navHeader {
-  border-bottom: 1px solid #eee;
-  padding: 1.5rem 0;
-  position: sticky;
-  top: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  z-index: 100;
+.topHeader {
+  padding: 40px 0;
+  background: linear-gradient(180deg, #111 0%, transparent 100%);
+  border-bottom: 1px solid #1a1a1a;
 }
 
-.navInner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-}
+.headerContent { max-width: 1400px; margin: 0 auto; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; }
 
-.navInner h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -1px;
-  margin: 0;
-}
+.brand h1 { font-size: 2rem; font-weight: 900; letter-spacing: -1px; }
+.brand h1 span { color: #ff00ff; }
+.location { color: #ff00ff; font-weight: 800; text-transform: uppercase; font-size: 0.7rem; margin-top: 5px; }
 
-.searchContainer {
-  position: relative;
-  width: 300px;
+.searchBar { position: relative; width: 350px; }
+.searchIcon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #555; }
+.searchBar input {
+  width: 100%; background: #121212; border: 1px solid #222; color: #fff;
+  padding: 12px 15px 12px 45px; border-radius: 8px; outline: none; transition: 0.3s;
 }
+.searchBar input:focus { border-color: #ff00ff; }
 
-.searchIcon {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #999;
-}
+.mainGrid { max-width: 1400px; margin: 0 auto; padding: 40px; }
 
-.searchContainer input {
-  width: 100%;
-  padding: 12px 12px 12px 40px;
-  border-radius: 12px;
-  border: none;
-  background: #f2f2f7;
-  outline: none;
-}
+.shelfTitle { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; border-left: 4px solid #ff00ff; padding-left: 15px; }
 
-.mainContent {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
+/* Hero Cards */
+.heroScroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
+.heroCard { min-width: 240px; background: #0a0a0a; border-radius: 16px; border: 1px solid #1a1a1a; padding: 15px; }
 
-.section {
-  margin-bottom: 4rem;
+.cardVisual { position: relative; width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; }
+.cardVisual img { width: 100%; height: 100%; object-fit: cover; }
+.playOverlay { 
+  position: absolute; inset: 0; background: rgba(0,0,0,0.5); 
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; color: #fff; opacity: 0; transition: 0.3s; border: none; cursor: pointer;
 }
+.heroCard:hover .playOverlay { opacity: 1; }
 
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
-  
-}
+.stationLink { color: #fff; text-decoration: none; margin: 15px 0 5px; font-size: 1.1rem; }
+.stationLink:hover { color: #ff00ff; }
 
-.featuredSlider {
-  display: flex;
-  gap: 2rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  scroll-snap-type: x mandatory;
+/* Bento Grid Layout */
+.bentoGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+.compactCard { 
+  background: #0a0a0a; padding: 12px; border-radius: 12px; border: 1px solid #1a1a1a;
+  display: flex; align-items: center; gap: 15px; transition: 0.2s;
 }
+.compactCard:hover { border-color: #333; }
 
-.featuredCard {
-  flex-shrink: 0;
-  width: 450px;
-  height: 280px;
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  scroll-snap-align: start;
-}
+.miniThumb { position: relative; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+.miniThumb img { width: 100%; height: 100%; object-fit: cover; }
+.miniPlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
 
-.featuredImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.nameLink h4 { font-size: 1rem; color: #fff; margin-bottom: 2px; }
+.nameLink p { font-size: 0.75rem; color: #666; }
+.nameLink:hover h4 { color: #ff00ff; }
 
-.featuredOverlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 2rem;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
-  color: #000000;
-}
-
-.liveLabel {
-  background: #ff3b30;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-weight: 800;
-  font-size: 0.7rem;
-}
-
-.compactGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 2rem;
-}
-
-.stationCard {
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.2s ease;
-}
-
-.stationCard:hover {
-  transform: scale(1.02);
-}
-
-.cardThumb {
-  position: relative;
-  aspect-ratio: 1/1;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #f2f2f7;
-  border: 1px solid #eee;
-}
-
-.cardThumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cardInfo h4 {
-  margin-top: 10px;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #000000;
-}
-
-.cardInfo p {
-  color: #8e8e93;
-  font-size: 0.85rem;
-}
+.activeCard { border-color: #ff00ff !important; background: #111; }

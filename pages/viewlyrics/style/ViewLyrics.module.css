@@ -425,3 +425,70 @@
 
 
 
+.pageContainer {
+  background: #000;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  color: #fff;
+}
+
+/* Ad Placement Optimization */
+.adWrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  min-height: 100px; /* Essential to prevent CLS build errors */
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 5;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Premium Noir Visual Layers */
+.bgBlur {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-size: cover; background-position: center;
+  filter: blur(80px) saturate(1.5); opacity: 0.3; z-index: 1;
+}
+
+.bgOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at center, transparent, #000 80%);
+  z-index: 2;
+}
+
+.glassPanel {
+  background: rgba(15, 15, 15, 0.7);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 40px;
+  margin-bottom: 40px;
+}
+
+.lyricsBody {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #eee;
+  white-space: pre-wrap;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Mobile Responsive Tweaks */
+@media (max-width: 768px) {
+  .adWrapper { margin: 20px auto; padding: 10px; }
+  .glassPanel { padding: 25px; }
+  .lyricsBody { font-size: 1rem; }
+}

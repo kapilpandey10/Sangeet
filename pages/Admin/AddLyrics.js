@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { 
   FaTrash, FaPlus, FaLayerGroup, FaYoutube, 
-  FaPenNib, FaLanguage, FaCalendarAlt, FaUserEdit 
+  FaPenNib, FaLanguage, FaCalendarAlt, FaUserEdit, FaSearch 
 } from 'react-icons/fa'; 
 import styles from './style/AddLyrics.module.css';
 
@@ -42,7 +42,7 @@ const AddLyrics = () => {
       setVideoError('');
     } else {
       setThumbnail('');
-      setVideoError('Invalid URL');
+      setVideoError('Invalid YouTube URL or ID');
     }
   };
 
@@ -53,7 +53,16 @@ const AddLyrics = () => {
     if (val.length > 1) {
       const { data } = await supabase.from('lyrics').select('artist').ilike('artist', `%${val}%`).limit(5);
       updated[index].suggestions = data ? [...new Set(data.map(l => l.artist))] : [];
+    } else {
+      updated[index].suggestions = [];
     }
+    setArtists(updated);
+  };
+
+  const selectArtist = (index, name) => {
+    const updated = [...artists];
+    updated[index].name = name;
+    updated[index].suggestions = [];
     setArtists(updated);
   };
 
@@ -80,10 +89,10 @@ const AddLyrics = () => {
       }]);
 
       if (error) throw error;
-      setMessage('Submission Live for Review');
-      // Reset logic preserved
+      setMessage('Submission Initialized: Pending Review');
       setTitle(''); setSlug(''); setArtists([{ name: '', suggestions: [] }]);
-      setLyrics(''); setEnglishLyrics(''); setVideoUrl('');
+      setLyrics(''); setEnglishLyrics(''); setVideoUrl(''); setThumbnail('');
+      setTimeout(() => setMessage(''), 5000);
     } catch (err) {
       setMessage('Error: ' + err.message);
     }
@@ -108,15 +117,24 @@ const AddLyrics = () => {
 
             <div className={styles.fieldBox}>
               <label>Custom Slug</label>
-              <input type="text" value={slug} placeholder="Auto-generated if empty" onChange={(e) => setSlug(e.target.value)} />
+              <input type="text" value={slug} placeholder="Leave empty for auto-gen" onChange={(e) => setSlug(e.target.value)} />
             </div>
 
             <div className={styles.fieldBoxFull}>
               <label>Singers / Artists</label>
               {artists.map((artist, index) => (
-                <div key={index} className={styles.artistRow}>
-                  <input type="text" value={artist.name} onChange={(e) => handleArtistChange(index, e)} required />
-                  {index > 0 && <button type="button" onClick={() => setArtists(artists.filter((_, i) => i !== index))}><FaTrash /></button>}
+                <div key={index} className={styles.artistContainer}>
+                  <div className={styles.artistRow}>
+                    <input type="text" value={artist.name} onChange={(e) => handleArtistChange(index, e)} required />
+                    {index > 0 && <button type="button" onClick={() => setArtists(artists.filter((_, i) => i !== index))}><FaTrash /></button>}
+                  </div>
+                  {artist.suggestions.length > 0 && (
+                    <ul className={styles.suggestionList}>
+                      {artist.suggestions.map((s, i) => (
+                        <li key={i} onClick={() => selectArtist(index, s)}><FaSearch size={10} /> {s}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
               <button type="button" className={styles.btnAdd} onClick={() => setArtists([...artists, { name: '', suggestions: [] }])}>
@@ -130,8 +148,8 @@ const AddLyrics = () => {
             </div>
 
             <div className={styles.fieldBox}>
-              <label><FaCalendarAlt /> Year</label>
-              <input type="number" value={releaseYear} onChange={(e) => setReleaseYear(e.target.value)} required />
+              <label><FaCalendarAlt /> Release Year</label>
+              <input type="number" min="1900" max={new Date().getFullYear()} value={releaseYear} onChange={(e) => setReleaseYear(e.target.value)} required />
             </div>
 
             <div className={styles.fieldBox}>
@@ -142,7 +160,10 @@ const AddLyrics = () => {
             <div className={styles.fieldBox}>
               <label><FaUserEdit /> Added By</label>
               <input list="adminList" value={addedBy} onChange={(e) => setAddedBy(e.target.value)} required />
-              <datalist id="adminList"><option value="Admin"/><option value="Ashish Khanal (Mr. Thule)"/></datalist>
+              <datalist id="adminList">
+                <option value="Admin"/>
+                <option value="Ashish Khanal (Mr. Thule)"/>
+              </datalist>
             </div>
           </div>
         </aside>
@@ -150,21 +171,24 @@ const AddLyrics = () => {
         {/* RIGHT: CONTENT & PREVIEW */}
         <section className={styles.contentPanel}>
           <div className={styles.monitorArea}>
-            {thumbnail ? (
-              <div className={styles.previewFrame}>
+            <div className={styles.previewFrame}>
+              {thumbnail ? (
                 <img src={thumbnail} alt="Preview" />
-                <div className={styles.ytBadge}><FaYoutube /> Live Link Sync</div>
-              </div>
-            ) : (
-              <div className={styles.emptyMonitor}>Monitor Offline: Waiting for YouTube URL</div>
-            )}
-            <input 
-              type="text" 
-              className={styles.ytInput} 
-              placeholder="Paste YouTube Link or Video ID" 
-              value={videoUrl} 
-              onChange={handleVideoUrlChange} 
-            />
+              ) : (
+                <div className={styles.emptyMonitor}>Monitor Offline: Waiting for Sync</div>
+              )}
+              <div className={styles.statusBadge}><FaYoutube /> Studio Sync</div>
+            </div>
+            <div className={styles.inputWrapper}>
+              <input 
+                type="text" 
+                className={styles.ytInput} 
+                placeholder="Paste YouTube Link or Video ID" 
+                value={videoUrl} 
+                onChange={handleVideoUrlChange} 
+              />
+              {videoError && <p className={styles.errorText}>{videoError}</p>}
+            </div>
           </div>
 
           <div className={styles.lyricsGrid}>
@@ -173,13 +197,18 @@ const AddLyrics = () => {
               <textarea className={styles.noirTextarea} rows={12} value={lyrics} onChange={(e) => setLyrics(e.target.value)} />
             </div>
             <div className={styles.textContainer}>
-              <label>English Translation</label>
+              <label>English Version</label>
               <textarea className={styles.noirTextarea} rows={12} value={englishLyrics} onChange={(e) => setEnglishLyrics(e.target.value)} />
             </div>
           </div>
 
+          <div className={styles.descArea}>
+            <label>Track Description</label>
+            <textarea className={styles.noirTextarea} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short insight about the track..." />
+          </div>
+
           <footer className={styles.actionCenter}>
-             <button type="submit" className={styles.publishBtn}>Initialize & Publish Track</button>
+             <button type="submit" className={styles.publishBtn}>Finalize & Submit to Library</button>
           </footer>
         </section>
       </form>

@@ -1,4 +1,3 @@
-// File: pages/viewlyrics/[slug].js
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -8,6 +7,46 @@ import { FaTwitter, FaFacebook, FaWhatsapp, FaArrowLeft, FaLanguage } from 'reac
 import Verified from './verified';
 import FloatingModal from '../../components/FloatingModal';
 import styles from './style/ViewLyrics.module.css';
+<Head>
+  <title>{`${lyric.title} Lyrics | DynaBeat`}</title>
+  <meta name="description" content={`Read the original and English lyrics for ${lyric.title} by ${lyric.artist}.`} />
+  
+  {/* Correctly uses your Publisher ID from environment variables */}
+  <script 
+    async 
+    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`} 
+    crossOrigin="anonymous"
+  ></script>
+</Head>
+// 1. Refreshing Ad Component: Triggers a new impression every 60 seconds.js]
+const RefreshingAdSlot = ({ id, interval = 60000 }) => {
+  const [adKey, setAdKey] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      // Only refresh if the tab is visible to the user
+      if (document.visibilityState === 'visible') {
+        setAdKey(prev => prev + 1);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [interval]);
+
+  return (
+    <div className={styles.adWrapper} key={adKey}>
+      <ins className="adsbygoogle"
+           style={{ display: 'block' }}
+           data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_ID}
+           data-ad-slot={id}
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script dangerouslySetInnerHTML={{ 
+        __html: '(adsbygoogle = window.adsbygoogle || []).push({});' 
+      }} />
+    </div>
+  );
+};
 
 const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   const [isEnglish, setIsEnglish] = useState(false);
@@ -34,6 +73,8 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
       <Head>
         <title>{`${lyric.title} Lyrics | DynaBeat`}</title>
         <meta name="description" content={`Read the original and English lyrics for ${lyric.title} by ${lyric.artist}.`} />
+        {/* Global AdSense Script */}
+        <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`} crossOrigin="anonymous"></script>
       </Head>
 
       <div className={styles.bgBlur} style={{ backgroundImage: `url(${thumbnailUrl})` }}></div>
@@ -75,6 +116,9 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           </div>
         </section>
 
+        {/* STATIC AD: Initial impression */}
+        <RefreshingAdSlot id="TOP_AD_SLOT_ID" interval={90000} />
+
         <section className={`${styles.lyricsSection} ${styles.reveal}`}>
           <div className={styles.glassPanel}>
             <div className={styles.panelHeader}>
@@ -86,7 +130,9 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           </div>
         </section>
 
-        {/* Video Section - Fixed Merge Conflict Here */}
+        {/* REFRESHING AD: High frequency refresh (60s) for middle content.js] */}
+        <RefreshingAdSlot id="MIDDLE_AD_SLOT_ID" interval={60000} />
+
         {youtubeId && (
           <section className={`${styles.videoSection} ${styles.reveal}`}>
             <h3 className={styles.sectionLabel}>Official Music Video</h3>
@@ -96,7 +142,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                 title="Music Video"
                 allowFullScreen
               ></iframe>
-              <div className={styles.youtubeOverlay}></div>
             </div>
           </section>
         )}
@@ -141,14 +186,7 @@ export const getServerSideProps = async (context) => {
       .single();
 
     if (error || !lyric) {
-      return {
-        props: {
-          lyric: null,
-          relatedLyrics: [],
-          slug,
-          error: 'Lyric not found.',
-        },
-      };
+      return { props: { lyric: null, relatedLyrics: [], slug, error: 'Lyric not found.' } };
     }
 
     const { data: relatedLyrics } = await supabase
@@ -158,18 +196,9 @@ export const getServerSideProps = async (context) => {
       .eq('status', 'approved')
       .limit(5);
 
-    return {
-      props: {
-        lyric,
-        relatedLyrics: relatedLyrics || [],
-        slug,
-        error: null,
-      },
-    };
+    return { props: { lyric, relatedLyrics: relatedLyrics || [], slug, error: null } };
   } catch (error) {
-    return {
-      props: { lyric: null, relatedLyrics: [], slug, error: 'Server error.' },
-    };
+    return { props: { lyric: null, relatedLyrics: [], slug, error: 'Server error.' } };
   }
 };
 

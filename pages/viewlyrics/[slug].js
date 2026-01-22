@@ -7,17 +7,14 @@ import { FaTwitter, FaFacebook, FaWhatsapp, FaArrowLeft, FaLanguage } from 'reac
 import Verified from './verified';
 import FloatingModal from '../../components/FloatingModal';
 import styles from './style/ViewLyrics.module.css';
-<Head>
-  <title>{`${lyric.title} Lyrics | DynaBeat`}</title>
-  <meta name="description" content={`Read the original and English lyrics for ${lyric.title} by ${lyric.artist}.`} />
-  
+
   {/* Correctly uses your Publisher ID from environment variables */}
   <script 
     async 
     src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`} 
     crossOrigin="anonymous"
   ></script>
-</Head>
+
 // 1. Refreshing Ad Component: Triggers a new impression every 60 seconds.js]
 const RefreshingAdSlot = ({ id, interval = 60000 }) => {
   const [adKey, setAdKey] = useState(0);

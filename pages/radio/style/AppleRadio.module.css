@@ -69,6 +69,7 @@
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
+  
 }
 
 .featuredSlider {
@@ -102,7 +103,7 @@
   right: 0;
   padding: 2rem;
   background: linear-gradient(transparent, rgba(0,0,0,0.8));
-  color: #fff;
+  color: #000000;
 }
 
 .liveLabel {
@@ -148,6 +149,7 @@
   margin-top: 10px;
   font-weight: 600;
   font-size: 1rem;
+  color: #000000;
 }
 
 .cardInfo p {

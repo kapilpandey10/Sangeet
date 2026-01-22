@@ -1,13 +1,10 @@
-// pages/Admin/AddLyrics.js
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { FaTrash, FaPlus } from 'react-icons/fa'; // Icons for adding/removing
-import styles from './style/AddLyrics.module.css'; // CSS module
-
-// Initialize Supabase client (using NEXT_PUBLIC_ prefix for environment variables)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '../../supabaseClient';
+import { 
+  FaTrash, FaPlus, FaLayerGroup, FaYoutube, 
+  FaPenNib, FaLanguage, FaCalendarAlt, FaUserEdit 
+} from 'react-icons/fa'; 
+import styles from './style/AddLyrics.module.css';
 
 const AddLyrics = () => {
   const [title, setTitle] = useState('');
@@ -16,348 +13,175 @@ const AddLyrics = () => {
   const [writer, setWriter] = useState('');
   const [lyrics, setLyrics] = useState('');
   const [englishLyrics, setEnglishLyrics] = useState('');
-  const [releaseYear, setReleaseYear] = useState('');
+  const [releaseYear, setReleaseYear] = useState(new Date().getFullYear());
   const [videoUrl, setVideoUrl] = useState('');
   const [videoError, setVideoError] = useState('');
   const [message, setMessage] = useState('');
-  const [addedBy, setAddedBy] = useState('');
-  const [language, setLanguage] = useState('');
+  const [addedBy, setAddedBy] = useState('Admin');
+  const [language, setLanguage] = useState('Nepali');
   const [description, setDescription] = useState('');
   const [thumbnail, setThumbnail] = useState('');
 
-  
-  // Set page title
   useEffect(() => {
-    document.title = 'Add Song Lyrics | Contribute to dynabyte ';
+    document.title = 'Command: Add Lyrics | Contributor Studio';
   }, []);
 
-  // Generate a slug from the title
-  const generateSlug = (title) => {
-    return title
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with dashes
-      .replace(/-+/g, '-'); // Replace multiple dashes with a single dash
+  const generateSlug = (t) => t.trim().toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+
+  const getYouTubeVideoID = (url) => {
+    const regex = /(?:v=|\/)([a-zA-Z0-9_-]{11})/;
+    return url.match(regex)?.[1] || (url.length === 11 ? url : null);
   };
 
-  // Validate the YouTube URL or video ID
-  const validateYouTubeURL = (url) => {
-    const urlRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const idRegex = /^[a-zA-Z0-9_-]{11}$/;
-
-    let videoId = null;
-
-    if (urlRegex.test(url)) {
-      const match = url.match(urlRegex);
-      videoId = match ? match[1] : null;
-    } else if (idRegex.test(url)) {
-      videoId = url;
+  const handleVideoUrlChange = (e) => {
+    const url = e.target.value;
+    setVideoUrl(url);
+    const videoId = getYouTubeVideoID(url);
+    if (videoId) {
+      setThumbnail(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+      setVideoError('');
     } else {
-      setVideoError('Please enter a valid YouTube Video URL.');
-      return null;
+      setThumbnail('');
+      setVideoError('Invalid URL');
     }
-
-    setVideoError('');
-    return videoId;
   };
 
-  // Add a new artist input field
-  const addArtist = () => {
-    setArtists([...artists, { name: '', suggestions: [] }]);
-  };
-
-  // Remove an artist input field
-  const removeArtist = (index) => {
-    const updatedArtists = [...artists];
-    updatedArtists.splice(index, 1);
-    setArtists(updatedArtists);
-  };
-// Extract YouTube video ID from URL or ID
-const getYouTubeVideoID = (url) => {
-  const urlRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const idRegex = /^[a-zA-Z0-9_-]{11}$/;
-
-  if (urlRegex.test(url)) {
-    const match = url.match(urlRegex);
-    return match ? match[1] : null;
-  } else if (idRegex.test(url)) {
-    return url; // Treat as direct video ID
-  }
-  return null;
-};
-
-// Handle YouTube URL or video ID change
-const handleVideoUrlChange = (e) => {
-  const url = e.target.value;
-  setVideoUrl(url);
-
-  const videoId = getYouTubeVideoID(url);
-  if (videoId) {
-    setThumbnail(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
-    setVideoError('');
-  } else {
-    setThumbnail(''); // Clear thumbnail if URL/ID is invalid
-    setVideoError('Please enter a valid YouTube Video URL or ID.');
-  }
-};
-  // Fetch artist suggestions from the lyrics table
   const handleArtistChange = async (index, event) => {
-    const updatedArtists = [...artists];
-    const artistName = event.target.value;
-    updatedArtists[index].name = artistName;
-    setArtists(updatedArtists);
-
-    if (artistName.length > 1) {
-      const { data, error } = await supabase
-        .from('lyrics')
-        .select('artist')
-        .ilike('artist', `%${artistName}%`)
-        .limit(5);
-
-      if (!error && data.length) {
-        const uniqueArtists = [...new Set(data.map((lyric) => lyric.artist))];
-        updatedArtists[index].suggestions = uniqueArtists;
-      } else {
-        updatedArtists[index].suggestions = [];
-      }
-      setArtists(updatedArtists);
-    } else {
-      updatedArtists[index].suggestions = [];
-      setArtists(updatedArtists);
+    const updated = [...artists];
+    const val = event.target.value;
+    updated[index].name = val;
+    if (val.length > 1) {
+      const { data } = await supabase.from('lyrics').select('artist').ilike('artist', `%${val}%`).limit(5);
+      updated[index].suggestions = data ? [...new Set(data.map(l => l.artist))] : [];
     }
+    setArtists(updated);
   };
 
-  // Select an artist from suggestions
-  const selectArtistSuggestion = (index, suggestion) => {
-    const updatedArtists = [...artists];
-    updatedArtists[index].name = suggestion;
-    updatedArtists[index].suggestions = []; // Clear suggestions
-    setArtists(updatedArtists);
-  };
-
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const finalVideoId = validateYouTubeURL(videoUrl);
-    if (!finalVideoId) return;
-
-    const finalSlug = slug || generateSlug(title);
+    const videoId = getYouTubeVideoID(videoUrl);
+    if (!videoId) return setVideoError('Valid YouTube URL required');
 
     try {
-      const { data, error } = await supabase
-        .from('lyrics')
-        .insert([
-          {
-            title,
-            slug: finalSlug, // Save slug
-            artist: artists.map((artist) => artist.name).join(', '),
-            lyrics_writer: writer,
-            lyrics,
-            english_lyrics: englishLyrics,
-            published_date: `${releaseYear}-01-01`,
-            music_url: `https://www.youtube.com/watch?v=${finalVideoId}`,
-            status: 'pending',
-            added_by: addedBy || 'Admin', // Set default to Admin
-            language,
-            description,
-            thumbnail_url: thumbnail
-          },
-        ]);
+      const { error } = await supabase.from('lyrics').insert([{
+        title,
+        slug: slug || generateSlug(title),
+        artist: artists.map(a => a.name).join(', '),
+        lyrics_writer: writer,
+        lyrics,
+        english_lyrics: englishLyrics,
+        published_date: `${releaseYear}-01-01`,
+        music_url: `https://www.youtube.com/watch?v=${videoId}`,
+        status: 'pending',
+        added_by: addedBy,
+        language,
+        description,
+        thumbnail_url: thumbnail
+      }]);
 
       if (error) throw error;
-
-      setMessage('Lyrics submitted successfully! It will be reviewed by the admin and listed soon.');
-      // Reset form fields
-      setTitle('');
-      setSlug('');
-      setArtists([{ name: '', suggestions: [] }]);
-      setWriter('');
-      setLyrics('');
-      setEnglishLyrics('');
-      setReleaseYear('');
-      setVideoUrl('');
-      setAddedBy('');
-      setLanguage('');
-      setDescription('');
-      setTimeout(() => setMessage(''), 5000);
-    } catch (error) {
-      setMessage('An error occurred while adding lyrics: ' + error.message);
-      setTimeout(() => setMessage(''), 5000);
+      setMessage('Submission Live for Review');
+      // Reset logic preserved
+      setTitle(''); setSlug(''); setArtists([{ name: '', suggestions: [] }]);
+      setLyrics(''); setEnglishLyrics(''); setVideoUrl('');
+    } catch (err) {
+      setMessage('Error: ' + err.message);
     }
   };
 
   return (
-    <div className={styles.addLyricsContainer}>
-      <h1 className={styles.addLyricsTitle}>Add New Lyrics</h1>
-      {message && <p className={styles.submissionMessage}>{message}</p>}
-      <form onSubmit={handleSubmit} className={styles.addLyricsForm}>
-        <div className={styles.formGroup}>
-          <label htmlFor="title">Title</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="slug">Slug (URL-friendly)</label>
-          <input
-            type="text"
-            id="slug"
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder="Leave empty to auto-generate"
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="artists">Singer</label>
-          {artists.map((artist, index) => (
-            <div key={index} className={styles.artistInput}>
-              <input
-                type="text"
-                value={artist.name}
-                onChange={(e) => handleArtistChange(index, e)}
-                required
-                placeholder="Enter Singer name"
-              />
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => removeArtist(index)}
-                  className={styles.removeArtistButton}
-                >
-                  <FaTrash />
-                </button>
-              )}
-              {artist.suggestions.length > 0 && (
-                <ul className={styles.suggestionsList}>
-                  {artist.suggestions.map((suggestion, i) => (
-                    <li key={i} onClick={() => selectArtistSuggestion(index, suggestion)}>
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              )}
+    <div className={styles.studioContainer}>
+      {message && <div className={styles.noirToast}>{message}</div>}
+      
+      <form onSubmit={handleSubmit} className={styles.studioLayout}>
+        {/* LEFT: METADATA PANEL */}
+        <aside className={styles.metaPanel}>
+          <div className={styles.panelHeader}>
+            <FaLayerGroup color="#ff00ff" /> <span>Metadata Inspector</span>
+          </div>
+          
+          <div className={styles.fieldGrid}>
+            <div className={styles.fieldBox}>
+              <label>Track Title</label>
+              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
             </div>
-          ))}
-          <button type="button" onClick={addArtist} className={styles.addArtistButton}>
-            <FaPlus /> Add Artist
-          </button>
-        </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="writer">Lyrics Writer</label>
-          <input
-            type="text"
-            id="writer"
-            value={writer}
-            onChange={(e) => setWriter(e.target.value)}
-            required
-          />
-        </div>
+            <div className={styles.fieldBox}>
+              <label>Custom Slug</label>
+              <input type="text" value={slug} placeholder="Auto-generated if empty" onChange={(e) => setSlug(e.target.value)} />
+            </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="lyrics">Lyrics (Original Language)</label>
-          <textarea
-            id="lyrics"
-            value={lyrics}
-            onChange={(e) => setLyrics(e.target.value)}
-            rows={10}
-          />
-        </div>
+            <div className={styles.fieldBoxFull}>
+              <label>Singers / Artists</label>
+              {artists.map((artist, index) => (
+                <div key={index} className={styles.artistRow}>
+                  <input type="text" value={artist.name} onChange={(e) => handleArtistChange(index, e)} required />
+                  {index > 0 && <button type="button" onClick={() => setArtists(artists.filter((_, i) => i !== index))}><FaTrash /></button>}
+                </div>
+              ))}
+              <button type="button" className={styles.btnAdd} onClick={() => setArtists([...artists, { name: '', suggestions: [] }])}>
+                <FaPlus /> Add Artist
+              </button>
+            </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="englishLyrics">Lyrics (English)</label>
-          <textarea
-            id="englishLyrics"
-            value={englishLyrics}
-            onChange={(e) => setEnglishLyrics(e.target.value)}
-            rows={10}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="description">Short Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="releaseYear">Release Year</label>
-          <input
-            type="number"
-            id="releaseYear"
-            value={releaseYear}
-            onChange={(e) => setReleaseYear(e.target.value)}
-            required
-            min="1900"
-            max={new Date().getFullYear()}
-          />
-        </div>
+            <div className={styles.fieldBox}>
+              <label><FaPenNib /> Writer</label>
+              <input type="text" value={writer} onChange={(e) => setWriter(e.target.value)} required />
+            </div>
 
-        <div className={styles.formGroup}>
-        <label htmlFor="thumbnail">Thumbnail URL</label>
-        <input
-          id="thumbnail"
-          value={thumbnail}
-          onChange={(e) => setThumbnail(e.target.value)}
-          placeholder="Auto-filled from YouTube URL"
-        />
-      </div>
+            <div className={styles.fieldBox}>
+              <label><FaCalendarAlt /> Year</label>
+              <input type="number" value={releaseYear} onChange={(e) => setReleaseYear(e.target.value)} required />
+            </div>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="videoUrl">YouTube Video URL/ID</label>
-        <input
-          type="text"
-          id="videoUrl"
-          value={videoUrl}
-          onChange={handleVideoUrlChange}
-          placeholder="YouTube Video URL or ID"
-        />
-        {videoError && <p className={styles.error}>{videoError}</p>}
-      </div>
-        <div className={styles.formGroup}>
-  <label htmlFor="addedBy">Added By</label>
-  <input
-    list="addedByOptions"
-    id="addedBy"
-    value={addedBy}
-    onChange={(e) => setAddedBy(e.target.value)}
-    placeholder="Admin, Ashish Khanal (Mr. Thule)"
-    required
-  />
-  <datalist id="addedByOptions">
-  <option value="" disabled>
-      Select who added the lyrics
-    </option>
-    <option value="Admin" />
-    <option value="Ashish Khanal (Mr. Thule)" />
-  </datalist>
-</div>
+            <div className={styles.fieldBox}>
+              <label><FaLanguage /> Language</label>
+              <input type="text" value={language} onChange={(e) => setLanguage(e.target.value)} required />
+            </div>
 
+            <div className={styles.fieldBox}>
+              <label><FaUserEdit /> Added By</label>
+              <input list="adminList" value={addedBy} onChange={(e) => setAddedBy(e.target.value)} required />
+              <datalist id="adminList"><option value="Admin"/><option value="Ashish Khanal (Mr. Thule)"/></datalist>
+            </div>
+          </div>
+        </aside>
 
+        {/* RIGHT: CONTENT & PREVIEW */}
+        <section className={styles.contentPanel}>
+          <div className={styles.monitorArea}>
+            {thumbnail ? (
+              <div className={styles.previewFrame}>
+                <img src={thumbnail} alt="Preview" />
+                <div className={styles.ytBadge}><FaYoutube /> Live Link Sync</div>
+              </div>
+            ) : (
+              <div className={styles.emptyMonitor}>Monitor Offline: Waiting for YouTube URL</div>
+            )}
+            <input 
+              type="text" 
+              className={styles.ytInput} 
+              placeholder="Paste YouTube Link or Video ID" 
+              value={videoUrl} 
+              onChange={handleVideoUrlChange} 
+            />
+          </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="language">Language</label>
-          <input
-            type="text"
-            id="language"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            required
-          />
-        </div>
+          <div className={styles.lyricsGrid}>
+            <div className={styles.textContainer}>
+              <label>Original Lyrics</label>
+              <textarea className={styles.noirTextarea} rows={12} value={lyrics} onChange={(e) => setLyrics(e.target.value)} />
+            </div>
+            <div className={styles.textContainer}>
+              <label>English Translation</label>
+              <textarea className={styles.noirTextarea} rows={12} value={englishLyrics} onChange={(e) => setEnglishLyrics(e.target.value)} />
+            </div>
+          </div>
 
-       
-
-        <button type="submit" className={styles.submitButton}>Submit Lyrics</button>
+          <footer className={styles.actionCenter}>
+             <button type="submit" className={styles.publishBtn}>Initialize & Publish Track</button>
+          </footer>
+        </section>
       </form>
     </div>
   );

@@ -1,196 +1,120 @@
-.manageLyricsContainer {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f4f7f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.studioContainer {
+  height: 85vh;
+  background: #000;
+  border: 1px solid #1a1a1a;
+  border-radius: 20px;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
-
-
-.searchBox {
-  width: 100%;
-  padding: 10px;
-  border: 2px solid #2c3e50;
-  border-radius: 8px;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.searchBox:focus {
-  border-color: #1abc9c;
-}
-
-.message {
-  padding: 10px 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 1rem;
-  text-align: center;
-}
-
-.message.success {
-  background-color: #2ecc71;
-  color: white;
-}
-
-.message.error {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.lyricsList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.lyricsItem {
+.studioHeader {
+  padding: 20px 40px;
+  background: #080808;
+  border-bottom: 1px solid #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: white;
-  padding: 15px;
+}
+
+.searchWrapper { flex: 1; position: relative; max-width: 600px; }
+.searchIcon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #444; }
+.noirSearch { width: 100%; background: #000; border: 1px solid #1a1a1a; color: #fff; padding: 12px 12px 12px 45px; border-radius: 10px; }
+
+.studioMain { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; }
+
+/* Left Sidebar */
+.librarySidebar { border-right: 1px solid #1a1a1a; background: #080808; overflow-y: auto; padding: 15px; }
+
+.trackCard {
+  display: flex; gap: 12px; padding: 12px; border-radius: 12px;
+  background: #111; border: 1px solid #1a1a1a; margin-bottom: 10px; cursor: pointer; transition: 0.2s;
+}
+
+.trackCard:hover { border-color: #444; }
+.trackActive { border-color: #fff !important; background: #1a1a1a !important; }
+
+.trackThumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; }
+.trackInfo h4 { font-size: 0.9rem; margin-bottom: 2px; }
+.trackInfo p { font-size: 0.75rem; color: #555; }
+
+/* Right Inspector Panel */
+.inspectorPanel { background: #000; display: flex; flex-direction: column; overflow: hidden; }
+.metaForm { display: flex; flex-direction: column; height: 100%; }
+
+.inspectorHeader { padding: 25px 40px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+.inspectorActions { display: flex; gap: 12px; }
+
+.scrollFields { flex: 1; overflow-y: auto; padding: 30px 40px; }
+
+.videoPreviewArea { width: 100%; height: 320px; background: #080808; border-radius: 15px; overflow: hidden; border: 1px solid #1a1a1a; margin-bottom: 30px; }
+.videoPreviewArea iframe { width: 100%; height: 100%; }
+
+.formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.fieldBox label, .fieldFull label { display: block; font-size: 0.7rem; color: #555; text-transform: uppercase; font-weight: 900; margin-bottom: 8px; }
+.fieldBox input, .fieldFull input, .noirTextarea {
+  width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; color: #fff; padding: 12px; border-radius: 8px; font-family: inherit;
+}
+
+.fieldFull { grid-column: span 2; }
+.noirTextarea { resize: none; }
+
+.btnSave { background: #fff; color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+.btnDelete { background: rgba(255, 0, 0, 0.1); color: #ff3b3b; border: 1px solid #ff3b3b; padding: 12px 20px; border-radius: 8px; cursor: pointer; }
+
+.emptyInspector { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #222; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+
+.noirToast { position: absolute; top: 20px; right: 20px; background: #fff; color: #000; padding: 10px 25px; border-radius: 8px; font-weight: 900; z-index: 100; }/* Visibility Toggle Styling */
+.btnPublic, .btnPrivate {
+  padding: 10px 20px;
   border-radius: 8px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.lyricsItem:hover {
-  transform: scale(1.02);
-}
-
-.lyricsItemContent {
-  flex-grow: 1;
-}
-
-.lyricsItem h3 {
-  font-size: 1.4rem;
-  color: #2c3e50;
-  margin: 0 0 5px;
-}
-
-.lyricsItem p {
-  font-size: 1rem;
-  color: #7f8c8d;
-  margin: 3px 0;
-}
-
-.iconButtons {
-  display: flex;
-  gap: 10px;
-}
-
-.iconButton {
-  background-color: #3498db;
-  border: none;
-  color: white;
-  font-size: 1.2rem;
-  padding: 8px;
-  border-radius: 5px;
+  font-weight: 800;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s;
+  border: none;
+  text-transform: uppercase;
+  font-size: 0.75rem;
 }
 
-.iconButton.deleteButton {
-  background-color: #e74c3c;
+.btnPublic {
+  background: rgba(0, 255, 0, 0.1);
+  color: #00ff00;
+  border: 1px solid #00ff00;
 }
 
-.iconButton:hover {
-  background-color: #2980b9;
+.btnPrivate {
+  background: rgba(255, 165, 0, 0.1);
+  color: #ffa500;
+  border: 1px solid #ffa500;
 }
 
-.iconButton.deleteButton:hover {
-  background-color: #c0392b;
+.privateLabel {
+  font-size: 0.6rem;
+  background: #ffa500;
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-top: 5px;
+  display: inline-block;
 }
 
-.editLyricForm {
-  flex-basis: 70%;
-  padding: 20px;
-  background-color: #ecf0f1;
+.statusText {
+  background: #111;
+  padding: 12px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
+  font-size: 0.85rem;
+  color: #888;
+  border: 1px solid #222;
 }
 
-.editLyricForm h2 {
-  font-size: 1.8rem;
-  color: #2c3e50;
-  margin-bottom: 15px;
-}
-
-.editLyricForm form {
-  display: flex;
-  flex-direction: column;
-}
-
-.editLyricForm label {
-  margin-bottom: 10px;
-  font-size: 1rem;
-  color: #34495e;
-}
-
-.editLyricForm input,
-.editLyricForm textarea {
-  padding: 10px;
-  font-size: 1rem;
-  border: 2px solid #bdc3c7;
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.3s ease;
-  width: 100%;
-}
-
-.editLyricForm input:focus,
-.editLyricForm textarea:focus {
-  border-color: #1abc9c;
-}
-
-.editLyricForm textarea {
-  resize: none;
-  height: 150px;
-}
-
-.formActions {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.saveButton {
-  background-color: #2ecc71;
-}
-
-.saveButton:hover {
-  background-color: #27ae60;
-}
-
-.cancelButton {
-  background-color: #e74c3c;
-}
-
-.cancelButton:hover {
-  background-color: #c0392b;
-}
-
-@media (max-width: 768px) {
-  .lyricsItem {
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  .iconButtons {
-      margin-top: 10px;
-  }
-
-  .editLyricForm {
-      width: 100%;
-  }
+.statusText strong {
+  color: #fff;
+  text-transform: uppercase;
 }

@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { FaEdit, FaTrashAlt, FaSave, FaTimes } from 'react-icons/fa';
+import { supabase } from '../../supabaseClient';
+import { 
+  FaEdit, FaTrashAlt, FaSave, FaTimes, FaSearch, FaEye, FaEyeSlash,
+  FaLayerGroup, FaYoutube, FaUserEdit, FaCalendarAlt, FaPenNib 
+} from 'react-icons/fa';
 import ConfirmMsg from '../../components/ConfirmMsg';
 import styles from './style/ManageLyrics.module.css';
-
-// Access environment variables with NEXT_PUBLIC prefix for Next.js
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ManageLyrics = () => {
   const [lyrics, setLyrics] = useState([]);
@@ -17,314 +13,209 @@ const ManageLyrics = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editLyric, setEditLyric] = useState(null);
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [lyricToDelete, setLyricToDelete] = useState(null);
 
-  // Fetch only approved lyrics from Supabase
+  // 1. Fetch both Public (approved) and Private lyrics
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
         const { data, error } = await supabase
           .from('lyrics')
           .select('*')
-          .eq('status', 'approved'); // Fetch only approved lyrics
+          .in('status', ['approved', 'private']) 
+          .order('created_at', { ascending: false });
         
         if (error) throw error;
         setLyrics(data || []);
         setFilteredLyrics(data || []);
       } catch (error) {
-        console.error('Error fetching lyrics:', error);
-        setLyrics([]);
-        setFilteredLyrics([]);
+        console.error('Error fetching library:', error);
       }
     };
     fetchLyrics();
   }, []);
 
-  // Handle delete functionality
-  const handleDelete = async (id) => {
-    try {
-      const { error } = await supabase.from('lyrics').delete().eq('id', id);
-      if (error) throw error;
-
-      setLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
-      setFilteredLyrics((prevLyrics) => prevLyrics.filter((lyric) => lyric.id !== id));
-      setMessageType('success');
-      setMessage('Lyrics deleted successfully.');
-    } catch (error) {
-      setMessageType('error');
-      setMessage('Failed to delete the lyrics. Please try again.');
-    } finally {
-      setShowConfirm(false);
-    }
-  };
-
-  // Handle update functionality
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      const { id, title, artist, lyrics, lyrics_writer, published_date, music_url, added_by, thumbnail_url } = editLyric;
-      const { error } = await supabase
-        .from('lyrics')
-        .update({ 
-          title, 
-          artist, 
-          lyrics, 
-          lyrics_writer, 
-          published_date, 
-          music_url, 
-          added_by, 
-          thumbnail_url
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setLyrics((prevLyrics) =>
-        prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
-      );
-      setFilteredLyrics((prevLyrics) =>
-        prevLyrics.map((lyric) => (lyric.id === id ? editLyric : lyric))
-      );
-      setEditLyric(null);
-      setMessageType('success');
-      setMessage('Lyrics updated successfully!');
-      setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      setMessageType('error');
-      setMessage('Failed to update the lyrics. Please try again.');
-      setTimeout(() => setMessage(''), 3000);
-    }
-  };
-
-  // Handle edit button click
-  const handleEditClick = (lyric) => {
-    setEditLyric(lyric);
-  };
-
-  // Handle delete button click
-  const handleDeleteClick = (lyric) => {
-    setLyricToDelete(lyric);
-    setShowConfirm(true);
-  };
-
-  // Confirm delete
-  const handleConfirmDelete = () => {
-    if (lyricToDelete) {
-      handleDelete(lyricToDelete.id);
-    }
-  };
-
-  // Cancel delete
-  const handleCancelDelete = () => {
-    setShowConfirm(false);
-    setLyricToDelete(null);
-  };
-
-  // Extract YouTube video ID
-  const getYouTubeVideoID = (url) => {
-    const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  };
-
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    setEditLyric((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  
-    // If the music_url field changes, update the thumbnail_url automatically
-    if (name === 'music_url') {
-      const videoID = getYouTubeVideoID(value);
-      if (videoID) {
-        setEditLyric((prevState) => ({
-          ...prevState,
-          thumbnail_url: `https://img.youtube.com/vi/${videoID}/maxresdefault.jpg`
-        }));
-      } else {
-        setEditLyric((prevState) => ({
-          ...prevState,
-          thumbnail_url: '' // Clear the thumbnail_url if video ID is invalid
-        }));
-      }
-    }
-  };
-  // Handle search input
+  // 2. High-Performance Search Logic
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-
-    const filtered = lyrics.filter((lyric) => {
-      return (
-        lyric.title.toLowerCase().includes(query) ||
-        lyric.artist.toLowerCase().includes(query) ||
-        lyric.lyrics.toLowerCase().includes(query) ||
-        (lyric.added_by && lyric.added_by.toLowerCase().includes(query))
-      );
-    });
+    const filtered = lyrics.filter(l => 
+      l.title.toLowerCase().includes(query) || 
+      l.artist.toLowerCase().includes(query) ||
+      (l.added_by && l.added_by.toLowerCase().includes(query))
+    );
     setFilteredLyrics(filtered);
   };
 
+  // 3. YouTube ID Extractor helper
+  const extractYTId = (url) => url?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
+
+  // 4. Handle Save for ALL fields including Status
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const { error } = await supabase
+      .from('lyrics')
+      .update({
+        title: editLyric.title,
+        artist: editLyric.artist,
+        lyrics: editLyric.lyrics,
+        lyrics_writer: editLyric.lyrics_writer,
+        published_date: editLyric.published_date,
+        music_url: editLyric.music_url,
+        thumbnail_url: editLyric.thumbnail_url,
+        added_by: editLyric.added_by,
+        status: editLyric.status // Public/Private Toggle state
+      })
+      .eq('id', editLyric.id);
+
+    if (!error) {
+      setLyrics(lyrics.map(l => l.id === editLyric.id ? editLyric : l));
+      setFilteredLyrics(filteredLyrics.map(l => l.id === editLyric.id ? editLyric : l));
+      setMessage(`Successfully Updated: ${editLyric.title}`);
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
+
   return (
-    <div className={styles.manageLyricsContainer}>
-      <h2>Manage Lyrics</h2>
-
-      {/* Search Box */}
-      <input
-        type="text"
-        placeholder="Search by title, artist, lyrics, or added by..."
-        value={searchQuery}
-        onChange={handleSearch}
-        className={styles.searchBox}
-      />
-
-      {/* Show the number of filtered results */}
-      <p>{filteredLyrics.length} {filteredLyrics.length === 1 ? 'result' : 'results'} found</p>
-
-      {/* Display success/error messages */}
-      {message && (
-        <div className={`${styles.message} ${styles[messageType]}`}>
-          {message}
+    <div className={styles.studioContainer}>
+      {message && <div className={styles.noirToast}>{message}</div>}
+      
+      <header className={styles.studioHeader}>
+        <div className={styles.searchWrapper}>
+          <FaSearch className={styles.searchIcon} />
+          <input 
+            type="text" 
+            placeholder="Search live & private tracks..." 
+            className={styles.noirSearch} 
+            value={searchQuery}
+            onChange={handleSearch}
+          />
         </div>
-      )}
+        <div className={styles.libraryCount}>
+          <FaLayerGroup /> <span>{filteredLyrics.length} Tracks in Library</span>
+        </div>
+      </header>
 
-      {/* Display Lyrics List */}
-      {filteredLyrics.length > 0 ? (
-        <ul className={styles.lyricsList}>
+      <div className={styles.studioMain}>
+        {/* LEFT: SCROLLABLE LIBRARY LIST */}
+        <aside className={styles.librarySidebar}>
           {filteredLyrics.map((lyric) => (
-            <li key={lyric.id} className={styles.lyricsItem}>
-              <div className={styles.lyricsItemContent}>
-                <h3>{lyric.title}</h3>
-                <p><strong>Artist:</strong> {lyric.artist}</p>
-                <p><strong>Writer:</strong> {lyric.lyrics_writer || 'N/A'}</p>
-                <p><strong>Added By:</strong> {lyric.added_by || 'N/A'}</p>
+            <div 
+              key={lyric.id} 
+              className={`${styles.trackCard} ${editLyric?.id === lyric.id ? styles.trackActive : ''}`}
+              onClick={() => setEditLyric({ ...lyric })}
+            >
+              <img src={lyric.thumbnail_url || '/logo/logo.webp'} alt="" className={styles.trackThumb} />
+              <div className={styles.trackInfo}>
+                <h4>{lyric.title}</h4>
+                <p>{lyric.artist}</p>
+                {lyric.status === 'private' && <span className={styles.privateLabel}>Private</span>}
               </div>
-              <div className={styles.iconButtons}>
-                <button onClick={() => handleEditClick(lyric)} className={styles.iconButton}>
-                  <FaEdit />
-                </button>
-                <button onClick={() => handleDeleteClick(lyric)} className={`${styles.iconButton} ${styles.deleteButton}`}>
-                  <FaTrashAlt />
-                </button>
-              </div>
-
-              {/* Display Edit Form */}
-              {editLyric && editLyric.id === lyric.id && (
-                <div className={styles.editLyricForm}>
-                  <h2>Edit Lyric</h2>
-                  <form onSubmit={handleUpdate}>
-                    <label>
-                      Title:
-                      <input
-                        type="text"
-                        name="title"
-                        value={editLyric.title}
-                        onChange={handleChange}
-                        required
-                      />
-                    </label>
-                    <label>
-                      Artist:
-                      <input
-                        type="text"
-                        name="artist"
-                        value={editLyric.artist}
-                        onChange={handleChange}
-                        required
-                      />
-                    </label>
-
-                    <label>
-                      Thumbnail URL:
-                      <input
-                        type="text"
-                        name="thumbnail_url"
-                        value={editLyric.thumbnail_url} 
-                        onChange={handleChange}
-                        required
-                        readOnly
-                      />
-                    </label>
-
-                    <label>
-                      Lyrics Writer:
-                      <input
-                        type="text"
-                        name="lyrics_writer"
-                        value={editLyric.lyrics_writer || ''}
-                        onChange={handleChange}
-                      />
-                    </label>
-                    <label>
-                      Lyrics:
-                      <textarea
-                        name="lyrics"
-                        value={editLyric.lyrics}
-                        onChange={handleChange}
-                        rows={5}
-                      />
-                    </label>
-                    <label>
-                      Published Date:
-                      <input
-                        type="date"
-                        name="published_date"
-                        value={editLyric.published_date}
-                        onChange={handleChange}
-                        required
-                      />
-                    </label>
-                    <label>
-                      Music URL:
-                      <input
-                        type="text"
-                        name="music_url"
-                        value={editLyric.music_url || ''}
-                        onChange={handleChange}
-                      />
-                    </label>
-                    <label>
-                      Added By:
-                      <input
-                        type="text"
-                        name="added_by"
-                        value={editLyric.added_by || ''}
-                        onChange={handleChange}
-                      />
-                    </label>
-                    <div className={styles.formActions}>
-                      <button type="submit" className={`${styles.iconButton} ${styles.saveButton}`}>
-                        <FaSave />
-                      </button>
-                      <button type="button" onClick={() => setEditLyric(null)} className={`${styles.iconButton} ${styles.cancelButton}`}>
-                        <FaTimes />
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
-            </li>
+            </div>
           ))}
-        </ul>
-      ) : (
-        <p>No approved lyrics available.</p>
-      )}
+        </aside>
 
-      {/* ConfirmMsg modal, shown only when showConfirm is true */}
+        {/* RIGHT: FULL STUDIO INSPECTOR */}
+        <section className={styles.inspectorPanel}>
+          {editLyric ? (
+            <form className={styles.metaForm} onSubmit={handleUpdate}>
+              <div className={styles.inspectorHeader}>
+                <h3>Studio Inspector</h3>
+                <div className={styles.inspectorActions}>
+                  {/* Status Toggle Button */}
+                  <button 
+                    type="button" 
+                    className={editLyric.status === 'approved' ? styles.btnPublic : styles.btnPrivate}
+                    onClick={() => setEditLyric({
+                      ...editLyric, 
+                      status: editLyric.status === 'approved' ? 'private' : 'approved'
+                    })}
+                  >
+                    {editLyric.status === 'approved' ? <><FaEye /> Public</> : <><FaEyeSlash /> Private</>}
+                  </button>
+
+                  <button type="button" className={styles.btnDelete} onClick={() => { setLyricToDelete(editLyric); setShowConfirm(true); }}>
+                    <FaTrashAlt />
+                  </button>
+                  <button type="submit" className={styles.btnSave}><FaSave /> Save Changes</button>
+                </div>
+              </div>
+
+              <div className={styles.scrollFields}>
+                {/* Visual Monitor Area */}
+                <div className={styles.videoPreviewArea}>
+                  {editLyric.music_url && extractYTId(editLyric.music_url) ? (
+                    <iframe 
+                       src={`https://www.youtube.com/embed/${extractYTId(editLyric.music_url)}`} 
+                       title="Studio Monitor" 
+                       frameBorder="0" 
+                       allowFullScreen 
+                    />
+                  ) : (
+                    <div className={styles.noPreview}>Waiting for Valid Music URL...</div>
+                  )}
+                </div>
+
+                <div className={styles.formGrid}>
+                  <div className={styles.fieldBox}>
+                    <label><FaEdit /> Track Title</label>
+                    <input type="text" value={editLyric.title} onChange={(e) => setEditLyric({...editLyric, title: e.target.value})} />
+                  </div>
+                  <div className={styles.fieldBox}>
+                    <label><FaUserEdit /> Main Artist</label>
+                    <input type="text" value={editLyric.artist} onChange={(e) => setEditLyric({...editLyric, artist: e.target.value})} />
+                  </div>
+                  <div className={styles.fieldBox}>
+                    <label><FaPenNib /> Lyrics Writer</label>
+                    <input type="text" value={editLyric.lyrics_writer || ''} onChange={(e) => setEditLyric({...editLyric, lyrics_writer: e.target.value})} />
+                  </div>
+                  <div className={styles.fieldBox}>
+                    <label><FaCalendarAlt /> Release Date</label>
+                    <input type="date" value={editLyric.published_date} onChange={(e) => setEditLyric({...editLyric, published_date: e.target.value})} />
+                  </div>
+                  <div className={styles.fieldFull}>
+                    <label><FaYoutube /> YouTube Music URL</label>
+                    <input type="text" value={editLyric.music_url || ''} onChange={(e) => setEditLyric({...editLyric, music_url: e.target.value})} />
+                  </div>
+                  <div className={styles.fieldFull}>
+                    <label>Lyrics Body</label>
+                    <textarea 
+                      className={styles.noirTextarea} 
+                      rows={12} 
+                      value={editLyric.lyrics} 
+                      onChange={(e) => setEditLyric({...editLyric, lyrics: e.target.value})} 
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
+          ) : (
+            <div className={styles.emptyInspector}>
+               <FaLayerGroup size={50} />
+               <p>Select a track from the library to update</p>
+            </div>
+          )}
+        </section>
+      </div>
+
       {showConfirm && (
         <ConfirmMsg
           show={showConfirm}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-          message="Are you sure you want to delete this lyric?"
+          onConfirm={async () => {
+             const { error } = await supabase.from('lyrics').delete().eq('id', lyricToDelete.id);
+             if (!error) {
+               setLyrics(lyrics.filter(l => l.id !== lyricToDelete.id));
+               setFilteredLyrics(filteredLyrics.filter(l => l.id !== lyricToDelete.id));
+               setEditLyric(null);
+               setShowConfirm(false);
+             }
+          }}
+          onCancel={() => setShowConfirm(false)}
+          message={`Are you sure you want to permanently delete "${lyricToDelete?.title}"?`}
         />
       )}
-    </div> 
+    </div>
   );
 };
 

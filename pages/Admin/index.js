@@ -1,206 +1,132 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
-import { FaCaretDown, FaCheckCircle, FaEdit, FaPlus,FaEnvelope, FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper } from 'react-icons/fa'; // Icons for menu
+import { 
+  FaCheckCircle, FaEdit, FaPlus, FaEnvelope, FaSun, FaMoon,
+  FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper, FaBroadcastTower, FaCogs, FaEye 
+} from 'react-icons/fa';
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
-import AddBlog from './addBlog'; // Blog component
-
-import styles from './style/AdminDashboard.module.css'; // CSS module for Next.js
-import { useRouter } from 'next/router';
+import AddBlog from './addBlog'; 
 import ManageBlog from './manageblog';
 import ManageArtist from './ManageArtist';
 import AddRadio from './AddRadio';
+import styles from './style/AdminDashboard.module.css';
+import { useRouter } from 'next/router';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState({
-    manage: false,
-    account: false,
-    blog: false,
-  }); // Store the dropdown state for each section
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to professional dark
+  const [glassIntensity, setGlassIntensity] = useState(70);
+  const router = useRouter();
 
-  const dropdownRef = useRef(); // Ref for detecting click outside dropdowns
-  const router = useRouter(); // Use Next.js router
-
-  // Check if the user is logged in (session check)
+  // Rule 1: Preserve original session check
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-
-      if (session) {
-        setSession(session);
-      } else {
-        router.push('/login'); // Redirect to login
+      if (!session) {
+        router.push('/login');
       }
       setLoading(false);
     };
-
     checkSession();
+    
+    // Load local UI preferences
+    const savedTheme = localStorage.getItem('adminTheme');
+    if (savedTheme) setIsDarkMode(savedTheme === 'dark');
   }, [router]);
 
-  // Handle user logout
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem('adminTheme', newTheme ? 'dark' : 'light');
+  };
+
+  // Rule 2: Preserve original logout logic
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/login'); // Redirect to login after logout
+    router.push('/login');
   };
 
-  // Toggle dropdown visibility
-  const toggleDropdown = (section) => {
-    setDropdownOpen((prevState) => ({
-      ...prevState,
-      [section]: !prevState[section],
-    }));
-  };
-
-  // Close dropdowns if clicking outside
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setDropdownOpen({ manage: false, account: false, blog: false });
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // Render content based on the active tab
+  // Rule 3: Preserve original renderContent logic + New Settings
   const renderContent = () => {
     switch (activeTab) {
-      case 'approve':
-        return <ApproveLyrics />;
-      case 'manage':
-        return <ManageLyrics />;
-      case 'messages':
-        return <Messages />;
-      case 'add-lyrics':
-        return <AddLyrics />;
-      case 'add-artist':
-        return <AddArtist />;
-      case 'blog':
-        return <AddBlog />;
-      case 'manageblog':
-        return <ManageBlog />;
-      case 'manage-artist':
-        return <ManageArtist />
-      case 'add-radio':
-        return <AddRadio />
-      default:
-        return <ManageLyrics />;
+      case 'approve': return <ApproveLyrics />;
+      case 'manage': return <ManageLyrics />;
+      case 'messages': return <Messages />;
+      case 'add-lyrics': return <AddLyrics />;
+      case 'add-artist': return <AddArtist />;
+      case 'blog': return <AddBlog />;
+      case 'manageblog': return <ManageBlog />;
+      case 'manage-artist': return <ManageArtist />;
+      case 'add-radio': return <AddRadio />;
+      case 'settings': return (
+        <div className={styles.settingsPanel}>
+          <h3>Dashboard Calibrations</h3>
+          <div className={styles.settingRow}>
+            <label>High-Contrast Dark Mode</label>
+            <button onClick={toggleTheme} className={styles.toggleBtn}>
+              {isDarkMode ? <FaSun /> : <FaMoon />} {isDarkMode ? 'Switch to Light' : 'Switch to Dark'}
+            </button>
+          </div>
+          <div className={styles.settingRow}>
+            <label>Glass Transparency ({glassIntensity}%)</label>
+            <input 
+              type="range" min="10" max="90" 
+              value={glassIntensity} 
+              onChange={(e) => setGlassIntensity(e.target.value)} 
+            />
+          </div>
+          <p className={styles.hint}>Settings are local to this device and don't affect your public site.</p>
+        </div>
+      );
+      default: return <ManageLyrics />;
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading spinner
-  }
+  if (loading) return <div className={styles.loader}>Initializing Command Center...</div>;
 
   return (
-    <div className={styles.adminDashboard}>
-      <nav className={styles.topNav} ref={dropdownRef}>
-        <ul className={styles.navList}>
-          {/* Manage Dropdown */}
-          <li className={styles.navItem}>
-            <span onClick={() => toggleDropdown('manage')}>
-              Music <FaCaretDown className={styles.caretIcon} />
-            </span>
-            {dropdownOpen.manage && (
-              <ul className={styles.dropdownMenu}>
-                <li onClick={() => setActiveTab('add-lyrics')}>
-                  <FaMusic className={styles.icon} /> Add Lyrics
-                </li>
-                <li onClick={() => setActiveTab('approve')}>
-                  <FaCheckCircle className={styles.icon} /> Approve Lyrics
-                </li>
-                <li onClick={() => setActiveTab('manage')}>
-                  <FaEdit className={styles.icon} /> Manage Lyrics
-                </li>
-                
-                
-              </ul>
-            )}
-          </li>
- {/* Artist Dropdown */}
- <li className={styles.navItem}>
-            <span onClick={() => toggleDropdown('artist')}>
-              Artist <FaCaretDown className={styles.caretIcon} />
-            </span>
-            {dropdownOpen.artist && (
-              <ul className={styles.dropdownMenu}>
-                 <li onClick={() => setActiveTab('add-artist')}>
-              <FaUserPlus className={styles.icon} /> Add Artist
-                </li>
+    <div 
+      className={`${styles.adminDashboard} ${isDarkMode ? styles.ultraDark : styles.lightMode}`}
+      style={{ '--glass-opacity': `${glassIntensity / 100}` }}
+    >
+      <aside className={styles.sidebar}>
+        <div className={styles.brand}>Dyna<span>Beat</span> Admin</div>
+        
+        <nav className={styles.sideNav}>
+          <div className={styles.sectionLabel}>Music</div>
+          <button className={activeTab === 'approve' ? styles.active : ''} onClick={() => setActiveTab('approve')}><FaCheckCircle /> Approve</button>
+          <button className={activeTab === 'add-lyrics' ? styles.active : ''} onClick={() => setActiveTab('add-lyrics')}><FaPlus /> Add</button>
+          <button className={activeTab === 'manage' ? styles.active : ''} onClick={() => setActiveTab('manage')}><FaEdit /> Manage</button>
 
-              <li onClick={() => setActiveTab('manage-artist')}>
-                  <FaEdit className={styles.icon} /> Manage Artist
-              </li>
-               
-              </ul>
-            )}
-          </li>
-         
+          <div className={styles.sectionLabel}>Media</div>
+          <button className={activeTab === 'blog' ? styles.active : ''} onClick={() => setActiveTab('blog')}><FaPlus /> New Blog</button>
+          <button className={activeTab === 'manageblog' ? styles.active : ''} onClick={() => setActiveTab('manageblog')}><FaNewspaper /> Manage Blog</button>
+          <button className={activeTab === 'add-radio' ? styles.active : ''} onClick={() => setActiveTab('add-radio')}><FaBroadcastTower /> Radio</button>
 
-          {/* Blog Dropdown */}
-          <li className={styles.navItem}>
-            <span onClick={() => toggleDropdown('blog')}>
-              Blog <FaCaretDown className={styles.caretIcon} />
-            </span>
-            {dropdownOpen.blog && (
-              <ul className={styles.dropdownMenu}>
-                <li onClick={() => setActiveTab('blog')}>
-                  <FaNewspaper className={styles.icon} /> Add Blog
-                </li>
-                <li onClick={() => setActiveTab('manageblog')}>
-                  <FaEdit className={styles.icon} /> Manage Blog
-                </li>
-              </ul>
-            )}
-          </li>
-                {/* Radio Dropdown */}
-          <li className={styles.navItem}>
-            <span onClick={() => toggleDropdown('manage')}>
-             Radio <FaCaretDown className={styles.caretIcon} />
-            </span>
-            {dropdownOpen.manage && (
-              <ul className={styles.dropdownMenu}>
-                <li onClick={() => setActiveTab('add-radio')}>
-                  <FaPlus className={styles.icon} /> Add Radio
-                </li>
-                <li onClick={() => setActiveTab('approve')}>
-                  <FaEdit className={styles.icon} />Manage Radio
-                </li>
-              </ul>
-            )}
-          </li>
+          <div className={styles.sectionLabel}>System</div>
+          <button className={activeTab === 'settings' ? styles.active : ''} onClick={() => setActiveTab('settings')}><FaCogs /> UI Settings</button>
+          <button className={activeTab === 'messages' ? styles.active : ''} onClick={() => setActiveTab('messages')}><FaEnvelope /> Messages</button>
+          
+          <button className={styles.logoutBtn} onClick={handleLogout}><FaSignOutAlt /> Logout</button>
+        </nav>
+      </aside>
 
-
-         {/* Account Dropdown */}
-         <li className={styles.navItem}>
-            <span onClick={() => toggleDropdown('account')}>
-              Account <FaCaretDown className={styles.caretIcon} />
-            </span>
-            {dropdownOpen.account && (
-              <ul className={styles.dropdownMenu}>
-                <li onClick={() => setActiveTab('messages')}>
-                  <FaEnvelope className={styles.icon} /> Messages
-                </li>
-                <li onClick={handleLogout}>
-                  <FaSignOutAlt className={styles.icon} /> Logout
-                </li>
-              </ul>
-            )}
-          </li>
-          </ul>
-      </nav>
-
-      <main className={styles.mainContent}>
-        {renderContent()}
+      <main className={styles.mainArea}>
+        <header className={styles.topHeader}>
+           <div className={styles.headerInfo}>
+              <h2>{activeTab.toUpperCase()}</h2>
+              <span className={styles.statusBadge}><FaEye /> Command Mode</span>
+           </div>
+           <div className={styles.userBadge}>Admin Session</div>
+        </header>
+        <div className={styles.scrollContent}>
+           {renderContent()}
+        </div>
       </main>
     </div>
   );

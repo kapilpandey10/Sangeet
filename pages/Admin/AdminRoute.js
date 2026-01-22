@@ -1,32 +1,43 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router'; // Fixed: Use Next.js router
 import { supabase } from '../../supabaseClient';
 
 const AdminRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const checkAdminAccess = async () => {
-      const { data: user, error } = await supabase.auth.getUser();
+      // 1. Get the current authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (user && user.user_metadata.role === 'admin') {
+      if (!user) {
+        router.push('/Admin/AdminLogin');
+        return;
+      }
+
+      // 2. Verify role against your 'admin' database table for extra security
+      const { data: adminData } = await supabase
+        .from('admin')
+        .select('role')
+        .ilike('email', user.email)
+        .single();
+
+      if (adminData && adminData.role.toLowerCase() === 'admin') {
         setIsAdmin(true);
       } else {
-        navigate('/no-access');
+        router.push('/404'); // Stealth security: redirect unauthorized to 404
       }
       setLoading(false);
     };
 
     checkAdminAccess();
-  }, []);
+  }, [router]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div className="admin-loader">Initializing Command Center...</div>;
 
-  return isAdmin ? children : <div>No Access</div>;
+  return isAdmin ? <>{children}</> : null;
 };
 
 export default AdminRoute;

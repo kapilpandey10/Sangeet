@@ -67,7 +67,6 @@ const LyricsLibrary = ({ allLyrics }) => {
                 ))}
               </div>
             </section>
-
             {/* Random Discovery Section */}
             <section className={styles.sectionArea}>
               <h2 className={styles.sectionTitle}><FaRandom color="#6366f1" /> Quick Discovery</h2>

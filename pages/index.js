@@ -10,6 +10,7 @@ import styles from '../styles/HomePage.module.css';
 const HomeYTVideo = dynamic(() => import('./homeytvideo'), { ssr: false });
 const FeaturedArtistCard = dynamic(() => import('./FeaturedArtistCard'), { ssr: false });
 const HeroSlider = dynamic(() => import('../components/HeroSlider'), { ssr: false });
+const NewRelease = dynamic(() => import('../components/NewRelease'), { ssr: false });
 
 const HomePage = ({ lyrics, featuredArtist }) => {
   useEffect(() => {
@@ -32,7 +33,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
     "@type": "WebSite",
     "name": "DynaBeat",
     "url": "https://pandeykapil.com.np/",
-    "description": "Nepal's ultimate digital library for Nepali music lyrics, artist biographies, and live radio.",
+    "description": "Nepal's ultimate digital library for  music lyrics, artist biographies, and live radio.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://pandeykapil.com.np/searchresults?query={search_term_string}",
@@ -45,7 +46,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
       <Head>
         <title>DynaBeat | Nepali Music Lyrics, Artist Bios & Live Radio Hub</title>
         <meta name="description" content="Discover thousands of Nepali music lyrics, explore detailed artist biographies, and stream live radio globally. DynaBeat is your ultimate destination for music and culture." />
-        <meta name="keywords" content="Nepali Music Lyrics, Nepali Song Lyrics, Live Radio Nepal, Nepali Artist Biography, DynaBeat Music, Stream Nepali Songs Online" />
+        <meta name="keywords" content="Nepali Music Lyrics,Music Lyrics, Nepali Song Lyrics, Live Radio Nepal, Nepali Artist Biography, DynaBeat Music, Stream Nepali Songs Online" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://pandeykapil.com.np/" />
 
@@ -85,7 +86,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
       The Premier Archive for <strong> Music</strong>, Artist Bios & Live Radio.
     </h2>
     <p className={styles.seoDescription}>
-      Access thousands of verified Nepali song lyrics and international radio stations in one modern digital library.
+      Access thousands of verified  song lyrics and international radio stations in one modern digital library.
     </p>
   </div>
 </header>
@@ -123,6 +124,8 @@ const HomePage = ({ lyrics, featuredArtist }) => {
             ))}
           </div>
         </section>
+        <NewRelease />
+
 
         <section className={`${styles.videoSection} ${styles.scrollAnimated}`}>
            <HomeYTVideo />

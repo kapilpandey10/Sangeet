@@ -1,0 +1,35 @@
+.adminWrapper {
+  display: flex;
+  background: #050505;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+  width: 260px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand { font-size: 1.5rem; font-weight: 900; margin-bottom: 50px; text-transform: uppercase; }
+.brand span { color: #ff00ff; }
+
+.link, .activeLink {
+  display: flex; align-items: center; gap: 15px;
+  padding: 14px 20px; margin-bottom: 10px;
+  border-radius: 12px; color: #888; border: none; background: none;
+  cursor: pointer; width: 100%; transition: 0.3s;
+}
+
+.activeLink {
+  background: linear-gradient(90deg, rgba(255, 0, 255, 0.1), transparent);
+  color: #ff00ff;
+  border-left: 3px solid #ff00ff;
+}
+
+.mainArea { flex: 1; padding: 40px; }
+.topHeader { display: flex; justify-content: space-between; margin-bottom: 40px; }

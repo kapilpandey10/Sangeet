@@ -1,0 +1,76 @@
+.studioContainer {
+  height: 85vh;
+  background: #000;
+  border: 1px solid #1a1a1a;
+  border-radius: 20px;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.studioHeader {
+  padding: 20px 40px;
+  background: #080808;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.searchWrapper { flex: 1; position: relative; max-width: 600px; }
+.searchIcon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #444; }
+.noirSearch { width: 100%; background: #000; border: 1px solid #1a1a1a; color: #fff; padding: 12px 12px 12px 45px; border-radius: 10px; outline: none; }
+
+.studioMain { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; }
+
+/* Sidebar Library */
+.librarySidebar { border-right: 1px solid #1a1a1a; background: #080808; overflow-y: auto; padding: 15px; }
+
+.stationCard {
+  display: flex; gap: 12px; padding: 12px; border-radius: 12px;
+  background: #111; border: 1px solid #1a1a1a; margin-bottom: 10px; cursor: pointer; transition: 0.2s;
+}
+
+.stationCard:hover { border-color: #444; }
+.cardActive { border-color: #fff !important; background: #1a1a1a !important; }
+
+.stationThumb { width: 45px; height: 45px; border-radius: 6px; object-fit: cover; }
+.stationInfo h4 { font-size: 0.9rem; margin-bottom: 2px; }
+.stationInfo p { font-size: 0.7rem; color: #555; }
+
+.tagOnline, .tagOffline { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
+.tagOnline { color: #00ff00; background: rgba(0, 255, 0, 0.1); }
+.tagOffline { color: #ff4444; background: rgba(255, 68, 68, 0.1); }
+
+/* Inspector Panel */
+.inspectorPanel { background: #000; display: flex; flex-direction: column; overflow: hidden; }
+.metaForm { display: flex; flex-direction: column; height: 100%; }
+
+.inspectorHeader { padding: 25px 40px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+.inspectorActions { display: flex; gap: 12px; }
+
+.scrollFields { flex: 1; overflow-y: auto; padding: 30px 40px; }
+
+.previewArea { display: flex; gap: 25px; align-items: center; margin-bottom: 40px; background: #050505; padding: 20px; border-radius: 15px; border: 1px solid #1a1a1a; }
+.largeLogo { width: 80px; height: 80px; border-radius: 12px; border: 1px solid #222; object-fit: cover; }
+
+.statusIndicator { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #888; }
+.pulse { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; }
+
+.formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.fieldBox label, .fieldFull label { display: block; font-size: 0.7rem; color: #555; text-transform: uppercase; font-weight: 900; margin-bottom: 8px; }
+.fieldBox input, .fieldFull input { width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a; color: #fff; padding: 12px; border-radius: 8px; font-family: inherit; }
+
+.fieldFull { grid-column: span 2; }
+
+/* Action Buttons */
+.btnOnline, .btnOffline { padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; border: none; font-size: 0.75rem; text-transform: uppercase; transition: 0.3s; }
+.btnOnline { background: rgba(0, 255, 0, 0.1); color: #00ff00; border: 1px solid #00ff00; }
+.btnOffline { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444; }
+
+.btnSave { background: #fff; color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+.btnDelete { background: rgba(255, 0, 0, 0.05); color: #ff3b3b; border: 1px solid #ff3b3b; padding: 12px 20px; border-radius: 8px; cursor: pointer; }
+
+.noirToast { position: absolute; top: 20px; right: 20px; background: #fff; color: #000; padding: 10px 25px; border-radius: 8px; font-weight: 900; z-index: 100; }
+.emptyInspector { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #111; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }

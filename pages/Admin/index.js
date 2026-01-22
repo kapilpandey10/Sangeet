@@ -13,6 +13,7 @@ import AddBlog from './addBlog';
 import ManageBlog from './manageblog';
 import ManageArtist from './ManageArtist';
 import AddRadio from './AddRadio';
+import ManageRadio from './ManageRadio';
 import styles from './style/AdminDashboard.module.css';
 import { useRouter } from 'next/router';
 
@@ -63,6 +64,7 @@ const AdminDashboard = () => {
       case 'manageblog': return <ManageBlog />;
       case 'manage-artist': return <ManageArtist />;
       case 'add-radio': return <AddRadio />;
+      case 'manage-radio': return <ManageRadio />;
       case 'settings': return (
         <div className={styles.settingsPanel}>
           <h3>Dashboard Calibrations</h3>
@@ -106,7 +108,8 @@ const AdminDashboard = () => {
           <div className={styles.sectionLabel}>Media</div>
           <button className={activeTab === 'blog' ? styles.active : ''} onClick={() => setActiveTab('blog')}><FaPlus /> New Blog</button>
           <button className={activeTab === 'manageblog' ? styles.active : ''} onClick={() => setActiveTab('manageblog')}><FaNewspaper /> Manage Blog</button>
-          <button className={activeTab === 'add-radio' ? styles.active : ''} onClick={() => setActiveTab('add-radio')}><FaBroadcastTower /> Radio</button>
+          <button className={activeTab === 'add-radio' ? styles.active : ''} onClick={() => setActiveTab('add-radio')}><FaBroadcastTower />Add Radio</button>
+          <button className={activeTab === 'manage-radio' ? styles.active : ''} onClick={() => setActiveTab('manage-radio')}><FaEdit /> Manage Radio</button>
 
           <div className={styles.sectionLabel}>System</div>
           <button className={activeTab === 'settings' ? styles.active : ''} onClick={() => setActiveTab('settings')}><FaCogs /> UI Settings</button>

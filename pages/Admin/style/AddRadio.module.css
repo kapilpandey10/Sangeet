@@ -1,91 +1,132 @@
-/* AddRadio.module.css */
-.addRadioContainer {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #1a1a1a;
-    color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .header {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #ffdd57;
-  }
-  
-  .addRadioForm {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .label {
-    margin-top: 15px;
-    font-size: 1rem;
-    color: #ffdd57;
-  }
-  
-  .inputField {
-    padding: 10px;
-    margin-top: 5px;
-    font-size: 1rem;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background-color: #333;
-    color: #fff;
-  }
-  
-  .inputField::placeholder {
-    color: #999;
-  }
-  
-  .submitButton {
-    margin-top: 20px;
-    padding: 12px;
-    font-size: 1rem;
-    color: #000;
-    background-color: #ffdd57;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .submitButton:hover {
-    background-color: #ffaa00;
-  }
-  
-  .submitButton:disabled {
-    background-color: #666;
-    cursor: not-allowed;
-  }
-  
-  .errorMessage {
-    color: #ff4d4d;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .successMessage {
-    color: #4caf50;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .addRadioContainer {
-      padding: 15px;
-    }
-  
-    .inputField, 
-    .submitButton {
-      font-size: 0.9rem;
-    }
-  
-    .header {
-      font-size: 1.5rem;
-    }
-  }
-  
+.studioContainer {
+  height: 88vh;
+  background: #000;
+  border: 1px solid #1a1a1a;
+  border-radius: 24px;
+  overflow: hidden;
+  color: #fff;
+}
+
+.studioLayout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  width: 100%;
+  height: 100%;
+}
+
+/* Metadata Panel */
+.metaPanel {
+  background: #080808;
+  border-right: 1px solid #1a1a1a;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  margin-bottom: 30px;
+}
+
+.fieldGrid { display: flex; flex-direction: column; gap: 20px; }
+.fieldBox label, .streamArea label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.7rem; color: #555; text-transform: uppercase;
+  font-weight: 950; margin-bottom: 10px; letter-spacing: 1px;
+}
+
+.fieldBox input, .fieldBox select, .noirInput {
+  width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a;
+  color: #fff; padding: 12px; border-radius: 10px; font-family: inherit;
+  outline: none;
+}
+
+.fieldBox input:focus { border-color: #fff; }
+
+/* Content Panel */
+.contentPanel { display: flex; flex-direction: column; background: #000; }
+
+.monitorArea { padding: 40px; background: #050505; border-bottom: 1px solid #1a1a1a; }
+.previewFrame { 
+  width: 180px; height: 180px; border-radius: 20px; overflow: hidden; 
+  position: relative; border: 1px solid #222; margin: 0 auto 25px;
+  background: #000;
+}
+.previewFrame img { width: 100%; height: 100%; object-fit: cover; }
+
+.emptyLogo { height: 100%; display: flex; align-items: center; justify-content: center; color: #111; }
+
+.statusBadge {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.8); padding: 4px 12px; border-radius: 20px;
+  font-size: 0.6rem; font-weight: 900; letter-spacing: 1px; white-space: nowrap;
+}
+
+.uploadBox { display: flex; justify-content: center; }
+.fileLabel {
+  background: rgba(255,255,255,0.05); border: 1px solid #1a1a1a;
+  padding: 12px 25px; border-radius: 10px; cursor: pointer;
+  font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 10px;
+}
+
+.streamArea { padding: 40px; flex: 1; }
+.hint { font-size: 0.75rem; color: #444; margin-top: 10px; }
+
+/* Action Center */
+.actionCenter { padding: 25px 40px; border-top: 1px solid #1a1a1a; background: #080808; }
+.publishBtn { 
+  width: 100%; background: #fff; color: #000; border: none; padding: 20px; 
+  border-radius: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+}
+
+.publishBtn:disabled { background: #111; color: #333; cursor: not-allowed; }
+
+.noirToast {
+  position: fixed; top: 20px; right: 20px; background: #fff; color: #000;
+  padding: 12px 25px; border-radius: 8px; font-weight: 900; z-index: 9999;
+}/* Suggestion Logic Styling */
+.searchContainer {
+  position: relative;
+  width: 100%;
+}
+
+.suggestionList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.suggestionList li {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 0.85rem;
+}
+
+.suggestionList li:last-child { border-bottom: none; }
+.suggestionList li:hover { background: #1a1a1a; color: #ff00ff; }
+
+.suggestionList li strong { font-weight: 900; }
+.suggestionList li span { font-size: 0.7rem; color: #555; margin-left: auto; }
+
+/* Invert colors when hovering over the strong tag inside li */
+.suggestionList li:hover span { color: #fff; }

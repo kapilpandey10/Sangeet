@@ -101,9 +101,9 @@ const AdminDashboard = () => {
         
         <nav className={styles.sideNav}>
           <div className={styles.sectionLabel}>Music</div>
-          <button className={activeTab === 'approve' ? styles.active : ''} onClick={() => setActiveTab('approve')}><FaCheckCircle /> Approve</button>
-          <button className={activeTab === 'add-lyrics' ? styles.active : ''} onClick={() => setActiveTab('add-lyrics')}><FaPlus /> Add</button>
-          <button className={activeTab === 'manage' ? styles.active : ''} onClick={() => setActiveTab('manage')}><FaEdit /> Manage</button>
+          <button className={activeTab === 'approve' ? styles.active : ''} onClick={() => setActiveTab('approve')}><FaCheckCircle /> Approve Lyrics</button>
+          <button className={activeTab === 'add-lyrics' ? styles.active : ''} onClick={() => setActiveTab('add-lyrics')}><FaPlus /> Add Lyrics</button>
+          <button className={activeTab === 'manage' ? styles.active : ''} onClick={() => setActiveTab('manage')}><FaEdit /> Manage Lyrics</button>
 
           <div className={styles.sectionLabel}>Media</div>
           <button className={activeTab === 'blog' ? styles.active : ''} onClick={() => setActiveTab('blog')}><FaPlus /> New Blog</button>

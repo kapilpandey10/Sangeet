@@ -17,7 +17,6 @@ const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -29,39 +28,47 @@ const Navbar = () => {
 
   /* ---------------- Lock body scroll when mobile menu open ---------------- */
   useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
-  /* ---------------- ESC key close ---------------- */
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+  /* ---------------- Toggle Menu with Propagation Fix ---------------- */
+  const toggleMenu = (e) => {
+    e.stopPropagation(); // Stops the click from reaching the window/document
+    setIsMobileMenuOpen((prev) => !prev);
+  };
 
   /* ---------------- Click outside close ---------------- */
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+      // If the menu is open and the click is NOT inside the menuRef area, close it
+      if (isMobileMenuOpen && menuRef.current && !menuRef.current.contains(e.target)) {
         setIsMobileMenuOpen(false);
       }
     };
 
     if (isMobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('click', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, [isMobileMenuOpen]);
 
-  /* ---------------- Active link helper ---------------- */
+  /* ---------------- ESC key close ---------------- */
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   const isActive = useCallback(
     (path) => (router.pathname === path ? styles.active : ''),
     [router.pathname]
@@ -77,7 +84,7 @@ const Navbar = () => {
         {/* Mobile Toggle */}
         <button
           className={styles.mobileToggle}
-          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          onClick={toggleMenu} // Using the fixed toggle function
           aria-label="Toggle Menu"
           aria-expanded={isMobileMenuOpen}
         >
@@ -106,21 +113,16 @@ const Navbar = () => {
           <Link href="/viewlyrics" className={isActive('/viewlyrics')}>
             Lyrics
           </Link>
-
           <Link href="/artistbio" className={isActive('/artistbio')}>
             Artists
           </Link>
-
           <Link href="/blogs" className={isActive('/blogs')}>
             Blog
           </Link>
-
           <Link href="/radio" className={styles.specialLink}>
             <FaBroadcastTower />
             <span>Live Radio</span>
           </Link>
-
-          {/* Mobile only */}
           <Link href="/contact" className={styles.mobileOnlyLink}>
             Get in Touch
           </Link>
@@ -135,7 +137,6 @@ const Navbar = () => {
           >
             <FaSearch />
           </button>
-
           <Link href="/contact" className={styles.contactBtn}>
             Get in Touch
           </Link>
@@ -149,7 +150,6 @@ const Navbar = () => {
         >
           <FaSearch />
         </button>
-
       </div>
     </nav>
   );

@@ -5,52 +5,78 @@ import { supabase } from '../../supabaseClient';
 import { FaSearch, FaGlobeAmericas, FaPlay, FaPause, FaBroadcastTower } from 'react-icons/fa';
 import styles from './style/AppleRadio.module.css';
 
-const RadioDiscovery = ({ stations }) => {
+const RadioDiscovery = ({ initialStations }) => {
   const [search, setSearch] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const [userCountry, setUserCountry] = useState(null);
   const [playingId, setPlayingId] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
   const audioRef = useRef(null);
 
-  // 1. Detect Location & Prioritize
+  // 1. Intelligent Location Detection
   useEffect(() => {
     fetch('https://ipapi.co/json/')
       .then(res => res.json())
       .then(data => setUserCountry(data.country_name))
-      .catch(() => setUserCountry("Nepal"));
+      .catch(() => setUserCountry("Australia")); // Default example
   }, []);
 
-  // 2. Smart Sorting: Local First, then alphabetically
-  const sortedStations = useMemo(() => {
-    return [...stations].sort((a, b) => {
-      if (a.country === userCountry && b.country !== userCountry) return -1;
-      if (b.country === userCountry && a.country !== userCountry) return 1;
-      return a.radioname.localeCompare(b.radioname);
-    });
-  }, [stations, userCountry]);
+  // 2. Advanced Client-Side Search using provided parameters
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (search.length > 2) {
+        setIsSearching(true);
+        try {
+          // Implementing search with your specific parameters: hidebroken, order, and limit
+          const params = new URLSearchParams({
+            name: search,
+            hidebroken: 'true',
+            order: 'clickcount',
+            reverse: 'true',
+            limit: '20'
+          });
+          const res = await fetch(`https://de1.api.radio-browser.info/json/stations/search?${params}`);
+          const data = await res.json();
+          setSearchResults(data.map(s => ({
+            id: s.stationuuid,
+            radioname: s.name,
+            stream_url: s.url_resolved,
+            logo_url: s.favicon,
+            country: s.country,
+            slug: s.stationuuid
+          })));
+        } catch (err) {
+          console.error("Search failed", err);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    }, 500);
 
-  // 3. Audio Stream Handler
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
+  // 3. Audio Stream Controller
   const handlePlayStream = (e, station) => {
-    e.stopPropagation(); // Prevents navigation when clicking play icon
+    e.preventDefault();
+    e.stopPropagation();
     if (playingId === station.id) {
       audioRef.current.pause();
       setPlayingId(null);
     } else {
       setPlayingId(station.id);
       audioRef.current.src = station.stream_url;
-      audioRef.current.play();
+      audioRef.current.play().catch(err => console.error("Playback error", err));
     }
   };
 
-  const filtered = sortedStations.filter(s => 
-    s.radioname.toLowerCase().includes(search.toLowerCase()) ||
-    s.country.toLowerCase().includes(search.toLowerCase())
-  );
+  const displayStations = search.length > 2 ? searchResults : initialStations;
 
   return (
     <div className={styles.noirPage}>
       <Head><title>Radio Discovery | DynaBeat</title></Head>
-      
-      {/* Hidden Audio Engine */}
       <audio ref={audioRef} onEnded={() => setPlayingId(null)} />
 
       <header className={styles.topHeader}>
@@ -63,7 +89,7 @@ const RadioDiscovery = ({ stations }) => {
             <FaSearch className={styles.searchIcon} />
             <input 
               type="text" 
-              placeholder="Search stations or countries..." 
+              placeholder="Search stations, cities, or countries..." 
               onChange={(e) => setSearch(e.target.value)} 
             />
           </div>
@@ -71,79 +97,65 @@ const RadioDiscovery = ({ stations }) => {
       </header>
 
       <main className={styles.mainGrid}>
-        {/* Local Priority Spotlight */}
-        {!search && userCountry && (
-          <section className={styles.shelf}>
-            <h2 className={styles.shelfTitle}>Stations Near You</h2>
-            <div className={styles.heroScroll}>
-              {stations.filter(s => s.country === userCountry).map(s => (
-                <HeroStation 
-                  key={s.id} 
-                  station={s} 
-                  isPlaying={playingId === s.id} 
-                  onPlay={(e) => handlePlayStream(e, s)} 
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Discovery Feed */}
         <section className={styles.shelf}>
-          <h2 className={styles.shelfTitle}>{search ? 'Search Results' : 'Global Discovery'}</h2>
+          <h2 className={styles.shelfTitle}>
+            {search.length > 2 ? `Results for "${search}"` : 'Global Discovery'}
+          </h2>
+          
           <div className={styles.bentoGrid}>
-            {filtered.slice(0, 12).map(s => (
-              <CompactStation 
-                key={s.id} 
-                station={s} 
-                isPlaying={playingId === s.id} 
-                onPlay={(e) => handlePlayStream(e, s)} 
-              />
+            {displayStations.map(s => (
+              <div key={s.id} className={`${styles.compactCard} ${playingId === s.id ? styles.activeCard : ''}`}>
+                <div className={styles.miniThumb}>
+                  <img src={s.logo_url || '/logo/logo.webp'} alt="" />
+                  <button className={styles.miniPlay} onClick={(e) => handlePlayStream(e, s)}>
+                    {playingId === s.id ? <FaPause /> : <FaPlay />}
+                  </button>
+                </div>
+                <Link href={`/radio/${s.slug}`} className={styles.nameLink}>
+                  <h4>{s.radioname}</h4>
+                  <p>{s.country}</p>
+                </Link>
+                {playingId === s.id && (
+                  <div className={styles.visualizer}>
+                    <span></span><span></span><span></span>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
+          {isSearching && <p className={styles.loadingText}>Fetching high-quality streams...</p>}
         </section>
       </main>
     </div>
   );
 };
 
-// Sub-component for Major Stations
-const HeroStation = ({ station, isPlaying, onPlay }) => (
-  <div className={styles.heroCard}>
-    <div className={styles.cardVisual}>
-      <img src={station.logo_url || '/logo/logo.webp'} alt="" />
-      <button className={styles.playOverlay} onClick={onPlay}>
-        {isPlaying ? <FaPause /> : <FaPlay />}
-      </button>
-    </div>
-    <div className={styles.cardDetails}>
-      <Link href={`/radio/${station.slug}`}>
-        <h3 className={styles.stationLink}>{station.radioname}</h3>
-      </Link>
-      <p>{station.city || station.country}</p>
-    </div>
-  </div>
-);
-
-// Sub-component for Grid Display
-const CompactStation = ({ station, isPlaying, onPlay }) => (
-  <div className={`${styles.compactCard} ${isPlaying ? styles.activeCard : ''}`}>
-    <div className={styles.miniThumb}>
-      <img src={station.logo_url || '/logo/logo.webp'} alt="" />
-      <button className={styles.miniPlay} onClick={onPlay}>
-        {isPlaying ? <FaPause /> : <FaPlay />}
-      </button>
-    </div>
-    <Link href={`/radio/${station.slug}`} className={styles.nameLink}>
-      <h4>{station.radioname}</h4>
-      <p>{station.country}</p>
-    </Link>
-  </div>
-);
-
 export const getServerSideProps = async () => {
-  const { data } = await supabase.from('radio').select('*').eq('status', 'online');
-  return { props: { stations: data || [] } };
+  try {
+    // Fetch top 50 global stations using your specific parameters
+    const params = new URLSearchParams({
+      hidebroken: 'true',
+      order: 'votes',
+      reverse: 'true',
+      limit: '50'
+    });
+    
+    const response = await fetch(`https://de1.api.radio-browser.info/json/stations/search?${params}`);
+    const apiData = await response.json();
+
+    const stations = apiData.map(s => ({
+      id: s.stationuuid,
+      radioname: s.name,
+      stream_url: s.url_resolved,
+      logo_url: s.favicon,
+      country: s.country,
+      slug: s.stationuuid
+    }));
+
+    return { props: { initialStations: stations } };
+  } catch (error) {
+    return { props: { initialStations: [] } };
+  }
 };
 
 export default RadioDiscovery;

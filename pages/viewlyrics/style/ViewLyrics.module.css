@@ -1,197 +1,512 @@
-/* File: style/ViewLyrics.module.css */
+/* ═══════════════════════════════════════════════════════════════
+   ViewLyrics.module.css — Ad-Optimized DynaBeat Lyrics Page
+   Fonts: Bebas Neue (display) + DM Sans (body)
+   Theme: Dark noir with gold accent
+   Ad slots: 13 placements strategically positioned
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset & Base ────────────────────────────────────────────── */
 
 .pageContainer {
   position: relative;
   min-height: 100vh;
-  background: #050505;
+  background: #080808;
   color: #fff;
   overflow-x: hidden;
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* Immersive Background Logic */
+/* ── Immersive Background ────────────────────────────────────── */
 .bgBlur {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-size: cover;
   background-position: center;
-  filter: blur(80px) saturate(1.5);
-  opacity: 0.35;
+  filter: blur(90px) saturate(1.8);
+  opacity: 0.25;
   z-index: 0;
-  transform: scale(1.1); /* Prevents white edges from blur */
+  transform: scale(1.15);
 }
 
 .bgOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, transparent 0%, #050505 90%);
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, transparent 0%, #080808 75%);
   z-index: 1;
 }
 
-.contentWrapper {
+/* ── TOP LEADERBOARD AD ──────────────────────────────────────── */
+/* Slot 1: 728×90 banner — most viewed, loads first */
+.topLeaderboard {
   position: relative;
-  z-index: 10;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 8rem 2rem 4rem;
+  z-index: 20;
+  width: 100%;
+  background: #0d0d0d;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  min-height: 110px;
 }
 
-/* Hero Styles */
-.heroSection {
-  margin-bottom: 4rem;
+/* ── THREE-COLUMN LAYOUT ─────────────────────────────────────── */
+.outerLayout {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  align-items: start;
 }
+
+/* ── SIDEBAR ADS ─────────────────────────────────────────────── */
+/* Slots 11 & 12: Left/right sticky 160×600 skyscrapers */
+.leftSidebar,
+.rightSidebar {
+  display: none; /* hidden on mobile */
+}
+
+.stickyAd {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.sidebarAdUnit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 8px;
+  min-width: 176px;
+  min-height: 616px;
+}
+
+/* ── MAIN CONTENT ────────────────────────────────────────────── */
+.contentWrapper {
+  min-width: 0;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── NAVIGATION ──────────────────────────────────────────────── */
+.topNav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+  text-transform: uppercase;
+}
+
+.backLink:hover { color: #c9a84c; }
+
+.breadcrumb {
+  color: rgba(255,255,255,0.25);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+/* ── HERO SECTION ────────────────────────────────────────────── */
+.heroSection { margin-bottom: 2.5rem; }
 
 .heroMain {
   display: flex;
-  gap: 3rem;
-  align-items: center;
+  gap: 2.5rem;
+  align-items: flex-start;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 24px;
+  padding: 2rem;
 }
 
 .imageWrapper {
+  position: relative;
   flex-shrink: 0;
-  border-radius: 30px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
 }
 
-.mainThumb {
-  object-fit: cover;
+.imageGlow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), transparent);
+  pointer-events: none;
+}
+
+.mainThumb { object-fit: cover; display: block; }
+
+.heroInfo { flex: 1; min-width: 0; padding-top: 0.5rem; }
+
+.nowPlaying {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: #c9a84c;
+  margin-bottom: 0.5rem;
 }
 
 .songTitle {
-  font-size: 3.5rem;
-  font-weight: 800;
-  letter-spacing: -2px;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(to right, #fff, #888);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -1px;
+  margin-bottom: 1rem;
+  color: #fff;
 }
 
 .metaRow {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .artistName {
-  font-size: 1.4rem;
-  color: #ff0055;
+  font-size: 1.1rem;
+  color: #c9a84c;
   font-weight: 600;
 }
 
-/* Glass Lyrics Panel */
+.releaseYear {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.actionRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #c9a84c;
+  color: #000;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.toggleBtn:hover {
+  background: #e0c06a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+}
+
+.iconBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.iconBtn:hover { border-color: #c9a84c; color: #c9a84c; }
+.iconBtn.liked { color: #ff4d6d; border-color: #ff4d6d; }
+
+/* ── AD UNITS (inline, between content) ─────────────────────── */
+/* Shared style for all inline ad placements */
+.adUnit {
+  width: 100%;
+  margin: 1.8rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 120px;
+  overflow: hidden;
+}
+
+.adLabel {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  align-self: flex-start;
+  padding: 0 4px;
+}
+
+/* In-lyrics fluid ad — blends naturally between lyric chunks */
+.inLyricsAd {
+  width: 100%;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(201,168,76,0.12);
+  border-radius: 14px;
+  padding: 12px;
+  min-height: 100px;
+  overflow: hidden;
+}
+
+/* Native ad card — sits inside the related tracks grid */
+.nativeAdCard {
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── LYRICS SECTION ──────────────────────────────────────────── */
+.lyricsSection { margin-bottom: 0; }
+
 .glassPanel {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 40px;
-  padding: 3rem;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin-bottom: 0;
 }
 
 .panelHeader {
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 0.8rem;
-  color: #777;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
   padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.panelTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.5);
+}
+
+.panelMeta {
+  font-size: 0.75rem;
+  color: #c9a84c;
+  letter-spacing: 1px;
 }
 
 .lyricsBody {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.3rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.15rem;
   line-height: 2;
-  color: #eee;
+  color: #e8e8e8;
   white-space: pre-wrap;
   text-align: center;
 }
 
-/* Buttons */
-.toggleBtn {
-  background: #fff;
-  color: #000;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 50px;
-  font-weight: 700;
+/* ── SECTION LABEL ───────────────────────────────────────────── */
+.sectionLabel {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 1rem;
+}
+
+/* ── SHARE BAR ───────────────────────────────────────────────── */
+.shareBar {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  cursor: pointer;
-  transition: 0.3s;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding: 1.2rem 1.8rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  flex-wrap: wrap;
 }
 
-.toggleBtn:hover {
-  background: #ff0055;
+.shareLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-right: auto;
+}
+
+.shareButtons { display: flex; gap: 0.75rem; }
+
+.shareBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  transform: translateY(-3px);
+  font-size: 1rem;
+  text-decoration: none;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Video Wrapper */
+.shareBtn:hover { transform: scale(1.12); opacity: 0.85; }
+.fb { background: #1877f2; }
+.tw { background: #1da1f2; }
+.wa { background: #25d366; }
+
+/* ── VIDEO SECTION ───────────────────────────────────────────── */
+.videoSection { margin-bottom: 0.5rem; }
+
 .videoWrapper {
   position: relative;
   padding-bottom: 56.25%;
   height: 0;
-  border-radius: 30px;
+  border-radius: 20px;
   overflow: hidden;
-  margin-top: 1.5rem;
+  background: #111;
 }
 
 .videoWrapper iframe {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   border: none;
 }
 
-/* Related Grid */
+/* ── RELATED GRID ────────────────────────────────────────────── */
+.relatedSection { margin-top: 1rem; }
+
 .relatedGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
 }
 
 .smallCard {
-  background: rgba(255,255,255,0.03);
-  border-radius: 20px;
-  padding: 10px;
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 0.8rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 10px;
   text-decoration: none;
-  transition: 0.3s;
+  transition: all 0.2s;
 }
 
 .smallCard:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(201,168,76,0.08);
+  border-color: rgba(201,168,76,0.2);
+  transform: translateY(-2px);
 }
 
 .smallThumb {
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   position: relative;
-  border-radius: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.smallInfo h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.smallInfo p {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+/* ── STICKY BOTTOM AD (Slot 13) ──────────────────────────────── */
+/* Mobile-first sticky footer ad — always visible, dismissible */
+.stickyBottomAd {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(8,8,8,0.97);
+  border-top: 1px solid rgba(201,168,76,0.2);
+  padding: 4px 0 0;
+  display: flex;
+  justify-content: center;
+  min-height: 60px;
+  max-height: 100px;
   overflow: hidden;
 }
 
-/* Reveal Animation */
+.closeSticky {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem;
+  cursor: pointer;
+  z-index: 1000;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.closeSticky:hover { color: #fff; }
+
+/* Add bottom padding to main content so sticky ad doesn't cover content */
+.contentWrapper { padding-bottom: 120px; }
+
+/* ── REVEAL ANIMATIONS ───────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: 1s ease;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
 .active {
@@ -199,296 +514,46 @@
   transform: translateY(0);
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .heroMain { flex-direction: column; text-align: center; }
-  .songTitle { font-size: 2.5rem; }
-  .glassPanel { padding: 1.5rem; border-radius: 25px; }
-  .lyricsBody { font-size: 1.1rem; }
-}
-/* File: pages/viewlyrics/style/ViewLyrics.module.css */
-.viewLyricsPage {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  padding: 2rem 1rem;
-}
-
-.lyricsHeader {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 3rem;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  text-align: left;
-}
-
-.lyricsText {
-  background: var(--bg-card);
-  color: #1f2937;
-  padding: 3rem;
-  border-radius: 20px;
-  font-size: 1.2rem;
-  line-height: 2;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  max-width: 800px;
-  margin: 0 auto 3rem;
-  white-space: pre-wrap;
-  font-family: inherit; /* Removing mono-space for cleaner feel */
-}
-
-.toggleButton {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 2rem;
-  transition: opacity 0.2s;
-}
-
-.toggleButton:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-}
-
-.lyricsText {
-  white-space: pre-wrap;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #333;
-  padding: 2.5rem;
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-}
-
-.musicVideo {
-  margin: 3rem 0;
-}
-
-.musicVideo iframe {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-/* --- Social Share Buttons --- */
-.socialShareButtons {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin: 3rem 0;
-}
-
-.socialButton {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+/* ── ERROR STATE ─────────────────────────────────────────────── */
+.errorWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.socialButton:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.socialButton svg {
-  font-size: 1.5rem;
-}
-
-/* --- Related Lyrics Section --- */
-.relatedLyrics {
-  margin-top: 3rem;
-  padding: 1rem;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.relatedLyrics h3 {
-  text-align: center;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 2rem;
-}
-
-.relatedLyricsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
-}
-
-.relatedLyricItem {
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  color: #2c3e50;
-  background-color: #f8f9fa;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-  text-align: center;
-}
-
-.relatedLyricItem:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.relatedThumbnail {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.relatedLyricInfo {
-  padding: 1rem;
-}
-
-.relatedLyricInfo h4 {
-  font-size: 1rem;
-  margin: 0 0 0.25rem;
-  font-weight: 600;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.relatedLyricInfo p {
-  font-size: 0.8rem;
-  color: #95a5a6;
-  margin: 0;
-}
-
-/* --- Ad Containers --- */
-.adContainer {
-  margin: 2rem 0;
-  text-align: center;
-}
-
-/* --- Responsive Layout for Desktops (768px+) --- */
-@media (min-width: 768px) {
-  .lyricsHeader {
-    flex-direction: row;
-    align-items: flex-start;
-    text-align: left;
-    gap: 3rem;
-    padding: 3rem;
-  }
-
-  .lyricsHeader h1 {
-    font-size: 3rem;
-  }
-
-  .lyricsHeader p {
-    font-size: 1.1rem;
-  }
-
-  .relatedLyricsGrid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-.musicVideoContainer {
-  position: relative; /* This is crucial for positioning the overlay correctly */
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  height: 0;
-  overflow: hidden;
-  margin-top: 1.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-
-.musicVideoContainer iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-
-
-.pageContainer {
-  background: #000;
   min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
-  color: #fff;
+  color: rgba(255,255,255,0.4);
+  font-size: 1rem;
 }
 
-/* Ad Placement Optimization */
-.adWrapper {
-  width: 100%;
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  min-height: 100px; /* Essential to prevent CLS build errors */
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════════════════════════════ */
+
+/* Tablet: show one sidebar */
+@media (min-width: 900px) {
+  .outerLayout {
+    grid-template-columns: 1fr 180px;
+  }
+  .leftSidebar { display: none; }
+  .rightSidebar { display: block; }
 }
 
-.contentWrapper {
-  position: relative;
-  z-index: 5;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px 20px;
+/* Desktop: show both sidebars */
+@media (min-width: 1200px) {
+  .outerLayout {
+    grid-template-columns: 180px 1fr 180px;
+  }
+  .leftSidebar { display: block; }
 }
 
-/* Premium Noir Visual Layers */
-.bgBlur {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background-size: cover; background-position: center;
-  filter: blur(80px) saturate(1.5); opacity: 0.3; z-index: 1;
-}
-
-.bgOverlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle at center, transparent, #000 80%);
-  z-index: 2;
-}
-
-.glassPanel {
-  background: rgba(15, 15, 15, 0.7);
-  backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 40px;
-  margin-bottom: 40px;
-}
-
-.lyricsBody {
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #eee;
-  white-space: pre-wrap;
-  font-family: 'Inter', sans-serif;
-}
-
-/* Mobile Responsive Tweaks */
-@media (max-width: 768px) {
-  .adWrapper { margin: 20px auto; padding: 10px; }
-  .glassPanel { padding: 25px; }
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .outerLayout { grid-template-columns: 1fr; padding: 0 0.5rem; }
+  .leftSidebar, .rightSidebar { display: none; }
+  .heroMain { flex-direction: column; align-items: center; text-align: center; }
+  .songTitle { font-size: 2.8rem; }
+  .glassPanel { padding: 1.5rem 1rem; border-radius: 18px; }
   .lyricsBody { font-size: 1rem; }
+  .actionRow { justify-content: center; }
+  .relatedGrid { grid-template-columns: 1fr 1fr; }
+  .adUnit { margin: 1.2rem 0; }
 }

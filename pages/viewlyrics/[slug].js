@@ -8,9 +8,45 @@ import Verified from './verified';
 import FloatingModal from '../../components/FloatingModal';
 import styles from './style/ViewLyrics.module.css';
 
-// ─── Ad Component: Auto-refreshes every N seconds ────────────────────────────
-const AdSlot = ({ slotId, format = 'auto', label = 'Advertisement', interval = null }) => {
+// ─── Your AdSense Publisher ID ────────────────────────────────
+const ADSENSE_CLIENT = 'ca-pub-9887409333966239';
+
+// ─── Ad Slot IDs — replace these with your real slot IDs from AdSense dashboard ──
+// Go to AdSense → Ads → By ad unit → Create new ad unit → copy the data-ad-slot value
+const AD_SLOTS = {
+  TOP_LEADERBOARD:   'REPLACE_WITH_SLOT_ID',   // Slot 1: top of page
+  BELOW_HERO:        'REPLACE_WITH_SLOT_ID',   // Slot 2: below hero card
+  MID_LYRICS_1:      'REPLACE_WITH_SLOT_ID',   // Slot 3: between lyric chunk 1 & 2
+  MID_LYRICS_2:      'REPLACE_WITH_SLOT_ID',   // Slot 4: between lyric chunk 2 & 3
+  BELOW_LYRICS:      'REPLACE_WITH_SLOT_ID',   // Slot 5: below full lyrics
+  BEFORE_VIDEO:      'REPLACE_WITH_SLOT_ID',   // Slot 6: before YouTube embed
+  AFTER_VIDEO:       'REPLACE_WITH_SLOT_ID',   // Slot 7: after YouTube embed
+  BEFORE_RELATED:    'REPLACE_WITH_SLOT_ID',   // Slot 8: before related tracks
+  NATIVE_RELATED:    'REPLACE_WITH_SLOT_ID',   // Slot 9: native ad inside related grid
+  BOTTOM_BANNER:     'REPLACE_WITH_SLOT_ID',   // Slot 10: page bottom
+  LEFT_SIDEBAR:      'REPLACE_WITH_SLOT_ID',   // Slot 11: left sticky skyscraper
+  RIGHT_SIDEBAR_1:   'REPLACE_WITH_SLOT_ID',   // Slot 12: right sticky skyscraper
+  RIGHT_SIDEBAR_2:   'REPLACE_WITH_SLOT_ID',   // Slot 13: second right sidebar ad
+  STICKY_FOOTER:     'REPLACE_WITH_SLOT_ID',   // Slot 14: fixed mobile footer
+};
+
+// ─── Push ad to adsbygoogle queue ────────────────────────────
+const pushAd = () => {
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  } catch (e) {
+    console.error('AdSense push error:', e);
+  }
+};
+
+// ─── Standard inline ad unit (auto-refreshing) ───────────────
+const AdSlot = ({ slotId, format = 'auto', layoutKey = null, label = 'Advertisement', interval = null }) => {
   const [key, setKey] = useState(0);
+  const insRef = useRef(null);
+
+  useEffect(() => {
+    pushAd();
+  }, [key]);
 
   useEffect(() => {
     if (!interval) return;
@@ -24,67 +60,74 @@ const AdSlot = ({ slotId, format = 'auto', label = 'Advertisement', interval = n
     <div className={styles.adUnit} key={key}>
       <span className={styles.adLabel}>{label}</span>
       <ins
+        ref={insRef}
         className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_ID}
+        style={{ display: 'block', width: '100%' }}
+        data-ad-client={ADSENSE_CLIENT}
         data-ad-slot={slotId}
         data-ad-format={format}
         data-full-width-responsive="true"
+        {...(layoutKey ? { 'data-ad-layout-key': layoutKey } : {})}
       />
-      <script dangerouslySetInnerHTML={{ __html: '(adsbygoogle = window.adsbygoogle || []).push({});' }} />
     </div>
   );
 };
 
-// ─── Sidebar sticky ad ────────────────────────────────────────────────────────
-const SidebarAd = ({ slotId }) => (
-  <div className={styles.sidebarAdUnit}>
-    <span className={styles.adLabel}>Advertisement</span>
-    <ins
-      className="adsbygoogle"
-      style={{ display: 'block', width: '160px', height: '600px' }}
-      data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_ID}
-      data-ad-slot={slotId}
-      data-ad-format="vertical"
-    />
-    <script dangerouslySetInnerHTML={{ __html: '(adsbygoogle = window.adsbygoogle || []).push({});' }} />
-  </div>
-);
+// ─── Sidebar skyscraper (160×600) ────────────────────────────
+const SidebarAd = ({ slotId }) => {
+  useEffect(() => { pushAd(); }, []);
+  return (
+    <div className={styles.sidebarAdUnit}>
+      <span className={styles.adLabel}>Advertisement</span>
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'inline-block', width: '160px', height: '600px' }}
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slotId}
+      />
+    </div>
+  );
+};
 
-// ─── In-lyrics interstitial ad (appears between lyric sections) ───────────────
-const InLyricsAd = ({ slotId }) => (
-  <div className={styles.inLyricsAd}>
-    <span className={styles.adLabel}>Advertisement</span>
-    <ins
-      className="adsbygoogle"
-      style={{ display: 'block' }}
-      data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_ID}
-      data-ad-slot={slotId}
-      data-ad-format="fluid"
-      data-ad-layout-key="-fb+5w+4e-db+86"
-    />
-    <script dangerouslySetInnerHTML={{ __html: '(adsbygoogle = window.adsbygoogle || []).push({});' }} />
-  </div>
-);
+// ─── In-lyrics fluid ad (blends between lyric chunks) ────────
+const InLyricsAd = ({ slotId }) => {
+  useEffect(() => { pushAd(); }, []);
+  return (
+    <div className={styles.inLyricsAd}>
+      <span className={styles.adLabel}>Advertisement</span>
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slotId}
+        data-ad-format="fluid"
+        data-ad-layout-key="-fb+5w+4e-db+86"
+      />
+    </div>
+  );
+};
 
-// ─── Split lyrics into chunks for in-content ads ─────────────────────────────
+// ─── Split lyrics text into N chunks for in-content ads ──────
 const splitLyrics = (text, chunkCount = 3) => {
   if (!text) return [''];
   const lines = text.split('\n');
   const size = Math.ceil(lines.length / chunkCount);
   return Array.from({ length: chunkCount }, (_, i) =>
     lines.slice(i * size, (i + 1) * size).join('\n')
-  ).filter(Boolean);
+  ).filter(c => c.trim());
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// MAIN PAGE COMPONENT
+// ═══════════════════════════════════════════════════════════════
 const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   const [isEnglish, setIsEnglish] = useState(false);
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [stickyVisible, setStickyVisible] = useState(true);
   const youtubeRef = useRef(null);
 
-  // Reveal animation
+  // Scroll reveal animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries.forEach(e => e.isIntersecting && e.target.classList.add(styles.active)),
@@ -94,7 +137,11 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
     return () => observer.disconnect();
   }, [lyric]);
 
-  if (!lyric) return <div className={styles.errorWrapper}><p>{error || 'Lyric not found.'}</p></div>;
+  if (!lyric) return (
+    <div className={styles.errorWrapper}>
+      <p>{error || 'Lyric not found.'}</p>
+    </div>
+  );
 
   const youtubeId = lyric.music_url?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
   const thumbnailUrl = lyric.thumbnail_url?.trim() || '/logo/logo.webp';
@@ -113,37 +160,43 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
       <Head>
         <title>{`${lyric.title} Lyrics | DynaBeat`}</title>
         <meta name="description" content={`Read the original and English lyrics for ${lyric.title} by ${lyric.artist}.`} />
+        <meta property="og:title" content={`${lyric.title} Lyrics`} />
+        <meta property="og:description" content={`${lyric.artist} — Read lyrics on DynaBeat`} />
+        <meta property="og:image" content={thumbnailUrl} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+        {/* AdSense script — your publisher ID */}
         <script
           async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}`}
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
           crossOrigin="anonymous"
         />
       </Head>
 
-      {/* Immersive blurred background */}
+      {/* Immersive blurred album art background */}
       <div className={styles.bgBlur} style={{ backgroundImage: `url(${thumbnailUrl})` }} />
       <div className={styles.bgOverlay} />
 
-      {/* ── AD SLOT 1: Top leaderboard (728×90) – highest visibility ── */}
+      {/* ══ SLOT 1: Top Leaderboard (728×90) — loads above fold, first impression ══ */}
       <div className={styles.topLeaderboard}>
-        <AdSlot slotId="YOUR_TOP_LEADERBOARD_SLOT" format="auto" label="Advertisement" />
+        <AdSlot slotId={AD_SLOTS.TOP_LEADERBOARD} label="Advertisement" />
       </div>
 
+      {/* Three-column layout: sidebar | content | sidebar */}
       <div className={styles.outerLayout}>
 
-        {/* ── LEFT SIDEBAR AD (sticky 160×600) ── */}
+        {/* ══ SLOT 11: Left Sticky Skyscraper (desktop only) ══ */}
         <aside className={styles.leftSidebar}>
           <div className={styles.stickyAd}>
-            <SidebarAd slotId="YOUR_LEFT_SIDEBAR_SLOT" />
+            <SidebarAd slotId={AD_SLOTS.LEFT_SIDEBAR} />
           </div>
         </aside>
 
-        {/* ── MAIN CONTENT ── */}
+        {/* ── Main Content Column ─────────────────────────────── */}
         <main className={styles.contentWrapper}>
 
+          {/* Nav */}
           <nav className={styles.topNav}>
             <Link href="/viewlyrics" className={styles.backLink}>
               <FaArrowLeft /> All Lyrics
@@ -151,19 +204,18 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             <span className={styles.breadcrumb}>{lyric.artist} › {lyric.title}</span>
           </nav>
 
-          {/* Hero */}
+          {/* ── Hero Card ───────────────────────────────────────── */}
           <section className={`${styles.heroSection} ${styles.reveal}`}>
             <div className={styles.heroMain}>
               <div className={styles.imageWrapper}>
                 <Image
                   src={thumbnailUrl}
                   alt={lyric.title}
-                  width={260}
-                  height={260}
+                  width={240}
+                  height={240}
                   className={styles.mainThumb}
                   priority
                 />
-                <div className={styles.imageGlow} />
               </div>
               <div className={styles.heroInfo}>
                 <p className={styles.nowPlaying}>NOW PLAYING</p>
@@ -173,7 +225,9 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                   {lyric.status === 'approved' && <Verified />}
                 </div>
                 <p className={styles.releaseYear}>
-                  {lyric.published_date ? new Date(lyric.published_date).getFullYear() : '2026'}
+                  {lyric.published_date
+                    ? `Released ${new Date(lyric.published_date).getFullYear()}`
+                    : 'DynaBeat'}
                 </p>
                 <div className={styles.actionRow}>
                   <button onClick={() => setIsEnglish(!isEnglish)} className={styles.toggleBtn}>
@@ -183,7 +237,11 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                   <button onClick={handleCopy} className={styles.iconBtn} title="Copy lyrics">
                     {copied ? <FaCheck /> : <FaCopy />}
                   </button>
-                  <button onClick={() => setLiked(!liked)} className={`${styles.iconBtn} ${liked ? styles.liked : ''}`} title="Like">
+                  <button
+                    onClick={() => setLiked(!liked)}
+                    className={`${styles.iconBtn} ${liked ? styles.liked : ''}`}
+                    title="Like"
+                  >
                     <FaHeart />
                   </button>
                 </div>
@@ -191,12 +249,14 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </div>
           </section>
 
-          {/* ── AD SLOT 2: Below hero, above lyrics (high CTR zone) ── */}
-          <div className={`${styles.reveal}`}>
-            <AdSlot slotId="YOUR_BELOW_HERO_SLOT" interval={90000} label="Advertisement" />
-          </div>
+          {/* ══ SLOT 2: Below Hero — high-attention zone before lyrics start ══ */}
+          <AdSlot
+            slotId={AD_SLOTS.BELOW_HERO}
+            interval={90000}
+            label="Advertisement"
+          />
 
-          {/* ── LYRICS SECTION: Split into chunks with ads between ── */}
+          {/* ── Lyrics: Chunk 1 ─────────────────────────────────── */}
           <section className={`${styles.lyricsSection} ${styles.reveal}`}>
             <div className={styles.glassPanel}>
               <div className={styles.panelHeader}>
@@ -205,16 +265,14 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                 </span>
                 <span className={styles.panelMeta}>{lyric.artist}</span>
               </div>
-
-              {/* Chunk 1 */}
               <pre className={styles.lyricsBody}>{lyricChunks[0]}</pre>
             </div>
           </section>
 
-          {/* ── AD SLOT 3: Mid-lyrics ad (in-feed/fluid format) ── */}
+          {/* ══ SLOT 3: Mid-lyrics 1 (fluid, in-feed) — user is scrolling through lyrics ══ */}
           {lyricChunks.length > 1 && (
             <>
-              <InLyricsAd slotId="YOUR_MID_LYRICS_SLOT_1" />
+              <InLyricsAd slotId={AD_SLOTS.MID_LYRICS_1} />
               <section className={`${styles.lyricsSection} ${styles.reveal}`}>
                 <div className={styles.glassPanel}>
                   <pre className={styles.lyricsBody}>{lyricChunks[1]}</pre>
@@ -223,10 +281,10 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </>
           )}
 
-          {/* ── AD SLOT 4: Second mid-lyrics ad ── */}
+          {/* ══ SLOT 4: Mid-lyrics 2 — deep in lyrics, high dwell-time user ══ */}
           {lyricChunks.length > 2 && (
             <>
-              <InLyricsAd slotId="YOUR_MID_LYRICS_SLOT_2" />
+              <InLyricsAd slotId={AD_SLOTS.MID_LYRICS_2} />
               <section className={`${styles.lyricsSection} ${styles.reveal}`}>
                 <div className={styles.glassPanel}>
                   <pre className={styles.lyricsBody}>{lyricChunks[2]}</pre>
@@ -235,23 +293,41 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </>
           )}
 
-          {/* ── AD SLOT 5: Below full lyrics (auto-refresh 60s) ── */}
-          <AdSlot slotId="YOUR_BELOW_LYRICS_SLOT" interval={60000} label="Advertisement" />
+          {/* ══ SLOT 5: Below full lyrics — auto-refreshes every 60s ══ */}
+          <AdSlot
+            slotId={AD_SLOTS.BELOW_LYRICS}
+            interval={60000}
+            label="Advertisement"
+          />
 
-          {/* Share Bar */}
+          {/* ── Share Bar ───────────────────────────────────────── */}
           <div className={`${styles.shareBar} ${styles.reveal}`}>
             <p className={styles.shareLabel}>Share this song</p>
             <div className={styles.shareButtons}>
-              <a href={`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noreferrer" className={`${styles.shareBtn} ${styles.fb}`}><FaFacebook /></a>
-              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(`${lyric.title} by ${lyric.artist}`)}`} target="_blank" rel="noreferrer" className={`${styles.shareBtn} ${styles.tw}`}><FaTwitter /></a>
-              <a href={`whatsapp://send?text=${encodeURIComponent(`${lyric.title} lyrics: ${pageUrl}`)}`} target="_blank" rel="noreferrer" className={`${styles.shareBtn} ${styles.wa}`}><FaWhatsapp /></a>
+              <a
+                href={`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+                target="_blank" rel="noreferrer"
+                className={`${styles.shareBtn} ${styles.fb}`}
+              ><FaFacebook /></a>
+              <a
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(`${lyric.title} by ${lyric.artist}`)}`}
+                target="_blank" rel="noreferrer"
+                className={`${styles.shareBtn} ${styles.tw}`}
+              ><FaTwitter /></a>
+              <a
+                href={`whatsapp://send?text=${encodeURIComponent(`${lyric.title} lyrics: ${pageUrl}`)}`}
+                target="_blank" rel="noreferrer"
+                className={`${styles.shareBtn} ${styles.wa}`}
+              ><FaWhatsapp /></a>
             </div>
           </div>
 
-          {/* ── AD SLOT 6: Before video (premium placement) ── */}
+          {/* ── YouTube Video ───────────────────────────────────── */}
           {youtubeId && (
             <>
-              <AdSlot slotId="YOUR_BEFORE_VIDEO_SLOT" label="Advertisement" />
+              {/* ══ SLOT 6: Before video — premium attention spot ══ */}
+              <AdSlot slotId={AD_SLOTS.BEFORE_VIDEO} label="Advertisement" />
+
               <section className={`${styles.videoSection} ${styles.reveal}`}>
                 <h3 className={styles.sectionLabel}>Official Music Video</h3>
                 <div className={styles.videoWrapper} ref={youtubeRef}>
@@ -262,20 +338,31 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                   />
                 </div>
               </section>
-              {/* ── AD SLOT 7: After video ── */}
-              <AdSlot slotId="YOUR_AFTER_VIDEO_SLOT" interval={75000} label="Advertisement" />
+
+              {/* ══ SLOT 7: After video — post-watch engagement peak, refreshes every 75s ══ */}
+              <AdSlot
+                slotId={AD_SLOTS.AFTER_VIDEO}
+                interval={75000}
+                label="Advertisement"
+              />
             </>
           )}
 
-          {/* Related Tracks */}
+          {/* ── Related Tracks ──────────────────────────────────── */}
           {relatedLyrics.length > 0 && (
             <>
-              {/* ── AD SLOT 8: Before related (native-style) ── */}
-              <AdSlot slotId="YOUR_BEFORE_RELATED_SLOT" format="fluid" label="Sponsored" />
+              {/* ══ SLOT 8: Before related — native/fluid format ══ */}
+              <AdSlot
+                slotId={AD_SLOTS.BEFORE_RELATED}
+                format="fluid"
+                label="Sponsored"
+              />
 
               <section className={`${styles.relatedSection} ${styles.reveal}`}>
                 <h3 className={styles.sectionLabel}>Similar Tracks</h3>
                 <div className={styles.relatedGrid}>
+
+                  {/* First 2 real tracks */}
                   {relatedLyrics.slice(0, 2).map(song => (
                     <Link href={`/viewlyrics/${song.slug}`} key={song.id} className={styles.smallCard}>
                       <div className={styles.smallThumb}>
@@ -288,19 +375,19 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                     </Link>
                   ))}
 
-                  {/* ── AD SLOT 9: Inline native ad within related grid ── */}
+                  {/* ══ SLOT 9: Native ad card inside related grid — disguised as a track card ══ */}
                   <div className={styles.nativeAdCard}>
                     <ins
                       className="adsbygoogle"
                       style={{ display: 'block' }}
-                      data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_ID}
-                      data-ad-slot="YOUR_NATIVE_RELATED_SLOT"
+                      data-ad-client={ADSENSE_CLIENT}
+                      data-ad-slot={AD_SLOTS.NATIVE_RELATED}
                       data-ad-format="fluid"
                       data-ad-layout="in-article"
                     />
-                    <script dangerouslySetInnerHTML={{ __html: '(adsbygoogle = window.adsbygoogle || []).push({});' }} />
                   </div>
 
+                  {/* Remaining tracks */}
                   {relatedLyrics.slice(2).map(song => (
                     <Link href={`/viewlyrics/${song.slug}`} key={song.id} className={styles.smallCard}>
                       <div className={styles.smallThumb}>
@@ -312,40 +399,55 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                       </div>
                     </Link>
                   ))}
+
                 </div>
               </section>
             </>
           )}
 
-          {/* ── AD SLOT 10: Bottom sticky / footer banner ── */}
-          <AdSlot slotId="YOUR_BOTTOM_BANNER_SLOT" interval={120000} label="Advertisement" />
+          {/* ══ SLOT 10: Bottom banner — catches users at end of page, refreshes 120s ══ */}
+          <AdSlot
+            slotId={AD_SLOTS.BOTTOM_BANNER}
+            interval={120000}
+            label="Advertisement"
+          />
 
         </main>
 
-        {/* ── RIGHT SIDEBAR AD (sticky 160×600) ── */}
+        {/* ══ SLOTS 12 & 13: Right Sticky Skyscrapers (tablet + desktop) ══ */}
         <aside className={styles.rightSidebar}>
           <div className={styles.stickyAd}>
-            <SidebarAd slotId="YOUR_RIGHT_SIDEBAR_SLOT" />
-            {/* ── AD SLOT 12: Second sidebar ad below first ── */}
-            <div style={{ marginTop: '20px' }}>
-              <SidebarAd slotId="YOUR_RIGHT_SIDEBAR_SLOT_2" />
+            <SidebarAd slotId={AD_SLOTS.RIGHT_SIDEBAR_1} />
+            <div className={styles.sidebarGap}>
+              <SidebarAd slotId={AD_SLOTS.RIGHT_SIDEBAR_2} />
             </div>
           </div>
         </aside>
 
       </div>
 
-      {/* ── AD SLOT 13: Fixed bottom sticky ad (mobile-focused) ── */}
-      <div className={styles.stickyBottomAd}>
-        <button className={styles.closeSticky} onClick={e => e.currentTarget.parentElement.style.display = 'none'}>✕</button>
-        <AdSlot slotId="YOUR_STICKY_BOTTOM_SLOT" format="auto" label="Advertisement" />
-      </div>
+      {/* ══ SLOT 14: Fixed sticky footer — always visible on mobile, dismissible ══ */}
+      {stickyVisible && (
+        <div className={styles.stickyBottomAd}>
+          <button
+            className={styles.closeSticky}
+            onClick={() => setStickyVisible(false)}
+            aria-label="Close ad"
+          >✕</button>
+          <AdSlot
+            slotId={AD_SLOTS.STICKY_FOOTER}
+            format="auto"
+            label="Advertisement"
+          />
+        </div>
+      )}
 
       <FloatingModal />
     </div>
   );
 };
 
+// ─── Data Fetching ────────────────────────────────────────────
 export const getServerSideProps = async (context) => {
   const { slug } = context.params;
   try {

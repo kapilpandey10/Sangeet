@@ -1,12 +1,15 @@
 /* ═══════════════════════════════════════════════════════════════
-   ViewLyrics.module.css — Ad-Optimized DynaBeat Lyrics Page
+   ViewLyrics.module.css — DynaBeat Ad-Optimized Lyrics Page
+   Publisher: ca-pub-9887409333966239
    Fonts: Bebas Neue (display) + DM Sans (body)
-   Theme: Dark noir with gold accent
-   Ad slots: 13 placements strategically positioned
+   Theme: Dark noir / gold accent
+   14 Ad slots mapped throughout
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── Reset & Base ────────────────────────────────────────────── */
+/* ── Reset ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── Page Shell ──────────────────────────────────────────────── */
 .pageContainer {
   position: relative;
   min-height: 100vh;
@@ -23,86 +26,96 @@
   background-size: cover;
   background-position: center;
   filter: blur(90px) saturate(1.8);
-  opacity: 0.25;
+  opacity: 0.22;
   z-index: 0;
-  transform: scale(1.15);
+  transform: scale(1.15); /* prevents blur white edges */
 }
 
 .bgOverlay {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 30%, transparent 0%, #080808 75%);
+  background: radial-gradient(ellipse at 50% 25%, transparent 0%, #080808 70%);
   z-index: 1;
 }
 
-/* ── TOP LEADERBOARD AD ──────────────────────────────────────── */
-/* Slot 1: 728×90 banner — most viewed, loads first */
+/* ═══════════════════════════════════════════════════════════════
+   SLOT 1 — TOP LEADERBOARD (728×90)
+   Highest viewability: loads first, above all content
+═══════════════════════════════════════════════════════════════ */
 .topLeaderboard {
   position: relative;
   z-index: 20;
   width: 100%;
-  background: #0d0d0d;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: #0c0c0c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: center;
-  padding: 8px 0;
-  min-height: 110px;
+  align-items: center;
+  padding: 6px 1rem;
+  min-height: 106px;
 }
 
-/* ── THREE-COLUMN LAYOUT ─────────────────────────────────────── */
+/* ── Three-column outer layout ───────────────────────────────── */
 .outerLayout {
   position: relative;
   z-index: 10;
   display: grid;
-  grid-template-columns: 180px 1fr 180px;
-  gap: 0;
-  max-width: 1400px;
+  grid-template-columns: 1fr; /* mobile: single column */
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 0.75rem;
   align-items: start;
 }
 
-/* ── SIDEBAR ADS ─────────────────────────────────────────────── */
-/* Slots 11 & 12: Left/right sticky 160×600 skyscrapers */
+/* ═══════════════════════════════════════════════════════════════
+   SLOTS 11, 12, 13 — SIDEBAR SKYSCRAPERS (160×600)
+   Visible entire page scroll on desktop
+═══════════════════════════════════════════════════════════════ */
 .leftSidebar,
 .rightSidebar {
-  display: none; /* hidden on mobile */
+  display: none; /* hidden mobile, enabled via media query */
 }
 
 .stickyAd {
   position: sticky;
-  top: 100px;
+  top: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 0;
+  padding: 16px 4px;
+  gap: 0;
+}
+
+.sidebarGap {
+  margin-top: 20px;
 }
 
 .sidebarAdUnit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.05);
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 10px;
   padding: 8px;
-  min-width: 176px;
-  min-height: 616px;
+  min-width: 178px;
+  min-height: 620px;
+  overflow: hidden;
 }
 
-/* ── MAIN CONTENT ────────────────────────────────────────────── */
+/* ── Main Content Column ─────────────────────────────────────── */
 .contentWrapper {
   min-width: 0;
-  padding: 2rem 1.5rem 4rem;
+  padding: 2rem 1rem 140px; /* bottom padding clears sticky footer ad */
 }
 
-/* ── NAVIGATION ──────────────────────────────────────────────── */
+/* ── Navigation ──────────────────────────────────────────────── */
 .topNav {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
@@ -110,95 +123,92 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.45);
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  letter-spacing: 0.5px;
-  transition: color 0.2s;
+  letter-spacing: 1px;
   text-transform: uppercase;
+  transition: color 0.2s;
 }
-
 .backLink:hover { color: #c9a84c; }
 
 .breadcrumb {
-  color: rgba(255,255,255,0.25);
-  font-size: 0.8rem;
   margin-left: auto;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
 }
 
-/* ── HERO SECTION ────────────────────────────────────────────── */
-.heroSection { margin-bottom: 2.5rem; }
+/* ── Hero Section ────────────────────────────────────────────── */
+.heroSection { margin-bottom: 1.5rem; }
 
 .heroMain {
   display: flex;
-  gap: 2.5rem;
+  gap: 2rem;
   align-items: flex-start;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 24px;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 22px;
+  padding: 1.75rem;
 }
 
 .imageWrapper {
-  position: relative;
   flex-shrink: 0;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08);
-}
-
-.imageGlow {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(201,168,76,0.15), transparent);
-  pointer-events: none;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  position: relative;
 }
 
 .mainThumb { object-fit: cover; display: block; }
 
-.heroInfo { flex: 1; min-width: 0; padding-top: 0.5rem; }
+.heroInfo { flex: 1; min-width: 0; padding-top: 0.25rem; }
 
 .nowPlaying {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   letter-spacing: 4px;
   color: #c9a84c;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .songTitle {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-size: clamp(2.2rem, 4vw, 4rem);
   line-height: 0.95;
-  letter-spacing: -1px;
-  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.9rem;
   color: #fff;
 }
 
 .metaRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .artistName {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #c9a84c;
   font-weight: 600;
 }
 
 .releaseYear {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 1.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
   letter-spacing: 1px;
+  margin-bottom: 1.2rem;
 }
 
 .actionRow {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.65rem;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -206,106 +216,110 @@
 .toggleBtn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   background: #c9a84c;
   color: #000;
   border: none;
-  padding: 0.65rem 1.4rem;
+  padding: 0.6rem 1.3rem;
   border-radius: 50px;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.3px;
 }
-
 .toggleBtn:hover {
   background: #e0c06a;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+  box-shadow: 0 8px 20px rgba(201, 168, 76, 0.3);
 }
 
 .iconBtn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  font-size: 0.9rem;
+  transition: border-color 0.2s, color 0.2s;
+  font-size: 0.85rem;
 }
-
 .iconBtn:hover { border-color: #c9a84c; color: #c9a84c; }
 .iconBtn.liked { color: #ff4d6d; border-color: #ff4d6d; }
 
-/* ── AD UNITS (inline, between content) ─────────────────────── */
-/* Shared style for all inline ad placements */
+/* ═══════════════════════════════════════════════════════════════
+   AD UNIT STYLES
+   Shared base + specific overrides per placement type
+═══════════════════════════════════════════════════════════════ */
+
+/* Shared "ad label" — small grey text above every unit */
+.adLabel {
+  font-size: 0.6rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.18);
+  align-self: flex-start;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+/* SLOTS 2, 5, 6, 7, 8, 10 — Standard inline ad units */
 .adUnit {
   width: 100%;
-  margin: 1.8rem 0;
+  margin: 1.6rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  background: rgba(255,255,255,0.015);
-  border: 1px solid rgba(255,255,255,0.05);
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  padding: 10px;
+  padding: 10px 10px 8px;
   min-height: 120px;
   overflow: hidden;
 }
 
-.adLabel {
-  font-size: 0.65rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.2);
-  align-self: flex-start;
-  padding: 0 4px;
-}
-
-/* In-lyrics fluid ad — blends naturally between lyric chunks */
+/* SLOTS 3, 4 — In-lyrics fluid ads (between lyric chunks) */
 .inLyricsAd {
   width: 100%;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  background: linear-gradient(135deg, rgba(201,168,76,0.04), rgba(255,255,255,0.02));
-  border: 1px solid rgba(201,168,76,0.12);
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.04), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(201, 168, 76, 0.1);
   border-radius: 14px;
-  padding: 12px;
-  min-height: 100px;
+  padding: 10px;
+  min-height: 90px;
   overflow: hidden;
 }
 
-/* Native ad card — sits inside the related tracks grid */
+/* SLOT 9 — Native ad inside related grid (looks like a track card) */
 .nativeAdCard {
-  background: rgba(255,255,255,0.02);
-  border: 1px dashed rgba(255,255,255,0.08);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
   overflow: hidden;
-  min-height: 120px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ── LYRICS SECTION ──────────────────────────────────────────── */
+/* ── Lyrics Section ──────────────────────────────────────────── */
 .lyricsSection { margin-bottom: 0; }
 
 .glassPanel {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 24px;
-  padding: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 22px;
+  padding: 2.25rem 2rem;
   margin-bottom: 0;
 }
 
@@ -313,96 +327,97 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 1.75rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .panelTitle {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 1rem;
+  font-size: 0.9rem;
   letter-spacing: 3px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .panelMeta {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #c9a84c;
   letter-spacing: 1px;
 }
 
 .lyricsBody {
   font-family: 'DM Sans', sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   line-height: 2;
   color: #e8e8e8;
   white-space: pre-wrap;
   text-align: center;
 }
 
-/* ── SECTION LABEL ───────────────────────────────────────────── */
+/* ── Section Label ───────────────────────────────────────────── */
 .sectionLabel {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   letter-spacing: 3px;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 0.9rem;
 }
 
-/* ── SHARE BAR ───────────────────────────────────────────────── */
+/* ── Share Bar ───────────────────────────────────────────────── */
 .shareBar {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin: 2rem 0;
-  padding: 1.2rem 1.8rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px;
+  gap: 0.9rem;
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
   flex-wrap: wrap;
 }
 
 .shareLabel {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.35);
   margin-right: auto;
 }
 
-.shareButtons { display: flex; gap: 0.75rem; }
+.shareButtons { display: flex; gap: 0.65rem; }
 
 .shareBtn {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
   text-decoration: none;
   transition: transform 0.2s, opacity 0.2s;
 }
-
-.shareBtn:hover { transform: scale(1.12); opacity: 0.85; }
+.shareBtn:hover { transform: scale(1.12); }
 .fb { background: #1877f2; }
 .tw { background: #1da1f2; }
 .wa { background: #25d366; }
 
-/* ── VIDEO SECTION ───────────────────────────────────────────── */
-.videoSection { margin-bottom: 0.5rem; }
+/* ── Video Section ───────────────────────────────────────────── */
+.videoSection { margin-bottom: 0; }
 
 .videoWrapper {
   position: relative;
   padding-bottom: 56.25%;
   height: 0;
-  border-radius: 20px;
+  border-radius: 18px;
   overflow: hidden;
   background: #111;
+  margin-top: 0.75rem;
 }
-
 .videoWrapper iframe {
   position: absolute;
   inset: 0;
@@ -411,74 +426,75 @@
   border: none;
 }
 
-/* ── RELATED GRID ────────────────────────────────────────────── */
-.relatedSection { margin-top: 1rem; }
+/* ── Related Tracks ──────────────────────────────────────────── */
+.relatedSection { margin-top: 0.5rem; }
 
 .relatedGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-top: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
 }
 
 .smallCard {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px;
-  padding: 10px;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 9px;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
-
 .smallCard:hover {
-  background: rgba(201,168,76,0.08);
-  border-color: rgba(201,168,76,0.2);
+  background: rgba(201, 168, 76, 0.07);
+  border-color: rgba(201, 168, 76, 0.18);
   transform: translateY(-2px);
 }
 
 .smallThumb {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   position: relative;
-  border-radius: 10px;
+  border-radius: 9px;
   overflow: hidden;
   flex-shrink: 0;
 }
 
 .smallInfo h4 {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100px;
+  max-width: 96px;
 }
-
 .smallInfo p {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.4);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.38);
   margin-top: 2px;
 }
 
-/* ── STICKY BOTTOM AD (Slot 13) ──────────────────────────────── */
-/* Mobile-first sticky footer ad — always visible, dismissible */
+/* ═══════════════════════════════════════════════════════════════
+   SLOT 14 — STICKY FOOTER (mobile-first, always visible)
+   Fixed bottom, user-dismissible, AdSense compliant
+═══════════════════════════════════════════════════════════════ */
 .stickyBottomAd {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 999;
-  background: rgba(8,8,8,0.97);
-  border-top: 1px solid rgba(201,168,76,0.2);
-  padding: 4px 0 0;
+  background: rgba(6, 6, 6, 0.97);
+  border-top: 1px solid rgba(201, 168, 76, 0.15);
+  padding: 4px 0 env(safe-area-inset-bottom, 0px);
   display: flex;
   justify-content: center;
+  align-items: center;
   min-height: 60px;
-  max-height: 100px;
+  max-height: 110px;
   overflow: hidden;
 }
 
@@ -486,41 +502,34 @@
   position: absolute;
   top: 4px;
   right: 8px;
-  background: none;
+  background: rgba(255, 255, 255, 0.08);
   border: none;
-  color: rgba(255,255,255,0.4);
-  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
   cursor: pointer;
   z-index: 1000;
-  padding: 4px 6px;
+  padding: 3px 7px;
   border-radius: 4px;
-  transition: color 0.2s;
+  line-height: 1;
+  transition: background 0.2s, color 0.2s;
 }
+.closeSticky:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
-.closeSticky:hover { color: #fff; }
-
-/* Add bottom padding to main content so sticky ad doesn't cover content */
-.contentWrapper { padding-bottom: 120px; }
-
-/* ── REVEAL ANIMATIONS ───────────────────────────────────────── */
+/* ── Reveal Animations ───────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(22px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
 }
+.active { opacity: 1; transform: translateY(0); }
 
-.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ── ERROR STATE ─────────────────────────────────────────────── */
+/* ── Error State ─────────────────────────────────────────────── */
 .errorWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.35);
   font-size: 1rem;
 }
 
@@ -528,32 +537,40 @@
    RESPONSIVE BREAKPOINTS
 ═══════════════════════════════════════════════════════════════ */
 
-/* Tablet: show one sidebar */
-@media (min-width: 900px) {
-  .outerLayout {
-    grid-template-columns: 1fr 180px;
-  }
-  .leftSidebar { display: none; }
-  .rightSidebar { display: block; }
+/* Small mobile */
+@media (max-width: 480px) {
+  .heroMain { flex-direction: column; align-items: center; text-align: center; }
+  .actionRow { justify-content: center; }
+  .songTitle { font-size: 2.4rem; }
+  .glassPanel { padding: 1.5rem 1rem; border-radius: 16px; }
+  .lyricsBody { font-size: 1rem; }
+  .relatedGrid { grid-template-columns: 1fr 1fr; }
+  .breadcrumb { display: none; }
 }
 
-/* Desktop: show both sidebars */
-@media (min-width: 1200px) {
+/* Tablet (≥768px): show right sidebar */
+@media (min-width: 768px) {
+  .outerLayout {
+    grid-template-columns: 1fr 180px;
+    gap: 0;
+  }
+  .rightSidebar { display: block; }
+  .contentWrapper { padding: 2rem 1.5rem 140px; }
+}
+
+/* Desktop (≥1160px): show both sidebars */
+@media (min-width: 1160px) {
   .outerLayout {
     grid-template-columns: 180px 1fr 180px;
   }
   .leftSidebar { display: block; }
+  .contentWrapper { padding: 2rem 2rem 140px; }
 }
 
-/* Mobile adjustments */
-@media (max-width: 600px) {
-  .outerLayout { grid-template-columns: 1fr; padding: 0 0.5rem; }
-  .leftSidebar, .rightSidebar { display: none; }
-  .heroMain { flex-direction: column; align-items: center; text-align: center; }
-  .songTitle { font-size: 2.8rem; }
-  .glassPanel { padding: 1.5rem 1rem; border-radius: 18px; }
-  .lyricsBody { font-size: 1rem; }
-  .actionRow { justify-content: center; }
-  .relatedGrid { grid-template-columns: 1fr 1fr; }
-  .adUnit { margin: 1.2rem 0; }
+/* Wide desktop (≥1380px): wider sidebars */
+@media (min-width: 1380px) {
+  .outerLayout {
+    grid-template-columns: 200px 1fr 200px;
+  }
+  .sidebarAdUnit { min-width: 196px; }
 }

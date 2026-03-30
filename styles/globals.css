@@ -19,7 +19,12 @@ html, body {
   overflow-x: hidden;
 }
 
-* { box-sizing: border-box; }
+/* Add this to your globals.css */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 /* Global Scroll Animated Utility */
 .scrollAnimated {

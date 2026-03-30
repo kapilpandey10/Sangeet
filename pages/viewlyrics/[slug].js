@@ -14,20 +14,20 @@ const ADSENSE_CLIENT = 'ca-pub-9887409333966239';
 // ─── Ad Slot IDs — replace these with your real slot IDs from AdSense dashboard ──
 // Go to AdSense → Ads → By ad unit → Create new ad unit → copy the data-ad-slot value
 const AD_SLOTS = {
-  TOP_LEADERBOARD:   'REPLACE_WITH_SLOT_ID',   // Slot 1: top of page
-  BELOW_HERO:        'REPLACE_WITH_SLOT_ID',   // Slot 2: below hero card
-  MID_LYRICS_1:      'REPLACE_WITH_SLOT_ID',   // Slot 3: between lyric chunk 1 & 2
-  MID_LYRICS_2:      'REPLACE_WITH_SLOT_ID',   // Slot 4: between lyric chunk 2 & 3
-  BELOW_LYRICS:      'REPLACE_WITH_SLOT_ID',   // Slot 5: below full lyrics
-  BEFORE_VIDEO:      'REPLACE_WITH_SLOT_ID',   // Slot 6: before YouTube embed
-  AFTER_VIDEO:       'REPLACE_WITH_SLOT_ID',   // Slot 7: after YouTube embed
-  BEFORE_RELATED:    'REPLACE_WITH_SLOT_ID',   // Slot 8: before related tracks
-  NATIVE_RELATED:    'REPLACE_WITH_SLOT_ID',   // Slot 9: native ad inside related grid
-  BOTTOM_BANNER:     'REPLACE_WITH_SLOT_ID',   // Slot 10: page bottom
-  LEFT_SIDEBAR:      'REPLACE_WITH_SLOT_ID',   // Slot 11: left sticky skyscraper
-  RIGHT_SIDEBAR_1:   'REPLACE_WITH_SLOT_ID',   // Slot 12: right sticky skyscraper
-  RIGHT_SIDEBAR_2:   'REPLACE_WITH_SLOT_ID',   // Slot 13: second right sidebar ad
-  STICKY_FOOTER:     'REPLACE_WITH_SLOT_ID',   // Slot 14: fixed mobile footer
+  TOP_LEADERBOARD:   '3280594056',   // Slot 1: top of page
+  BELOW_HERO:        '9654430713',   // Slot 2: below hero card
+  MID_LYRICS_1:      '1815265882',   // Slot 3: between lyric chunk 1 & 2
+  MID_LYRICS_2:      '3280594056',   // Slot 4: between lyric chunk 2 & 3
+  BELOW_LYRICS:      '4413509067',   // Slot 5: below full lyrics
+  BEFORE_VIDEO:      '4413509067',   // Slot 6: before YouTube embed
+  AFTER_VIDEO:       '1815265882',   // Slot 7: after YouTube embed
+  BEFORE_RELATED:    '9654430713',   // Slot 8: before related tracks
+  NATIVE_RELATED:    '9654430713',   // Slot 9: native ad inside related grid
+  BOTTOM_BANNER:     '3280594056',   // Slot 10: page bottom
+  LEFT_SIDEBAR:      '3886159363',   // Slot 11: left sticky skyscraper
+  RIGHT_SIDEBAR_1:   '9138486045',   // Slot 12: right sticky skyscraper
+  RIGHT_SIDEBAR_2:   '9138486045',   // Slot 13: second right sidebar ad
+  STICKY_FOOTER:     '3886159363',   // Slot 14: fixed mobile footer
 };
 
 // ─── Push ad to adsbygoogle queue ────────────────────────────

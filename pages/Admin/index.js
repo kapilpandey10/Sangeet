@@ -1,5 +1,8 @@
+// File location: components/Admin/AdminDashboard.jsx
+// Supabase auth has been removed — logout now clears the Cloudflare Access token
+
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../../supabaseClient'; // Still used for DATABASE queries only
 import { 
   FaCheckCircle, FaEdit, FaPlus, FaEnvelope, FaSun, FaMoon,
   FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper, FaBroadcastTower, FaCogs, FaEye 
@@ -12,33 +15,30 @@ import AddArtist from './addArtist';
 import AddBlog from './addBlog'; 
 import ManageBlog from './manageblog';
 import ManageArtist from './ManageArtist';
-import AddRadio from './AddRadio';
-import ManageRadio from './ManageRadio';
 import styles from './style/AdminDashboard.module.css';
 import { useRouter } from 'next/router';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
-  const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(true); // Default to professional dark
+  const [adminEmail, setAdminEmail] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [glassIntensity, setGlassIntensity] = useState(70);
   const router = useRouter();
 
-  // Rule 1: Preserve original session check
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
-      }
-      setLoading(false);
-    };
-    checkSession();
-    
-    // Load local UI preferences
+    // Load saved UI preferences
     const savedTheme = localStorage.getItem('adminTheme');
     if (savedTheme) setIsDarkMode(savedTheme === 'dark');
-  }, [router]);
+
+    // Get the admin's email from the verified Cloudflare token
+    fetch('/api/verify-admin')
+      .then(r => r.json())
+      .then(data => {
+        if (data.authorized && data.email) {
+          setAdminEmail(data.email);
+        }
+      });
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
@@ -46,13 +46,12 @@ const AdminDashboard = () => {
     localStorage.setItem('adminTheme', newTheme ? 'dark' : 'light');
   };
 
-  // Rule 2: Preserve original logout logic
+  // Logout: clear the Cloudflare Access cookie then redirect
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
+    // This Cloudflare endpoint clears the CF_Authorization cookie
+    window.location.href = 'https://kapilpandey2068.cloudflareaccess.com/cdn-cgi/access/logout';
   };
 
-  // Rule 3: Preserve original renderContent logic + New Settings
   const renderContent = () => {
     switch (activeTab) {
       case 'approve': return <ApproveLyrics />;
@@ -63,8 +62,7 @@ const AdminDashboard = () => {
       case 'blog': return <AddBlog />;
       case 'manageblog': return <ManageBlog />;
       case 'manage-artist': return <ManageArtist />;
-      case 'add-radio': return <AddRadio />;
-      case 'manage-radio': return <ManageRadio />;
+   
       case 'settings': return (
         <div className={styles.settingsPanel}>
           <h3>Dashboard Calibrations</h3>
@@ -89,8 +87,6 @@ const AdminDashboard = () => {
     }
   };
 
-  if (loading) return <div className={styles.loader}>Initializing Command Center...</div>;
-
   return (
     <div 
       className={`${styles.adminDashboard} ${isDarkMode ? styles.ultraDark : styles.lightMode}`}
@@ -108,9 +104,7 @@ const AdminDashboard = () => {
           <div className={styles.sectionLabel}>Media</div>
           <button className={activeTab === 'blog' ? styles.active : ''} onClick={() => setActiveTab('blog')}><FaPlus /> New Blog</button>
           <button className={activeTab === 'manageblog' ? styles.active : ''} onClick={() => setActiveTab('manageblog')}><FaNewspaper /> Manage Blog</button>
-          <button className={activeTab === 'add-radio' ? styles.active : ''} onClick={() => setActiveTab('add-radio')}><FaBroadcastTower />Add Radio</button>
-          <button className={activeTab === 'manage-radio' ? styles.active : ''} onClick={() => setActiveTab('manage-radio')}><FaEdit /> Manage Radio</button>
-
+    
           <div className={styles.sectionLabel}>System</div>
           <button className={activeTab === 'settings' ? styles.active : ''} onClick={() => setActiveTab('settings')}><FaCogs /> UI Settings</button>
           <button className={activeTab === 'messages' ? styles.active : ''} onClick={() => setActiveTab('messages')}><FaEnvelope /> Messages</button>
@@ -125,7 +119,8 @@ const AdminDashboard = () => {
               <h2>{activeTab.toUpperCase()}</h2>
               <span className={styles.statusBadge}><FaEye /> Command Mode</span>
            </div>
-           <div className={styles.userBadge}>Admin Session</div>
+           {/* Show the logged-in admin's email */}
+           <div className={styles.userBadge}>{adminEmail || 'Admin Session'}</div>
         </header>
         <div className={styles.scrollContent}>
            {renderContent()}

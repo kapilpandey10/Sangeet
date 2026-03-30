@@ -1,43 +1,66 @@
+// File location: components/Admin/AdminRoute.jsx
+// This protects all /Admin pages — if no valid Cloudflare token, redirects away
+
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Fixed: Use Next.js router
-import { supabase } from '../../supabaseClient';
+import { useRouter } from 'next/router';
 
 const AdminRoute = ({ children }) => {
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [status, setStatus] = useState('loading'); // 'loading' | 'authorized' | 'unauthorized'
   const router = useRouter();
 
   useEffect(() => {
-    const checkAdminAccess = async () => {
-      // 1. Get the current authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
+    const checkAccess = async () => {
+      try {
+        const res = await fetch('/api/verify-admin');
+        const data = await res.json();
 
-      if (!user) {
-        router.push('/Admin/AdminLogin');
-        return;
+        if (data.authorized) {
+          setStatus('authorized');
+        } else {
+          // Not authorized — Cloudflare Access will intercept and show OTP login
+          window.location.href = '/Admin';
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
+        window.location.href = '/Admin';
       }
-
-      // 2. Verify role against your 'admin' database table for extra security
-      const { data: adminData } = await supabase
-        .from('admin')
-        .select('role')
-        .ilike('email', user.email)
-        .single();
-
-      if (adminData && adminData.role.toLowerCase() === 'admin') {
-        setIsAdmin(true);
-      } else {
-        router.push('/404'); // Stealth security: redirect unauthorized to 404
-      }
-      setLoading(false);
     };
 
-    checkAdminAccess();
-  }, [router]);
+    checkAccess();
+  }, []);
 
-  if (loading) return <div className="admin-loader">Initializing Command Center...</div>;
+  // Show a loading screen while checking the token
+  if (status === 'loading') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#07080f',
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: '13px',
+        color: 'rgba(255,255,255,0.35)',
+        letterSpacing: '2px',
+        gap: '12px',
+      }}>
+        <span style={{
+          width: '16px',
+          height: '16px',
+          border: '2px solid rgba(0,229,200,0.2)',
+          borderTopColor: '#00e5c8',
+          borderRadius: '50%',
+          animation: 'spin 0.65s linear infinite',
+          display: 'inline-block',
+        }} />
+        INITIALIZING COMMAND CENTER…
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    );
+  }
 
-  return isAdmin ? <>{children}</> : null;
+  // Only render children if authorized
+  return status === 'authorized' ? <>{children}</> : null;
 };
 
 export default AdminRoute;

@@ -571,3 +571,132 @@
   }
   .sidebarAdUnit { min-width: 196px; }
 }
+
+/* ─── inContentAd (between lyric chunks) ────────────────────── */
+.inContentAd {
+  width: 100%;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.04), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  border-radius: 14px;
+  padding: 10px;
+  min-height: 90px;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AD BLOCKER MODAL
+═══════════════════════════════════════════════════════════════ */
+.adBlockOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.adBlockModal {
+  background: #111;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  animation: slideUpModal 0.35s ease;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.adBlockIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 1.6rem;
+  color: #c9a84c;
+}
+
+.adBlockTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.adBlockText {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.adBlockText strong { color: #fff; }
+
+.adBlockSubText {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.adBlockSubText strong { color: rgba(255, 255, 255, 0.7); }
+
+.adBlockButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.adBlockPrimary {
+  display: inline-flex;
+  align-items: center;
+  background: #c9a84c;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.adBlockPrimary:hover { background: #e0c06a; transform: translateY(-2px); }
+
+.adBlockSecondary {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.825rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.adBlockSecondary:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); }

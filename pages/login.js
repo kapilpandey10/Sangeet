@@ -1,7 +1,15 @@
-import AdminLogin from './Admin/AdminLogin'; // Adjust the path based on your file structure
+// File location: pages/Admin/index.jsx
+// This is your main admin page — it is protected by AdminRoute
 
-const Login = () => {
-  return <AdminLogin />;
+import AdminRoute from '../pages/Admin/AdminRoute';
+import AdminDashboard from '../pages/Admin/index';
+
+const AdminPage = () => {
+  return (
+    <AdminRoute>
+      <AdminDashboard />
+    </AdminRoute>
+  );
 };
 
-export default Login;
+export default AdminPage;

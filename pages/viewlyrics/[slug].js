@@ -18,15 +18,15 @@ const AD_SLOTS = {
   BELOW_HERO:        '9654430713',   // Slot 2: below hero card
   MID_LYRICS_1:      '1815265882',   // Slot 3: between lyric chunk 1 & 2
   MID_LYRICS_2:      '3280594056',   // Slot 4: between lyric chunk 2 & 3
-  BELOW_LYRICS:      '4413509067',   // Slot 5: below full lyrics
+  BELOW_LYRICS:      '7959039819',   // Slot 5: below full lyrics
   BEFORE_VIDEO:      '4413509067',   // Slot 6: before YouTube embed
   AFTER_VIDEO:       '1815265882',   // Slot 7: after YouTube embed
   BEFORE_RELATED:    '9654430713',   // Slot 8: before related tracks
-  NATIVE_RELATED:    '9654430713',   // Slot 9: native ad inside related grid
+  NATIVE_RELATED:    '2730763868',   // Slot 9: native ad inside related grid
   BOTTOM_BANNER:     '3280594056',   // Slot 10: page bottom
   LEFT_SIDEBAR:      '3886159363',   // Slot 11: left sticky skyscraper
   RIGHT_SIDEBAR_1:   '9138486045',   // Slot 12: right sticky skyscraper
-  RIGHT_SIDEBAR_2:   '9138486045',   // Slot 13: second right sidebar ad
+  RIGHT_SIDEBAR_2:   '2730763868',   // Slot 13: second right sidebar ad
   STICKY_FOOTER:     '3886159363',   // Slot 14: fixed mobile footer
 };
 

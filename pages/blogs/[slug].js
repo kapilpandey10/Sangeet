@@ -80,12 +80,26 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   });
   const isoDate = publishDate.toISOString();
 
+  // The DB stores full HTML documents (<!DOCTYPE html>...).
+  // Extract only <body> contents — otherwise the embedded <title> tag
+  // inside the stored document overrides your OG tags for Facebook's scraper.
+  const extractBodyContent = (html = '') => {
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (bodyMatch) return bodyMatch[1];
+    return html
+      .replace(/<head[\s\S]*?<\/head>/i, '')
+      .replace(/<\/?(?:html|body)[^>]*>/gi, '')
+      .replace(/<!DOCTYPE[^>]*>/gi, '');
+  };
+
+  const rawContent = extractBodyContent(blog.content || '');
+
   const sanitizedContent = typeof window !== 'undefined'
-    ? DOMPurify.sanitize(blog.content, {
+    ? DOMPurify.sanitize(rawContent, {
         ADD_TAGS: ['iframe'],
         ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
       })
-    : blog.content;
+    : rawContent;
 
   const pageTitle = `${blog.title} | DynaBeat`;
   const pageDescription = blog.excerpt || 'Read the latest Nepali music news on DynaBeat.';
@@ -383,6 +397,19 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   );
 };
 
+// Strip full HTML document wrapper server-side.
+// Content in DB is stored as full <!DOCTYPE html> documents — extracting
+// only the <body> contents ensures no rogue <title> or <meta> tags from
+// the stored document bleed into the page <head> during SSR.
+function stripToBodyContent(html = '') {
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  if (bodyMatch) return bodyMatch[1];
+  return html
+    .replace(/<head[\s\S]*?<\/head>/i, '')
+    .replace(/<\/?(?:html|body)[^>]*>/gi, '')
+    .replace(/<!DOCTYPE[^>]*>/gi, '');
+}
+
 export async function getServerSideProps({ params }) {
   const { slug } = params;
 
@@ -395,6 +422,13 @@ export async function getServerSideProps({ params }) {
 
   if (error || !blog) return { notFound: true };
 
+  // Clean the content before passing as prop — prevents SSR from
+  // injecting a second <title> tag into the document <head>.
+  const cleanedBlog = {
+    ...blog,
+    content: stripToBodyContent(blog.content || ''),
+  };
+
   const { data: relatedBlogs } = await supabase
     .from('blogs')
     .select('id, title, slug, thumbnail_url, published_date')
@@ -405,7 +439,7 @@ export async function getServerSideProps({ params }) {
 
   return {
     props: {
-      blog,
+      blog: cleanedBlog,
       relatedBlogs: relatedBlogs || [],
     },
   };

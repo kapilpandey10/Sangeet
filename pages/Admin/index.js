@@ -1,7 +1,7 @@
 // File location: pages/Admin/AdminDashboard.jsx
 // The full admin UI. Imported by index.jsx which wraps it in AdminRoute.
 // Do NOT export this as a Next.js page directly — always go through index.jsx.
-
+import AdminRoute from './AdminRoute';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import {
@@ -229,4 +229,10 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default function Page() {
+  return (
+    <AdminRoute>
+      <AdminDashboard />
+    </AdminRoute>
+  )
+}

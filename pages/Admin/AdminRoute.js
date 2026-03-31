@@ -1,25 +1,13 @@
 // File location: pages/Admin/AdminRoute.js
 // Checks Cloudflare Access JWT via /api/verify-admin before rendering children.
-//
-// HOW CF ACCESS WORKS:
-// - Cloudflare Access sits in FRONT of your site at the network edge.
-// - When an unauthenticated user hits /Admin, CF intercepts it and shows
-//   its own login page BEFORE your Next.js code ever runs.
-// - After login, CF sets the CF_Authorization cookie and lets the request
-//   through to your app — at which point verify-admin succeeds.
-//
-// This means AdminRoute should only ever run for:
-//   (a) authenticated users  → show the dashboard
-//   (b) users on localhost   → CF is bypassed, verify-admin returns false
-//
-// In case (b) we do a hard reload of the same URL so CF can intercept it
-// on the live domain. On localhost you'll need to test with a real session
-// cookie copied from the live site, or bypass the guard for local dev.
+// IMPORTANT: Never reload or redirect on failure — that causes infinite loops.
+// Instead, show an error screen so we can read the debug reason.
 
 import { useEffect, useState } from 'react';
 
 const AdminRoute = ({ children }) => {
-  const [status, setStatus] = useState('loading'); // 'loading' | 'authorized'
+  const [status, setStatus] = useState('loading'); // 'loading' | 'authorized' | 'denied'
+  const [reason, setReason] = useState('');
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -30,21 +18,21 @@ const AdminRoute = ({ children }) => {
         if (data.authorized) {
           setStatus('authorized');
         } else {
-          // Not authorized — this should rarely happen on the live site because
-          // Cloudflare Access blocks unauthenticated requests before they reach
-          // Next.js. If it does happen (e.g. expired token), reload the current
-          // URL so Cloudflare can intercept it and show the login page.
-          window.location.reload();
+          // Show the deny reason on screen — do NOT reload or redirect.
+          // This tells us exactly why CF auth is failing.
+          setReason(data.reason || 'Unknown reason');
+          setStatus('denied');
         }
       } catch (err) {
-        console.error('Auth check failed:', err);
-        window.location.reload();
+        setReason(`Network error: ${err.message}`);
+        setStatus('denied');
       }
     };
 
     checkAccess();
   }, []);
 
+  // ── Loading screen ──
   if (status === 'loading') {
     return (
       <div style={{
@@ -74,7 +62,50 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  return status === 'authorized' ? <>{children}</> : null;
+  // ── Denied screen — shows the reason so we can debug ──
+  // Once you confirm everything works, you can replace this with a redirect.
+  if (status === 'denied') {
+    return (
+      <div style={{
+        minHeight:      '100vh',
+        display:        'flex',
+        flexDirection:  'column',
+        alignItems:     'center',
+        justifyContent: 'center',
+        background:     '#07080f',
+        fontFamily:     "'JetBrains Mono', monospace",
+        color:          'rgba(255,255,255,0.7)',
+        gap:            '16px',
+        padding:        '40px',
+        textAlign:      'center',
+      }}>
+        <div style={{ fontSize: '11px', letterSpacing: '3px', color: '#ff4d4d' }}>
+          ACCESS DENIED
+        </div>
+        <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', maxWidth: '480px' }}>
+          Cloudflare token verification failed. Debug reason:
+        </div>
+        <div style={{
+          background:   'rgba(255,77,77,0.1)',
+          border:       '1px solid rgba(255,77,77,0.3)',
+          borderRadius: '6px',
+          padding:      '12px 24px',
+          fontSize:     '12px',
+          color:        '#ff4d4d',
+          maxWidth:     '480px',
+          wordBreak:    'break-all',
+        }}>
+          {reason}
+        </div>
+        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', maxWidth: '480px' }}>
+          Screenshot this and share it to diagnose the issue.
+        </div>
+      </div>
+    );
+  }
+
+  // ── Authorized ──
+  return <>{children}</>;
 };
 
 export default AdminRoute;

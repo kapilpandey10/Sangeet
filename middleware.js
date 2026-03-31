@@ -5,9 +5,12 @@ export const config = {
   matcher: ['/Admin', '/Admin/:path*'],
 };
 
+const CF_TEAM_DOMAIN = 'kapilpandey2068.cloudflareaccess.com'; // ← hardcoded
+
 export function middleware(request) {
-  // Skip on localhost
   const host = request.headers.get('host') || '';
+  
+  // Skip on localhost
   if (host.includes('localhost')) {
     return NextResponse.next();
   }
@@ -15,11 +18,8 @@ export function middleware(request) {
   const token = request.cookies.get('CF_Authorization')?.value;
 
   if (!token) {
-    // Use NEXT_PUBLIC_ prefix — only these work in Edge middleware
-    const teamDomain = process.env.NEXT_PUBLIC_CF_ACCESS_TEAM_DOMAIN;
-    const loginUrl = `https://${teamDomain}/cdn-cgi/access/login` +
+    const loginUrl = `https://${CF_TEAM_DOMAIN}/cdn-cgi/access/login` +
       `?redirect_url=${encodeURIComponent(request.url)}`;
-
     return NextResponse.redirect(loginUrl);
   }
 

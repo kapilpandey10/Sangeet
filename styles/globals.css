@@ -1,16 +1,19 @@
-/* Core Palette: Pure Black, White, and Electric Pink-to-Yellow Gradient */
 :root {
-  --bg-black: #000000;
-  --bg-dark-grey: #0a0a0a;
-  --text-white: #ffffff;
-  --text-grey: #888888;
-  --gradient-primary: linear-gradient(90deg, #ff00ff, #ffff00);
-  --neon-pink: #ff00ff;
-  --neon-yellow: #ffff00;
-  --bg: #080b10;
-  --surface: #0d1117;
+  --bg:           #faf8f3;
+  --surface:      #ffffff;
+  --surface2:     #f4f1ea;
+  --border:       #e0d9cc;
+  --text:         #1a1714;
+  --muted:        #7a6f5e;
+  --accent:       #b8960c;
+  --accent-dark:  #8a6a00;
+  --rule:         #d4c9b0;
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'Cormorant Garamond', serif;
+  --font-ui:      'Montserrat', sans-serif;
+  --page-max:     1160px;
+  --page-pad:     clamp(20px, 5vw, 60px);
 }
-
 html, body {
   background-color: var(--bg-black);
   color: var(--text-white);

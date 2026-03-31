@@ -2,22 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap');
 
 /* ── Tokens ── */
-:root {
-  --bg:           #faf8f3;
-  --surface:      #ffffff;
-  --surface2:     #f4f1ea;
-  --border:       #e0d9cc;
-  --text:         #1a1714;
-  --muted:        #7a6f5e;
-  --accent:       #b8960c;
-  --accent-dark:  #8a6a00;
-  --rule:         #d4c9b0;
-  --font-display: 'Playfair Display', serif;
-  --font-body:    'Cormorant Garamond', serif;
-  --font-ui:      'Montserrat', sans-serif;
-  --page-max:     1160px;
-  --page-pad:     clamp(20px, 5vw, 60px);
-}
+
 
 /* ── Page ── */
 .page {

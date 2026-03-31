@@ -1,14 +1,12 @@
 // File location: pages/api/verify-admin.js
-// This checks if the user has a valid Cloudflare Access token
-
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 const TEAM_DOMAIN = 'https://kapilpandey2068.cloudflareaccess.com';
 const AUD_TAG = '0a419b6b4c925924769d0a1322b7c7c4dafe0b45c8770ee9285b017c2f98a282';
 
 export default async function handler(req, res) {
-  // Get the Cloudflare Access token from cookies
-  const token = req.cookies['CF_Authorization'];
+  // Check both cookies and headers for the Cloudflare token
+  const token = req.cookies['CF_Authorization'] || req.headers['cf-access-jwt-assertion'];
 
   // If no token exists, user hasn't logged in via Cloudflare Access
   if (!token) {

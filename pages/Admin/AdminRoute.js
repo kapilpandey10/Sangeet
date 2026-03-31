@@ -1,6 +1,4 @@
-// File location: components/Admin/AdminRoute.jsx
-// This protects all /Admin pages — if no valid Cloudflare token, redirects away
-
+// File location: pages/Admin/AdminRoute.js
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -17,12 +15,12 @@ const AdminRoute = ({ children }) => {
         if (data.authorized) {
           setStatus('authorized');
         } else {
-          // Not authorized — Cloudflare Access will intercept and show OTP login
-          window.location.href = '/Admin';
+          // KICK UNAUTHORIZED USERS TO THE HOME PAGE TO PREVENT INFINITE LOOPS
+          window.location.href = '/';
         }
       } catch (err) {
         console.error('Auth check failed:', err);
-        window.location.href = '/Admin';
+        window.location.href = '/';
       }
     };
 

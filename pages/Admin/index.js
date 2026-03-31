@@ -1,4 +1,4 @@
-// AdminDashboard.jsx — Dynabeat Command Studio — Premium Redesign
+// File location: pages/Admin/index.js
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import {
@@ -6,6 +6,7 @@ import {
   FaMusic, FaSignOutAlt, FaNewspaper, FaCogs,
   FaSun, FaMoon, FaLayerGroup
 } from 'react-icons/fa';
+import AdminRoute from './AdminRoute'; // <-- IMPORTED HERE
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
@@ -195,4 +196,11 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+// <-- WRAPPED IN ADMINROUTE HERE -->
+export default function ProtectedAdminDashboard() {
+  return (
+    <AdminRoute>
+      <AdminDashboard />
+    </AdminRoute>
+  );
+}

@@ -114,43 +114,43 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
     <div className={styles.pageWrapper}>
       <Head>
         {/* ── Primary ── */}
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta name="keywords" content={`${blog.tags || ''}, nepali music, dynabeat, music news`} />
-        <link rel="canonical" href={currentUrl} />
+        <title key="title">{pageTitle}</title>
+        <meta key="description" name="description" content={pageDescription} />
+        <meta key="keywords" name="keywords" content={`${blog.tags || ''}, nepali music, dynabeat, music news`} />
+        <link key="canonical" rel="canonical" href={currentUrl} />
 
         {/* ── Open Graph (Facebook, WhatsApp, Messenger, Telegram, LinkedIn) ── */}
-        <meta property="og:site_name" content="DynaBeat" />
-        <meta property="og:locale" content="en_US" />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={currentUrl} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
+        <meta key="og:site_name" property="og:site_name" content="DynaBeat" />
+        <meta key="og:locale" property="og:locale" content="en_US" />
+        <meta key="og:type" property="og:type" content="article" />
+        <meta key="og:url" property="og:url" content={currentUrl} />
+        <meta key="og:title" property="og:title" content={pageTitle} />
+        <meta key="og:description" property="og:description" content={pageDescription} />
 
         {/* Image — must be absolute, ≥200×200, ideally 1200×630 */}
-        <meta property="og:image" content={ogImage} />
-        <meta property="og:image:secure_url" content={ogImage} />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={blog.title} />
+        <meta key="og:image" property="og:image" content={ogImage} />
+        <meta key="og:image:secure_url" property="og:image:secure_url" content={ogImage} />
+        <meta key="og:image:type" property="og:image:type" content="image/jpeg" />
+        <meta key="og:image:width" property="og:image:width" content="1200" />
+        <meta key="og:image:height" property="og:image:height" content="630" />
+        <meta key="og:image:alt" property="og:image:alt" content={blog.title} />
 
         {/* Article-specific OG */}
-        <meta property="article:published_time" content={isoDate} />
-        <meta property="article:modified_time" content={isoDate} />
-        <meta property="article:author" content={blog.author || 'DynaBeat Editor'} />
-        <meta property="article:section" content={blog.tags || 'Music'} />
-        {blog.tags && <meta property="article:tag" content={blog.tags} />}
+        <meta key="article:published_time" property="article:published_time" content={isoDate} />
+        <meta key="article:modified_time" property="article:modified_time" content={isoDate} />
+        <meta key="article:author" property="article:author" content={blog.author || 'DynaBeat Editor'} />
+        <meta key="article:section" property="article:section" content={blog.tags || 'Music'} />
+        {blog.tags && <meta key="article:tag" property="article:tag" content={blog.tags} />}
 
         {/* ── Twitter / X Card ── */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@DynaBeat" />
-        <meta name="twitter:creator" content="@DynaBeat" />
-        <meta name="twitter:url" content={currentUrl} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content={ogImage} />
-        <meta name="twitter:image:alt" content={blog.title} />
+        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+        <meta key="twitter:site" name="twitter:site" content="@DynaBeat" />
+        <meta key="twitter:creator" name="twitter:creator" content="@DynaBeat" />
+        <meta key="twitter:url" name="twitter:url" content={currentUrl} />
+        <meta key="twitter:title" name="twitter:title" content={pageTitle} />
+        <meta key="twitter:description" name="twitter:description" content={pageDescription} />
+        <meta key="twitter:image" name="twitter:image" content={ogImage} />
+        <meta key="twitter:image:alt" name="twitter:image:alt" content={blog.title} />
 
         {/* ── JSON-LD ── */}
         <script

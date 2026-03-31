@@ -1,86 +1,101 @@
-// File location: components/Admin/AdminDashboard.jsx
-// Supabase auth has been removed — logout now clears the Cloudflare Access token
-
+// AdminDashboard.jsx — Dynabeat Command Studio — Premium Redesign
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient'; // Still used for DATABASE queries only
-import { 
-  FaCheckCircle, FaEdit, FaPlus, FaEnvelope, FaSun, FaMoon,
-  FaMusic, FaUserPlus, FaSignOutAlt, FaNewspaper, FaBroadcastTower, FaCogs, FaEye 
+import { supabase } from '../../supabaseClient';
+import {
+  FaCheckCircle, FaEdit, FaPlus, FaEnvelope,
+  FaMusic, FaSignOutAlt, FaNewspaper, FaCogs,
+  FaSun, FaMoon, FaLayerGroup
 } from 'react-icons/fa';
 import ApproveLyrics from './ApproveLyrics';
 import ManageLyrics from './ManageLyrics';
 import Messages from './Messages';
 import AddLyrics from './AddLyrics';
 import AddArtist from './addArtist';
-import AddBlog from './addBlog'; 
+import AddBlog from './addBlog';
 import ManageBlog from './manageblog';
 import ManageArtist from './ManageArtist';
 import styles from './style/AdminDashboard.module.css';
-import { useRouter } from 'next/router';
+
+const NAV_SECTIONS = [
+  {
+    label: 'Music',
+    items: [
+      { id: 'approve',       icon: FaCheckCircle, label: 'Approve Lyrics',  sub: 'Review queue' },
+      { id: 'add-lyrics',    icon: FaPlus,        label: 'Add Lyrics',      sub: 'New entry' },
+      { id: 'manage',        icon: FaEdit,        label: 'Manage Lyrics',   sub: 'Library' },
+    ],
+  },
+  {
+    label: 'Media',
+    items: [
+      { id: 'blog',          icon: FaPlus,        label: 'New Blog',        sub: 'Compose' },
+      { id: 'manageblog',    icon: FaNewspaper,   label: 'Manage Blog',     sub: 'All posts' },
+      { id: 'add-artist',    icon: FaMusic,       label: 'Add Artist',      sub: 'New profile' },
+      { id: 'manage-artist', icon: FaLayerGroup,  label: 'Manage Artists',  sub: 'Roster' },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { id: 'messages',      icon: FaEnvelope,    label: 'Messages',        sub: 'Inbox' },
+      { id: 'settings',      icon: FaCogs,        label: 'Settings',        sub: 'Preferences' },
+    ],
+  },
+];
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('approve');
   const [adminEmail, setAdminEmail] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [glassIntensity, setGlassIntensity] = useState(70);
-  const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    // Load saved UI preferences
     const savedTheme = localStorage.getItem('adminTheme');
     if (savedTheme) setIsDarkMode(savedTheme === 'dark');
-
-    // Get the admin's email from the verified Cloudflare token
+    else setIsDarkMode(true); // default dark
     fetch('/api/verify-admin')
       .then(r => r.json())
-      .then(data => {
-        if (data.authorized && data.email) {
-          setAdminEmail(data.email);
-        }
-      });
+      .then(data => { if (data.authorized && data.email) setAdminEmail(data.email); });
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    localStorage.setItem('adminTheme', newTheme ? 'dark' : 'light');
+    const next = !isDarkMode;
+    setIsDarkMode(next);
+    localStorage.setItem('adminTheme', next ? 'dark' : 'light');
   };
 
-  // Logout: clear the Cloudflare Access cookie then redirect
-  const handleLogout = async () => {
-    // This Cloudflare endpoint clears the CF_Authorization cookie
+  const handleLogout = () => {
     window.location.href = 'https://kapilpandey2068.cloudflareaccess.com/cdn-cgi/access/logout';
   };
 
+  const allItems = NAV_SECTIONS.flatMap(s => s.items);
+  const currentItem = allItems.find(i => i.id === activeTab);
+
   const renderContent = () => {
     switch (activeTab) {
-      case 'approve': return <ApproveLyrics />;
-      case 'manage': return <ManageLyrics />;
-      case 'messages': return <Messages />;
-      case 'add-lyrics': return <AddLyrics />;
-      case 'add-artist': return <AddArtist />;
-      case 'blog': return <AddBlog />;
-      case 'manageblog': return <ManageBlog />;
-      case 'manage-artist': return <ManageArtist />;
-   
-      case 'settings': return (
+      case 'approve':        return <ApproveLyrics />;
+      case 'manage':         return <ManageLyrics />;
+      case 'messages':       return <Messages />;
+      case 'add-lyrics':     return <AddLyrics />;
+      case 'add-artist':     return <AddArtist />;
+      case 'blog':           return <AddBlog />;
+      case 'manageblog':     return <ManageBlog />;
+      case 'manage-artist':  return <ManageArtist />;
+      case 'settings':       return (
         <div className={styles.settingsPanel}>
-          <h3>Dashboard Calibrations</h3>
+          <h2 className={styles.settingsHeading}>Preferences</h2>
           <div className={styles.settingRow}>
-            <label>High-Contrast Dark Mode</label>
-            <button onClick={toggleTheme} className={styles.toggleBtn}>
-              {isDarkMode ? <FaSun /> : <FaMoon />} {isDarkMode ? 'Switch to Light' : 'Switch to Dark'}
+            <div>
+              <p className={styles.settingLabel}>Appearance</p>
+              <p className={styles.settingHint}>Toggle between light and dark editorial mode</p>
+            </div>
+            <button className={styles.themeBtn} onClick={toggleTheme}>
+              {isDarkMode ? <><FaSun /> Light mode</> : <><FaMoon /> Dark mode</>}
             </button>
           </div>
-          <div className={styles.settingRow}>
-            <label>Glass Transparency ({glassIntensity}%)</label>
-            <input 
-              type="range" min="10" max="90" 
-              value={glassIntensity} 
-              onChange={(e) => setGlassIntensity(e.target.value)} 
-            />
-          </div>
-          <p className={styles.hint}>Settings are local to this device and don't affect your public site.</p>
+          <p className={styles.settingsNote}>
+            Preferences are device-local and do not affect the public site.
+          </p>
         </div>
       );
       default: return <ManageLyrics />;
@@ -88,44 +103,94 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div 
-      className={`${styles.adminDashboard} ${isDarkMode ? styles.ultraDark : styles.lightMode}`}
-      style={{ '--glass-opacity': `${glassIntensity / 100}` }}
-    >
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>Dyna<span>Beat</span> Admin</div>
-        
-        <nav className={styles.sideNav}>
-          <div className={styles.sectionLabel}>Music</div>
-          <button className={activeTab === 'approve' ? styles.active : ''} onClick={() => setActiveTab('approve')}><FaCheckCircle /> Approve Lyrics</button>
-          <button className={activeTab === 'add-lyrics' ? styles.active : ''} onClick={() => setActiveTab('add-lyrics')}><FaPlus /> Add Lyrics</button>
-          <button className={activeTab === 'manage' ? styles.active : ''} onClick={() => setActiveTab('manage')}><FaEdit /> Manage Lyrics</button>
+    <div className={`${styles.shell} ${isDarkMode ? styles.dark : styles.light}`}>
 
-          <div className={styles.sectionLabel}>Media</div>
-          <button className={activeTab === 'blog' ? styles.active : ''} onClick={() => setActiveTab('blog')}><FaPlus /> New Blog</button>
-          <button className={activeTab === 'manageblog' ? styles.active : ''} onClick={() => setActiveTab('manageblog')}><FaNewspaper /> Manage Blog</button>
-    
-          <div className={styles.sectionLabel}>System</div>
-          <button className={activeTab === 'settings' ? styles.active : ''} onClick={() => setActiveTab('settings')}><FaCogs /> UI Settings</button>
-          <button className={activeTab === 'messages' ? styles.active : ''} onClick={() => setActiveTab('messages')}><FaEnvelope /> Messages</button>
-          
-          <button className={styles.logoutBtn} onClick={handleLogout}><FaSignOutAlt /> Logout</button>
+      {mobileOpen && (
+        <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
+      )}
+
+      {/* ── SIDEBAR ── */}
+      <aside className={`${styles.sidebar} ${mobileOpen ? styles.sideOpen : ''}`}>
+
+        {/* Masthead */}
+        <div className={styles.masthead}>
+          <p className={styles.mastheadEyebrow}>Command Studio</p>
+          <p className={styles.mastheadTitle}>DYNABEAT</p>
+          <p className={styles.mastheadCaption}>Admin Dashboard</p>
+          <div className={styles.mastheadRule}>
+            <div className={styles.mastheadRuleDot} />
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className={styles.nav}>
+          {NAV_SECTIONS.map(({ label, items }) => (
+            <div key={label} className={styles.navGroup}>
+              <span className={styles.navGroupLabel}>{label}</span>
+              {items.map(({ id, icon: Icon, label: itemLabel, sub }) => (
+                <button
+                  key={id}
+                  className={`${styles.navItem} ${activeTab === id ? styles.navActive : ''}`}
+                  onClick={() => { setActiveTab(id); setMobileOpen(false); }}
+                >
+                  <Icon className={styles.navIcon} />
+                  <span className={styles.navLabels}>
+                    <span className={styles.navLabel}>{itemLabel}</span>
+                    <span className={styles.navSub}>{sub}</span>
+                  </span>
+                  {activeTab === id && <span className={styles.activeBar} />}
+                </button>
+              ))}
+            </div>
+          ))}
         </nav>
+
+        {/* User footer */}
+        <div className={styles.sideFooter}>
+          {adminEmail && (
+            <div className={styles.userBlock}>
+              <div className={styles.avatar}>{adminEmail[0].toUpperCase()}</div>
+              <div className={styles.userMeta}>
+                <span className={styles.userRole}>Administrator</span>
+                <span className={styles.userEmail}>{adminEmail}</span>
+              </div>
+            </div>
+          )}
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            <FaSignOutAlt /> <span>Sign out</span>
+          </button>
+        </div>
       </aside>
 
-      <main className={styles.mainArea}>
-        <header className={styles.topHeader}>
-           <div className={styles.headerInfo}>
-              <h2>{activeTab.toUpperCase()}</h2>
-              <span className={styles.statusBadge}><FaEye /> Command Mode</span>
-           </div>
-           {/* Show the logged-in admin's email */}
-           <div className={styles.userBadge}>{adminEmail || 'Admin Session'}</div>
+      {/* ── MAIN ── */}
+      <div className={styles.main}>
+
+        {/* Top strip */}
+        <header className={styles.topStrip}>
+          <button className={styles.hamburger} onClick={() => setMobileOpen(true)}>
+            <span /><span /><span />
+          </button>
+          <div className={styles.topCenter}>
+            <span className={styles.topIssue}>Vol. I</span>
+            <span className={styles.topEm}>&mdash;</span>
+            <span className={styles.topSection}>{currentItem?.label || 'Dashboard'}</span>
+          </div>
+          <span className={styles.topDate}>
+            {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </span>
         </header>
-        <div className={styles.scrollContent}>
-           {renderContent()}
+
+        {/* Page title */}
+        <div className={styles.pageHeading}>
+          <p className={styles.pageEyebrow}>{currentItem?.sub || 'Module'}</p>
+          <h1 className={styles.pageTitle}>{currentItem?.label || 'Dashboard'}</h1>
+          <div className={styles.titleRule} />
         </div>
-      </main>
+
+        <div className={styles.content}>
+          {renderContent()}
+        </div>
+      </div>
     </div>
   );
 };

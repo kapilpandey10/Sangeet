@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
-import { 
-  FaTrash, FaPlus, FaLayerGroup, FaYoutube, 
-  FaPenNib, FaLanguage, FaCalendarAlt, FaUserEdit, FaSearch 
-} from 'react-icons/fa'; 
+import {
+  FaTrash, FaPlus, FaLayerGroup, FaYoutube,
+  FaPenNib, FaLanguage, FaCalendarAlt, FaUserEdit, FaSearch
+} from 'react-icons/fa';
 import styles from './style/AddLyrics.module.css';
 
 const AddLyrics = () => {
@@ -26,7 +26,8 @@ const AddLyrics = () => {
     document.title = 'Command: Add Lyrics | Contributor Studio';
   }, []);
 
-  const generateSlug = (t) => t.trim().toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+  const generateSlug = (t) =>
+    t.trim().toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
 
   const getYouTubeVideoID = (url) => {
     const regex = /(?:v=|\/)([a-zA-Z0-9_-]{11})/;
@@ -89,7 +90,7 @@ const AddLyrics = () => {
       }]);
 
       if (error) throw error;
-      setMessage('Submission Initialized: Pending Review');
+      setMessage('✓ Track queued for review');
       setTitle(''); setSlug(''); setArtists([{ name: '', suggestions: [] }]);
       setLyrics(''); setEnglishLyrics(''); setVideoUrl(''); setThumbnail('');
       setTimeout(() => setMessage(''), 5000);
@@ -99,117 +100,144 @@ const AddLyrics = () => {
   };
 
   return (
-    <div className={styles.studioContainer}>
-      {message && <div className={styles.noirToast}>{message}</div>}
-      
-      <form onSubmit={handleSubmit} className={styles.studioLayout}>
-        {/* LEFT: METADATA PANEL */}
+    <div className={styles.wrapper}>
+      {message && (
+        <div className={`${styles.toast} ${message.startsWith('Error') ? styles.toastError : styles.toastSuccess}`}>
+          {message}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className={styles.layout}>
+
+        {/* ── LEFT: METADATA ── */}
         <aside className={styles.metaPanel}>
-          <div className={styles.panelHeader}>
-            <FaLayerGroup color="#ff00ff" /> <span>Metadata Inspector</span>
+          <div className={styles.panelTitle}>
+            <FaLayerGroup className={styles.panelIcon} />
+            <span>Track Metadata</span>
           </div>
-          
-          <div className={styles.fieldGrid}>
-            <div className={styles.fieldBox}>
-              <label>Track Title</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            </div>
 
-            <div className={styles.fieldBox}>
-              <label>Custom Slug</label>
-              <input type="text" value={slug} placeholder="Leave empty for auto-gen" onChange={(e) => setSlug(e.target.value)} />
-            </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Track Title</label>
+            <input className={styles.input} type="text" value={title}
+              onChange={(e) => setTitle(e.target.value)} required placeholder="e.g. Timi Nai Ho" />
+          </div>
 
-            <div className={styles.fieldBoxFull}>
-              <label>Singers / Artists</label>
-              {artists.map((artist, index) => (
-                <div key={index} className={styles.artistContainer}>
-                  <div className={styles.artistRow}>
-                    <input type="text" value={artist.name} onChange={(e) => handleArtistChange(index, e)} required />
-                    {index > 0 && <button type="button" onClick={() => setArtists(artists.filter((_, i) => i !== index))}><FaTrash /></button>}
-                  </div>
-                  {artist.suggestions.length > 0 && (
-                    <ul className={styles.suggestionList}>
-                      {artist.suggestions.map((s, i) => (
-                        <li key={i} onClick={() => selectArtist(index, s)}><FaSearch size={10} /> {s}</li>
-                      ))}
-                    </ul>
+          <div className={styles.field}>
+            <label className={styles.label}>Custom Slug</label>
+            <input className={styles.input} type="text" value={slug}
+              placeholder="auto-generated if empty" onChange={(e) => setSlug(e.target.value)} />
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Singers / Artists</label>
+            {artists.map((artist, index) => (
+              <div key={index} className={styles.artistGroup}>
+                <div className={styles.artistRow}>
+                  <input className={styles.input} type="text" value={artist.name}
+                    onChange={(e) => handleArtistChange(index, e)} required placeholder="Artist name" />
+                  {index > 0 && (
+                    <button type="button" className={styles.iconBtn}
+                      onClick={() => setArtists(artists.filter((_, i) => i !== index))}>
+                      <FaTrash />
+                    </button>
                   )}
                 </div>
-              ))}
-              <button type="button" className={styles.btnAdd} onClick={() => setArtists([...artists, { name: '', suggestions: [] }])}>
-                <FaPlus /> Add Artist
-              </button>
-            </div>
+                {artist.suggestions.length > 0 && (
+                  <ul className={styles.suggestions}>
+                    {artist.suggestions.map((s, i) => (
+                      <li key={i} onClick={() => selectArtist(index, s)}>
+                        <FaSearch size={9} /> {s}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+            <button type="button" className={styles.addArtistBtn}
+              onClick={() => setArtists([...artists, { name: '', suggestions: [] }])}>
+              <FaPlus /> Add Artist
+            </button>
+          </div>
 
-            <div className={styles.fieldBox}>
-              <label><FaPenNib /> Writer</label>
-              <input type="text" value={writer} onChange={(e) => setWriter(e.target.value)} required />
+          <div className={styles.fieldGrid2}>
+            <div className={styles.field}>
+              <label className={styles.label}><FaPenNib className={styles.labelIcon} /> Writer</label>
+              <input className={styles.input} type="text" value={writer}
+                onChange={(e) => setWriter(e.target.value)} required />
             </div>
-
-            <div className={styles.fieldBox}>
-              <label><FaCalendarAlt /> Release Year</label>
-              <input type="number" min="1900" max={new Date().getFullYear()} value={releaseYear} onChange={(e) => setReleaseYear(e.target.value)} required />
+            <div className={styles.field}>
+              <label className={styles.label}><FaCalendarAlt className={styles.labelIcon} /> Year</label>
+              <input className={styles.input} type="number" min="1900"
+                max={new Date().getFullYear()} value={releaseYear}
+                onChange={(e) => setReleaseYear(e.target.value)} required />
             </div>
-
-            <div className={styles.fieldBox}>
-              <label><FaLanguage /> Language</label>
-              <input type="text" value={language} onChange={(e) => setLanguage(e.target.value)} required />
+            <div className={styles.field}>
+              <label className={styles.label}><FaLanguage className={styles.labelIcon} /> Language</label>
+              <input className={styles.input} type="text" value={language}
+                onChange={(e) => setLanguage(e.target.value)} required />
             </div>
-
-            <div className={styles.fieldBox}>
-              <label><FaUserEdit /> Added By</label>
-              <input list="adminList" value={addedBy} onChange={(e) => setAddedBy(e.target.value)} required />
+            <div className={styles.field}>
+              <label className={styles.label}><FaUserEdit className={styles.labelIcon} /> Added By</label>
+              <input className={styles.input} list="adminList" value={addedBy}
+                onChange={(e) => setAddedBy(e.target.value)} required />
               <datalist id="adminList">
-                <option value="Admin"/>
-                <option value="Ashish Khanal (Mr. Thule)"/>
+                <option value="Admin" />
+                <option value="Ashish Khanal (Mr. Thule)" />
               </datalist>
             </div>
           </div>
         </aside>
 
-        {/* RIGHT: CONTENT & PREVIEW */}
+        {/* ── RIGHT: CONTENT ── */}
         <section className={styles.contentPanel}>
-          <div className={styles.monitorArea}>
-            <div className={styles.previewFrame}>
-              {thumbnail ? (
-                <img src={thumbnail} alt="Preview" />
-              ) : (
-                <div className={styles.emptyMonitor}>Monitor Offline: Waiting for Sync</div>
-              )}
-              <div className={styles.statusBadge}><FaYoutube /> Studio Sync</div>
+
+          {/* YouTube preview */}
+          <div className={styles.monitor}>
+            <div className={styles.monitorScreen}>
+              {thumbnail
+                ? <img src={thumbnail} alt="Preview" className={styles.thumbImg} />
+                : <div className={styles.offlineScreen}>
+                    <FaYoutube className={styles.offlineIcon} />
+                    <span>Awaiting sync</span>
+                  </div>
+              }
             </div>
-            <div className={styles.inputWrapper}>
-              <input 
-                type="text" 
-                className={styles.ytInput} 
-                placeholder="Paste YouTube Link or Video ID" 
-                value={videoUrl} 
-                onChange={handleVideoUrlChange} 
-              />
-              {videoError && <p className={styles.errorText}>{videoError}</p>}
+            <div className={styles.ytInputWrap}>
+              <FaYoutube className={styles.ytIcon} />
+              <input className={styles.ytInput} type="text"
+                placeholder="Paste YouTube URL or video ID"
+                value={videoUrl} onChange={handleVideoUrlChange} />
+            </div>
+            {videoError && <p className={styles.error}>{videoError}</p>}
+          </div>
+
+          {/* Lyrics side by side */}
+          <div className={styles.lyricsRow}>
+            <div className={styles.lyricsBox}>
+              <label className={styles.lyricsLabel}>Original Lyrics</label>
+              <textarea className={styles.textarea} rows={14} value={lyrics}
+                onChange={(e) => setLyrics(e.target.value)} placeholder="Paste original lyrics here..." />
+            </div>
+            <div className={styles.lyricsBox}>
+              <label className={styles.lyricsLabel}>English Translation</label>
+              <textarea className={styles.textarea} rows={14} value={englishLyrics}
+                onChange={(e) => setEnglishLyrics(e.target.value)} placeholder="English version (optional)..." />
             </div>
           </div>
 
-          <div className={styles.lyricsGrid}>
-            <div className={styles.textContainer}>
-              <label>Original Lyrics</label>
-              <textarea className={styles.noirTextarea} rows={12} value={lyrics} onChange={(e) => setLyrics(e.target.value)} />
-            </div>
-            <div className={styles.textContainer}>
-              <label>English Version</label>
-              <textarea className={styles.noirTextarea} rows={12} value={englishLyrics} onChange={(e) => setEnglishLyrics(e.target.value)} />
-            </div>
+          {/* Description */}
+          <div className={styles.field}>
+            <label className={styles.lyricsLabel}>Track Description</label>
+            <textarea className={styles.textarea} rows={3} value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Short insight about the track..." />
           </div>
 
-          <div className={styles.descArea}>
-            <label>Track Description</label>
-            <textarea className={styles.noirTextarea} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short insight about the track..." />
+          <div className={styles.submitRow}>
+            <button type="submit" className={styles.submitBtn}>
+              Finalize &amp; Submit to Library
+            </button>
           </div>
-
-          <footer className={styles.actionCenter}>
-             <button type="submit" className={styles.publishBtn}>Finalize & Submit to Library</button>
-          </footer>
         </section>
       </form>
     </div>

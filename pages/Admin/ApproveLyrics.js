@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import ConfirmMsg from '../../components/ConfirmMsg';
-import { 
-  FaYoutube, FaEdit, FaCheck, FaTimes, FaUser, 
-  FaGlobe, FaCalendarAlt, FaLayerGroup, FaFileAlt 
+import {
+  FaYoutube, FaEdit, FaCheck, FaTimes,
+  FaGlobe, FaCalendarAlt, FaLayerGroup, FaFileAlt, FaUserEdit
 } from 'react-icons/fa';
 import styles from './style/ApproveLyrics.module.css';
 
@@ -17,106 +17,171 @@ const ApproveLyrics = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchPendingLyrics = async () => {
-      const { data, error } = await supabase.from('lyrics').select('*').eq('status', 'pending');
-      if (!error) setPendingLyrics(data);
+    const fetchPending = async () => {
+      const { data, error } = await supabase
+        .from('lyrics').select('*').eq('status', 'pending');
+      if (!error) setPendingLyrics(data || []);
     };
-    fetchPendingLyrics();
+    fetchPending();
   }, []);
 
   const handleConfirmAction = async () => {
     setLoading(true);
-    const tableUpdate = actionType === 'approve' 
+    const op = actionType === 'approve'
       ? supabase.from('lyrics').update({ ...editedLyric, status: 'approved' }).eq('id', selectedLyric.id)
       : supabase.from('lyrics').delete().eq('id', selectedLyric.id);
 
-    const { error } = await tableUpdate;
+    const { error } = await op;
     if (!error) {
       setPendingLyrics(pendingLyrics.filter(l => l.id !== selectedLyric.id));
       setSelectedLyric(null);
-      setMessage(actionType === 'approve' ? 'Review Finalized' : 'Submission Discarded');
+      setEditedLyric(null);
+      setMessage(actionType === 'approve' ? '✓ Track published to library' : '✕ Submission discarded');
+      setTimeout(() => setMessage(''), 4000);
     }
     setShowConfirm(false);
     setLoading(false);
   };
 
-  const extractYouTubeId = (url) => url?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
+  const extractYTId = (url) => url?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
+
+  const set = (field) => (e) => setEditedLyric({ ...editedLyric, [field]: e.target.value });
 
   return (
-    <div className={styles.commandContainer}>
+    <div className={styles.wrapper}>
       {message && <div className={styles.toast}>{message}</div>}
-      
-      <div className={styles.studioLayout}>
-        {/* LEFT: MINIMALIST QUEUE */}
-        <aside className={styles.sidebarQueue}>
+
+      <div className={styles.layout}>
+
+        {/* ── Queue Sidebar ── */}
+        <aside className={styles.queue}>
           <div className={styles.queueHeader}>
-            <FaLayerGroup /> <span>Pending Queue</span>
-            <div className={styles.badge}>{pendingLyrics.length}</div>
+            <FaLayerGroup />
+            <span>Pending Queue</span>
+            <span className={styles.queueBadge}>{pendingLyrics.length}</span>
           </div>
-          <div className={styles.scrollList}>
-            {pendingLyrics.map((lyric) => (
-              <div 
-                key={lyric.id} 
-                className={`${styles.queueItem} ${selectedLyric?.id === lyric.id ? styles.active : ''}`}
+          <div className={styles.queueList}>
+            {pendingLyrics.length === 0 ? (
+              <p className={styles.queueEmpty}>Queue is clear</p>
+            ) : pendingLyrics.map((lyric) => (
+              <div
+                key={lyric.id}
+                className={`${styles.queueItem} ${selectedLyric?.id === lyric.id ? styles.queueItemActive : ''}`}
                 onClick={() => { setSelectedLyric(lyric); setEditedLyric({ ...lyric }); }}
               >
-                <img src={lyric.thumbnail_url || '/logo/logo.webp'} alt="" className={styles.miniThumb} />
-                <div className={styles.itemMeta}>
-                  <h4>{lyric.title}</h4>
-                  <p>{lyric.artist}</p>
+                <img
+                  src={lyric.thumbnail_url || '/logo/logo.webp'}
+                  alt=""
+                  className={styles.queueThumb}
+                />
+                <div className={styles.queueMeta}>
+                  <p className={styles.queueTitle}>{lyric.title}</p>
+                  <p className={styles.queueArtist}>{lyric.artist}</p>
                 </div>
+                <span className={styles.pendingDot} />
               </div>
             ))}
           </div>
         </aside>
 
-        {/* RIGHT: OBSIDIAN REVIEW TOOLS */}
-        {selectedLyric ? (
-          <div className={styles.inspectorPanel}>
-            <div className={styles.toolScroll}>
-              <div className={styles.previewSection}>
-                {editedLyric.music_url && extractYouTubeId(editedLyric.music_url) ? (
-                  <div className={styles.videoFrame}>
-                    <iframe src={`https://www.youtube.com/embed/${extractYouTubeId(editedLyric.music_url)}`} title="Preview" frameBorder="0" allowFullScreen />
-                  </div>
+        {/* ── Inspector / Empty ── */}
+        {selectedLyric && editedLyric ? (
+          <div className={styles.inspector}>
+            <div className={styles.inspectorScroll}>
+
+              <div className={styles.inspectorTitle}>
+                <FaEdit /> Review Inspector — {editedLyric.title}
+              </div>
+
+              {/* Video */}
+              <div className={styles.videoWrap}>
+                {editedLyric.music_url && extractYTId(editedLyric.music_url) ? (
+                  <iframe
+                    className={styles.videoEmbed}
+                    src={`https://www.youtube.com/embed/${extractYTId(editedLyric.music_url)}`}
+                    title="Preview"
+                    frameBorder="0"
+                    allowFullScreen
+                  />
                 ) : (
-                  <div className={styles.noVideo}>No Video Provided</div>
+                  <div className={styles.noVideo}>
+                    <FaYoutube className={styles.noVideoIcon} />
+                    <span>No video URL provided</span>
+                  </div>
                 )}
               </div>
 
-              <div className={styles.editorGrid}>
-                <div className={styles.inputCard}>
-                  <label><FaEdit /> Metadata</label>
-                  <input type="text" placeholder="Song Title" value={editedLyric.title} onChange={(e) => setEditedLyric({...editedLyric, title: e.target.value})} />
-                  <input type="text" placeholder="Artist" value={editedLyric.artist} onChange={(e) => setEditedLyric({...editedLyric, artist: e.target.value})} />
-                  <div className={styles.row}>
-                    <input type="text" placeholder="Language" value={editedLyric.language} onChange={(e) => setEditedLyric({...editedLyric, language: e.target.value})} />
-                    <input type="text" placeholder="YouTube URL" value={editedLyric.music_url} onChange={(e) => setEditedLyric({...editedLyric, music_url: e.target.value})} />
-                  </div>
+              {/* Fields */}
+              <div className={styles.formGrid}>
+                <div className={styles.field}>
+                  <label className={styles.label}><FaEdit className={styles.labelIcon} /> Title</label>
+                  <input className={styles.input} type="text" value={editedLyric.title || ''} onChange={set('title')} />
                 </div>
-
-                <div className={styles.lyricsCard}>
-                  <label><FaFileAlt /> Lyrics Content</label>
-                  <textarea rows={10} value={editedLyric.lyrics} onChange={(e) => setEditedLyric({...editedLyric, lyrics: e.target.value})} />
+                <div className={styles.field}>
+                  <label className={styles.label}><FaUserEdit className={styles.labelIcon} /> Artist</label>
+                  <input className={styles.input} type="text" value={editedLyric.artist || ''} onChange={set('artist')} />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.label}><FaGlobe className={styles.labelIcon} /> Language</label>
+                  <input className={styles.input} type="text" value={editedLyric.language || ''} onChange={set('language')} />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.label}><FaCalendarAlt className={styles.labelIcon} /> Release Date</label>
+                  <input className={styles.input} type="date" value={editedLyric.published_date || ''} onChange={set('published_date')} />
+                </div>
+                <div className={`${styles.field} ${styles.fieldFull}`}>
+                  <label className={styles.label}><FaYoutube className={styles.labelIcon} /> YouTube URL</label>
+                  <input className={styles.input} type="text" value={editedLyric.music_url || ''} onChange={set('music_url')} />
+                </div>
+                <div className={`${styles.field} ${styles.fieldFull}`}>
+                  <label className={styles.label}><FaFileAlt className={styles.labelIcon} /> Lyrics</label>
+                  <textarea
+                    className={styles.textarea}
+                    rows={10}
+                    value={editedLyric.lyrics || ''}
+                    onChange={set('lyrics')}
+                  />
                 </div>
               </div>
+
             </div>
 
-            <footer className={styles.actionCenter}>
-              <button className={styles.discardBtn} onClick={() => { setActionType('reject'); setShowConfirm(true); }}>
+            {/* Action footer */}
+            <div className={styles.actionFooter}>
+              <button
+                className={styles.btnDiscard}
+                onClick={() => { setActionType('reject'); setShowConfirm(true); }}
+              >
                 <FaTimes /> Discard
               </button>
-              <button className={styles.approveBtn} onClick={() => { setActionType('approve'); setShowConfirm(true); }}>
-                <FaCheck /> Confirm & Publish
+              <button
+                className={styles.btnApprove}
+                disabled={loading}
+                onClick={() => { setActionType('approve'); setShowConfirm(true); }}
+              >
+                <FaCheck /> Confirm &amp; Publish
               </button>
-            </footer>
+            </div>
           </div>
         ) : (
           <div className={styles.emptyState}>
-            <FaLayerGroup size={40} />
-            <p>Select a track to begin review</p>
+            {pendingLyrics.length === 0 ? (
+              <>
+                <FaCheck className={styles.allClearIcon} style={{ fontSize: 40, opacity: 0.15 }} />
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 20, fontWeight: 700, color: 'var(--text2)', margin: 0 }}>
+                  All clear
+                </h3>
+                <p>No submissions pending review</p>
+              </>
+            ) : (
+              <>
+                <FaLayerGroup className={styles.emptyIcon} />
+                <p>Select a track to begin review</p>
+              </>
+            )}
           </div>
         )}
+
       </div>
 
       {showConfirm && (
@@ -124,7 +189,11 @@ const ApproveLyrics = () => {
           show={showConfirm}
           onConfirm={handleConfirmAction}
           onCancel={() => setShowConfirm(false)}
-          message={`Finalize review for ${selectedLyric.title}?`}
+          message={
+            actionType === 'approve'
+              ? `Publish "${selectedLyric?.title}" to the library?`
+              : `Permanently discard "${selectedLyric?.title}"?`
+          }
         />
       )}
     </div>

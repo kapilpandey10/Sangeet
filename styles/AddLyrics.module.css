@@ -1,81 +1,339 @@
-.add-lyrics-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .add-lyrics-form .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .add-lyrics-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .add-lyrics-form input,
-  .add-lyrics-form textarea {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-  
-  .add-lyrics-form button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
-  }
-  
-  .add-lyrics-form button:hover {
-    background-color: #0056b3;
-  }
-  
-  .submission-message {
-    color: green;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  
-  .form-group small {
-    display: block;
-    margin-top: 5px;
-    color: #666;
-    font-size: 0.9em;
-  }
-  
-  .suggestions-list {
-    border: 1px solid #ccc;
-    max-height: 100px;
-    overflow-y: auto;
-    list-style-type: none;
-    padding: 0;
-    margin: 5px 0;
-  }
-  
-  .suggestions-list li {
-    padding: 8px;
-    cursor: pointer;
-  }
-  
-  .suggestions-list li:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .error-message {
-    color: red;
-    font-size: 0.9em;
-    margin-top: 5px;
-  }
-  
+/* ── AddLyrics.module.css ────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+
+.wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,255,224,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,60,172,0.04) 0%, transparent 60%);
+  padding: 24px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  position: relative;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(12px);
+  animation: slideIn 0.3s ease;
+}
+.toastSuccess {
+  background: rgba(0,255,224,0.12);
+  border: 1px solid rgba(0,255,224,0.35);
+  color: var(--accent);
+}
+.toastError {
+  background: rgba(255,60,172,0.12);
+  border: 1px solid rgba(255,60,172,0.35);
+  color: var(--accent2);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Layout ── */
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ── Shared Panel ── */
+.metaPanel, .contentPanel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Panel Title ── */
+.panelTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.panelIcon { font-size: 15px; }
+
+/* ── Fields ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.fieldGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.labelIcon { color: var(--accent); font-size: 11px; }
+
+.input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input:focus {
+  border-color: rgba(0,255,224,0.4);
+  box-shadow: 0 0 0 3px rgba(0,255,224,0.06);
+}
+.input::placeholder { color: var(--muted); }
+
+/* ── Artist row ── */
+.artistGroup { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.artistRow { display: flex; gap: 8px; align-items: center; }
+.artistRow .input { flex: 1; }
+
+.iconBtn {
+  background: rgba(255,60,172,0.08);
+  border: 1px solid rgba(255,60,172,0.2);
+  color: var(--accent2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.iconBtn:hover { background: rgba(255,60,172,0.18); }
+
+.addArtistBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px dashed rgba(0,255,224,0.25);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.2s, border-color 0.2s;
+}
+.addArtistBtn:hover {
+  background: rgba(0,255,224,0.05);
+  border-color: rgba(0,255,224,0.5);
+}
+
+/* ── Suggestions ── */
+.suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.suggestions li {
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.15s;
+}
+.suggestions li:hover { background: rgba(0,255,224,0.07); }
+
+/* ── Monitor ── */
+.monitor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.monitorScreen {
+  width: 100%;
+  aspect-ratio: 16/7;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.offlineScreen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+.offlineIcon { font-size: 28px; opacity: 0.3; }
+
+.ytInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.ytInputWrap:focus-within {
+  border-color: rgba(0,255,224,0.4);
+}
+
+.ytIcon {
+  padding: 0 14px;
+  color: #ff0000;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.ytInput {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 11px 14px 11px 0;
+  outline: none;
+  flex: 1;
+}
+.ytInput::placeholder { color: var(--muted); }
+
+.error {
+  font-size: 11px;
+  color: var(--accent2);
+  margin: 0;
+  padding-left: 4px;
+}
+
+/* ── Lyrics ── */
+.lyricsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 720px) {
+  .lyricsRow { grid-template-columns: 1fr; }
+}
+
+.lyricsBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lyricsLabel {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 14px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.textarea:focus {
+  border-color: rgba(0,255,224,0.35);
+  box-shadow: 0 0 0 3px rgba(0,255,224,0.05);
+}
+.textarea::placeholder { color: var(--muted); }
+
+/* ── Submit ── */
+.submitRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, var(--accent), #00b8ff);
+  color: #000;
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0,255,224,0.2);
+}
+.submitBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(0,255,224,0.3);
+}
+.submitBtn:active { transform: translateY(0); }

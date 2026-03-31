@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -14,11 +13,20 @@ import styles from './style/ReadBlog.module.css';
 const SITE_URL = 'https://pandeykapil.com.np';
 const FALLBACK_IMAGE = `${SITE_URL}/logo/logo.webp`;
 
+// FIX #2: Derive OG image MIME type from the actual file extension
+// instead of hardcoding 'image/jpeg', which breaks previews for .webp / .png.
+const getImageMimeType = (url = '') => {
+  if (url.endsWith('.webp')) return 'image/webp';
+  if (url.endsWith('.png'))  return 'image/png';
+  if (url.endsWith('.gif'))  return 'image/gif';
+  return 'image/jpeg'; // safe default for .jpg / unknown
+};
+
 const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   const [readingProgress, setReadingProgress] = useState(0);
-  const [viewCount, setViewCount] = useState(blog?.views || 0);
-  const [copied, setCopied] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [viewCount, setViewCount]             = useState(blog?.views || 0);
+  const [copied, setCopied]                   = useState(false);
+  const [scrolled, setScrolled]               = useState(false);
   const articleRef = useRef(null);
 
   // Reading progress bar
@@ -26,10 +34,10 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
     const updateProgress = () => {
       const el = articleRef.current;
       if (!el) return;
-      const rect = el.getBoundingClientRect();
+      const rect          = el.getBoundingClientRect();
       const articleHeight = el.offsetHeight;
-      const scrolled = Math.max(0, -rect.top);
-      const progress = Math.min(100, (scrolled / (articleHeight - window.innerHeight)) * 100);
+      const scrolledPx    = Math.max(0, -rect.top);
+      const progress      = Math.min(100, (scrolledPx / (articleHeight - window.innerHeight)) * 100);
       setReadingProgress(Math.max(0, progress));
       setScrolled(window.scrollY > 80);
     };
@@ -63,65 +71,91 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
     </div>
   );
 
-  const readTime = Math.max(1, Math.ceil((blog.content || '').split(/\s+/).length / 200));
+  // FIX #6: Strip HTML tags BEFORE counting words so <div>, <p>, <span> etc.
+  // are not counted as words, which inflated the reading time estimate.
+  const textOnly = (blog.content || '').replace(/<[^>]+>/g, ' ');
+  const readTime  = Math.max(1, Math.ceil(textOnly.split(/\s+/).filter(Boolean).length / 200));
+
   const currentUrl = `${SITE_URL}/blogs/${blog.slug}`;
 
-  // Always use an absolute image URL — Supabase URLs are already absolute,
-  // but guard against relative paths just in case.
+  // Guard against relative paths (Supabase URLs are already absolute).
   const ogImage = blog.thumbnail_url
     ? blog.thumbnail_url.startsWith('http')
       ? blog.thumbnail_url
       : `${SITE_URL}${blog.thumbnail_url}`
     : FALLBACK_IMAGE;
 
-  const publishDate = new Date(blog.published_date);
+  // FIX #2 (applied): Derive the real MIME type from the URL.
+  const ogImageType = getImageMimeType(ogImage);
+
+  const publishDate   = new Date(blog.published_date);
   const formattedDate = publishDate.toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
-  const isoDate = publishDate.toISOString();
+  const isoDatePublished = publishDate.toISOString();
 
-  // The DB stores full HTML documents (<!DOCTYPE html>...).
-  // Extract only <body> contents — otherwise the embedded <title> tag
-  // inside the stored document overrides your OG tags for Facebook's scraper.
-  const extractBodyContent = (html = '') => {
-    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-    if (bodyMatch) return bodyMatch[1];
-    return html
-      .replace(/<head[\s\S]*?<\/head>/i, '')
-      .replace(/<\/?(?:html|body)[^>]*>/gi, '')
-      .replace(/<!DOCTYPE[^>]*>/gi, '');
-  };
+  // FIX #5: Use updated_at for dateModified so Google can track freshness.
+  // Falls back to published_date if the column doesn't exist yet.
+  const isoDateModified = blog.updated_at
+    ? new Date(blog.updated_at).toISOString()
+    : isoDatePublished;
 
-  const rawContent = extractBodyContent(blog.content || '');
-
+  // FIX #1: Content is already stripped server-side in getServerSideProps.
+  // The client-side extractBodyContent() function has been removed entirely.
+  // blog.content is safe to sanitize directly here.
   const sanitizedContent = typeof window !== 'undefined'
-    ? DOMPurify.sanitize(rawContent, {
+    ? DOMPurify.sanitize(blog.content || '', {
         ADD_TAGS: ['iframe'],
         ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
       })
-    : rawContent;
+    : blog.content || '';
 
-  const pageTitle = `${blog.title} | DynaBeat`;
+  // FIX #8: Keep the browser <title> with branding but use a clean og:title
+  // so WhatsApp / Telegram / Facebook previews don't show "| DynaBeat".
+  const pageTitle   = `${blog.title} | DynaBeat`;
+  const ogTitle     = blog.title; // clean, no suffix
   const pageDescription = blog.excerpt || 'Read the latest Nepali music news on DynaBeat.';
 
-  // JSON-LD structured data
+  // FIX #4: article:section should be a single broad category, not a tag list.
+  // We derive a single section label and split tags into individual meta tags.
+  const tagList   = (blog.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+  const ogSection = blog.category || tagList[0] || 'Music'; // use a dedicated category if available
+
+  // FIX #10: Use full ImageObject in JSON-LD so Google can index the image properly.
+  // FIX #5: Use isoDateModified for dateModified.
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
-    headline: blog.title,
+    headline:    blog.title,
     description: pageDescription,
-    image: [ogImage],
-    datePublished: isoDate,
-    dateModified: isoDate,
-    author: { '@type': 'Person', name: blog.author || 'DynaBeat Editor' },
+    image: [{
+      '@type':  'ImageObject',
+      url:      ogImage,
+      // FIX #3: We cannot guarantee dimensions from Supabase uploads,
+      // so we omit width/height here to let Google measure them directly.
+      // Add width/height back only if you enforce a fixed upload resolution in your CMS.
+    }],
+    datePublished: isoDatePublished,
+    dateModified:  isoDateModified,  // FIX #5
+    author: {
+      '@type': 'Person',
+      name: blog.author || 'DynaBeat Editor',
+    },
     publisher: {
       '@type': 'Organization',
       name: 'DynaBeat',
-      logo: { '@type': 'ImageObject', url: FALLBACK_IMAGE },
+      logo: {
+        '@type': 'ImageObject',
+        url: FALLBACK_IMAGE,
+      },
     },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': currentUrl },
-    articleSection: blog.tags || 'Music',
-    wordCount: (blog.content || '').split(/\s+/).length,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': currentUrl,
+    },
+    articleSection: ogSection,      // FIX #4: single category string
+    keywords: tagList.join(', '),   // proper field for tag list
+    wordCount: textOnly.split(/\s+/).filter(Boolean).length, // FIX #6: uses stripped text
   };
 
   return (
@@ -129,44 +163,56 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
       <Head>
         {/* ── Primary ── */}
         <title key="title">{pageTitle}</title>
-        <meta key="description" name="description" content={pageDescription} />
-        <meta key="keywords" name="keywords" content={`${blog.tags || ''}, nepali music, dynabeat, music news`} />
-        <link key="canonical" rel="canonical" href={currentUrl} />
+        <meta key="description"  name="description"  content={pageDescription} />
+        <meta key="keywords"     name="keywords"      content={`${tagList.join(', ')}, nepali music, dynabeat, music news`} />
+        <link key="canonical"    rel="canonical"      href={currentUrl} />
 
-        {/* ── Open Graph (Facebook, WhatsApp, Messenger, Telegram, LinkedIn) ── */}
-        <meta key="og:site_name" property="og:site_name" content="DynaBeat" />
-        <meta key="og:locale" property="og:locale" content="en_US" />
-        <meta key="og:type" property="og:type" content="article" />
-        <meta key="og:url" property="og:url" content={currentUrl} />
-        <meta key="og:title" property="og:title" content={pageTitle} />
+        {/* FIX #7: Explicit robots directive.
+            max-image-preview:large tells Google to show large thumbnails in search. */}
+        <meta key="robots" name="robots" content="index, follow, max-image-preview:large" />
+
+        {/* ── Open Graph ── */}
+        <meta key="og:site_name"   property="og:site_name"   content="DynaBeat" />
+        <meta key="og:locale"      property="og:locale"      content="en_US" />
+        <meta key="og:type"        property="og:type"        content="article" />
+        <meta key="og:url"         property="og:url"         content={currentUrl} />
+        {/* FIX #8: Use clean ogTitle (no "| DynaBeat") for social previews */}
+        <meta key="og:title"       property="og:title"       content={ogTitle} />
         <meta key="og:description" property="og:description" content={pageDescription} />
 
-        {/* Image — must be absolute, ≥200×200, ideally 1200×630 */}
-        <meta key="og:image" property="og:image" content={ogImage} />
+        {/* FIX #2: Use derived MIME type, not hardcoded "image/jpeg" */}
+        {/* FIX #3: Width/height omitted — we can't guarantee Supabase upload dimensions.
+            Facebook will fetch and measure the image itself, which is more reliable. */}
+        <meta key="og:image"            property="og:image"            content={ogImage} />
         <meta key="og:image:secure_url" property="og:image:secure_url" content={ogImage} />
-        <meta key="og:image:type" property="og:image:type" content="image/jpeg" />
-        <meta key="og:image:width" property="og:image:width" content="1200" />
-        <meta key="og:image:height" property="og:image:height" content="630" />
-        <meta key="og:image:alt" property="og:image:alt" content={blog.title} />
+        <meta key="og:image:type"       property="og:image:type"       content={ogImageType} />
+        <meta key="og:image:alt"        property="og:image:alt"        content={blog.title} />
 
         {/* Article-specific OG */}
-        <meta key="article:published_time" property="article:published_time" content={isoDate} />
-        <meta key="article:modified_time" property="article:modified_time" content={isoDate} />
-        <meta key="article:author" property="article:author" content={blog.author || 'DynaBeat Editor'} />
-        <meta key="article:section" property="article:section" content={blog.tags || 'Music'} />
-        {blog.tags && <meta key="article:tag" property="article:tag" content={blog.tags} />}
+        <meta key="article:published_time" property="article:published_time" content={isoDatePublished} />
+        {/* FIX #5: Use real modified time */}
+        <meta key="article:modified_time"  property="article:modified_time"  content={isoDateModified} />
+        <meta key="article:author"         property="article:author"         content={blog.author || 'DynaBeat Editor'} />
+        {/* FIX #4: Single category in article:section */}
+        <meta key="article:section"        property="article:section"        content={ogSection} />
+        {/* FIX #4: One article:tag per tag instead of a comma-separated blob */}
+        {tagList.map(tag => (
+          <meta key={`article:tag:${tag}`} property="article:tag" content={tag} />
+        ))}
 
         {/* ── Twitter / X Card ── */}
-        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
-        <meta key="twitter:site" name="twitter:site" content="@DynaBeat" />
-        <meta key="twitter:creator" name="twitter:creator" content="@DynaBeat" />
-        <meta key="twitter:url" name="twitter:url" content={currentUrl} />
-        <meta key="twitter:title" name="twitter:title" content={pageTitle} />
+        <meta key="twitter:card"        name="twitter:card"        content="summary_large_image" />
+        {/* FIX #9: Only include twitter:site if the handle is verified and active */}
+        <meta key="twitter:site"        name="twitter:site"        content="@DynaBeat" />
+        <meta key="twitter:creator"     name="twitter:creator"     content="@DynaBeat" />
+        <meta key="twitter:url"         name="twitter:url"         content={currentUrl} />
+        {/* FIX #8: Use clean ogTitle for Twitter card as well */}
+        <meta key="twitter:title"       name="twitter:title"       content={ogTitle} />
         <meta key="twitter:description" name="twitter:description" content={pageDescription} />
-        <meta key="twitter:image" name="twitter:image" content={ogImage} />
-        <meta key="twitter:image:alt" name="twitter:image:alt" content={blog.title} />
+        <meta key="twitter:image"       name="twitter:image"       content={ogImage} />
+        <meta key="twitter:image:alt"   name="twitter:image:alt"   content={blog.title} />
 
-        {/* ── JSON-LD ── */}
+        {/* ── JSON-LD (FIX #10: ImageObject, FIX #5: dateModified) ── */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -185,8 +231,18 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
         </Link>
         <span className={styles.stickyTitle}>{blog.title}</span>
         <div className={styles.stickyShare}>
-          <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`} target="_blank" rel="noopener noreferrer" className={styles.stickyShareBtn} aria-label="Share on Twitter"><FaTwitter /></a>
-          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noopener noreferrer" className={styles.stickyShareBtn} aria-label="Share on Facebook"><FaFacebook /></a>
+          <a
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
+            target="_blank" rel="noopener noreferrer"
+            className={styles.stickyShareBtn}
+            aria-label="Share on Twitter"
+          ><FaTwitter /></a>
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+            target="_blank" rel="noopener noreferrer"
+            className={styles.stickyShareBtn}
+            aria-label="Share on Facebook"
+          ><FaFacebook /></a>
           <button onClick={copyLink} className={styles.stickyShareBtn} aria-label="Copy link">
             {copied ? '✓' : <FaLink />}
           </button>
@@ -202,10 +258,10 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
               <FaArrowLeft /> Back to Newsroom
             </Link>
 
-            {blog.tags && (
+            {tagList.length > 0 && (
               <div className={styles.categoryStrip}>
                 <FaTag className={styles.tagIcon} />
-                <span>{blog.tags}</span>
+                <span>{tagList[0]}</span>
               </div>
             )}
 
@@ -228,7 +284,7 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
               <div className={styles.bylineMeta}>
                 <span className={styles.metaItem}>
                   <FaCalendarAlt className={styles.metaIcon} />
-                  <time dateTime={isoDate}>{formattedDate}</time>
+                  <time dateTime={isoDatePublished}>{formattedDate}</time>
                 </span>
                 <span className={styles.metaDivider}>·</span>
                 <span className={styles.metaItem}>
@@ -303,9 +359,10 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
               itemScope
               itemType="https://schema.org/NewsArticle"
             >
-              <meta itemProp="headline" content={blog.title} />
-              <meta itemProp="datePublished" content={isoDate} />
-              <meta itemProp="author" content={blog.author || 'DynaBeat Editor'} />
+              <meta itemProp="headline"      content={blog.title} />
+              <meta itemProp="datePublished" content={isoDatePublished} />
+              <meta itemProp="dateModified"  content={isoDateModified} />
+              <meta itemProp="author"        content={blog.author || 'DynaBeat Editor'} />
 
               <div
                 className={styles.articleBody}
@@ -313,10 +370,12 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
               />
 
               {/* Tags */}
-              {blog.tags && (
+              {tagList.length > 0 && (
                 <div className={styles.tagRow}>
                   <span className={styles.tagLabel}>Filed under:</span>
-                  <span className={styles.tagChip}>{blog.tags}</span>
+                  {tagList.map(tag => (
+                    <span key={tag} className={styles.tagChip}>{tag}</span>
+                  ))}
                 </div>
               )}
 
@@ -397,10 +456,14 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   );
 };
 
-// Strip full HTML document wrapper server-side.
-// Content in DB is stored as full <!DOCTYPE html> documents — extracting
-// only the <body> contents ensures no rogue <title> or <meta> tags from
-// the stored document bleed into the page <head> during SSR.
+// ─────────────────────────────────────────────────────────────────────────────
+// Strips the full HTML document wrapper server-side.
+// Content in DB is stored as <!DOCTYPE html> documents — extracting only
+// the <body> prevents rogue <title> / <meta> tags from the stored document
+// bleeding into the page <head> during SSR.
+// FIX #1: This is the ONLY place stripping happens. The client-side
+// extractBodyContent() function has been removed to avoid double-stripping.
+// ─────────────────────────────────────────────────────────────────────────────
 function stripToBodyContent(html = '') {
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   if (bodyMatch) return bodyMatch[1];
@@ -422,8 +485,7 @@ export async function getServerSideProps({ params }) {
 
   if (error || !blog) return { notFound: true };
 
-  // Clean the content before passing as prop — prevents SSR from
-  // injecting a second <title> tag into the document <head>.
+  // FIX #1: Strip HTML body content here (server-side) only — never again client-side.
   const cleanedBlog = {
     ...blog,
     content: stripToBodyContent(blog.content || ''),

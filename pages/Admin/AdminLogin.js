@@ -1,152 +1,186 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
-import { useRouter } from 'next/router';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import styles from './style/AdminLogin.module.css';  // Import the updated CSS
+// File location: pages/Admin/AdminLogin.js
+// Custom login page shown BEFORE Cloudflare Access.
+// Embeds the Turnstile widget — only redirects to CF Access after bot check passes.
 
-const AdminLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); 
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [forgotPassword, setForgotPassword] = useState(false);  
-  const [isResetLoading, setIsResetLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);  // Handle auth state locally
-  const router = useRouter();  
+import { useEffect, useRef, useState } from 'react';
+import Head from 'next/head';
 
-  // Handle login process
-  const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Please provide both email and password.");
-      return;
-    }
+export default function AdminLogin() {
+  const widgetRef        = useRef(null);
+  const [status, setStatus] = useState('idle'); // 'idle' | 'verifying' | 'error'
+  const [errorMsg, setErrorMsg] = useState('');
 
-    setIsLoading(true);
-    setError(''); 
-
-    const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    setIsLoading(false);
-
-    if (loginError) {
-      setError('Invalid login credentials. Please try again.');
-      return;
-    }
-
-    if (!sessionData || !sessionData.user) {
-      setError('An unexpected error occurred. Please try again.');
-      return;
-    }
-
-    const { data: adminData, error: adminError } = await supabase
-      .from('admin')
-      .select('role')
-      .ilike('email', sessionData.user.email)
-      .single();
-
-    if (adminError || !adminData) {
-      setError("Failed to fetch user role or user not found.");
-      await supabase.auth.signOut();
-      return;
-    }
-
-    if (adminData.role.toLowerCase() !== 'admin') {
-      setError("Access denied: You are not an admin.");
-      await supabase.auth.signOut();
-      return;
-    }
-
-    // Set local auth state and navigate
-    setIsAuthenticated(true);
-    router.push('/Admin');
-  };
-
-  // Handle password reset
-  const handlePasswordReset = async () => {
-    if (!email) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    setIsResetLoading(true);
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: process.env.REACT_APP_RESET_PASSWORD_URL || 'https://pandeykapil.com.np/reset-password',
-    });
-
-    setIsResetLoading(false);
-
-    if (error) {
-      setError("Failed to send password reset link. Please try again later.");
-    } else {
-      setError("If this email is registered, you will receive a reset link.");
-    }
-  };
-
-  // Check if the user is already logged in when the component mounts
+  // Load Turnstile script once
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setIsAuthenticated(true);  // User is already logged in
-        router.push('/Admin');  // Redirect to admin dashboard
+    if (document.getElementById('cf-turnstile-script')) return;
+    const script   = document.createElement('script');
+    script.id      = 'cf-turnstile-script';
+    script.src     = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async   = true;
+    script.defer   = true;
+    document.head.appendChild(script);
+  }, []);
+
+  // Called by Turnstile widget when user completes the challenge
+  const handleTurnstileSuccess = async (token) => {
+    setStatus('verifying');
+    setErrorMsg('');
+
+    try {
+      const res  = await fetch('/api/verify-turnstile', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ token }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Bot check passed → now go to Cloudflare Access for OTP login
+        window.location.href =
+          `https://${process.env.NEXT_PUBLIC_CF_ACCESS_TEAM_DOMAIN}/cdn-cgi/access/login` +
+          `?redirect_url=${encodeURIComponent(window.location.origin + '/Admin')}`;
+      } else {
+        setStatus('error');
+        setErrorMsg('Bot verification failed. Please try again.');
+        // Reset the widget so user can retry
+        if (window.turnstile) window.turnstile.reset(widgetRef.current);
       }
-    };
-    checkSession();
-  }, [router]);
+    } catch {
+      setStatus('error');
+      setErrorMsg('Something went wrong. Please refresh and try again.');
+    }
+  };
+
+  // Expose callback globally for Turnstile widget
+  useEffect(() => {
+    window.__onTurnstileSuccess = handleTurnstileSuccess;
+    return () => { delete window.__onTurnstileSuccess; };
+  }, []);
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginBox}>
-        <h1 className={styles.loginTitle}>{forgotPassword ? "Reset Password" : "Admin Login"}</h1>
-        {error && <p className={styles.errorMessage}>{error}</p>}
+    <>
+      <Head>
+        <title>Admin Login — Dynabeat</title>
+      </Head>
 
-        <form onSubmit={(e) => { e.preventDefault(); forgotPassword ? handlePasswordReset() : handleLogin(); }}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter admin email"
-            className={styles.inputField}
-          />
+      <div style={styles.page}>
+        <div style={styles.card}>
 
-          {!forgotPassword && (
-            <div className={styles.passwordInputContainer}>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                className={styles.inputField}
-              />
-              <button
-                type="button"
-                className={styles.togglePassword}
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ?   <FaEye /> : <FaEyeSlash />}
-              </button>
-            </div>
+          {/* Logo / brand */}
+          <div style={styles.brand}>
+            <p style={styles.eyebrow}>Command Studio</p>
+            <h1 style={styles.title}>DYNABEAT</h1>
+            <p style={styles.subtitle}>Admin Access</p>
+          </div>
+
+          <div style={styles.divider} />
+
+          {/* Instructions */}
+          <p style={styles.instruction}>
+            Complete the security check below, then sign in with your verified email.
+            A one-time PIN will be sent to your inbox.
+          </p>
+
+          {/* Turnstile widget */}
+          <div style={styles.widgetWrap}>
+            <div
+              ref={widgetRef}
+              className="cf-turnstile"
+              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+              data-callback="__onTurnstileSuccess"
+              data-theme="dark"
+            />
+          </div>
+
+          {/* States */}
+          {status === 'verifying' && (
+            <p style={styles.verifying}>Verifying… redirecting to login</p>
+          )}
+          {status === 'error' && (
+            <p style={styles.errorMsg}>{errorMsg}</p>
           )}
 
-          <button type="submit" className={styles.submitButton} disabled={isLoading}>
-            {isLoading ? <span className={styles.spinner}></span> : 'Login'}
-          </button>
-
-          <p
-            className={styles.forgotPasswordLink}
-            onClick={() => setForgotPassword(!forgotPassword)}
-          >
-            {forgotPassword ? "Back to Login" : "Forgot Password?"}
+          <p style={styles.note}>
+            Access is restricted to authorised administrators only.
           </p>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
-};
+}
 
-export default AdminLogin;
+// ─── Inline styles ────────────────────────────────────────────────────────────
+const styles = {
+  page: {
+    display:        'flex',
+    alignItems:     'center',
+    justifyContent: 'center',
+    minHeight:      '100vh',
+    background:     '#0a0a0a',
+    fontFamily:     'system-ui, sans-serif',
+    padding:        '24px',
+  },
+  card: {
+    background:   '#111',
+    border:       '1px solid #222',
+    borderRadius: '16px',
+    padding:      '48px 40px',
+    width:        '100%',
+    maxWidth:     '420px',
+    textAlign:    'center',
+  },
+  brand: {
+    marginBottom: '24px',
+  },
+  eyebrow: {
+    color:         '#f97316',
+    fontSize:      '11px',
+    fontWeight:    '700',
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase',
+    margin:        '0 0 8px',
+  },
+  title: {
+    color:         '#fff',
+    fontSize:      '32px',
+    fontWeight:    '800',
+    letterSpacing: '0.1em',
+    margin:        '0 0 6px',
+  },
+  subtitle: {
+    color:  '#555',
+    fontSize: '13px',
+    margin: '0',
+  },
+  divider: {
+    height:     '1px',
+    background: '#222',
+    margin:     '24px 0',
+  },
+  instruction: {
+    color:      '#888',
+    fontSize:   '13px',
+    lineHeight: '1.7',
+    margin:     '0 0 28px',
+  },
+  widgetWrap: {
+    display:        'flex',
+    justifyContent: 'center',
+    margin:         '0 0 20px',
+  },
+  verifying: {
+    color:      '#f97316',
+    fontSize:   '13px',
+    margin:     '0 0 16px',
+  },
+  errorMsg: {
+    color:      '#ef4444',
+    fontSize:   '13px',
+    margin:     '0 0 16px',
+  },
+  note: {
+    color:    '#444',
+    fontSize: '11px',
+    margin:   '16px 0 0',
+  },
+};

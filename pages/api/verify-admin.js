@@ -1,51 +1,70 @@
 // File location: pages/api/verify-admin.js
-// Temporarily dumps ALL cookies and headers so we can see what CF is sending.
-// Remove the debug block once auth is confirmed working.
+// Validates the Cloudflare Access JWT from the CF_Authorization cookie.
+// Called by AdminDashboard.jsx on mount to get the admin's email.
 
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import jwt from 'jsonwebtoken';
 
-const TEAM_DOMAIN = 'https://kapilpandey2068.cloudflareaccess.com';
-const AUD_TAG     = '0a419b6b4c925924769d0a1322b7c7c4dafe0b45c8770ee9285b017c2f98a282';
+const CERTS_URL = `https://${process.env.CF_ACCESS_TEAM_DOMAIN}/cdn-cgi/access/certs`;
+
+// Cache public keys so we don't fetch on every request
+let cachedKeys = null;
+let cacheTime  = 0;
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+async function getPublicKeys() {
+  if (cachedKeys && Date.now() - cacheTime < CACHE_TTL) return cachedKeys;
+
+  const res  = await fetch(CERTS_URL);
+  const data = await res.json();
+
+  // Cloudflare returns { keys: [...] } — we index by kid for fast lookup
+  cachedKeys = {};
+  for (const key of data.keys) {
+    cachedKeys[key.kid] = key;
+  }
+  cacheTime = Date.now();
+  return cachedKeys;
+}
 
 export default async function handler(req, res) {
-  // ── TEMPORARY DEBUG BLOCK ──────────────────────────────────────────────────
-  // Visit /api/verify-admin directly in your browser while logged into CF,
-  // then check what cookies and headers are listed in the response.
-  // This tells us exactly what CF is (or isn't) forwarding.
-  const debugInfo = {
-    allCookieKeys:    Object.keys(req.cookies),
-    hasCFCookie:      !!req.cookies['CF_Authorization'],
-    hasCFHeader:      !!req.headers['cf-access-jwt-assertion'],
-    // Show ALL headers so we can spot any CF-related ones
-    allHeaders:       Object.keys(req.headers),
-    // Show full cookie string (safe — no passwords, just CF tokens)
-    rawCookieHeader:  req.headers['cookie'] || '(none)',
-  };
-  console.log('[verify-admin] debug:', JSON.stringify(debugInfo, null, 2));
-  // ── END DEBUG BLOCK ────────────────────────────────────────────────────────
+  // Only allow GET
+  if (req.method !== 'GET') {
+    return res.status(405).json({ authorized: false, error: 'Method not allowed' });
+  }
 
-  const token =
-    req.cookies['CF_Authorization'] ||
-    req.headers['cf-access-jwt-assertion'];
+  const token = req.cookies['CF_Authorization'];
 
   if (!token) {
-    return res.status(401).json({
-      authorized:    false,
-      reason:        'No CF_Authorization cookie and no cf-access-jwt-assertion header found.',
-      // Return full debug info to the browser so you can see it on screen
-      debug:         debugInfo,
-    });
+    return res.status(401).json({ authorized: false, error: 'No token found' });
   }
 
   try {
-    const JWKS = createRemoteJWKSet(
-      new URL(`${TEAM_DOMAIN}/cdn-cgi/access/certs`)
-    );
+    // Decode header to get kid (key ID)
+    const decoded = jwt.decode(token, { complete: true });
+    if (!decoded) throw new Error('Invalid token format');
 
-    const { payload } = await jwtVerify(token, JWKS, {
-      issuer:   TEAM_DOMAIN,
-      audience: AUD_TAG,
+    const { kid } = decoded.header;
+    const keys    = await getPublicKeys();
+    const jwk     = keys[kid];
+
+    if (!jwk) throw new Error('Public key not found for kid: ' + kid);
+
+    // Convert JWK to PEM-compatible format for jsonwebtoken
+    const publicKey = require('jwk-to-pem')(jwk);
+
+    // Verify signature + claims
+    const payload = jwt.verify(token, publicKey, {
+      algorithms: ['RS256'],
+      audience:   process.env.CF_ACCESS_AUD,
+      issuer:     `https://${process.env.CF_ACCESS_TEAM_DOMAIN}`,
     });
+
+    // Only allow your specific verified email(s)
+    const ALLOWED_EMAILS = (process.env.CF_ALLOWED_EMAILS || '').split(',').map(e => e.trim());
+
+    if (ALLOWED_EMAILS.length > 0 && !ALLOWED_EMAILS.includes(payload.email)) {
+      return res.status(403).json({ authorized: false, error: 'Email not permitted' });
+    }
 
     return res.status(200).json({
       authorized: true,
@@ -53,11 +72,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('[verify-admin] JWT verification failed:', err.message);
-    return res.status(401).json({
-      authorized: false,
-      reason:     `JWT verification failed: ${err.message}`,
-      debug:      debugInfo,
-    });
+    console.error('[verify-admin] JWT error:', err.message);
+    return res.status(401).json({ authorized: false, error: 'Invalid or expired token' });
   }
 }

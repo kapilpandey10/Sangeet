@@ -1,120 +1,126 @@
 // File location: pages/Admin/AdminRoute.js
+// Wraps the dashboard — calls /api/verify-admin to confirm the CF Access JWT
+// is valid and the email is on the allow-list.
+// Renders a clean "Access Denied" screen if not authorized.
 
 import { useEffect, useState } from 'react';
 
-const AdminRoute = ({ children }) => {
-  const [status, setStatus] = useState('loading');
-  const [debugData, setDebugData] = useState(null);
+export default function AdminRoute({ children }) {
+  const [status, setStatus] = useState('loading'); // 'loading' | 'authorized' | 'denied'
+  const [email,  setEmail]  = useState('');
 
   useEffect(() => {
-    const checkAccess = async () => {
-      try {
-        const res  = await fetch('/api/verify-admin');
-        const data = await res.json();
-
+    fetch('/api/verify-admin')
+      .then(r => r.json())
+      .then(data => {
         if (data.authorized) {
+          setEmail(data.email);
           setStatus('authorized');
         } else {
-          setDebugData(data);
           setStatus('denied');
         }
-      } catch (err) {
-        setDebugData({ reason: `Network error: ${err.message}` });
-        setStatus('denied');
-      }
-    };
-    checkAccess();
+      })
+      .catch(() => setStatus('denied'));
   }, []);
 
+  // ── Loading ──
   if (status === 'loading') {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center',
-        justifyContent: 'center', background: '#07080f',
-        fontFamily: "'JetBrains Mono', monospace", fontSize: '13px',
-        color: 'rgba(255,255,255,0.35)', letterSpacing: '2px', gap: '12px',
-      }}>
-        <span style={{
-          width: '16px', height: '16px',
-          border: '2px solid rgba(0,229,200,0.2)', borderTopColor: '#00e5c8',
-          borderRadius: '50%', animation: 'spin 0.65s linear infinite', display: 'inline-block',
-        }} />
-        INITIALIZING COMMAND CENTER…
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <div style={styles.center}>
+        <div style={styles.spinner} />
+        <p style={styles.loadingText}>Verifying access…</p>
       </div>
     );
   }
 
+  // ── Access Denied ──
   if (status === 'denied') {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', background: '#07080f',
-        fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.7)',
-        gap: '12px', padding: '40px',
-      }}>
-        <div style={{ fontSize: '11px', letterSpacing: '3px', color: '#ff4d4d' }}>ACCESS DENIED</div>
-        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-          {debugData?.reason}
-        </div>
-
-        {/* ── Full debug dump — screenshot this ── */}
-        <div style={{
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '8px', padding: '16px 20px', maxWidth: '640px', width: '100%',
-          fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.8',
-        }}>
-          <div style={{ color: '#00e5c8', marginBottom: '8px', letterSpacing: '1px' }}>
-            DEBUG — screenshot and share this
-          </div>
-
-          <div><span style={{ color: 'rgba(255,255,255,0.3)' }}>CF cookie present: </span>
-            <span style={{ color: debugData?.debug?.hasCFCookie ? '#4dff91' : '#ff4d4d' }}>
-              {String(debugData?.debug?.hasCFCookie)}
-            </span>
-          </div>
-
-          <div><span style={{ color: 'rgba(255,255,255,0.3)' }}>CF header present: </span>
-            <span style={{ color: debugData?.debug?.hasCFHeader ? '#4dff91' : '#ff4d4d' }}>
-              {String(debugData?.debug?.hasCFHeader)}
-            </span>
-          </div>
-
-          <div style={{ marginTop: '8px' }}>
-            <span style={{ color: 'rgba(255,255,255,0.3)' }}>All cookies: </span>
-            <span>{debugData?.debug?.allCookieKeys?.join(', ') || '(none)'}</span>
-          </div>
-
-          <div style={{ marginTop: '4px' }}>
-            <span style={{ color: 'rgba(255,255,255,0.3)' }}>Raw cookie header: </span>
-            <span style={{ wordBreak: 'break-all' }}>{debugData?.debug?.rawCookieHeader}</span>
-          </div>
-
-          <div style={{ marginTop: '8px' }}>
-            <span style={{ color: 'rgba(255,255,255,0.3)' }}>CF-related headers: </span>
-            <span>
-              {debugData?.debug?.allHeaders
-                ?.filter(h => h.toLowerCase().includes('cf') || h.toLowerCase().includes('cloudflare'))
-                ?.join(', ') || '(none — CF is not proxying this request)'}
-            </span>
-          </div>
-
-          <div style={{ marginTop: '8px' }}>
-            <span style={{ color: 'rgba(255,255,255,0.3)' }}>All headers: </span>
-            <span style={{ wordBreak: 'break-all' }}>
-              {debugData?.debug?.allHeaders?.join(', ')}
-            </span>
-          </div>
-        </div>
-
-        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '8px' }}>
-          Also visit /api/verify-admin directly in your browser and paste the JSON here.
+      <div style={styles.center}>
+        <div style={styles.deniedCard}>
+          <div style={styles.lockIcon}>🔒</div>
+          <h1 style={styles.deniedTitle}>Access Denied</h1>
+          <p style={styles.deniedText}>
+            Your session is invalid or your account is not authorised to access this area.
+          </p>
+          <button
+            style={styles.loginBtn}
+            onClick={() => {
+              window.location.href =
+                `https://${process.env.NEXT_PUBLIC_CF_ACCESS_TEAM_DOMAIN}/cdn-cgi/access/login` +
+                `?redirect_url=${encodeURIComponent(window.location.href)}`;
+            }}
+          >
+            Sign in with Cloudflare Access
+          </button>
         </div>
       </div>
     );
   }
 
-  return <>{children}</>;
-};
+  // ── Authorized ──
+  return children;
+}
 
-export default AdminRoute;
+// ─── Inline styles (no extra CSS file needed) ────────────────────────────────
+const styles = {
+  center: {
+    display:         'flex',
+    flexDirection:   'column',
+    alignItems:      'center',
+    justifyContent:  'center',
+    minHeight:       '100vh',
+    background:      '#0a0a0a',
+    fontFamily:      'system-ui, sans-serif',
+  },
+  spinner: {
+    width:           '40px',
+    height:          '40px',
+    border:          '3px solid #333',
+    borderTop:       '3px solid #f97316',
+    borderRadius:    '50%',
+    animation:       'spin 0.8s linear infinite',
+  },
+  loadingText: {
+    color:           '#888',
+    marginTop:       '16px',
+    fontSize:        '14px',
+    letterSpacing:   '0.05em',
+  },
+  deniedCard: {
+    background:      '#111',
+    border:          '1px solid #222',
+    borderRadius:    '12px',
+    padding:         '48px 40px',
+    textAlign:       'center',
+    maxWidth:        '400px',
+    width:           '90%',
+  },
+  lockIcon: {
+    fontSize:        '48px',
+    marginBottom:    '16px',
+  },
+  deniedTitle: {
+    color:           '#fff',
+    fontSize:        '24px',
+    fontWeight:      '700',
+    margin:          '0 0 12px',
+  },
+  deniedText: {
+    color:           '#888',
+    fontSize:        '14px',
+    lineHeight:      '1.6',
+    margin:          '0 0 28px',
+  },
+  loginBtn: {
+    background:      '#f97316',
+    color:           '#fff',
+    border:          'none',
+    borderRadius:    '8px',
+    padding:         '12px 24px',
+    fontSize:        '14px',
+    fontWeight:      '600',
+    cursor:          'pointer',
+    width:           '100%',
+  },
+};

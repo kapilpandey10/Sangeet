@@ -1,8 +1,8 @@
 // File location: pages/Admin/index.jsx
-// This is your main admin page — it is protected by AdminRoute
+// Thin wrapper — protects the dashboard behind Cloudflare Access verification.
 
-import AdminRoute from '../pages/Admin/AdminRoute';
-import AdminDashboard from '../pages/Admin/index';
+import AdminRoute from './Admin/AdminRoute';
+import AdminDashboard from './Admin/index';
 
 const AdminPage = () => {
   return (

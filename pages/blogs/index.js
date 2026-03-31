@@ -23,93 +23,125 @@ const BlogHomepage = ({ blogs = [] }) => {
   const regularBlogs = hasBlogs ? blogs.slice(1) : [];
 
   return (
-    <div className={styles.page}>
+    <div className={styles.blogContainer}>
       <Head>
         <title>DynaStories | Nepali Music News</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+          rel="stylesheet"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </Head>
 
-      {/* ── Hero header ── */}
-      <header className={styles.hero}>
-        <div className={styles.heroBg} aria-hidden="true" />
-        <div className={styles.heroContent}>
-          <p className={styles.heroEyebrow}>The Pulse of Nepali Music</p>
-          <h1 className={styles.heroTitle}>Dyna<span>Stories</span></h1>
-          <p className={styles.heroSub}>
-            In-depth features, interviews & culture from the Nepali music scene
-          </p>
+      {/* ── Masthead ── */}
+      <header className={styles.blogHeader}>
+        <p className={styles.mastheadEyebrow}>Est. 2024 &nbsp;·&nbsp; Technology Music Culture</p>
+        <h1 className={styles.mainTitle}>
+          Dyna<em>Stories</em>
+        </h1>
+        <div className={styles.mastheadRule}>
+          <span className={styles.subSubtitle}>Keep things simple</span>
+        </div>
+        <div className={styles.mastheadStrip}>
+          <span className={styles.stripItem}>Music</span>
+          <span className={styles.stripDot} />
+          <span className={styles.stripItem}>Artists</span>
+          <span className={styles.stripDot} />
+          <span className={styles.stripItem}>Culture</span>
+          <span className={styles.stripDot} />
+          <span className={styles.stripItem}>Reviews</span>
+          <span className={styles.stripDot} />
+          <span className={styles.stripItem}>Interviews</span>
+          <span className={styles.stripDot} />
+          <span className={styles.stripItem}>Events</span>
         </div>
       </header>
 
-      <main className={styles.main}>
+      <main className={styles.blogMain}>
 
-        {/* ── Featured ── */}
+        {/* ── Featured Spotlight ── */}
         {featuredBlog ? (
           <section className={styles.featuredSection}>
-            <div className={styles.sectionTag}>Featured Story</div>
+            <div className={styles.featuredLabel}>
+              <span className={styles.featuredLabelLine} />
+              <span className={styles.featuredLabelText}>Featured Story</span>
+            </div>
+
             <Link href={`/blogs/${featuredBlog.slug}`} className={styles.featuredCard}>
-              <div className={styles.featuredImg}>
+              <div className={styles.featuredImage}>
                 <Image
                   src={featuredBlog.thumbnail_url || '/logo/logo.webp'}
                   alt={featuredBlog.title}
                   fill
                   priority
-                  className={styles.featuredImgEl}
                 />
-                <div className={styles.featuredImgOverlay} />
+                <div className={styles.featuredImageOverlay} />
+                <span className={styles.categoryBadge}>Cover Story</span>
+                <span className={styles.issueNumber}>01</span>
               </div>
-              <div className={styles.featuredBody}>
-                <div className={styles.featuredMeta}>
-                  <span><FaCalendarAlt /> {new Date(featuredBlog.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' })}</span>
-                  <span><FaUser /> {featuredBlog.author}</span>
+
+              <div className={styles.featuredContent}>
+                <div className={styles.metaRow}>
+                  <span className={styles.metaItem}>
+                    <FaCalendarAlt />
+                    {new Date(featuredBlog.created_at).toLocaleDateString('en-US', {
+                      month: 'long', day: 'numeric', year: 'numeric'
+                    })}
+                  </span>
+                  <span className={styles.metaDivider} />
+                  <span className={styles.metaItem}>
+                    <FaUser />
+                    {featuredBlog.author}
+                  </span>
                 </div>
-                <h2 className={styles.featuredTitle}>{featuredBlog.title}</h2>
-                <p className={styles.featuredExcerpt}>
-                  {featuredBlog.excerpt || 'Read the latest update from DynaBeat.'}
-                </p>
-                <div className={styles.readMore}>
-                  Read Full Story <FaArrowRight className={styles.arrowIcon} />
-                </div>
+
+                <h2>{featuredBlog.title}</h2>
+                <div className={styles.featuredDivider} />
+                <p>{featuredBlog.excerpt || 'Read the latest from DynaBeat — your source for Nepali music and culture.'}</p>
+
+                <span className={styles.readMore}>
+                  Read Full Story <FaArrowRight />
+                </span>
               </div>
             </Link>
           </section>
         ) : (
-          <p className={styles.noData}>No featured stories yet.</p>
+          <p className={styles.noData}>No featured stories available at the moment.</p>
         )}
 
-        {/* ── Grid ── */}
+        {/* ── Headlines Grid ── */}
         {regularBlogs.length > 0 && (
-          <section className={styles.gridSection}>
+          <section className={styles.newsGridSection}>
             <div className={styles.sectionHeader}>
-              <div className={styles.sectionTag}><FaClock /> Recent Headlines</div>
-              <div className={styles.sectionLine} />
+              <h3><FaClock /> Recent Headlines</h3>
+              <div className={styles.divider} />
             </div>
 
-            <div className={styles.grid}>
+            <div className={styles.blogsGrid}>
               {regularBlogs.map((blog) => (
-                <Link href={`/blogs/${blog.slug}`} key={blog.id} className={styles.card}>
-                  <div className={styles.cardImg}>
+                <Link href={`/blogs/${blog.slug}`} key={blog.id} className={styles.newsCard}>
+                  <div className={styles.cardThumb}>
                     <Image
                       src={blog.thumbnail_url || '/logo/logo.webp'}
                       alt={blog.title}
                       fill
-                      className={styles.cardImgEl}
                     />
                   </div>
-                  <div className={styles.cardBody}>
+                  <div className={styles.cardInfo}>
                     <span className={styles.cardDate}>
-                      {new Date(blog.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}
+                      {new Date(blog.created_at).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric', year: 'numeric'
+                      })}
                     </span>
-                    <h4 className={styles.cardTitle}>{blog.title}</h4>
+                    <h4>{blog.title}</h4>
                     {blog.excerpt && (
-                      <p className={styles.cardExcerpt}>
-                        {blog.excerpt.substring(0, 110)}{'...'}
-                      </p>
+                      <p>{blog.excerpt.substring(0, 100)}…</p>
                     )}
-                    <div className={styles.cardReadMore}>Read more <FaArrowRight /></div>
                   </div>
                 </Link>
               ))}
@@ -127,6 +159,7 @@ export const getServerSideProps = async () => {
       .from('blogs')
       .select('*')
       .order('created_at', { ascending: false });
+
     if (error) throw error;
     return { props: { blogs: blogs || [] } };
   } catch (error) {

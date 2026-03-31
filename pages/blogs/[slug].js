@@ -1,126 +1,354 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
 import { supabase } from '../../supabaseClient';
 import DOMPurify from 'dompurify';
-import { FaTwitter, FaFacebook, FaClock, FaEye, FaArrowLeft, FaShareAlt, FaCalendarAlt } from 'react-icons/fa';
+import {
+  FaTwitter, FaFacebook, FaClock, FaEye, FaArrowLeft,
+  FaCalendarAlt, FaLink, FaWhatsapp, FaTag
+} from 'react-icons/fa';
 import styles from './style/ReadBlog.module.css';
 
 const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   const [readingProgress, setReadingProgress] = useState(0);
   const [viewCount, setViewCount] = useState(blog?.views || 0);
+  const [copied, setCopied] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const articleRef = useRef(null);
 
-  // 1. Interactive: Reading Progress Bar
+  // Reading progress bar
   useEffect(() => {
     const updateProgress = () => {
-      const currentProgress = window.scrollY;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight > 0) {
-        setReadingProgress(Number((currentProgress / scrollHeight).toFixed(2)) * 100);
-      }
+      const el = articleRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const articleHeight = el.offsetHeight;
+      const scrolled = Math.max(0, -rect.top);
+      const progress = Math.min(100, (scrolled / (articleHeight - window.innerHeight)) * 100);
+      setReadingProgress(Math.max(0, progress));
+      setScrolled(window.scrollY > 80);
     };
-    window.addEventListener('scroll', updateProgress);
+    window.addEventListener('scroll', updateProgress, { passive: true });
     return () => window.removeEventListener('scroll', updateProgress);
   }, []);
 
-  // 2. Database Action: Increment Views
+  // Increment views
   useEffect(() => {
     if (blog?.id) {
-      const incrementViews = async () => {
+      const increment = async () => {
         const { data, error } = await supabase.rpc('increment_blog_views', { blog_id: blog.id });
         if (!error && data) setViewCount(data);
       };
-      incrementViews();
+      increment();
     }
   }, [blog?.id]);
 
-  if (!blog) return <div className={styles.errorContainer}><h2>Story not found.</h2><Link href="/blogs">Back to Blogs</Link></div>;
+  const copyLink = () => {
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
-  const readTime = Math.ceil((blog.content || "").split(' ').length / 200);
+  if (!blog) return (
+    <div className={styles.errorPage}>
+      <span className={styles.errorCode}>404</span>
+      <h2>Story not found.</h2>
+      <Link href="/blogs" className={styles.errorBack}>← Back to Newsroom</Link>
+    </div>
+  );
+
+  const readTime = Math.max(1, Math.ceil((blog.content || '').split(/\s+/).length / 200));
   const currentUrl = `https://pandeykapil.com.np/blogs/${blog.slug}`;
+  const publishDate = new Date(blog.published_date);
+  const formattedDate = publishDate.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  const isoDate = publishDate.toISOString();
 
-  // Sanitize Content for Security
-  const sanitizedContent = typeof window !== 'undefined' ? DOMPurify.sanitize(blog.content, {
-    ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
-  }) : blog.content;
+  const sanitizedContent = typeof window !== 'undefined'
+    ? DOMPurify.sanitize(blog.content, {
+        ADD_TAGS: ['iframe'],
+        ADD_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
+      })
+    : blog.content;
+
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: blog.title,
+    description: blog.excerpt || '',
+    image: blog.thumbnail_url || 'https://pandeykapil.com.np/logo/logo.webp',
+    datePublished: isoDate,
+    dateModified: isoDate,
+    author: { '@type': 'Person', name: blog.author || 'DynaBeat Editor' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'DynaBeat',
+      logo: { '@type': 'ImageObject', url: 'https://pandeykapil.com.np/logo/logo.webp' },
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': currentUrl },
+    articleSection: blog.tags || 'Music',
+    wordCount: (blog.content || '').split(/\s+/).length,
+  };
 
   return (
     <div className={styles.pageWrapper}>
       <Head>
-        <title>{`${blog.title} | DynaBeat Stories`}</title>
-        <meta name="description" content={blog.excerpt || "Read the latest Nepali music news on DynaBeat."} />
-        <meta property="og:image" content={blog.thumbnail_url || '/logo/logo.webp'} />
+        {/* Primary SEO */}
+        <title>{`${blog.title} | DynaBeat`}</title>
+        <meta name="description" content={blog.excerpt || 'Read the latest Nepali music news on DynaBeat.'} />
+        <meta name="keywords" content={`${blog.tags || ''}, nepali music, dynabeat, music news`} />
+        <link rel="canonical" href={currentUrl} />
+
+        {/* Open Graph */}
         <meta property="og:type" content="article" />
+        <meta property="og:title" content={blog.title} />
+        <meta property="og:description" content={blog.excerpt || ''} />
+        <meta property="og:image" content={blog.thumbnail_url || 'https://pandeykapil.com.np/logo/logo.webp'} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:site_name" content="DynaBeat" />
+        <meta property="article:published_time" content={isoDate} />
+        <meta property="article:author" content={blog.author || 'DynaBeat Editor'} />
+        {blog.tags && <meta property="article:tag" content={blog.tags} />}
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={blog.title} />
+        <meta name="twitter:description" content={blog.excerpt || ''} />
+        <meta name="twitter:image" content={blog.thumbnail_url || 'https://pandeykapil.com.np/logo/logo.webp'} />
+
+        {/* JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </Head>
 
-      {/* Modern Top Progress Bar */}
-      <div className={styles.progressContainer}>
-        <div className={styles.progressBar} style={{ width: `${readingProgress}%` }}></div>
+      {/* Reading progress bar */}
+      <div className={`${styles.progressRail} ${scrolled ? styles.progressVisible : ''}`}>
+        <div className={styles.progressBar} style={{ width: `${readingProgress}%` }} />
       </div>
 
-      <main className={styles.readBlogContainer}>
-        <Link href="/blogs" className={styles.backBtn}><FaArrowLeft /> Back to Newsroom</Link>
+      {/* Sticky nav */}
+      <nav className={`${styles.stickyNav} ${scrolled ? styles.stickyNavVisible : ''}`}>
+        <Link href="/blogs" className={styles.stickyBack}>
+          <FaArrowLeft /> Newsroom
+        </Link>
+        <span className={styles.stickyTitle}>{blog.title}</span>
+        <div className={styles.stickyShare}>
+          <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`} target="_blank" rel="noopener noreferrer" className={styles.stickyShareBtn} aria-label="Share on Twitter"><FaTwitter /></a>
+          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`} target="_blank" rel="noopener noreferrer" className={styles.stickyShareBtn} aria-label="Share on Facebook"><FaFacebook /></a>
+          <button onClick={copyLink} className={styles.stickyShareBtn} aria-label="Copy link">
+            {copied ? '✓' : <FaLink />}
+          </button>
+        </div>
+      </nav>
 
-        <header className={styles.articleHeader}>
-          <div className={styles.categoryBadge}>Inside Music</div>
-          <h1 className={styles.mainTitle}>{blog.title}</h1>
-          
-          <div className={styles.authorBar}>
-            <div className={styles.authorInfo}>
-              <strong>{blog.author || 'DynaBeat Editor'}</strong>
-              <span><FaCalendarAlt /> {new Date(blog.published_date).toLocaleDateString()}</span>
-            </div>
-            <div className={styles.statsRow}>
-              <span><FaClock /> {readTime} min read</span>
-              <span><FaEye /> {viewCount} views</span>
+      <main className={styles.main}>
+
+        {/* ── ARTICLE HERO ── */}
+        <div className={styles.heroSection}>
+          <div className={styles.heroInner}>
+            <Link href="/blogs" className={styles.backLink}>
+              <FaArrowLeft /> Back to Newsroom
+            </Link>
+
+            {blog.tags && (
+              <div className={styles.categoryStrip}>
+                <FaTag className={styles.tagIcon} />
+                <span>{blog.tags}</span>
+              </div>
+            )}
+
+            <h1 className={styles.headline}>{blog.title}</h1>
+
+            {blog.excerpt && (
+              <p className={styles.dek}>{blog.excerpt}</p>
+            )}
+
+            <div className={styles.byline}>
+              <div className={styles.bylineAuthor}>
+                <div className={styles.authorAvatar}>
+                  {(blog.author || 'D').charAt(0).toUpperCase()}
+                </div>
+                <div className={styles.authorMeta}>
+                  <span className={styles.authorName}>{blog.author || 'DynaBeat Editor'}</span>
+                  <span className={styles.authorRole}>Staff Writer · DynaBeat</span>
+                </div>
+              </div>
+              <div className={styles.bylineMeta}>
+                <span className={styles.metaItem}>
+                  <FaCalendarAlt className={styles.metaIcon} />
+                  <time dateTime={isoDate}>{formattedDate}</time>
+                </span>
+                <span className={styles.metaDivider}>·</span>
+                <span className={styles.metaItem}>
+                  <FaClock className={styles.metaIcon} />
+                  {readTime} min read
+                </span>
+                <span className={styles.metaDivider}>·</span>
+                <span className={styles.metaItem}>
+                  <FaEye className={styles.metaIcon} />
+                  {viewCount.toLocaleString()} views
+                </span>
+              </div>
             </div>
           </div>
-        </header>
-
-        <div className={styles.heroImageBox}>
-          <Image 
-            src={blog.thumbnail_url || '/logo/logo.webp'} 
-            alt={blog.title} 
-            fill 
-            className={styles.heroImage}
-            priority 
-          />
         </div>
 
-        <div className={styles.layoutBody}>
-          <article className={styles.mainContent}>
-            <div 
-              className={styles.blogHtmlContent}
-              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-            />
-            
-            <div className={styles.shareSection}>
-               <h3>Enjoyed this story? Share the beat.</h3>
-               <div className={styles.shareBtns}>
-                 <a href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`} target="_blank" className={styles.fbBtn}><FaFacebook /> Facebook</a>
-                 <a href={`https://twitter.com/intent/tweet?url=${currentUrl}`} target="_blank" className={styles.twBtn}><FaTwitter /> Twitter</a>
-               </div>
+        {/* ── HERO IMAGE ── */}
+        {blog.thumbnail_url && (
+          <div className={styles.heroImageWrap}>
+            <div className={styles.heroImageInner}>
+              <Image
+                src={blog.thumbnail_url}
+                alt={blog.title}
+                fill
+                className={styles.heroImage}
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+              />
+              <div className={styles.heroImageOverlay} />
             </div>
-          </article>
+          </div>
+        )}
 
-          {/* Fixed Related Sidebar */}
-          <aside className={styles.sidebar}>
-            <h3>More Headlines</h3>
-            <div className={styles.relatedGrid}>
-              {relatedBlogs.length > 0 ? relatedBlogs.map((item) => (
-                <Link href={`/blogs/${item.slug}`} key={item.id} className={styles.sideCard}>
-                   <div className={styles.sideThumb}>
-                     <Image src={item.thumbnail_url || '/logo/logo.webp'} alt={item.title} fill />
-                   </div>
-                   <h4>{item.title}</h4>
-                </Link>
-              )) : <p>No related stories yet.</p>}
-            </div>
-          </aside>
+        {/* ── CONTENT + SIDEBAR ── */}
+        <div className={styles.contentWrap}>
+          <div className={styles.contentGrid}>
+
+            {/* Left share column */}
+            <aside className={styles.shareColumn} aria-label="Share article">
+              <div className={styles.shareSticky}>
+                <span className={styles.shareLabel}>Share</span>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className={`${styles.shareBtn} ${styles.shareFb}`}
+                  aria-label="Share on Facebook"
+                ><FaFacebook /></a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className={`${styles.shareBtn} ${styles.shareTw}`}
+                  aria-label="Share on Twitter"
+                ><FaTwitter /></a>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(blog.title + ' ' + currentUrl)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className={`${styles.shareBtn} ${styles.shareWa}`}
+                  aria-label="Share on WhatsApp"
+                ><FaWhatsapp /></a>
+                <button
+                  onClick={copyLink}
+                  className={`${styles.shareBtn} ${styles.shareCopy} ${copied ? styles.shareCopied : ''}`}
+                  aria-label="Copy link"
+                >{copied ? '✓' : <FaLink />}</button>
+              </div>
+            </aside>
+
+            {/* Main article */}
+            <article
+              ref={articleRef}
+              className={styles.article}
+              itemScope
+              itemType="https://schema.org/NewsArticle"
+            >
+              <meta itemProp="headline" content={blog.title} />
+              <meta itemProp="datePublished" content={isoDate} />
+              <meta itemProp="author" content={blog.author || 'DynaBeat Editor'} />
+
+              <div
+                className={styles.articleBody}
+                dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+              />
+
+              {/* Tags */}
+              {blog.tags && (
+                <div className={styles.tagRow}>
+                  <span className={styles.tagLabel}>Filed under:</span>
+                  <span className={styles.tagChip}>{blog.tags}</span>
+                </div>
+              )}
+
+              {/* Share footer */}
+              <div className={styles.shareFooter}>
+                <div className={styles.shareFooterRule} />
+                <h3 className={styles.shareFooterTitle}>Enjoyed this story? Share the beat.</h3>
+                <div className={styles.shareFooterBtns}>
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className={styles.shareFooterBtn}
+                  ><FaFacebook /> Share on Facebook</a>
+                  <a
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className={styles.shareFooterBtn}
+                  ><FaTwitter /> Post on Twitter</a>
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(blog.title + ' ' + currentUrl)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className={styles.shareFooterBtn}
+                  ><FaWhatsapp /> Send via WhatsApp</a>
+                  <button onClick={copyLink} className={styles.shareFooterBtn}>
+                    <FaLink /> {copied ? 'Copied!' : 'Copy Link'}
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            {/* Right sidebar */}
+            <aside className={styles.sidebar} aria-label="Related stories">
+              <div className={styles.sidebarSticky}>
+                <div className={styles.sidebarHeader}>
+                  <span className={styles.sidebarRule} />
+                  <h3 className={styles.sidebarTitle}>More Headlines</h3>
+                </div>
+                {relatedBlogs.length > 0 ? (
+                  <div className={styles.relatedList}>
+                    {relatedBlogs.map((item, i) => (
+                      <Link href={`/blogs/${item.slug}`} key={item.id} className={styles.relatedCard}>
+                        <span className={styles.relatedNum}>0{i + 1}</span>
+                        <div className={styles.relatedContent}>
+                          {item.thumbnail_url && (
+                            <div className={styles.relatedThumb}>
+                              <Image
+                                src={item.thumbnail_url}
+                                alt={item.title}
+                                fill
+                                sizes="80px"
+                              />
+                            </div>
+                          )}
+                          <h4 className={styles.relatedTitle}>{item.title}</h4>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.noRelated}>No related stories yet.</p>
+                )}
+
+                {/* Newsletter CTA */}
+                <div className={styles.newsletterBox}>
+                  <div className={styles.newsletterIcon}>♪</div>
+                  <h4 className={styles.newsletterTitle}>Stay in the beat</h4>
+                  <p className={styles.newsletterText}>Get the latest Nepali music news delivered to your inbox.</p>
+                  <Link href="/newsletter" className={styles.newsletterBtn}>Subscribe Free</Link>
+                </div>
+              </div>
+            </aside>
+
+          </div>
         </div>
+
       </main>
     </div>
   );
@@ -129,27 +357,28 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
 export async function getServerSideProps({ params }) {
   const { slug } = params;
 
-  // 1. Fetch the main blog story
   const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
     .eq('slug', slug)
+    .eq('status', 'published')
     .single();
-  
+
   if (error || !blog) return { notFound: true };
 
-  // 2. Fetch related blogs for the sidebar
   const { data: relatedBlogs } = await supabase
     .from('blogs')
-    .select('id, title, slug, thumbnail_url')
-    .neq('id', blog.id) // Don't show the current post
+    .select('id, title, slug, thumbnail_url, published_date')
+    .neq('id', blog.id)
+    .eq('status', 'published')
+    .order('published_date', { ascending: false })
     .limit(4);
 
-  return { 
-    props: { 
-      blog, 
-      relatedBlogs: relatedBlogs || [] // Fallback to empty array to prevent .map() error
-    } 
+  return {
+    props: {
+      blog,
+      relatedBlogs: relatedBlogs || [],
+    },
   };
 }
 

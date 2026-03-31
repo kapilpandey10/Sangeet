@@ -23,6 +23,7 @@
     "express": "^4.21.0",
     "framer-motion": "^11.14.4",
     "icy": "^2.1.0",
+    "jose": "^6.2.2",
     "lucide-react": "^0.462.0",
     "mobile-detect": "^1.4.5",
     "next": "^15.1.0",

@@ -1,6 +1,6 @@
 // File location: pages/api/verify-admin.js
-// Verifies the Cloudflare Access JWT from either the cookie or request header.
-// Returns detailed reason strings to help diagnose auth failures.
+// Temporarily dumps ALL cookies and headers so we can see what CF is sending.
+// Remove the debug block once auth is confirmed working.
 
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
@@ -8,24 +8,32 @@ const TEAM_DOMAIN = 'https://kapilpandey2068.cloudflareaccess.com';
 const AUD_TAG     = '0a419b6b4c925924769d0a1322b7c7c4dafe0b45c8770ee9285b017c2f98a282';
 
 export default async function handler(req, res) {
-  // CF Access sends the JWT as either a cookie or a request header.
-  // Check both — whichever arrives first wins.
+  // ── TEMPORARY DEBUG BLOCK ──────────────────────────────────────────────────
+  // Visit /api/verify-admin directly in your browser while logged into CF,
+  // then check what cookies and headers are listed in the response.
+  // This tells us exactly what CF is (or isn't) forwarding.
+  const debugInfo = {
+    allCookieKeys:    Object.keys(req.cookies),
+    hasCFCookie:      !!req.cookies['CF_Authorization'],
+    hasCFHeader:      !!req.headers['cf-access-jwt-assertion'],
+    // Show ALL headers so we can spot any CF-related ones
+    allHeaders:       Object.keys(req.headers),
+    // Show full cookie string (safe — no passwords, just CF tokens)
+    rawCookieHeader:  req.headers['cookie'] || '(none)',
+  };
+  console.log('[verify-admin] debug:', JSON.stringify(debugInfo, null, 2));
+  // ── END DEBUG BLOCK ────────────────────────────────────────────────────────
+
   const token =
     req.cookies['CF_Authorization'] ||
     req.headers['cf-access-jwt-assertion'];
 
-  // ── Debug: log what we actually received ──
-  // Remove this block once auth is confirmed working.
-  console.log('[verify-admin] cookies:', Object.keys(req.cookies));
-  console.log('[verify-admin] cf header present:', !!req.headers['cf-access-jwt-assertion']);
-  console.log('[verify-admin] token found:', !!token);
-
   if (!token) {
     return res.status(401).json({
-      authorized: false,
-      reason: 'No CF_Authorization cookie and no cf-access-jwt-assertion header found. ' +
-              'Cloudflare Access may not be protecting this route, or the cookie is not ' +
-              'being forwarded to the API route.',
+      authorized:    false,
+      reason:        'No CF_Authorization cookie and no cf-access-jwt-assertion header found.',
+      // Return full debug info to the browser so you can see it on screen
+      debug:         debugInfo,
     });
   }
 
@@ -48,7 +56,8 @@ export default async function handler(req, res) {
     console.error('[verify-admin] JWT verification failed:', err.message);
     return res.status(401).json({
       authorized: false,
-      reason: `JWT verification failed: ${err.message}`,
+      reason:     `JWT verification failed: ${err.message}`,
+      debug:      debugInfo,
     });
   }
 }

@@ -1,14 +1,22 @@
 // File location: pages/Admin/AdminRoute.js
 // Checks Cloudflare Access JWT via /api/verify-admin before rendering children.
-// On failure: redirects to the Cloudflare Access login page (not the homepage),
-// so the user gets a login prompt instead of silently landing on /.
+//
+// HOW CF ACCESS WORKS:
+// - Cloudflare Access sits in FRONT of your site at the network edge.
+// - When an unauthenticated user hits /Admin, CF intercepts it and shows
+//   its own login page BEFORE your Next.js code ever runs.
+// - After login, CF sets the CF_Authorization cookie and lets the request
+//   through to your app — at which point verify-admin succeeds.
+//
+// This means AdminRoute should only ever run for:
+//   (a) authenticated users  → show the dashboard
+//   (b) users on localhost   → CF is bypassed, verify-admin returns false
+//
+// In case (b) we do a hard reload of the same URL so CF can intercept it
+// on the live domain. On localhost you'll need to test with a real session
+// cookie copied from the live site, or bypass the guard for local dev.
 
 import { useEffect, useState } from 'react';
-
-// Your Cloudflare Access login URL.
-// When a user isn't authenticated, sending them here shows the CF login page.
-// After they log in, Cloudflare redirects them back to the original URL.
-const CF_LOGIN_URL = 'https://kapilpandey2068.cloudflareaccess.com/';
 
 const AdminRoute = ({ children }) => {
   const [status, setStatus] = useState('loading'); // 'loading' | 'authorized'
@@ -22,15 +30,15 @@ const AdminRoute = ({ children }) => {
         if (data.authorized) {
           setStatus('authorized');
         } else {
-          // ── NOT authorized ──
-          // Redirect to Cloudflare Access login page so the user can authenticate.
-          // CF will redirect them back to /Admin after a successful login.
-          window.location.href = `${CF_LOGIN_URL}?redirect_url=${encodeURIComponent(window.location.href)}`;
+          // Not authorized — this should rarely happen on the live site because
+          // Cloudflare Access blocks unauthenticated requests before they reach
+          // Next.js. If it does happen (e.g. expired token), reload the current
+          // URL so Cloudflare can intercept it and show the login page.
+          window.location.reload();
         }
       } catch (err) {
         console.error('Auth check failed:', err);
-        // Network error — same redirect, let CF handle it.
-        window.location.href = CF_LOGIN_URL;
+        window.location.reload();
       }
     };
 

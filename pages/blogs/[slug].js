@@ -11,6 +11,9 @@ import {
 } from 'react-icons/fa';
 import styles from './style/ReadBlog.module.css';
 
+const SITE_URL = 'https://pandeykapil.com.np';
+const FALLBACK_IMAGE = `${SITE_URL}/logo/logo.webp`;
+
 const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   const [readingProgress, setReadingProgress] = useState(0);
   const [viewCount, setViewCount] = useState(blog?.views || 0);
@@ -61,7 +64,16 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   );
 
   const readTime = Math.max(1, Math.ceil((blog.content || '').split(/\s+/).length / 200));
-  const currentUrl = `https://pandeykapil.com.np/blogs/${blog.slug}`;
+  const currentUrl = `${SITE_URL}/blogs/${blog.slug}`;
+
+  // Always use an absolute image URL — Supabase URLs are already absolute,
+  // but guard against relative paths just in case.
+  const ogImage = blog.thumbnail_url
+    ? blog.thumbnail_url.startsWith('http')
+      ? blog.thumbnail_url
+      : `${SITE_URL}${blog.thumbnail_url}`
+    : FALLBACK_IMAGE;
+
   const publishDate = new Date(blog.published_date);
   const formattedDate = publishDate.toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -75,20 +87,23 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
       })
     : blog.content;
 
-  // JSON-LD structured data for SEO
+  const pageTitle = `${blog.title} | DynaBeat`;
+  const pageDescription = blog.excerpt || 'Read the latest Nepali music news on DynaBeat.';
+
+  // JSON-LD structured data
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: blog.title,
-    description: blog.excerpt || '',
-    image: blog.thumbnail_url || 'https://pandeykapil.com.np/logo/logo.webp',
+    description: pageDescription,
+    image: [ogImage],
     datePublished: isoDate,
     dateModified: isoDate,
     author: { '@type': 'Person', name: blog.author || 'DynaBeat Editor' },
     publisher: {
       '@type': 'Organization',
       name: 'DynaBeat',
-      logo: { '@type': 'ImageObject', url: 'https://pandeykapil.com.np/logo/logo.webp' },
+      logo: { '@type': 'ImageObject', url: FALLBACK_IMAGE },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': currentUrl },
     articleSection: blog.tags || 'Music',
@@ -98,32 +113,46 @@ const ReadBlog = ({ blog, relatedBlogs = [] }) => {
   return (
     <div className={styles.pageWrapper}>
       <Head>
-        {/* Primary SEO */}
-        <title>{`${blog.title} | DynaBeat`}</title>
-        <meta name="description" content={blog.excerpt || 'Read the latest Nepali music news on DynaBeat.'} />
+        {/* ── Primary ── */}
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
         <meta name="keywords" content={`${blog.tags || ''}, nepali music, dynabeat, music news`} />
         <link rel="canonical" href={currentUrl} />
 
-        {/* Open Graph */}
+        {/* ── Open Graph (Facebook, WhatsApp, Messenger, Telegram, LinkedIn) ── */}
+        <meta property="og:site_name" content="DynaBeat" />
+        <meta property="og:locale" content="en_US" />
         <meta property="og:type" content="article" />
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.excerpt || ''} />
-        <meta property="og:image" content={blog.thumbnail_url || 'https://pandeykapil.com.np/logo/logo.webp'} />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+
+        {/* Image — must be absolute, ≥200×200, ideally 1200×630 */}
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:secure_url" content={ogImage} />
+        <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:url" content={currentUrl} />
-        <meta property="og:site_name" content="DynaBeat" />
+        <meta property="og:image:alt" content={blog.title} />
+
+        {/* Article-specific OG */}
         <meta property="article:published_time" content={isoDate} />
+        <meta property="article:modified_time" content={isoDate} />
         <meta property="article:author" content={blog.author || 'DynaBeat Editor'} />
+        <meta property="article:section" content={blog.tags || 'Music'} />
         {blog.tags && <meta property="article:tag" content={blog.tags} />}
 
-        {/* Twitter Card */}
+        {/* ── Twitter / X Card ── */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={blog.excerpt || ''} />
-        <meta name="twitter:image" content={blog.thumbnail_url || 'https://pandeykapil.com.np/logo/logo.webp'} />
+        <meta name="twitter:site" content="@DynaBeat" />
+        <meta name="twitter:creator" content="@DynaBeat" />
+        <meta name="twitter:url" content={currentUrl} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content={blog.title} />
 
-        {/* JSON-LD */}
+        {/* ── JSON-LD ── */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -40,12 +40,12 @@ const BlogHomepage = ({ blogs = [] }) => {
 
       {/* ── Masthead ── */}
       <header className={styles.blogHeader}>
-        <p className={styles.mastheadEyebrow}>Est. 2024 &nbsp;·&nbsp; Technology Music Culture</p>
+        <p className={styles.mastheadEyebrow}>Est. 2024 &nbsp;·&nbsp; Nepali Music Culture</p>
         <h1 className={styles.mainTitle}>
           Dyna<em>Stories</em>
         </h1>
         <div className={styles.mastheadRule}>
-          <span className={styles.subSubtitle}>Keep things simple</span>
+          <span className={styles.subSubtitle}>The Pulse of Nepali Music</span>
         </div>
         <div className={styles.mastheadStrip}>
           <span className={styles.stripItem}>Music</span>
@@ -158,6 +158,7 @@ export const getServerSideProps = async () => {
     const { data: blogs, error } = await supabase
       .from('blogs')
       .select('*')
+      .eq('status', 'published')
       .order('created_at', { ascending: false });
 
     if (error) throw error;

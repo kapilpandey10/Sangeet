@@ -1,27 +1,27 @@
-// File location: middleware.js  (root of project, same level as pages/)
-// Runs on the Edge before any /Admin page is rendered.
-// If no CF_Authorization cookie exists, redirects to Cloudflare Access login.
-
+// middleware.js
 import { NextResponse } from 'next/server';
 
 export const config = {
-  // Protect everything under /Admin
   matcher: ['/Admin', '/Admin/:path*'],
 };
 
 export function middleware(request) {
+  // Skip on localhost
+  const host = request.headers.get('host') || '';
+  if (host.includes('localhost')) {
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get('CF_Authorization')?.value;
 
-  // No token at all → send to Cloudflare Access login
   if (!token) {
-    const loginUrl = `https://${process.env.CF_ACCESS_TEAM_DOMAIN}/cdn-cgi/access/login` +
+    // Use NEXT_PUBLIC_ prefix — only these work in Edge middleware
+    const teamDomain = process.env.NEXT_PUBLIC_CF_ACCESS_TEAM_DOMAIN;
+    const loginUrl = `https://${teamDomain}/cdn-cgi/access/login` +
       `?redirect_url=${encodeURIComponent(request.url)}`;
 
     return NextResponse.redirect(loginUrl);
   }
 
-  // Token exists — let the request through.
-  // Full JWT signature verification happens in /api/verify-admin
-  // (Edge runtime can't use Node crypto libs like jwk-to-pem).
   return NextResponse.next();
 }

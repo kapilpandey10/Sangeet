@@ -1,14 +1,8 @@
-// Messages.jsx — Premium Redesign
+// Messages.jsx
 import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import ConfirmMsg from '../../components/ConfirmMsg';
 import { FaEnvelope, FaTrashAlt, FaInbox } from 'react-icons/fa';
 import styles from './style/Messages.module.css';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
@@ -17,26 +11,32 @@ const Messages = () => {
   const [toDelete, setToDelete] = useState(null);
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data, error } = await supabase
-        .from('message')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (!error) setMessages(data || []);
+    const fetchMessages = async () => {
+      const res = await fetch('/api/admin/messages/all');
+      const data = await res.json();
+      setMessages(data || []);
     };
-    fetch();
+    fetchMessages();
   }, []);
 
   const handleSelect = async (msg) => {
     setSelected(msg);
     if (!msg.viewed) {
-      await supabase.from('message').update({ viewed: true }).eq('id', msg.id);
+      await fetch('/api/admin/messages/markread', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: msg.id }),
+      });
       setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, viewed: true } : m));
     }
   };
 
   const handleDelete = async (id) => {
-    await supabase.from('message').delete().eq('id', id);
+    await fetch('/api/admin/messages/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
     setMessages(prev => prev.filter(m => m.id !== id));
     if (selected?.id === id) setSelected(null);
     setShowConfirm(false);
@@ -44,7 +44,6 @@ const Messages = () => {
   };
 
   const unreadCount = messages.filter(m => !m.viewed).length;
-
   const initials = (name) => name
     ? name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '?';
@@ -53,14 +52,11 @@ const Messages = () => {
     <div className={styles.wrapper}>
       <div className={styles.layout}>
 
-        {/* ── Inbox list ── */}
         <aside className={styles.inbox}>
           <div className={styles.inboxHeader}>
             <FaInbox />
             <span>Inbox</span>
-            {unreadCount > 0 && (
-              <span className={styles.unreadBadge}>{unreadCount} new</span>
-            )}
+            {unreadCount > 0 && <span className={styles.unreadBadge}>{unreadCount} new</span>}
           </div>
           <div className={styles.messageList}>
             {messages.length === 0 ? (
@@ -95,7 +91,6 @@ const Messages = () => {
           </div>
         </aside>
 
-        {/* ── Message Content ── */}
         <div className={styles.content}>
           {selected ? (
             <div className={styles.contentInner}>
@@ -114,10 +109,8 @@ const Messages = () => {
                       hour: '2-digit', minute: '2-digit'
                     })}
                   </span>
-                  <button
-                    className={styles.deleteMsgBtn}
-                    onClick={() => { setToDelete(selected); setShowConfirm(true); }}
-                  >
+                  <button className={styles.deleteMsgBtn}
+                    onClick={() => { setToDelete(selected); setShowConfirm(true); }}>
                     <FaTrashAlt /> Delete
                   </button>
                 </div>

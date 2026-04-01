@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
 import {
   FaTrash, FaPlus, FaLayerGroup, FaYoutube,
   FaPenNib, FaLanguage, FaCalendarAlt, FaUserEdit, FaSearch
@@ -52,8 +51,9 @@ const AddLyrics = () => {
     const val = event.target.value;
     updated[index].name = val;
     if (val.length > 1) {
-      const { data } = await supabase.from('lyrics').select('artist').ilike('artist', `%${val}%`).limit(5);
-      updated[index].suggestions = data ? [...new Set(data.map(l => l.artist))] : [];
+      const res = await fetch(`/api/admin/lyrics/autocomplete?q=${encodeURIComponent(val)}`);
+      const data = await res.json();
+      updated[index].suggestions = data || [];
     } else {
       updated[index].suggestions = [];
     }
@@ -72,8 +72,10 @@ const AddLyrics = () => {
     const videoId = getYouTubeVideoID(videoUrl);
     if (!videoId) return setVideoError('Valid YouTube URL required');
 
-    try {
-      const { error } = await supabase.from('lyrics').insert([{
+    const res = await fetch('/api/admin/lyrics/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         title,
         slug: slug || generateSlug(title),
         artist: artists.map(a => a.name).join(', '),
@@ -86,16 +88,18 @@ const AddLyrics = () => {
         added_by: addedBy,
         language,
         description,
-        thumbnail_url: thumbnail
-      }]);
+        thumbnail_url: thumbnail,
+      }),
+    });
 
-      if (error) throw error;
+    if (res.ok) {
       setMessage('✓ Track queued for review');
       setTitle(''); setSlug(''); setArtists([{ name: '', suggestions: [] }]);
       setLyrics(''); setEnglishLyrics(''); setVideoUrl(''); setThumbnail('');
       setTimeout(() => setMessage(''), 5000);
-    } catch (err) {
-      setMessage('Error: ' + err.message);
+    } else {
+      const err = await res.json();
+      setMessage('Error: ' + (err.error || 'Something went wrong'));
     }
   };
 
@@ -109,7 +113,6 @@ const AddLyrics = () => {
 
       <form onSubmit={handleSubmit} className={styles.layout}>
 
-        {/* ── LEFT: METADATA ── */}
         <aside className={styles.metaPanel}>
           <div className={styles.panelTitle}>
             <FaLayerGroup className={styles.panelIcon} />
@@ -188,10 +191,7 @@ const AddLyrics = () => {
           </div>
         </aside>
 
-        {/* ── RIGHT: CONTENT ── */}
         <section className={styles.contentPanel}>
-
-          {/* YouTube preview */}
           <div className={styles.monitor}>
             <div className={styles.monitorScreen}>
               {thumbnail
@@ -211,7 +211,6 @@ const AddLyrics = () => {
             {videoError && <p className={styles.error}>{videoError}</p>}
           </div>
 
-          {/* Lyrics side by side */}
           <div className={styles.lyricsRow}>
             <div className={styles.lyricsBox}>
               <label className={styles.lyricsLabel}>Original Lyrics</label>
@@ -225,7 +224,6 @@ const AddLyrics = () => {
             </div>
           </div>
 
-          {/* Description */}
           <div className={styles.field}>
             <label className={styles.lyricsLabel}>Track Description</label>
             <textarea className={styles.textarea} rows={3} value={description}

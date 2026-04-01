@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../../supabaseClient'; // kept ONLY for image storage upload
 import styles from './style/AddBlog.module.css';
 
 const TAGS = [
@@ -37,7 +37,7 @@ const AddBlog = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState('meta'); // 'meta' | 'content' | 'settings'
+  const [activeSection, setActiveSection] = useState('meta');
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
@@ -47,7 +47,6 @@ const AddBlog = () => {
     setPublishedDate(new Date().toISOString().split('T')[0]);
   }, []);
 
-  // Auto-generate slug from title
   useEffect(() => {
     if (!slugManuallyEdited && title) {
       setSlug(title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''));
@@ -97,6 +96,7 @@ const AddBlog = () => {
     { label: 'A', action: () => insertFormatting('<a href="', '">Link text</a>'), title: 'Link' },
   ];
 
+  // Image upload still uses supabase storage directly (this is fine — storage is not a DB table)
   const uploadImage = async () => {
     if (!imageFile) return null;
     const fileName = `${slug}-${Date.now()}`;
@@ -117,14 +117,25 @@ const AddBlog = () => {
     setLoading(true);
     try {
       const imageUrl = imageFile ? await uploadImage() : '';
-      const { error } = await supabase.from('blogs').insert([{
-        title, author, slug, excerpt,
-        published_date: publishedDate,
-        thumbnail_url: imageUrl,
-        content, status,
-        tags: selectedTag,
-      }]);
-      if (error) throw error;
+
+      // DB insert goes through the secure API route
+      const res = await fetch('/api/admin/blogs/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title, author, slug, excerpt,
+          published_date: publishedDate,
+          thumbnail_url: imageUrl,
+          content, status,
+          tags: selectedTag,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'An error occurred.');
+      }
+
       setSuccessMessage('Blog published successfully!');
       resetForm();
     } catch (err) {
@@ -157,7 +168,6 @@ const AddBlog = () => {
 
   return (
     <div className={styles.addBlogContainer}>
-      {/* Header */}
       <div className={styles.editorHeader}>
         <div className={styles.editorHeaderLeft}>
           <div className={styles.editorBadge}>NEW POST</div>
@@ -169,39 +179,24 @@ const AddBlog = () => {
           <div className={styles.completionWrap}>
             <div className={styles.completionLabel}>{score}% complete</div>
             <div className={styles.completionBar}>
-              <div
-                className={styles.completionFill}
-                style={{
-                  width: `${score}%`,
-                  background: score === 100 ? '#22c55e' : score > 60 ? '#f59e0b' : '#ef4444'
-                }}
-              />
+              <div className={styles.completionFill}
+                style={{ width: `${score}%`, background: score === 100 ? '#22c55e' : score > 60 ? '#f59e0b' : '#ef4444' }} />
             </div>
           </div>
           <div className={styles.statusToggle}>
-            <button
-              type="button"
-              className={`${styles.statusBtn} ${status === 'draft' ? styles.statusActive : ''}`}
-              onClick={() => setStatus('draft')}
-            >Draft</button>
-            <button
-              type="button"
-              className={`${styles.statusBtn} ${status === 'published' ? styles.statusActive : ''}`}
-              onClick={() => setStatus('published')}
-            >Publish</button>
+            <button type="button" className={`${styles.statusBtn} ${status === 'draft' ? styles.statusActive : ''}`}
+              onClick={() => setStatus('draft')}>Draft</button>
+            <button type="button" className={`${styles.statusBtn} ${status === 'published' ? styles.statusActive : ''}`}
+              onClick={() => setStatus('published')}>Publish</button>
           </div>
         </div>
       </div>
 
-      {/* Section Tabs */}
       <div className={styles.sectionTabs}>
         {['meta', 'content', 'settings'].map(s => (
-          <button
-            key={s}
-            type="button"
+          <button key={s} type="button"
             className={`${styles.sectionTab} ${activeSection === s ? styles.sectionTabActive : ''}`}
-            onClick={() => setActiveSection(s)}
-          >
+            onClick={() => setActiveSection(s)}>
             {s === 'meta' ? '① Post Details' : s === 'content' ? '② Content' : '③ Settings'}
           </button>
         ))}
@@ -209,96 +204,54 @@ const AddBlog = () => {
 
       <form onSubmit={handleSubmit} className={styles.editorForm}>
 
-        {/* ── SECTION 1: META ── */}
         {activeSection === 'meta' && (
           <div className={styles.section}>
             <div className={styles.fieldGrid}>
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>
-                  Title <span className={styles.required}>*</span>
-                </label>
-                <input
-                  className={styles.input}
-                  type="text"
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  placeholder="Your compelling headline..."
-                  maxLength={120}
-                />
+                <label className={styles.label}>Title <span className={styles.required}>*</span></label>
+                <input className={styles.input} type="text" value={title}
+                  onChange={e => setTitle(e.target.value)} placeholder="Your compelling headline..." maxLength={120} />
                 <div className={styles.charCount}>{title.length}/120</div>
               </div>
-
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>
-                  Author <span className={styles.required}>*</span>
-                </label>
-                <input
-                  className={styles.input}
-                  type="text"
-                  value={author}
-                  onChange={e => setAuthor(e.target.value)}
-                  placeholder="Author name"
-                />
+                <label className={styles.label}>Author <span className={styles.required}>*</span></label>
+                <input className={styles.input} type="text" value={author}
+                  onChange={e => setAuthor(e.target.value)} placeholder="Author name" />
               </div>
-
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>
-                  Slug <span className={styles.required}>*</span>
-                  <span className={styles.labelHint}>URL path for this post</span>
-                </label>
+                <label className={styles.label}>Slug <span className={styles.required}>*</span>
+                  <span className={styles.labelHint}>URL path for this post</span></label>
                 <div className={styles.slugWrap}>
                   <span className={styles.slugPrefix}>/blog/</span>
-                  <input
-                    className={`${styles.input} ${styles.slugInput}`}
-                    type="text"
-                    value={slug}
+                  <input className={`${styles.input} ${styles.slugInput}`} type="text" value={slug}
                     onChange={e => { setSlug(e.target.value); setSlugManuallyEdited(true); }}
-                    placeholder="auto-generated-from-title"
-                  />
+                    placeholder="auto-generated-from-title" />
                 </div>
               </div>
-
               <div className={styles.fieldGroup}>
                 <label className={styles.label}>Published Date</label>
-                <input
-                  className={styles.input}
-                  type="date"
-                  value={publishedDate}
-                  onChange={e => setPublishedDate(e.target.value)}
-                />
+                <input className={styles.input} type="date" value={publishedDate}
+                  onChange={e => setPublishedDate(e.target.value)} />
               </div>
-
               <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
-                <label className={styles.label}>
-                  Excerpt
-                  <span className={styles.labelHint}>Short summary shown in listings</span>
-                </label>
-                <textarea
-                  className={styles.textarea}
-                  value={excerpt}
+                <label className={styles.label}>Excerpt
+                  <span className={styles.labelHint}>Short summary shown in listings</span></label>
+                <textarea className={styles.textarea} value={excerpt}
                   onChange={e => setExcerpt(e.target.value)}
-                  placeholder="Write a short description that draws readers in..."
-                  rows={3}
-                  maxLength={300}
-                />
+                  placeholder="Write a short description that draws readers in..." rows={3} maxLength={300} />
                 <div className={styles.charCount}>{excerpt.length}/300</div>
               </div>
-
               <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
                 <label className={styles.label}>Thumbnail Image</label>
-                <div
-                  className={`${styles.dropZone} ${dragOver ? styles.dragOver : ''} ${imagePreview ? styles.hasImage : ''}`}
+                <div className={`${styles.dropZone} ${dragOver ? styles.dragOver : ''} ${imagePreview ? styles.hasImage : ''}`}
                   onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                >
+                  onClick={() => fileInputRef.current?.click()}>
                   {imagePreview ? (
                     <div className={styles.imagePreviewWrap}>
                       <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
-                      <div className={styles.imageOverlay}>
-                        <span>Click to change</span>
-                      </div>
+                      <div className={styles.imageOverlay}><span>Click to change</span></div>
                     </div>
                   ) : (
                     <div className={styles.dropZoneInner}>
@@ -307,17 +260,11 @@ const AddBlog = () => {
                       <p className={styles.dropHint}>PNG, JPG, WEBP up to 10MB</p>
                     </div>
                   )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.gif,.webp"
-                    onChange={e => handleFileSelect(e.target.files[0])}
-                    style={{ display: 'none' }}
-                  />
+                  <input ref={fileInputRef} type="file" accept=".png,.jpg,.jpeg,.gif,.webp"
+                    onChange={e => handleFileSelect(e.target.files[0])} style={{ display: 'none' }} />
                 </div>
               </div>
             </div>
-
             <div className={styles.sectionNav}>
               <button type="button" className={styles.nextBtn} onClick={() => setActiveSection('content')}>
                 Continue to Content →
@@ -326,48 +273,29 @@ const AddBlog = () => {
           </div>
         )}
 
-        {/* ── SECTION 2: CONTENT ── */}
         {activeSection === 'content' && (
           <div className={styles.section}>
             <div className={styles.contentEditor}>
               <div className={styles.toolbar}>
                 {toolbarActions.map((t, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={styles.toolbarBtn}
-                    onClick={t.action}
-                    title={t.title}
-                    style={t.style}
-                  >{t.label}</button>
+                  <button key={i} type="button" className={styles.toolbarBtn}
+                    onClick={t.action} title={t.title} style={t.style}>{t.label}</button>
                 ))}
                 <div className={styles.toolbarDivider} />
                 <WordCount text={content} />
               </div>
-
-              <textarea
-                ref={contentRef}
-                className={styles.contentTextarea}
-                value={content}
+              <textarea ref={contentRef} className={styles.contentTextarea} value={content}
                 onChange={e => setContent(e.target.value)}
                 placeholder={`Start writing your story in HTML...\n\n<h2>Your First Section</h2>\n<p>Your content here...</p>`}
-                rows={28}
-                spellCheck
-              />
+                rows={28} spellCheck />
             </div>
-
             <div className={styles.sectionNav}>
-              <button type="button" className={styles.backBtn} onClick={() => setActiveSection('meta')}>
-                ← Back
-              </button>
-              <button type="button" className={styles.nextBtn} onClick={() => setActiveSection('settings')}>
-                Continue to Settings →
-              </button>
+              <button type="button" className={styles.backBtn} onClick={() => setActiveSection('meta')}>← Back</button>
+              <button type="button" className={styles.nextBtn} onClick={() => setActiveSection('settings')}>Continue to Settings →</button>
             </div>
           </div>
         )}
 
-        {/* ── SECTION 3: SETTINGS ── */}
         {activeSection === 'settings' && (
           <div className={styles.section}>
             <div className={styles.settingsGrid}>
@@ -375,16 +303,12 @@ const AddBlog = () => {
                 <label className={styles.label}>Category / Tag</label>
                 <div className={styles.tagGrid}>
                   {TAGS.map(tag => (
-                    <button
-                      key={tag}
-                      type="button"
+                    <button key={tag} type="button"
                       className={`${styles.tagChip} ${selectedTag === tag ? styles.tagChipActive : ''}`}
-                      onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
-                    >{tag}</button>
+                      onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}>{tag}</button>
                   ))}
                 </div>
               </div>
-
               <div className={styles.summaryCard}>
                 <h3 className={styles.summaryTitle}>Post Summary</h3>
                 <div className={styles.summaryRow}><span>Title</span><span>{title || '—'}</span></div>
@@ -392,9 +316,7 @@ const AddBlog = () => {
                 <div className={styles.summaryRow}><span>Slug</span><span>/blog/{slug || '—'}</span></div>
                 <div className={styles.summaryRow}><span>Tag</span><span>{selectedTag || '—'}</span></div>
                 <div className={styles.summaryRow}><span>Status</span>
-                  <span className={status === 'published' ? styles.publishedBadge : styles.draftBadge}>
-                    {status}
-                  </span>
+                  <span className={status === 'published' ? styles.publishedBadge : styles.draftBadge}>{status}</span>
                 </div>
                 <div className={styles.summaryRow}><span>Thumbnail</span><span>{imageFile ? imageFile.name : '—'}</span></div>
                 <div className={styles.summaryRow}><span>Word Count</span>
@@ -404,32 +326,16 @@ const AddBlog = () => {
             </div>
 
             {errorMessage && (
-              <div className={styles.errorBanner}>
-                <span className={styles.errorIcon}>!</span> {errorMessage}
-              </div>
+              <div className={styles.errorBanner}><span className={styles.errorIcon}>!</span> {errorMessage}</div>
             )}
             {successMessage && (
-              <div className={styles.successBanner}>
-                <span>✓</span> {successMessage}
-              </div>
+              <div className={styles.successBanner}><span>✓</span> {successMessage}</div>
             )}
 
             <div className={styles.sectionNav}>
-              <button type="button" className={styles.backBtn} onClick={() => setActiveSection('content')}>
-                ← Back
-              </button>
-              <button
-                type="submit"
-                className={styles.publishBtn}
-                disabled={loading}
-              >
-                {loading ? (
-                  <><span className={styles.spinner} /> Publishing…</>
-                ) : status === 'published' ? (
-                  '⚡ Publish Post'
-                ) : (
-                  '💾 Save Draft'
-                )}
+              <button type="button" className={styles.backBtn} onClick={() => setActiveSection('content')}>← Back</button>
+              <button type="submit" className={styles.publishBtn} disabled={loading}>
+                {loading ? <><span className={styles.spinner} /> Publishing…</> : status === 'published' ? '⚡ Publish Post' : '💾 Save Draft'}
               </button>
             </div>
           </div>

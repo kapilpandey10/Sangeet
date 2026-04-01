@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+// ← remove the supabase import entirely
 import {
   FaEdit, FaTrashAlt, FaSave, FaSearch, FaEye, FaEyeSlash,
   FaLayerGroup, FaYoutube, FaUserEdit, FaCalendarAlt, FaPenNib
@@ -19,12 +19,8 @@ const ManageLyrics = () => {
   useEffect(() => {
     const fetchLyrics = async () => {
       try {
-        const { data, error } = await supabase
-          .from('lyrics')
-          .select('*')
-          .in('status', ['approved', 'private'])
-          .order('created_at', { ascending: false });
-        if (error) throw error;
+        const res = await fetch('/api/admin/lyrics/all');
+        const data = await res.json();
         setLyrics(data || []);
         setFilteredLyrics(data || []);
       } catch (err) {
@@ -49,22 +45,13 @@ const ManageLyrics = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const { error } = await supabase
-      .from('lyrics')
-      .update({
-        title:          editLyric.title,
-        artist:         editLyric.artist,
-        lyrics:         editLyric.lyrics,
-        lyrics_writer:  editLyric.lyrics_writer,
-        published_date: editLyric.published_date,
-        music_url:      editLyric.music_url,
-        thumbnail_url:  editLyric.thumbnail_url,
-        added_by:       editLyric.added_by,
-        status:         editLyric.status,
-      })
-      .eq('id', editLyric.id);
+    const res = await fetch('/api/admin/lyrics/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editLyric),
+    });
 
-    if (!error) {
+    if (res.ok) {
       const updated = (arr) => arr.map(l => l.id === editLyric.id ? editLyric : l);
       setLyrics(updated(lyrics));
       setFilteredLyrics(updated(filteredLyrics));
@@ -73,11 +60,25 @@ const ManageLyrics = () => {
     }
   };
 
+  const handleDelete = async () => {
+    const res = await fetch('/api/admin/lyrics/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: lyricToDelete.id }),
+    });
+
+    if (res.ok) {
+      setLyrics(lyrics.filter(l => l.id !== lyricToDelete.id));
+      setFilteredLyrics(filteredLyrics.filter(l => l.id !== lyricToDelete.id));
+      setEditLyric(null);
+      setShowConfirm(false);
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       {message && <div className={styles.toast}>{message}</div>}
 
-      {/* ── Top Bar ── */}
       <div className={styles.topBar}>
         <div className={styles.searchBox}>
           <FaSearch className={styles.searchIcon} />
@@ -95,10 +96,7 @@ const ManageLyrics = () => {
         </div>
       </div>
 
-      {/* ── Body ── */}
       <div className={styles.body}>
-
-        {/* LEFT: Track list */}
         <aside className={styles.sidebar}>
           {filteredLyrics.length === 0 ? (
             <p className={styles.empty}>No tracks found</p>
@@ -124,11 +122,9 @@ const ManageLyrics = () => {
           ))}
         </aside>
 
-        {/* RIGHT: Inspector */}
         <section className={styles.inspector}>
           {editLyric ? (
             <form className={styles.inspectorForm} onSubmit={handleUpdate}>
-
               <div className={styles.inspectorTop}>
                 <div className={styles.inspectorTitle}>
                   <FaEdit /> Studio Inspector
@@ -160,7 +156,6 @@ const ManageLyrics = () => {
                 </div>
               </div>
 
-              {/* Video Preview */}
               <div className={styles.videoWrap}>
                 {editLyric.music_url && extractYTId(editLyric.music_url) ? (
                   <iframe
@@ -178,7 +173,6 @@ const ManageLyrics = () => {
                 )}
               </div>
 
-              {/* Form Fields */}
               <div className={styles.formGrid}>
                 <div className={styles.field}>
                   <label className={styles.label}><FaEdit className={styles.li} /> Title</label>
@@ -212,7 +206,6 @@ const ManageLyrics = () => {
                     onChange={(e) => setEditLyric({ ...editLyric, lyrics: e.target.value })} />
                 </div>
               </div>
-
             </form>
           ) : (
             <div className={styles.emptyInspector}>
@@ -221,21 +214,12 @@ const ManageLyrics = () => {
             </div>
           )}
         </section>
-
       </div>
 
       {showConfirm && (
         <ConfirmMsg
           show={showConfirm}
-          onConfirm={async () => {
-            const { error } = await supabase.from('lyrics').delete().eq('id', lyricToDelete.id);
-            if (!error) {
-              setLyrics(lyrics.filter(l => l.id !== lyricToDelete.id));
-              setFilteredLyrics(filteredLyrics.filter(l => l.id !== lyricToDelete.id));
-              setEditLyric(null);
-              setShowConfirm(false);
-            }
-          }}
+          onConfirm={handleDelete}  // ← cleaned up, no inline async
           onCancel={() => setShowConfirm(false)}
           message={`Permanently delete "${lyricToDelete?.title}"?`}
         />

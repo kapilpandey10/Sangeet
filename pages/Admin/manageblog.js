@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../../supabaseClient';
-import { FaTrash, FaEdit, FaEye, FaSearch, FaTimes, FaGlobe, FaArchive } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaSearch, FaTimes, FaGlobe, FaArchive } from 'react-icons/fa';
 import styles from './style/ManageBlog.module.css';
 
 const STATUS_ALL = 'all';
@@ -13,21 +12,18 @@ const ManageBlog = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(null); // blog id pending delete
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
   const [saving, setSaving] = useState(false);
   const contentRef = useRef(null);
 
-  // Edit fields
   const [form, setForm] = useState({
     title: '', slug: '', content: '', published_date: '',
     status: '', excerpt: '', thumbnail_url: '', tags: '', author: '',
   });
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
+  useEffect(() => { fetchBlogs(); }, []);
 
   useEffect(() => {
     let result = blogs;
@@ -46,11 +42,8 @@ const ManageBlog = () => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('blogs')
-        .select('id, title, slug, content, published_date, status, excerpt, thumbnail_url, tags, author')
-        .order('published_date', { ascending: false });
-      if (error) throw error;
+      const res = await fetch('/api/admin/blogs/all');
+      const data = await res.json();
       setBlogs(data || []);
     } catch (err) {
       setError('Error fetching blogs');
@@ -67,23 +60,16 @@ const ManageBlog = () => {
   const handleEditClick = (blog) => {
     setSelectedBlog(blog);
     setForm({
-      title: blog.title || '',
-      slug: blog.slug || '',
-      content: blog.content || '',
-      published_date: blog.published_date || '',
-      status: blog.status || 'draft',
-      excerpt: blog.excerpt || '',
-      thumbnail_url: blog.thumbnail_url || '',
-      tags: blog.tags || '',
-      author: blog.author || '',
+      title: blog.title || '', slug: blog.slug || '', content: blog.content || '',
+      published_date: blog.published_date || '', status: blog.status || 'draft',
+      excerpt: blog.excerpt || '', thumbnail_url: blog.thumbnail_url || '',
+      tags: blog.tags || '', author: blog.author || '',
     });
     setIsEditing(true);
     setError(null);
   };
 
-  const handleFormChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-  };
+  const handleFormChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
   const insertFormatting = (before, after = '') => {
     const el = contentRef.current;
@@ -93,10 +79,7 @@ const ManageBlog = () => {
     const selected = form.content.slice(start, end);
     const newContent = form.content.slice(0, start) + before + selected + after + form.content.slice(end);
     handleFormChange('content', newContent);
-    setTimeout(() => {
-      el.focus();
-      el.setSelectionRange(start + before.length, end + before.length);
-    }, 0);
+    setTimeout(() => { el.focus(); el.setSelectionRange(start + before.length, end + before.length); }, 0);
   };
 
   const toolbarActions = [
@@ -118,11 +101,12 @@ const ManageBlog = () => {
     setSaving(true);
     setError(null);
     try {
-      const { error } = await supabase
-        .from('blogs')
-        .update({ ...form })
-        .eq('id', selectedBlog.id);
-      if (error) throw error;
+      const res = await fetch('/api/admin/blogs/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: selectedBlog.id, ...form }),
+      });
+      if (!res.ok) throw new Error();
       setBlogs(prev => prev.map(b => b.id === selectedBlog.id ? { ...b, ...form } : b));
       showSuccess('Post updated successfully.');
       setIsEditing(false);
@@ -136,8 +120,12 @@ const ManageBlog = () => {
 
   const handleDeleteBlog = async (blogId) => {
     try {
-      const { error } = await supabase.from('blogs').delete().eq('id', blogId);
-      if (error) throw error;
+      const res = await fetch('/api/admin/blogs/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: blogId }),
+      });
+      if (!res.ok) throw new Error();
       setBlogs(prev => prev.filter(b => b.id !== blogId));
       showSuccess('Post deleted.');
       setDeleteConfirm(null);
@@ -149,8 +137,12 @@ const ManageBlog = () => {
   const toggleStatus = async (blog) => {
     const newStatus = blog.status === 'draft' ? 'published' : 'draft';
     try {
-      const { error } = await supabase.from('blogs').update({ status: newStatus }).eq('id', blog.id);
-      if (error) throw error;
+      const res = await fetch('/api/admin/blogs/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: blog.id, status: newStatus }),
+      });
+      if (!res.ok) throw new Error();
       setBlogs(prev => prev.map(b => b.id === blog.id ? { ...b, status: newStatus } : b));
       showSuccess(`Post ${newStatus === 'published' ? 'published' : 'moved to draft'}.`);
     } catch (err) {
@@ -159,55 +151,34 @@ const ManageBlog = () => {
   };
 
   const wordCount = (text) => text?.trim() ? text.trim().split(/\s+/).length : 0;
-
   const publishedCount = blogs.filter(b => b.status === 'published').length;
   const draftCount = blogs.filter(b => b.status === 'draft').length;
 
   return (
     <div className={styles.container}>
 
-      {/* ── TOP BAR ── */}
       <div className={styles.topBar}>
         <div className={styles.topBarLeft}>
           <h1 className={styles.pageTitle}>Blog Posts</h1>
           <div className={styles.statsRow}>
-            <span className={styles.statItem}>
-              <span className={styles.statDot} style={{ background: '#22c55e' }} />
-              {publishedCount} published
-            </span>
+            <span className={styles.statItem}><span className={styles.statDot} style={{ background: '#22c55e' }} />{publishedCount} published</span>
             <span className={styles.statDivider}>·</span>
-            <span className={styles.statItem}>
-              <span className={styles.statDot} style={{ background: '#f59e0b' }} />
-              {draftCount} drafts
-            </span>
+            <span className={styles.statItem}><span className={styles.statDot} style={{ background: '#f59e0b' }} />{draftCount} drafts</span>
             <span className={styles.statDivider}>·</span>
             <span className={styles.statItem}>{blogs.length} total</span>
           </div>
         </div>
-
         <div className={styles.topBarRight}>
           <div className={styles.searchWrap}>
             <FaSearch className={styles.searchIcon} />
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search posts..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-            {search && (
-              <button className={styles.searchClear} onClick={() => setSearch('')}>
-                <FaTimes />
-              </button>
-            )}
+            <input className={styles.searchInput} type="text" placeholder="Search posts..."
+              value={search} onChange={e => setSearch(e.target.value)} />
+            {search && <button className={styles.searchClear} onClick={() => setSearch('')}><FaTimes /></button>}
           </div>
           <div className={styles.filterTabs}>
             {[STATUS_ALL, 'published', 'draft'].map(s => (
-              <button
-                key={s}
-                className={`${styles.filterTab} ${statusFilter === s ? styles.filterActive : ''}`}
-                onClick={() => setStatusFilter(s)}
-              >
+              <button key={s} className={`${styles.filterTab} ${statusFilter === s ? styles.filterActive : ''}`}
+                onClick={() => setStatusFilter(s)}>
                 {s === STATUS_ALL ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
@@ -215,24 +186,11 @@ const ManageBlog = () => {
         </div>
       </div>
 
-      {/* ── NOTIFICATIONS ── */}
-      {successMessage && (
-        <div className={styles.successBanner}>
-          <span>✓</span> {successMessage}
-        </div>
-      )}
-      {error && !isEditing && (
-        <div className={styles.errorBanner}>
-          <span>!</span> {error}
-        </div>
-      )}
+      {successMessage && <div className={styles.successBanner}><span>✓</span> {successMessage}</div>}
+      {error && !isEditing && <div className={styles.errorBanner}><span>!</span> {error}</div>}
 
-      {/* ── BLOG TABLE ── */}
       {loading ? (
-        <div className={styles.loadingState}>
-          <div className={styles.loadSpinner} />
-          <span>Loading posts…</span>
-        </div>
+        <div className={styles.loadingState}><div className={styles.loadSpinner} /><span>Loading posts…</span></div>
       ) : filtered.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>✦</div>
@@ -242,15 +200,7 @@ const ManageBlog = () => {
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
-              <tr>
-                <th>Post</th>
-                <th>Author</th>
-                <th>Tag</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Words</th>
-                <th>Actions</th>
-              </tr>
+              <tr><th>Post</th><th>Author</th><th>Tag</th><th>Date</th><th>Status</th><th>Words</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {filtered.map(blog => (
@@ -260,42 +210,20 @@ const ManageBlog = () => {
                     <div className={styles.postSlug}>/blog/{blog.slug}</div>
                   </td>
                   <td className={styles.authorCell}>{blog.author}</td>
-                  <td>
-                    {blog.tags ? (
-                      <span className={styles.tagBadge}>{blog.tags}</span>
-                    ) : <span className={styles.emptyCell}>—</span>}
-                  </td>
+                  <td>{blog.tags ? <span className={styles.tagBadge}>{blog.tags}</span> : <span className={styles.emptyCell}>—</span>}</td>
                   <td className={styles.dateCell}>
-                    {blog.published_date
-                      ? new Date(blog.published_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      : '—'
-                    }
+                    {blog.published_date ? new Date(blog.published_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                   </td>
-                  <td>
-                    <span className={blog.status === 'published' ? styles.statusPublished : styles.statusDraft}>
-                      {blog.status}
-                    </span>
-                  </td>
+                  <td><span className={blog.status === 'published' ? styles.statusPublished : styles.statusDraft}>{blog.status}</span></td>
                   <td className={styles.wordCell}>{wordCount(blog.content).toLocaleString()}</td>
                   <td>
                     <div className={styles.actionRow}>
-                      <button
-                        className={styles.actionBtn}
-                        onClick={() => handleEditClick(blog)}
-                        title="Edit"
-                      ><FaEdit /></button>
-                      <button
-                        className={`${styles.actionBtn} ${styles.actionToggle}`}
-                        onClick={() => toggleStatus(blog)}
-                        title={blog.status === 'draft' ? 'Publish' : 'Move to Draft'}
-                      >
+                      <button className={styles.actionBtn} onClick={() => handleEditClick(blog)} title="Edit"><FaEdit /></button>
+                      <button className={`${styles.actionBtn} ${styles.actionToggle}`} onClick={() => toggleStatus(blog)}
+                        title={blog.status === 'draft' ? 'Publish' : 'Move to Draft'}>
                         {blog.status === 'draft' ? <FaGlobe /> : <FaArchive />}
                       </button>
-                      <button
-                        className={`${styles.actionBtn} ${styles.actionDelete}`}
-                        onClick={() => setDeleteConfirm(blog.id)}
-                        title="Delete"
-                      ><FaTrash /></button>
+                      <button className={`${styles.actionBtn} ${styles.actionDelete}`} onClick={() => setDeleteConfirm(blog.id)} title="Delete"><FaTrash /></button>
                     </div>
                   </td>
                 </tr>
@@ -305,40 +233,30 @@ const ManageBlog = () => {
         </div>
       )}
 
-      {/* ── DELETE CONFIRM MODAL ── */}
       {deleteConfirm && (
         <div className={styles.overlay} onClick={() => setDeleteConfirm(null)}>
           <div className={styles.confirmModal} onClick={e => e.stopPropagation()}>
             <div className={styles.confirmIcon}>⚠</div>
             <h3 className={styles.confirmTitle}>Delete Post?</h3>
-            <p className={styles.confirmText}>
-              This action cannot be undone. The post will be permanently removed.
-            </p>
+            <p className={styles.confirmText}>This action cannot be undone. The post will be permanently removed.</p>
             <div className={styles.confirmActions}>
               <button className={styles.cancelBtn} onClick={() => setDeleteConfirm(null)}>Cancel</button>
-              <button className={styles.deleteBtn} onClick={() => handleDeleteBlog(deleteConfirm)}>
-                Delete Permanently
-              </button>
+              <button className={styles.deleteBtn} onClick={() => handleDeleteBlog(deleteConfirm)}>Delete Permanently</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── EDIT MODAL ── */}
       {isEditing && selectedBlog && (
         <div className={styles.overlay} onClick={() => setIsEditing(false)}>
           <div className={styles.editModal} onClick={e => e.stopPropagation()}>
-
             <div className={styles.modalHeader}>
               <div>
                 <div className={styles.modalBadge}>EDITING</div>
                 <h2 className={styles.modalTitle}>{selectedBlog.title}</h2>
               </div>
-              <button className={styles.closeBtn} onClick={() => setIsEditing(false)}>
-                <FaTimes />
-              </button>
+              <button className={styles.closeBtn} onClick={() => setIsEditing(false)}><FaTimes /></button>
             </div>
-
             <div className={styles.modalBody}>
               <div className={styles.modalGrid}>
                 <div className={styles.fieldGroup}>
@@ -370,53 +288,35 @@ const ManageBlog = () => {
                   <input className={styles.input} value={form.tags} onChange={e => handleFormChange('tags', e.target.value)} />
                 </div>
                 <div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
-                  <label className={styles.label}>
-                    Content <span className={styles.req}>*</span>
-                    <span className={styles.wc}>{wordCount(form.content)} words</span>
-                  </label>
+                  <label className={styles.label}>Content <span className={styles.req}>*</span>
+                    <span className={styles.wc}>{wordCount(form.content)} words</span></label>
                   <div className={styles.contentEditor}>
                     <div className={styles.toolbar}>
                       {toolbarActions.map((t, i) => (
-                        <button key={i} type="button" className={styles.toolbarBtn} onClick={t.action} style={t.style}>
-                          {t.label}
-                        </button>
+                        <button key={i} type="button" className={styles.toolbarBtn} onClick={t.action} style={t.style}>{t.label}</button>
                       ))}
                     </div>
-                    <textarea
-                      ref={contentRef}
-                      className={styles.contentTextarea}
-                      rows={16}
-                      value={form.content}
-                      onChange={e => handleFormChange('content', e.target.value)}
-                    />
+                    <textarea ref={contentRef} className={styles.contentTextarea} rows={16}
+                      value={form.content} onChange={e => handleFormChange('content', e.target.value)} />
                   </div>
                 </div>
                 <div className={styles.fieldGroup}>
                   <label className={styles.label}>Status</label>
                   <div className={styles.statusToggle}>
                     {['draft', 'published'].map(s => (
-                      <button
-                        key={s}
-                        type="button"
+                      <button key={s} type="button"
                         className={`${styles.statusBtn} ${form.status === s ? styles.statusActive : ''}`}
-                        onClick={() => handleFormChange('status', s)}
-                      >{s.charAt(0).toUpperCase() + s.slice(1)}</button>
+                        onClick={() => handleFormChange('status', s)}>
+                        {s.charAt(0).toUpperCase() + s.slice(1)}
+                      </button>
                     ))}
                   </div>
                 </div>
               </div>
-
-              {error && isEditing && (
-                <div className={styles.errorBanner}>
-                  <span>!</span> {error}
-                </div>
-              )}
+              {error && isEditing && <div className={styles.errorBanner}><span>!</span> {error}</div>}
             </div>
-
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={() => setIsEditing(false)}>
-                Cancel
-              </button>
+              <button className={styles.cancelBtn} onClick={() => setIsEditing(false)}>Cancel</button>
               <button className={styles.saveBtn} onClick={handleUpdateBlog} disabled={saving}>
                 {saving ? <><span className={styles.spinner} /> Saving…</> : '✓ Save Changes'}
               </button>

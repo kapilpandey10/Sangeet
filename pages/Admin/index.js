@@ -230,9 +230,9 @@ const AdminDashboard = () => {
 };
 
 export default function Page() {
-  //return (
-   // <AdminRoute>
-    //  <AdminDashboard />
-    //</AdminRoute>
- // )
+return (
+<AdminRoute>
+    <AdminDashboard />
+   </AdminRoute>
+ )
 }

@@ -1,35 +1,43 @@
 import Link from 'next/link';
-import styles from '../styles/404.module.css'; // Import CSS Module
+import styles from '../styles/404.module.css';
 
 const Custom404 = () => {
   return (
     <div className={styles.container}>
+      {/* Ambient background orbs */}
+      <div className={styles.orb1} />
+      <div className={styles.orb2} />
+      <div className={styles.orb3} />
+
       <div className={styles.content}>
-        <div className={styles.emojiWrapper}>
-          <svg className={styles.sadEmoji} viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            {/* Face */}
-            <circle cx="32" cy="32" r="30" fill="#f8d733" />
-            
-            {/* Eyes */}
-            <circle cx="22" cy="24" r="4" className={styles.eye} />
-            <circle cx="42" cy="24" r="4" className={styles.eye} />
-
-            {/* Mouth */}
-            <path d="M22,44 C28,38 36,38 42,44" stroke="#333" strokeWidth="2" strokeLinecap="round" />
-
-            {/* Tear Drop - adjusted position closer to the right eye */}
-            <path
-              d="M42,28 Q44,38 38,40 Q34,38 36,28 Z"
-              fill="#00c5ff"
-              className={styles.tear}
-            />
-          </svg>
+        {/* Glitchy 404 */}
+        <div className={styles.codeWrapper}>
+          <span className={styles.codeText} data-text="404">404</span>
         </div>
-        <h1 className={styles.title}>Page Not Found</h1>
-        <p className={styles.message}>Please use the Search button to search. There is always a chance you might Discover it. </p>
-        <Link href="/">
-          <span className={styles.homeLink}>Return to Homepage</span>
-        </Link>
+
+        {/* Divider line */}
+        <div className={styles.divider} />
+
+        <p className={styles.label}>PAGE NOT FOUND</p>
+
+        <h1 className={styles.title}>Looks like you've drifted into the void.</h1>
+
+        <p className={styles.message}>
+          The page you're looking for doesn't exist, was moved, or never existed at all.
+          Try searching, or head back home.
+        </p>
+
+        <div className={styles.actions}>
+          <Link href="/">
+            <span className={styles.primaryBtn}>Return Home</span>
+          </Link>
+          <Link href="/searchresults">
+            <span className={styles.secondaryBtn}>Search Site</span>
+          </Link>
+        </div>
+
+        {/* Decorative grid coordinates */}
+        <p className={styles.coords}>ERR · 404 · NULL · VOID</p>
       </div>
     </div>
   );

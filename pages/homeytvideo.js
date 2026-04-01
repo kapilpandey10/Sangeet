@@ -101,7 +101,7 @@ const HomeYTVideo = () => {
 
   // autoplay=0 so browser doesn't block; enablejsapi=1 so postMessage works
   const embedUrl = videoId
-    ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1`
+    ? `https://www.youtube.com/embed/${videoId}?autoplay=0&mute=0&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1`
     : null;
 
   const handleViewLyrics = () => {

@@ -223,7 +223,6 @@ const HomePage = ({ lyrics, featuredArtist }) => {
           <div className={styles.sectionHead}>
             <div>
               <p className={styles.sectionEyebrow}>— Fresh Drops</p>
-              <h2 className={styles.sectionTitle}>New Releases</h2>
             </div>
           </div>
           <NewRelease />

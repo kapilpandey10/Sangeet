@@ -2,9 +2,9 @@
 // Retro CRT TV component — YouTube video plays inside a TV bezel.
 // A transparent overlay blocks all YouTube controls (no pause, no seek, no fullscreen).
 // Song rotates every 5 minutes in sync across all devices via UTC time.
-// Keeps all original logic intact.
+// Play/pause button added to control panel to fix browser autoplay restrictions.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useRouter } from 'next/router';
 import styles from '../styles/HomeYTVideo.module.css';
@@ -14,12 +14,15 @@ const HomeYTVideo = () => {
   const [loading,    setLoading]    = useState(true);
   const [timeLeft,   setTimeLeft]   = useState(0);
   const [lyricsData, setLyricsData] = useState(null);
-  const [powered,    setPowered]    = useState(false); // TV power-on animation
+  const [powered,    setPowered]    = useState(false);
+  const [isPlaying,  setIsPlaying]  = useState(false); // ← new
+  const iframeRef = useRef(null);                       // ← new
   const router = useRouter();
 
   // ── Fetch video for current 5-minute UTC interval ─────────────────────────
   const fetchVideoForInterval = async () => {
     setLoading(true);
+    setIsPlaying(false); // reset play state on song change
     try {
       const { data: lyricsWithVideos, error } = await supabase
         .from('lyrics')
@@ -61,8 +64,8 @@ const HomeYTVideo = () => {
 
   // ── Countdown timer ────────────────────────────────────────────────────────
   const calculateTimeLeft = () => {
-    const now       = new Date();
-    const elapsed   = (now.getUTCMinutes() % 5) * 60 + now.getUTCSeconds();
+    const now     = new Date();
+    const elapsed = (now.getUTCMinutes() % 5) * 60 + now.getUTCSeconds();
     return 5 * 60 - elapsed;
   };
 
@@ -71,6 +74,18 @@ const HomeYTVideo = () => {
     const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // ── Play / Pause via YouTube postMessage API ───────────────────────────────
+  const togglePlay = () => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const command = isPlaying ? 'pauseVideo' : 'playVideo';
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: 'command', func: command, args: [] }),
+      '*'
+    );
+    setIsPlaying(prev => !prev);
+  };
 
   // ── YouTube ID extractor ───────────────────────────────────────────────────
   const extractYouTubeId = (url) => {
@@ -84,9 +99,9 @@ const HomeYTVideo = () => {
   const secondsLeft = timeLeft % 60;
   const videoId     = extractYouTubeId(videoUrl);
 
-  // autoplay=1 mute=0 — controls=0 hides native controls (overlay handles the rest)
+  // autoplay=0 so browser doesn't block; enablejsapi=1 so postMessage works
   const embedUrl = videoId
-    ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1`
+    ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&enablejsapi=1`
     : null;
 
   const handleViewLyrics = () => {
@@ -125,6 +140,7 @@ const HomeYTVideo = () => {
               {/* VIDEO */}
               {powered && !loading && embedUrl && (
                 <iframe
+                  ref={iframeRef}
                   className={styles.videoFrame}
                   src={embedUrl}
                   title="DynaBeat TV"
@@ -139,6 +155,21 @@ const HomeYTVideo = () => {
                   <div className={styles.loadingDot} />
                   <div className={styles.loadingDot} />
                   <div className={styles.loadingDot} />
+                </div>
+              )}
+
+              {/* Idle overlay — shown when loaded but not yet playing */}
+              {powered && !loading && embedUrl && !isPlaying && (
+                <div className={styles.idleOverlay}>
+                  <button
+                    className={styles.bigPlayBtn}
+                    onClick={togglePlay}
+                    aria-label="Play"
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="36" height="36">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </button>
                 </div>
               )}
 
@@ -188,6 +219,26 @@ const HomeYTVideo = () => {
                 <span className={styles.knobLabel}>VOL</span>
               </div>
             </div>
+
+            {/* ── PLAY / PAUSE BUTTON ────────────────────────────────────── */}
+            {powered && !loading && embedUrl && (
+              <button
+                className={`${styles.playPauseBtn} ${isPlaying ? styles.playPauseBtnActive : ''}`}
+                onClick={togglePlay}
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+              >
+                {isPlaying ? (
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                )}
+                <span className={styles.playPauseLabel}>{isPlaying ? 'PAUSE' : 'PLAY'}</span>
+              </button>
+            )}
 
             {/* Power indicator */}
             <div className={styles.powerArea}>

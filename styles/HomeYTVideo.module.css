@@ -199,7 +199,7 @@
 }
 
 /* ── CONTROL BLOCKER — invisible div covering the whole screen ────────────── */
-/* Prevents clicks reaching the iframe = no pause, seek, fullscreen, menu */
+/* Prevents clicks reaching the iframe = no pause, seek, fullscreen, menu    */
 .controlBlocker {
   position: absolute;
   inset: 0;
@@ -234,6 +234,46 @@
 @keyframes loadBounce {
   0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
   40%            { transform: scale(1);   opacity: 1;   }
+}
+
+/* ── Idle overlay (shown before first play) ──────────────────────────────── */
+.idleOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 18; /* sits below controlBlocker (20) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none; /* let clicks fall through... */
+}
+
+/* Big play button punches above controlBlocker so it receives clicks */
+.bigPlayBtn {
+  pointer-events: all;
+  z-index: 25;
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(211, 84, 0, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 0 32px rgba(211, 84, 0, 0.6);
+}
+
+.bigPlayBtn:hover {
+  background: #e8621a;
+  transform: scale(1.08);
+}
+
+.bigPlayBtn:active {
+  transform: scale(0.96);
 }
 
 /* ── Channel bug (top-left LIVE badge) ───────────────────────────────────── */
@@ -405,6 +445,47 @@
   text-transform: uppercase;
 }
 
+/* ── Play / Pause button on control panel ────────────────────────────────── */
+.playPauseBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #1a1208;
+  border: 1.5px solid #3a2a18;
+  border-radius: 6px;
+  padding: 8px 14px;
+  color: #5a4530;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.playPauseBtn:hover {
+  border-color: #d35400;
+  color: #d35400;
+  transform: translateY(-1px);
+}
+
+.playPauseBtn:active {
+  transform: translateY(0);
+}
+
+.playPauseBtnActive {
+  border-color: rgba(211, 84, 0, 0.5);
+  color: #d35400;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(211, 84, 0, 0.3);
+}
+
+.playPauseLabel {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
 /* Power LED */
 .powerArea {
   display: flex;
@@ -537,5 +618,14 @@
   .antennaLeft,
   .antennaRight {
     display: none;
+  }
+
+  .playPauseBtn {
+    padding: 6px 10px;
+  }
+
+  .bigPlayBtn {
+    width: 56px;
+    height: 56px;
   }
 }

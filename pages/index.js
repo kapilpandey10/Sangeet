@@ -237,7 +237,7 @@ const HomePage = ({ lyrics, featuredArtist }) => {
           <div className={styles.sectionHead}>
             <div>
               <p className={styles.sectionEyebrow}>— Watch</p>
-              <h2 className={styles.sectionTitle}>Music Videos</h2>
+              <h2 className={styles.sectionTitle}>LIVE DYNABEAT TV</h2>
             </div>
           </div>
           <HomeYTVideo />

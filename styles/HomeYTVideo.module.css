@@ -1,168 +1,541 @@
-/* Container for YouTube video section */
-.homeYTVideoContainer {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-  box-sizing: border-box;
-}
+/* File location: styles/HomeYTVideo.module.css */
+/* Retro CRT television — chunky bezel, scanlines, phosphor glow, warm wood grain */
 
-/* YouTube video container with responsive design */
-.youtubeVideoContainer {
+/* ── Google Font ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Scene wrapper ───────────────────────────────────────────────────────── */
+.scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 40px 0 60px;
   position: relative;
-  margin: 20px 0;
 }
 
-/* Aspect ratio for video to ensure responsiveness */
-.videoWrapper {
+/* ── TV outer shell ──────────────────────────────────────────────────────── */
+.tv {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  height: 0;
-  overflow: hidden;
-  max-width: 100%;
-  background: #000;
+  width: min(780px, 92vw);
+  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8)) drop-shadow(0 0 60px rgba(211,84,0,0.06));
+  transform: perspective(1200px) rotateX(2deg);
+  transition: filter 0.8s ease;
 }
 
-/* YouTube iframe fills the wrapper */
-.videoWrapper iframe {
+.tvOn {
+  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8)) drop-shadow(0 0 80px rgba(255,180,80,0.12));
+}
+
+/* ── Antennas ────────────────────────────────────────────────────────────── */
+.antennaLeft,
+.antennaRight {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -64px;
+  width: 4px;
+  height: 68px;
+  background: linear-gradient(to top, #5a4a3a, #9a8a7a);
+  border-radius: 2px;
+  transform-origin: bottom center;
+  z-index: 1;
+}
+
+.antennaLeft  { left: 28%;  transform: rotate(-22deg); }
+.antennaRight { right: 28%; transform: rotate(22deg);  }
+
+.antennaLeft::after,
+.antennaRight::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7a6a5a;
+}
+
+/* ── TV body ─────────────────────────────────────────────────────────────── */
+.tvBody {
+  background: #2a1f14;
+  border-radius: 24px 24px 16px 16px;
+  padding: 24px 24px 20px;
+  border: 3px solid #1a1208;
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.06),
+    inset 0 -4px 8px rgba(0,0,0,0.6),
+    4px 4px 0 #1a1208,
+    -4px 4px 0 #1a1208;
+
+  /* Wood-grain texture via repeating linear gradients */
+  background-image:
+    repeating-linear-gradient(
+      92deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.04) 3px,
+      rgba(0,0,0,0.04) 4px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 8px,
+      rgba(255,255,255,0.015) 8px,
+      rgba(255,255,255,0.015) 9px
+    ),
+    linear-gradient(175deg, #3a2a18 0%, #2a1f14 40%, #1e1509 100%);
+}
+
+/* ── Screen bezel ────────────────────────────────────────────────────────── */
+.screenBezel {
+  background: #0a0a0a;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow:
+    inset 0 0 0 2px #111,
+    inset 0 4px 12px rgba(0,0,0,0.9),
+    inset 0 -2px 6px rgba(0,0,0,0.8);
+  border: 2px solid #0d0d0d;
+}
+
+/* ── Screen inner (where the magic happens) ──────────────────────────────── */
+.screenInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* CRT barrel-distortion vignette */
+.crtVignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.75) 100%);
+  z-index: 10;
+  pointer-events: none;
+  border-radius: 6px;
+}
+
+/* Scanlines */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+  z-index: 11;
+  pointer-events: none;
+  animation: scanlineScroll 8s linear infinite;
+}
+
+@keyframes scanlineScroll {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100px; }
+}
+
+/* Phosphor flicker */
+.flicker {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 210, 120, 0);
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.flickerOn {
+  animation: flicker 6s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%,  100% { opacity: 0;    }
+  2%         { opacity: 0.03; }
+  4%         { opacity: 0;    }
+  30%        { opacity: 0;    }
+  31%        { opacity: 0.02; }
+  32%        { opacity: 0;    }
+  70%        { opacity: 0;    }
+  71%        { opacity: 0.025;}
+  72%        { opacity: 0;    }
+}
+
+/* Static / no-signal on power-off */
+.static {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  z-index: 5;
+  animation: staticAnim 0.1s steps(1) infinite;
+}
+
+@keyframes staticAnim {
+  0%   { background-position: 0 0; }
+  25%  { background-position: -10px 5px; }
+  50%  { background-position: 8px -8px; }
+  75%  { background-position: -5px 10px; }
+  100% { background-position: 3px -3px; }
+}
+
+/* ── Video iframe ────────────────────────────────────────────────────────── */
+.videoFrame {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  border:100px red;
+  border: none;
+  z-index: 1;
+  /* Slight warm tint to match CRT phosphor feel */
+  filter: sepia(8%) saturate(110%) brightness(0.95);
 }
 
-/* Logo overlay in the top-right corner */
-.logoContainer {
+/* ── CONTROL BLOCKER — invisible div covering the whole screen ────────────── */
+/* Prevents clicks reaching the iframe = no pause, seek, fullscreen, menu */
+.controlBlocker {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  inset: 0;
+  z-index: 20;
+  cursor: default;
+  background: transparent;
+}
+
+/* ── Loading dots ────────────────────────────────────────────────────────── */
+.loadingScreen {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
-  color: white;
+  justify-content: center;
+  gap: 10px;
+  z-index: 2;
+  background: #050505;
 }
 
-/* Logo image inside the overlay */
-.logoOverlay {
-  width: 50px;
-  height: 50px;
-  margin-right: 8px;
+.loadingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d35400;
+  animation: loadBounce 1.2s ease-in-out infinite;
 }
 
-/* Brand name text next to the logo */
+.loadingDot:nth-child(2) { animation-delay: 0.2s; }
+.loadingDot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes loadBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%            { transform: scale(1);   opacity: 1;   }
+}
+
+/* ── Channel bug (top-left LIVE badge) ───────────────────────────────────── */
+.channelBug {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+}
+
+.liveDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e53935;
+  animation: pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Bottom info bar ─────────────────────────────────────────────────────── */
+.infoBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 24px 14px 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+}
+
+.infoLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 17px;
+  color: #fff;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(211,84,0,0.5);
+}
+
+.infoArtist {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.infoRight { flex-shrink: 0; }
+
+.infoTimer {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #d35400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Control panel (below screen) ────────────────────────────────────────── */
+.controlPanel {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 8px;
+}
+
+/* Brand badge */
+.brandBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
 .brandName {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: #c8a87a;
+  letter-spacing: 0.08em;
 }
 
-.highlight {
-  color: #1abc9c; /* Highlighted color for part of the brand */
+.brandAccent {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: #d35400;
+  letter-spacing: 0.08em;
 }
 
-/* Countdown timer styling */
-.timerText {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: #2c3e50;
+.brandTagline {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.3em;
+  color: #5a4530;
+  text-transform: uppercase;
+  margin-top: 2px;
 }
 
-/* Button styling for the "View Lyrics" button */
-.viewLyricsButton {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #1abc9c;
-  color: white;
-  border: none;
-  border-radius: 5px;
+/* Knobs */
+.knobs {
+  display: flex;
+  gap: 20px;
+}
+
+.knobGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.knob {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #6a5a4a, #2a1f14);
+  border: 2px solid #1a1208;
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.08),
+    0 2px 4px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+/* Indicator line on knob */
+.knob::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(var(--r, 0deg));
+  width: 2px;
+  height: 10px;
+  background: #c8a87a;
+  border-radius: 1px;
+  transform-origin: bottom center;
+}
+
+.knobLabel {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  color: #5a4530;
+  text-transform: uppercase;
+}
+
+/* Power LED */
+.powerArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.powerLed {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2a1208;
+  border: 1px solid #1a0a04;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+.powerLedOn {
+  background: #d35400;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.3),
+    0 0 8px rgba(211,84,0,0.8),
+    0 0 16px rgba(211,84,0,0.4);
+  animation: ledPulse 3s ease-in-out infinite;
+}
+
+@keyframes ledPulse {
+  0%, 100% { box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 0 8px rgba(211,84,0,0.8), 0 0 16px rgba(211,84,0,0.4); }
+  50%       { box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 0 4px rgba(211,84,0,0.5), 0 0 8px rgba(211,84,0,0.2);  }
+}
+
+.powerLabel {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  color: #5a4530;
+  text-transform: uppercase;
+}
+
+/* Speaker grille */
+.speaker {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 4px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.4);
+}
+
+.speakerSlot {
+  width: 36px;
+  height: 2px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 1px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+/* ── TV legs ─────────────────────────────────────────────────────────────── */
+.legs {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 60px;
+}
+
+.leg {
+  width: 20px;
+  height: 28px;
+  background: linear-gradient(to bottom, #2a1f14, #1a1208);
+  border-radius: 0 0 6px 6px;
+  border: 2px solid #1a1208;
+  border-top: none;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.5);
+}
+
+/* ── View Lyrics button ──────────────────────────────────────────────────── */
+.lyricsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid rgba(211,84,0,0.4);
+  color: #d35400;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: 2px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
 }
 
-.viewLyricsButton:hover {
-  background-color: #16a085; /* Darker shade on hover */
+.lyricsBtn:hover {
+  background: rgba(211,84,0,0.08);
+  border-color: #d35400;
+  color: #e8621a;
+  transform: translateY(-2px);
 }
 
-/* Loading state */
-.loadingText {
-  font-size: 1.2rem;
-  color: #7f8c8d;
+.lyricsBtn:active {
+  transform: translateY(0);
 }
 
-/* Media Queries for responsive design */
-@media (max-width: 1024px) {
-  /* Smaller screens like tablets */
-  .youtubeVideoContainer {
-    margin: 15px 0;
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .tv {
+    transform: none;
   }
 
-  .logoOverlay {
-    width: 40px;
-    height: 40px;
+  .brandName,
+  .brandAccent {
+    font-size: 16px;
   }
 
-  .brandName {
-    font-size: 1rem;
+  .knob {
+    width: 24px;
+    height: 24px;
   }
 
-  .viewLyricsButton {
-    padding: 8px 16px;
-    font-size: 0.9rem;
+  .speakerSlot {
+    width: 24px;
   }
 
-  .timerText {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-width: 768px) {
-  /* Mobile devices */
-  .youtubeVideoContainer {
-    margin: 10px 0;
+  .legs {
+    padding: 0 40px;
   }
 
-  .logoOverlay {
-    width: 35px;
-    height: 35px;
-  }
-
-  .viewLyricsButton {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
-
-  .timerText {
-    font-size: 1.2rem;
-  }
-
-  .brandName {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Extra small mobile devices */
-  .youtubeVideoContainer {
-    margin: 5px 0;
-  }
-
-  .logoOverlay {
-    width: 30px;
-    height: 30px;
-  }
-
-  .viewLyricsButton {
-    padding: 5px 10px;
-    font-size: 0.8rem;
-  }
-
-  .timerText {
-    font-size: 1.1rem;
-  }
-
-  .brandName {
-    font-size: 0.85rem;
+  .antennaLeft,
+  .antennaRight {
+    display: none;
   }
 }

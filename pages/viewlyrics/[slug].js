@@ -275,7 +275,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
 
   // ── Copy / Selection protection ─────────────────────────────
   useEffect(() => {
-    // Block copy, cut, select-all (Ctrl+A / Cmd+A), and right-click everywhere
     document.addEventListener('copy',        blockEvent);
     document.addEventListener('cut',         blockEvent);
     document.addEventListener('selectstart', blockEvent);
@@ -311,14 +310,12 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   const lyricChunks  = splitLyrics(currentText, 3);
   const pageUrl      = typeof window !== 'undefined' ? window.location.href : '';
 
-  // Copy button still works — it bypasses the document listener by writing directly
   const handleCopy = () => {
     navigator.clipboard.writeText(currentText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Shared props applied to every lyric section for belt-and-suspenders protection
   const noSelectProps = {
     onCopy:        blockEvent,
     onCut:         blockEvent,
@@ -346,23 +343,19 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
         />
       </Head>
 
-      {/* Ad Blocker Modal */}
       {adBlockDetected && !adBlockDismissed && (
         <AdBlockerModal onDismiss={() => setAdBlockDismissed(true)} />
       )}
 
-      {/* Immersive background */}
       <div className={styles.bgBlur} style={{ backgroundImage: `url(${thumbnailUrl})` }} />
       <div className={styles.bgOverlay} />
 
-      {/* ══ SLOT 1: Top Leaderboard ══ */}
       <div className={styles.topLeaderboard}>
         <AdSlot slotId={AD_SLOTS.TOP_LEADERBOARD} onBlocked={handleAdBlocked} />
       </div>
 
       <div className={styles.outerLayout}>
 
-        {/* ══ SLOT 11: Left Sidebar ══ */}
         <aside className={styles.leftSidebar}>
           <div className={styles.stickyAd}>
             <SidebarAd slotId={AD_SLOTS.LEFT_SIDEBAR} onBlocked={handleAdBlocked} />
@@ -371,7 +364,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
 
         <main className={styles.contentWrapper}>
 
-          {/* Nav */}
           <nav className={styles.topNav}>
             <Link href="/viewlyrics" className={styles.backLink}>
               <FaArrowLeft /> All Lyrics
@@ -379,7 +371,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             <span className={styles.breadcrumb}>{lyric.artist} › {lyric.title}</span>
           </nav>
 
-          {/* ── Hero ────────────────────────────────────────── */}
           <section className={`${styles.heroSection} ${styles.reveal}`}>
             <div className={styles.heroMain}>
               <div className={styles.imageWrapper}>
@@ -404,11 +395,16 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                     ? `Released ${new Date(lyric.published_date).getFullYear()}`
                     : 'DynaBeat'}
                 </p>
+                {/* Show view count on the song page itself */}
+                {lyric.click_count > 0 && (
+                  <p className={styles.viewCount}>
+                    👁 {lyric.click_count.toLocaleString()} views
+                  </p>
+                )}
                 <div className={styles.actionRow}>
                   <button onClick={() => setIsEnglish(!isEnglish)} className={styles.toggleBtn}>
                     <FaLanguage /> {isEnglish ? 'Original' : 'English'}
                   </button>
-                  {/* Copy button intentionally still works — uses clipboard API directly */}
                   <button onClick={handleCopy} className={styles.iconBtn} title="Copy lyrics">
                     {copied ? <FaCheck /> : <FaCopy />}
                   </button>
@@ -424,14 +420,12 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </div>
           </section>
 
-          {/* ══ SLOT 2: Below Hero ══ */}
           <AdSlot
             slotId={AD_SLOTS.BELOW_HERO}
             interval={90000}
             onBlocked={handleAdBlocked}
           />
 
-          {/* ── Lyrics Chunk 1 ────────────────────────────── */}
           <section
             className={`${styles.lyricsSection} ${styles.reveal}`}
             {...noSelectProps}
@@ -447,7 +441,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </div>
           </section>
 
-          {/* ══ SLOT 3: Between chunk 1 & 2 ══ */}
           {lyricChunks.length > 1 && (
             <>
               <InContentAd slotId={AD_SLOTS.MID_LYRICS_1} onBlocked={handleAdBlocked} />
@@ -462,7 +455,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </>
           )}
 
-          {/* ══ SLOT 4: Between chunk 2 & 3 ══ */}
           {lyricChunks.length > 2 && (
             <>
               <InContentAd slotId={AD_SLOTS.MID_LYRICS_2} onBlocked={handleAdBlocked} />
@@ -477,14 +469,12 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </>
           )}
 
-          {/* ══ SLOT 5: Below Lyrics ══ */}
           <AdSlot
             slotId={AD_SLOTS.BELOW_LYRICS}
             interval={60000}
             onBlocked={handleAdBlocked}
           />
 
-          {/* ── Share Bar ─────────────────────────────────── */}
           <div className={`${styles.shareBar} ${styles.reveal}`}>
             <p className={styles.shareLabel}>Share this song</p>
             <div className={styles.shareButtons}>
@@ -506,12 +496,9 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </div>
           </div>
 
-          {/* ── YouTube ───────────────────────────────────── */}
           {youtubeId && (
             <>
-              {/* ══ SLOT 6: Before Video ══ */}
               <AdSlot slotId={AD_SLOTS.BEFORE_VIDEO} onBlocked={handleAdBlocked} />
-
               <section className={`${styles.videoSection} ${styles.reveal}`}>
                 <h3 className={styles.sectionLabel}>Official Music Video</h3>
                 <div className={styles.videoWrapper} ref={youtubeRef}>
@@ -522,8 +509,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                   />
                 </div>
               </section>
-
-              {/* ══ SLOT 7: After Video ══ */}
               <AdSlot
                 slotId={AD_SLOTS.AFTER_VIDEO}
                 interval={75000}
@@ -532,32 +517,20 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
             </>
           )}
 
-          {/* ── Related Tracks ────────────────────────────── */}
           {relatedLyrics.length > 0 && (
             <>
-              {/* ══ SLOT 8: Before Related ══ */}
               <AdSlot
                 slotId={AD_SLOTS.BEFORE_RELATED}
                 label="Sponsored"
                 onBlocked={handleAdBlocked}
               />
-
               <section className={`${styles.relatedSection} ${styles.reveal}`}>
                 <h3 className={styles.sectionLabel}>Similar Tracks</h3>
                 <div className={styles.relatedGrid}>
-
                   {relatedLyrics.slice(0, 2).map(song => (
-                    <Link
-                      href={`/viewlyrics/${song.slug}`}
-                      key={song.id}
-                      className={styles.smallCard}
-                    >
+                    <Link href={`/viewlyrics/${song.slug}`} key={song.id} className={styles.smallCard}>
                       <div className={styles.smallThumb}>
-                        <NextImage
-                          src={song.thumbnail_url || '/logo/logo.webp'}
-                          alt={song.title}
-                          fill
-                        />
+                        <NextImage src={song.thumbnail_url || '/logo/logo.webp'} alt={song.title} fill />
                       </div>
                       <div className={styles.smallInfo}>
                         <h4>{song.title}</h4>
@@ -565,25 +538,11 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                       </div>
                     </Link>
                   ))}
-
-                  {/* ══ SLOT 9: Native inside grid ══ */}
-                  <NativeRelatedAd
-                    slotId={AD_SLOTS.NATIVE_RELATED}
-                    onBlocked={handleAdBlocked}
-                  />
-
+                  <NativeRelatedAd slotId={AD_SLOTS.NATIVE_RELATED} onBlocked={handleAdBlocked} />
                   {relatedLyrics.slice(2).map(song => (
-                    <Link
-                      href={`/viewlyrics/${song.slug}`}
-                      key={song.id}
-                      className={styles.smallCard}
-                    >
+                    <Link href={`/viewlyrics/${song.slug}`} key={song.id} className={styles.smallCard}>
                       <div className={styles.smallThumb}>
-                        <NextImage
-                          src={song.thumbnail_url || '/logo/logo.webp'}
-                          alt={song.title}
-                          fill
-                        />
+                        <NextImage src={song.thumbnail_url || '/logo/logo.webp'} alt={song.title} fill />
                       </div>
                       <div className={styles.smallInfo}>
                         <h4>{song.title}</h4>
@@ -591,13 +550,11 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                       </div>
                     </Link>
                   ))}
-
                 </div>
               </section>
             </>
           )}
 
-          {/* ══ SLOT 10: Bottom Banner ══ */}
           <AdSlot
             slotId={AD_SLOTS.BOTTOM_BANNER}
             interval={120000}
@@ -606,7 +563,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
 
         </main>
 
-        {/* ══ SLOTS 12 & 13: Right Sidebar ══ */}
         <aside className={styles.rightSidebar}>
           <div className={styles.stickyAd}>
             <SidebarAd slotId={AD_SLOTS.RIGHT_SIDEBAR_1} onBlocked={handleAdBlocked} />
@@ -618,7 +574,6 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
 
       </div>
 
-      {/* ══ SLOT 14: Sticky Footer (mobile) ══ */}
       {stickyVisible && (
         <div className={styles.stickyBottomAd}>
           <button
@@ -651,6 +606,13 @@ export const getServerSideProps = async (context) => {
     if (error || !lyric) {
       return { props: { lyric: null, relatedLyrics: [], slug, error: 'Lyric not found.' } };
     }
+
+    // ── Increment click count on every real page visit ──────
+    // Runs server-side so it catches direct URL visits, not just card clicks
+    await supabase.rpc('increment_click_count', { song_id: lyric.id });
+
+    // Return the updated count so the page shows the live number
+    lyric.click_count = (lyric.click_count || 0) + 1;
 
     const { data: relatedLyrics } = await supabase
       .from('lyrics')

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import NextImage from 'next/image';   // renamed to avoid clash with browser's Image constructor
+import NextImage from 'next/image';
 import { supabase } from '../../supabaseClient';
 import {
   FaTwitter, FaFacebook, FaWhatsapp,
@@ -71,18 +71,11 @@ const AdBlockerModal = ({ onDismiss }) => (
 
 // ═══════════════════════════════════════════════════════════════
 // STANDARD AD SLOT
-// Auto-hides when unfilled. Reports blocked status to parent.
 // ═══════════════════════════════════════════════════════════════
-const AdSlot = ({
-  slotId,
-  format = 'auto',
-  label = 'Advertisement',
-  interval = null,
-  onBlocked,
-}) => {
-  const [key, setKey]       = useState(0);
+const AdSlot = ({ slotId, format = 'auto', label = 'Advertisement', interval = null, onBlocked }) => {
+  const [key, setKey]         = useState(0);
   const [visible, setVisible] = useState(true);
-  const insRef              = useRef(null);
+  const insRef                = useRef(null);
 
   useEffect(() => {
     pushAd();
@@ -92,7 +85,6 @@ const AdSlot = ({
       if (status === 'unfilled') {
         setVisible(false);
       } else if (!status) {
-        // No status = request was blocked
         onBlocked?.();
         setVisible(false);
       }
@@ -130,7 +122,7 @@ const AdSlot = ({
 };
 
 // ═══════════════════════════════════════════════════════════════
-// SIDEBAR AD (160×600)
+// SIDEBAR AD
 // ═══════════════════════════════════════════════════════════════
 const SidebarAd = ({ slotId, onBlocked }) => {
   const [visible, setVisible] = useState(true);
@@ -166,10 +158,7 @@ const SidebarAd = ({ slotId, onBlocked }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// IN-CONTENT AD (between lyric chunks)
-// Uses standard "auto" display — NOT in-feed/fluid.
-// In-feed requires a real list/article feed page. A lyrics page
-// with <pre> blocks does not qualify — hence Google's error.
+// IN-CONTENT AD
 // ═══════════════════════════════════════════════════════════════
 const InContentAd = ({ slotId, onBlocked }) => {
   const [visible, setVisible] = useState(true);
@@ -207,7 +196,7 @@ const InContentAd = ({ slotId, onBlocked }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// NATIVE AD CARD (inside related grid)
+// NATIVE AD CARD
 // ═══════════════════════════════════════════════════════════════
 const NativeRelatedAd = ({ slotId, onBlocked }) => {
   const [visible, setVisible] = useState(true);
@@ -253,20 +242,23 @@ const splitLyrics = (text, chunkCount = 3) => {
   ).filter(c => c.trim());
 };
 
+// ─── Shared copy/context-menu block handler ───────────────────
+const blockEvent = (e) => e.preventDefault();
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN PAGE COMPONENT
 // ═══════════════════════════════════════════════════════════════
 const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
-  const [isEnglish, setIsEnglish]         = useState(false);
-  const [copied, setCopied]               = useState(false);
-  const [liked, setLiked]                 = useState(false);
-  const [stickyVisible, setStickyVisible] = useState(true);
+  const [isEnglish, setIsEnglish]               = useState(false);
+  const [copied, setCopied]                     = useState(false);
+  const [liked, setLiked]                       = useState(false);
+  const [stickyVisible, setStickyVisible]       = useState(true);
   const [adBlockDetected, setAdBlockDetected]   = useState(false);
   const [adBlockDismissed, setAdBlockDismissed] = useState(false);
   const youtubeRef      = useRef(null);
   const adBlockReported = useRef(false);
 
-  // Fire modal only once, regardless of how many slots report blocked
+  // ── Ad-block detection ──────────────────────────────────────
   const handleAdBlocked = useCallback(() => {
     if (!adBlockReported.current) {
       adBlockReported.current = true;
@@ -274,16 +266,30 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
     }
   }, []);
 
-  // Primary ad-block detection:
-  // Use browser's native HTMLImageElement (NOT Next.js Image) to ping ad server
   useEffect(() => {
-    const img = new window.Image(); // window.Image = native browser Image constructor
-    img.onload = () => {};          // loaded fine — ads not blocked
-    img.onerror = () => handleAdBlocked(); // request blocked
+    const img = new window.Image();
+    img.onload = () => {};
+    img.onerror = () => handleAdBlocked();
     img.src = `https://pagead2.googlesyndication.com/pagead/show_ads.js?t=${Date.now()}`;
   }, [handleAdBlocked]);
 
-  // Scroll reveal
+  // ── Copy / Selection protection ─────────────────────────────
+  useEffect(() => {
+    // Block copy, cut, select-all (Ctrl+A / Cmd+A), and right-click everywhere
+    document.addEventListener('copy',        blockEvent);
+    document.addEventListener('cut',         blockEvent);
+    document.addEventListener('selectstart', blockEvent);
+    document.addEventListener('contextmenu', blockEvent);
+
+    return () => {
+      document.removeEventListener('copy',        blockEvent);
+      document.removeEventListener('cut',         blockEvent);
+      document.removeEventListener('selectstart', blockEvent);
+      document.removeEventListener('contextmenu', blockEvent);
+    };
+  }, []);
+
+  // ── Scroll reveal ───────────────────────────────────────────
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => entries.forEach(e => e.isIntersecting && e.target.classList.add(styles.active)),
@@ -305,10 +311,18 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
   const lyricChunks  = splitLyrics(currentText, 3);
   const pageUrl      = typeof window !== 'undefined' ? window.location.href : '';
 
+  // Copy button still works — it bypasses the document listener by writing directly
   const handleCopy = () => {
     navigator.clipboard.writeText(currentText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Shared props applied to every lyric section for belt-and-suspenders protection
+  const noSelectProps = {
+    onCopy:        blockEvent,
+    onCut:         blockEvent,
+    onContextMenu: blockEvent,
   };
 
   return (
@@ -348,7 +362,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
 
       <div className={styles.outerLayout}>
 
-        {/* ══ SLOT 11: Left Sidebar (desktop only) ══ */}
+        {/* ══ SLOT 11: Left Sidebar ══ */}
         <aside className={styles.leftSidebar}>
           <div className={styles.stickyAd}>
             <SidebarAd slotId={AD_SLOTS.LEFT_SIDEBAR} onBlocked={handleAdBlocked} />
@@ -394,6 +408,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                   <button onClick={() => setIsEnglish(!isEnglish)} className={styles.toggleBtn}>
                     <FaLanguage /> {isEnglish ? 'Original' : 'English'}
                   </button>
+                  {/* Copy button intentionally still works — uses clipboard API directly */}
                   <button onClick={handleCopy} className={styles.iconBtn} title="Copy lyrics">
                     {copied ? <FaCheck /> : <FaCopy />}
                   </button>
@@ -417,7 +432,10 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           />
 
           {/* ── Lyrics Chunk 1 ────────────────────────────── */}
-          <section className={`${styles.lyricsSection} ${styles.reveal}`}>
+          <section
+            className={`${styles.lyricsSection} ${styles.reveal}`}
+            {...noSelectProps}
+          >
             <div className={styles.glassPanel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelTitle}>
@@ -433,7 +451,10 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           {lyricChunks.length > 1 && (
             <>
               <InContentAd slotId={AD_SLOTS.MID_LYRICS_1} onBlocked={handleAdBlocked} />
-              <section className={`${styles.lyricsSection} ${styles.reveal}`}>
+              <section
+                className={`${styles.lyricsSection} ${styles.reveal}`}
+                {...noSelectProps}
+              >
                 <div className={styles.glassPanel}>
                   <pre className={styles.lyricsBody}>{lyricChunks[1]}</pre>
                 </div>
@@ -445,7 +466,10 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
           {lyricChunks.length > 2 && (
             <>
               <InContentAd slotId={AD_SLOTS.MID_LYRICS_2} onBlocked={handleAdBlocked} />
-              <section className={`${styles.lyricsSection} ${styles.reveal}`}>
+              <section
+                className={`${styles.lyricsSection} ${styles.reveal}`}
+                {...noSelectProps}
+              >
                 <div className={styles.glassPanel}>
                   <pre className={styles.lyricsBody}>{lyricChunks[2]}</pre>
                 </div>
@@ -582,7 +606,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
 
         </main>
 
-        {/* ══ SLOTS 12 & 13: Right Sidebar (tablet + desktop) ══ */}
+        {/* ══ SLOTS 12 & 13: Right Sidebar ══ */}
         <aside className={styles.rightSidebar}>
           <div className={styles.stickyAd}>
             <SidebarAd slotId={AD_SLOTS.RIGHT_SIDEBAR_1} onBlocked={handleAdBlocked} />

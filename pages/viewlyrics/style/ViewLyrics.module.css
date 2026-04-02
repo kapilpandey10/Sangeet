@@ -25,7 +25,7 @@
   filter: blur(90px) saturate(1.8);
   opacity: 0.22;
   z-index: 0;
-  transform: scale(1.15); /* prevents blur white edges */
+  transform: scale(1.15);
 }
 
 .bgOverlay {
@@ -37,7 +37,6 @@
 
 /* ═══════════════════════════════════════════════════════════════
    SLOT 1 — TOP LEADERBOARD (728×90)
-   Highest viewability: loads first, above all content
 ═══════════════════════════════════════════════════════════════ */
 .topLeaderboard {
   position: relative;
@@ -57,7 +56,7 @@
   position: relative;
   z-index: 10;
   display: grid;
-  grid-template-columns: 1fr; /* mobile: single column */
+  grid-template-columns: 1fr;
   max-width: 1380px;
   margin: 0 auto;
   padding: 0 0.75rem;
@@ -66,11 +65,10 @@
 
 /* ═══════════════════════════════════════════════════════════════
    SLOTS 11, 12, 13 — SIDEBAR SKYSCRAPERS (160×600)
-   Visible entire page scroll on desktop
 ═══════════════════════════════════════════════════════════════ */
 .leftSidebar,
 .rightSidebar {
-  display: none; /* hidden mobile, enabled via media query */
+  display: none;
 }
 
 .stickyAd {
@@ -104,7 +102,7 @@
 /* ── Main Content Column ─────────────────────────────────────── */
 .contentWrapper {
   min-width: 0;
-  padding: 2rem 1rem 140px; /* bottom padding clears sticky footer ad */
+  padding: 2rem 1rem 140px;
 }
 
 /* ── Navigation ──────────────────────────────────────────────── */
@@ -250,10 +248,7 @@
 
 /* ═══════════════════════════════════════════════════════════════
    AD UNIT STYLES
-   Shared base + specific overrides per placement type
 ═══════════════════════════════════════════════════════════════ */
-
-/* Shared "ad label" — small grey text above every unit */
 .adLabel {
   font-size: 0.6rem;
   letter-spacing: 2.5px;
@@ -264,7 +259,6 @@
   flex-shrink: 0;
 }
 
-/* SLOTS 2, 5, 6, 7, 8, 10 — Standard inline ad units */
 .adUnit {
   width: 100%;
   margin: 1.6rem 0;
@@ -280,7 +274,6 @@
   overflow: hidden;
 }
 
-/* SLOTS 3, 4 — In-lyrics fluid ads (between lyric chunks) */
 .inLyricsAd {
   width: 100%;
   margin: 1.5rem 0;
@@ -295,7 +288,6 @@
   overflow: hidden;
 }
 
-/* SLOT 9 — Native ad inside related grid (looks like a track card) */
 .nativeAdCard {
   background: rgba(255, 255, 255, 0.02);
   border: 1px dashed rgba(255, 255, 255, 0.07);
@@ -318,6 +310,12 @@
   border-radius: 22px;
   padding: 2.25rem 2rem;
   margin-bottom: 0;
+
+  /* ── Copy protection: CSS layer ── */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .panelHeader {
@@ -344,6 +342,7 @@
   letter-spacing: 1px;
 }
 
+/* ── Lyrics body — core copy protection ─────────────────────── */
 .lyricsBody {
   font-family: 'DM Sans', sans-serif;
   font-size: 1.1rem;
@@ -351,6 +350,21 @@
   color: #e8e8e8;
   white-space: pre-wrap;
   text-align: center;
+
+  /* Disable text selection via CSS */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  /* Disable long-press selection on iOS/Android */
+  -webkit-touch-callout: none;
+
+  /* Prevent the text cursor from appearing on hover */
+  cursor: default;
+
+  /* Extra: prevent drag-start highlight on some browsers */
+  -webkit-user-drag: none;
 }
 
 /* ── Section Label ───────────────────────────────────────────── */
@@ -475,8 +489,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SLOT 14 — STICKY FOOTER (mobile-first, always visible)
-   Fixed bottom, user-dismissible, AdSense compliant
+   SLOT 14 — STICKY FOOTER
 ═══════════════════════════════════════════════════════════════ */
 .stickyBottomAd {
   position: fixed;
@@ -534,7 +547,6 @@
    RESPONSIVE BREAKPOINTS
 ═══════════════════════════════════════════════════════════════ */
 
-/* Small mobile */
 @media (max-width: 480px) {
   .heroMain { flex-direction: column; align-items: center; text-align: center; }
   .actionRow { justify-content: center; }
@@ -545,7 +557,6 @@
   .breadcrumb { display: none; }
 }
 
-/* Tablet (≥768px): show right sidebar */
 @media (min-width: 768px) {
   .outerLayout {
     grid-template-columns: 1fr 180px;
@@ -555,7 +566,6 @@
   .contentWrapper { padding: 2rem 1.5rem 140px; }
 }
 
-/* Desktop (≥1160px): show both sidebars */
 @media (min-width: 1160px) {
   .outerLayout {
     grid-template-columns: 180px 1fr 180px;
@@ -564,7 +574,6 @@
   .contentWrapper { padding: 2rem 2rem 140px; }
 }
 
-/* Wide desktop (≥1380px): wider sidebars */
 @media (min-width: 1380px) {
   .outerLayout {
     grid-template-columns: 200px 1fr 200px;
@@ -572,7 +581,7 @@
   .sidebarAdUnit { min-width: 196px; }
 }
 
-/* ─── inContentAd (between lyric chunks) ────────────────────── */
+/* ── In-content ad (between lyric chunks) ────────────────────── */
 .inContentAd {
   width: 100%;
   margin: 1.5rem 0;
@@ -654,7 +663,6 @@
   line-height: 1.7;
   margin-bottom: 0.75rem;
 }
-
 .adBlockText strong { color: #fff; }
 
 .adBlockSubText {
@@ -663,7 +671,6 @@
   line-height: 1.6;
   margin-bottom: 2rem;
 }
-
 .adBlockSubText strong { color: rgba(255, 255, 255, 0.7); }
 
 .adBlockButtons {

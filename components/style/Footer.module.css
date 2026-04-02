@@ -38,7 +38,10 @@
     );
   color: var(--clr-text);
   font-family: 'DM Mono', monospace;
+
+  /* ── FIX: sit above any fixed page overlays (bgBlur / bgOverlay) ── */
   position: relative;
+  z-index: 20;
 }
 
 /* ── Decorative top border ────────────────────────────────── */

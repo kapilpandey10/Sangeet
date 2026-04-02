@@ -7,7 +7,7 @@ import { supabase } from '../../supabaseClient';
 import {
   FaCheckCircle, FaEdit, FaPlus, FaEnvelope,
   FaMusic, FaSignOutAlt, FaNewspaper, FaCogs,
-  FaSun, FaMoon, FaLayerGroup
+  FaSun, FaMoon, FaLayerGroup, FaBolt
 } from 'react-icons/fa';
 import ApproveLyrics  from './ApproveLyrics';
 import ManageLyrics   from './ManageLyrics';

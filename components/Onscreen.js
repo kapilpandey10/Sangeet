@@ -1,29 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../supabaseClient';
-import { FaTimes, FaMusic, FaArrowRight, FaClock } from 'react-icons/fa';
+import { FaTimes, FaMusic, FaArrowRight } from 'react-icons/fa';
 import styles from './style/Onscreen.module.css';
 
+const AUTO_DISMISS_MS = 5000;
+
 const Onscreen = () => {
-  const [lyric, setLyric] = useState(null);
-  const [visible, setVisible] = useState(false);
-  const [currentTime, setCurrentTime] = useState('');
+  const [lyric, setLyric]       = useState(null);
+  const [visible, setVisible]   = useState(false);
+  const [progress, setProgress] = useState(100);
   const router = useRouter();
 
-  // 1. Fetch random lyric
   const fetchRandomLyric = async () => {
     const { data, error } = await supabase
       .from('lyrics')
       .select('id, title, slug, thumbnail_url, artist, lyrics_writer')
       .eq('status', 'approved');
 
-    if (!error && data.length > 0) {
-      const randomIndex = Math.floor(Math.random() * data.length);
-      setLyric(data[randomIndex]);
+    if (!error && data?.length > 0) {
+      setLyric(data[Math.floor(Math.random() * data.length)]);
     }
   };
 
-  // 2. Navigation logic
   const handleExploreNow = () => {
     setVisible(false);
     router.push(`/viewlyrics/${lyric.slug}`);
@@ -31,54 +30,64 @@ const Onscreen = () => {
 
   useEffect(() => {
     fetchRandomLyric();
-    
-    // Live clock for the "Advanced" feel
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    }, 1000);
-
-    return () => clearInterval(timer);
   }, []);
 
-  // 3. Visibility logic (Homepage only)
+  // Show only on homepage
   useEffect(() => {
-    if (router.pathname === '/') {
-      const timer = setTimeout(() => setVisible(true), 1500); // Slight delay for better UX
-      return () => clearTimeout(timer);
-    } else {
-      setVisible(false);
-    }
+    if (router.pathname !== '/') { setVisible(false); return; }
+    const show = setTimeout(() => setVisible(true), 1500);
+    return () => clearTimeout(show);
   }, [router.pathname]);
+
+  // Auto-dismiss + progress bar
+  useEffect(() => {
+    if (!visible) { setProgress(100); return; }
+
+    // Shrink progress bar smoothly
+    const interval = 50; // ms per tick
+    const step = (interval / AUTO_DISMISS_MS) * 100;
+    const ticker = setInterval(() => {
+      setProgress(prev => {
+        if (prev <= 0) { clearInterval(ticker); return 0; }
+        return prev - step;
+      });
+    }, interval);
+
+    // Dismiss after 5s
+    const dismiss = setTimeout(() => setVisible(false), AUTO_DISMISS_MS);
+
+    return () => { clearInterval(ticker); clearTimeout(dismiss); };
+  }, [visible]);
 
   if (!lyric || !visible) return null;
 
   return (
     <div className={styles.overlayContainer}>
       <div className={styles.glassBanner}>
-        <button className={styles.closeBtn} onClick={() => setVisible(false)}>
+
+        {/* Progress bar */}
+        <div className={styles.progressBar}>
+          <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+        </div>
+
+        <button className={styles.closeBtn} onClick={() => setVisible(false)} aria-label="Close">
           <FaTimes />
         </button>
-
-        <div className={styles.badgeRow}>
-          <span className={styles.liveBadge}>LIVE NOW</span>
-          <span className={styles.timeBadge}><FaClock /> {currentTime}</span>
-        </div>
 
         <div className={styles.contentLayout}>
           <div className={styles.imageBox}>
             <img src={lyric.thumbnail_url || '/logo/logo.webp'} alt={lyric.title} />
           </div>
-          
+
           <div className={styles.textDetails}>
-            <div className={styles.categoryLabel}><FaMusic /> Featured Lyrics</div>
+            <div className={styles.categoryLabel}><FaMusic /> Featured</div>
             <h3 className={styles.songTitle}>{lyric.title}</h3>
-            <p className={styles.artistName}>by {lyric.artist}</p>
-            <p className={styles.writerName}>Written by: {lyric.lyrics_writer || 'DynaBeat Team'}</p>
+            <p className={styles.artistName}>{lyric.artist}</p>
           </div>
         </div>
 
         <button className={styles.actionBtn} onClick={handleExploreNow}>
-          Explore Now <FaArrowRight />
+          View Lyrics <FaArrowRight />
         </button>
       </div>
     </div>

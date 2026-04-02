@@ -437,7 +437,7 @@ const LyricsLibrary = ({ allLyrics = [], trendingLyrics = [], newLyrics = [], fe
     allLyrics.filter(l => l.lyrics && l.lyrics.split('\n').filter(x => x.trim().length > 15).length >= 2).slice(0, 6),
   [allLyrics]);
 
-  // Group songs by artist, pick top 4 artists with 2+ songs
+  // Group songs by artist, sort by total views, pick top 4 with 2+ songs
   const artistSpotlights = useMemo(() => {
     const map = {};
     allLyrics.forEach(s => {
@@ -541,7 +541,6 @@ const LyricsLibrary = ({ allLyrics = [], trendingLyrics = [], newLyrics = [], fe
           </section>
         ) : (
           <>
-
             {/* ─── RECENTLY VIEWED (client-only) ────────── */}
             {mounted && <RecentlyViewed />}
 
@@ -560,9 +559,9 @@ const LyricsLibrary = ({ allLyrics = [], trendingLyrics = [], newLyrics = [], fe
             <section className={styles.section}>
               <div className={styles.twoColLayout}>
 
-                {/* Left: Trending by click count */}
+                {/* Left: Top 10 by click_count — always fresh from DB */}
                 <div className={styles.trendingPanel}>
-                  <SectionHead icon={<FaFire />} title="Trending" sub="Most viewed" />
+                  <SectionHead icon={<FaFire />} title="Trending" sub="Top 10 most viewed" />
                   <div className={styles.trendingList}>
                     {trendingLyrics.map((s, i) => (
                       <TrendingRow key={s.slug} song={s} rank={i + 1} />
@@ -570,7 +569,7 @@ const LyricsLibrary = ({ allLyrics = [], trendingLyrics = [], newLyrics = [], fe
                   </div>
                 </div>
 
-                {/* Right: New releases by published_date */}
+                {/* Right: Newest 8 by published_date */}
                 <div className={styles.newPanel}>
                   <SectionHead icon={<FaRegClock />} title="New This Week" sub="Just added" />
                   <div className={styles.newList}>
@@ -626,7 +625,6 @@ const LyricsLibrary = ({ allLyrics = [], trendingLyrics = [], newLyrics = [], fe
 
             {/* ─── AD SLOT 4 ────────────────────────────── */}
             <AdBanner slotId={AD_SLOTS.BOTTOM} label="Advertisement" />
-
           </>
         )}
       </main>
@@ -634,35 +632,39 @@ const LyricsLibrary = ({ allLyrics = [], trendingLyrics = [], newLyrics = [], fe
   );
 };
 
-// ─── Data fetching ────────────────────────────────────────────
-export const getStaticProps = async () => {
+// ═══════════════════════════════════════════════════════════════
+// DATA FETCHING — getServerSideProps so trending is ALWAYS live
+// No caching — every page load reads fresh click_count from DB
+// ═══════════════════════════════════════════════════════════════
+export const getServerSideProps = async () => {
   try {
-    // All lyrics (latest first) — used for New This Week, card grid, quotes, artists
-    const { data: allData, error: allError } = await supabase
-      .from('lyrics')
-      .select('id, title, artist, slug, thumbnail_url, lyrics, status, published_date, click_count')
-      .eq('status', 'approved')
-      .order('published_date', { ascending: false });
+    // Run both queries in parallel for speed
+    const [allResult, trendingResult] = await Promise.all([
+      // All lyrics newest first — for card grid, quotes, artists, new releases
+      supabase
+        .from('lyrics')
+        .select('id, title, artist, slug, thumbnail_url, lyrics, status, published_date, click_count')
+        .eq('status', 'approved')
+        .order('published_date', { ascending: false }),
 
-    if (allError) throw allError;
+      // Top 10 strictly by click_count DESC — the real trending list
+      supabase
+        .from('lyrics')
+        .select('id, title, artist, slug, thumbnail_url, click_count')
+        .eq('status', 'approved')
+        .order('click_count', { ascending: false })
+        .limit(10),
+    ]);
 
-    // Trending — sorted by click_count descending
-    const { data: trendingData, error: trendingError } = await supabase
-      .from('lyrics')
-      .select('id, title, artist, slug, thumbnail_url, click_count')
-      .eq('status', 'approved')
-      .order('click_count', { ascending: false })
-      .limit(10);
+    if (allResult.error) throw allResult.error;
 
-    if (trendingError) throw trendingError;
+    const all      = allResult.data    || [];
+    const trending = trendingResult.data || [];
 
-    const all = allData || [];
-    const trending = trendingData || [];
-
-    // New this week = newest 8 by published_date (already sorted above)
+    // New this week = 8 newest by published_date (all is already date-sorted)
     const newLyrics = all.slice(0, 8);
 
-    // Featured = random from top 5 most-clicked songs that have lyrics
+    // Featured = random pick from top 5 most-viewed songs that have lyrics
     const withLyrics = [...all]
       .filter(l => l.lyrics && l.lyrics.length > 80)
       .sort((a, b) => (b.click_count || 0) - (a.click_count || 0))
@@ -673,18 +675,16 @@ export const getStaticProps = async () => {
 
     return {
       props: {
-        allLyrics: all,
-        trendingLyrics: trending,
+        allLyrics:      all,
+        trendingLyrics: trending,   // sorted by click_count DESC, fresh every request
         newLyrics,
-        featuredLyric: featuredLyric || null,
+        featuredLyric:  featuredLyric || null,
       },
-      revalidate: 60,
     };
   } catch (err) {
-    console.error(err);
+    console.error('LyricsList fetch error:', err);
     return {
       props: { allLyrics: [], trendingLyrics: [], newLyrics: [], featuredLyric: null },
-      revalidate: 60,
     };
   }
 };

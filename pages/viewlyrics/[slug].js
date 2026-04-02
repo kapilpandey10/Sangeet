@@ -398,16 +398,14 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                 {/* Show view count on the song page itself */}
                 {lyric.click_count > 0 && (
                   <p className={styles.viewCount}>
-                    👁 {lyric.click_count.toLocaleString()} views
+                    {lyric.click_count.toLocaleString()} views
                   </p>
                 )}
                 <div className={styles.actionRow}>
                   <button onClick={() => setIsEnglish(!isEnglish)} className={styles.toggleBtn}>
                     <FaLanguage /> {isEnglish ? 'Original' : 'English'}
                   </button>
-                  <button onClick={handleCopy} className={styles.iconBtn} title="Copy lyrics">
-                    {copied ? <FaCheck /> : <FaCopy />}
-                  </button>
+                 
                   <button
                     onClick={() => setLiked(!liked)}
                     className={`${styles.iconBtn} ${liked ? styles.liked : ''}`}

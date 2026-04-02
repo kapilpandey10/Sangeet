@@ -142,7 +142,7 @@ const SpeedMode = ({ onSuccess }) => {
           title,
           slug:            generateSlug(title),
           artist,
-          lyricist,
+          'lyrics-writer': lyricist,
           lyrics:          LYRICS_PLACEHOLDER,
           english_lyrics:  '',
           music_url:       `https://www.youtube.com/watch?v=${meta.videoId}`,

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// ← remove the supabase import entirely
 import {
   FaEdit, FaTrashAlt, FaSave, FaSearch, FaEye, FaEyeSlash,
   FaLayerGroup, FaYoutube, FaUserEdit, FaCalendarAlt, FaPenNib
@@ -13,8 +12,10 @@ const ManageLyrics = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editLyric, setEditLyric] = useState(null);
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' | 'error'
   const [showConfirm, setShowConfirm] = useState(false);
   const [lyricToDelete, setLyricToDelete] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -25,10 +26,20 @@ const ManageLyrics = () => {
         setFilteredLyrics(data || []);
       } catch (err) {
         console.error('Error fetching library:', err);
+        showToast('Failed to load lyrics', 'error');
       }
     };
     fetchLyrics();
   }, []);
+
+  const showToast = (msg, type = 'success') => {
+    setMessage(msg);
+    setMessageType(type);
+    setTimeout(() => {
+      setMessage('');
+      setMessageType('');
+    }, 4000);
+  };
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -43,55 +54,88 @@ const ManageLyrics = () => {
 
   const extractYTId = (url) => url?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
 
- const handleUpdate = async (e) => {
-  e.preventDefault();
-  setMessage('Saving...');
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    showToast('Saving...', 'info');
 
-  try {
-    const res = await fetch('/api/admin/lyrics/update', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editLyric),
-    });
+    try {
+      const res = await fetch('/api/admin/lyrics/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editLyric),
+      });
 
-    const data = await res.json();   // ← read the response body
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        // response body wasn't JSON
+      }
 
-    if (res.ok) {
-      const updated = (arr) => arr.map(l => l.id === editLyric.id ? editLyric : l);
-      setLyrics(updated(lyrics));
-      setFilteredLyrics(updated(filteredLyrics));
-      setMessage(`✓ Updated: ${editLyric.title}`);
-    } else {
-      // Now you'll actually see what the API is returning
-      setMessage(`✗ Error: ${data?.error || data?.message || res.statusText}`);
-      console.error('Update failed:', data);
+      if (res.ok) {
+        const updated = (arr) => arr.map(l => l.id === editLyric.id ? editLyric : l);
+        setLyrics(prev => updated(prev));
+        setFilteredLyrics(prev => updated(prev));
+        showToast(`✓ Updated: ${editLyric.title}`, 'success');
+      } else {
+        const errMsg = data?.error || data?.message || `Server error (${res.status})`;
+        showToast(`✗ ${errMsg}`, 'error');
+        console.error('Update failed:', data);
+      }
+    } catch (err) {
+      showToast(`✗ Network error: ${err.message}`, 'error');
+      console.error('Update error:', err);
+    } finally {
+      setIsSaving(false);
     }
-  } catch (err) {
-    setMessage(`✗ Network error: ${err.message}`);
-    console.error('Update error:', err);
-  }
-
-  setTimeout(() => setMessage(''), 4000);
-};
+  };
 
   const handleDelete = async () => {
-    const res = await fetch('/api/admin/lyrics/delete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: lyricToDelete.id }),
-    });
+    try {
+      const res = await fetch('/api/admin/lyrics/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: lyricToDelete.id }),
+      });
 
-    if (res.ok) {
-      setLyrics(lyrics.filter(l => l.id !== lyricToDelete.id));
-      setFilteredLyrics(filteredLyrics.filter(l => l.id !== lyricToDelete.id));
-      setEditLyric(null);
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        // response body wasn't JSON
+      }
+
+      if (res.ok) {
+        setLyrics(prev => prev.filter(l => l.id !== lyricToDelete.id));
+        setFilteredLyrics(prev => prev.filter(l => l.id !== lyricToDelete.id));
+        setEditLyric(null);
+        setShowConfirm(false);
+        showToast(`✓ Deleted: ${lyricToDelete.title}`, 'success');
+      } else {
+        const errMsg = data?.error || data?.message || `Server error (${res.status})`;
+        showToast(`✗ ${errMsg}`, 'error');
+        setShowConfirm(false);
+        console.error('Delete failed:', data);
+      }
+    } catch (err) {
+      showToast(`✗ Network error: ${err.message}`, 'error');
       setShowConfirm(false);
+      console.error('Delete error:', err);
     }
   };
 
   return (
     <div className={styles.wrapper}>
-      {message && <div className={styles.toast}>{message}</div>}
+      {message && (
+        <div className={`${styles.toast} ${
+          messageType === 'error' ? styles.toastError :
+          messageType === 'info' ? styles.toastInfo :
+          styles.toastSuccess
+        }`}>
+          {message}
+        </div>
+      )}
 
       <div className={styles.topBar}>
         <div className={styles.searchBox}>
@@ -164,8 +208,8 @@ const ManageLyrics = () => {
                   >
                     <FaTrashAlt />
                   </button>
-                  <button type="submit" className={styles.btnSave}>
-                    <FaSave /> Save
+                  <button type="submit" className={styles.btnSave} disabled={isSaving}>
+                    <FaSave /> {isSaving ? 'Saving...' : 'Save'}
                   </button>
                 </div>
               </div>
@@ -190,12 +234,12 @@ const ManageLyrics = () => {
               <div className={styles.formGrid}>
                 <div className={styles.field}>
                   <label className={styles.label}><FaEdit className={styles.li} /> Title</label>
-                  <input className={styles.input} type="text" value={editLyric.title}
+                  <input className={styles.input} type="text" value={editLyric.title || ''}
                     onChange={(e) => setEditLyric({ ...editLyric, title: e.target.value })} />
                 </div>
                 <div className={styles.field}>
                   <label className={styles.label}><FaUserEdit className={styles.li} /> Artist</label>
-                  <input className={styles.input} type="text" value={editLyric.artist}
+                  <input className={styles.input} type="text" value={editLyric.artist || ''}
                     onChange={(e) => setEditLyric({ ...editLyric, artist: e.target.value })} />
                 </div>
                 <div className={styles.field}>
@@ -233,7 +277,7 @@ const ManageLyrics = () => {
       {showConfirm && (
         <ConfirmMsg
           show={showConfirm}
-          onConfirm={handleDelete}  // ← cleaned up, no inline async
+          onConfirm={handleDelete}
           onCancel={() => setShowConfirm(false)}
           message={`Permanently delete "${lyricToDelete?.title}"?`}
         />

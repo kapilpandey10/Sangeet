@@ -473,6 +473,103 @@
 }
 .saveBtn:disabled { opacity: 0.38; cursor: not-allowed; transform: none; box-shadow: none; }
 
+/* ── Section label ── */
+.sectionLabel {
+  padding: 8px 14px 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sectionLabelText {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Req / auto / optional tags ── */
+.req   { color: #e07a5f; margin-left: 3px; }
+.autoTag {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  color: #ffcc00;
+  background: rgba(255,204,0,0.1);
+  border: 1px solid rgba(255,204,0,0.2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+.optTag {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  background: var(--surface, rgba(255,255,255,0.04));
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* ── Mono input ── */
+.fieldMono { font-family: var(--font-mono) !important; font-size: 11px !important; opacity: 0.8; }
+
+/* ── Lyrics textarea ── */
+.lyricsTextarea {
+  resize: vertical;
+  min-height: 70px;
+  font-size: 11px !important;
+  line-height: 1.6;
+}
+.lyricsHint {
+  font-size: 10px;
+  color: var(--muted);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+/* ── Optional toggle ── */
+.optionalToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 14px;
+  padding: 8px 12px;
+  background: var(--surface, rgba(255,255,255,0.02));
+  border: 1px dashed var(--border);
+  border-radius: 7px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  text-align: left;
+  width: calc(100% - 28px);
+}
+.optionalToggle:hover { border-color: rgba(255,204,0,0.3); color: var(--text); }
+.optionalCount {
+  font-size: 9px;
+  font-weight: 400;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.optionalSection {
+  animation: fadeUp 0.25s ease;
+  border-top: 1px dashed var(--border);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
 /* ── How It Works ── */
 .howItWorks {
   background: var(--bg);

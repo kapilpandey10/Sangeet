@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import {
   FaBolt, FaYoutube, FaTimes, FaSpinner, FaPaperPlane,
-  FaMusic, FaPen, FaGlobe, FaCalendar, FaUser, FaMicrophone,
-  FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaEye
+  FaMusic, FaPen, FaGlobe, FaCalendar, FaMicrophone,
+  FaCheckCircle, FaExclamationTriangle, FaInfoCircle,
+  FaEye, FaEnvelope, FaAlignLeft, FaUser, FaChevronDown,
+  FaChevronUp, FaTag
 } from 'react-icons/fa';
 import styles from './style/Speedmode.module.css';
 
@@ -15,7 +17,6 @@ const getYouTubeID = (url) => {
 const generateSlug = (t) =>
   t.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
 
-// ─── oEmbed fetch ────────────────────────────────────────────
 const fetchYouTubeMeta = async (url) => {
   const res = await fetch(
     `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`
@@ -24,38 +25,24 @@ const fetchYouTubeMeta = async (url) => {
   return res.json();
 };
 
-// ─── Parse "Artist - Title" from YouTube titles ─────────────
 const parseTitle = (raw) => {
-  // Try common patterns: "Artist - Title", "Artist – Title", "Artist | Title"
   const patterns = [/ - /, / – /, / \| /];
   for (const sep of patterns) {
     const idx = raw.search(sep);
     if (idx !== -1) {
       const match = raw.match(sep);
-      return {
-        artist: raw.slice(0, idx).trim(),
-        title: raw.slice(idx + match[0].length).trim(),
-      };
+      return { artist: raw.slice(0, idx).trim(), title: raw.slice(idx + match[0].length).trim() };
     }
   }
   return { artist: '', title: raw.trim() };
 };
 
-// ─── Strip common YouTube title suffixes ────────────────────
 const cleanTitle = (t) =>
   t.replace(/\s*[\(\[](official\s*(video|audio|lyric|mv|music video)|lyrics?|hd|4k|ft\..+?)[\)\]]/gi, '')
-   .replace(/\s*\|\s*.+$/, '')
-   .trim();
+   .replace(/\s*\|\s*.+$/, '').trim();
 
-// ─── Guess lyricist from description (heuristic) ────────────
-const guessLyricist = (title, artist) => {
-  // Basic heuristic — return artist as fallback; real app would scrape description
-  return artist;
-};
-
-// ─── Detect language from channel/title ─────────────────────
 const guessLanguage = (title, channelName) => {
-  const nepali = /[\u0900-\u097F]/;   // Devanagari
+  const nepali = /[\u0900-\u097F]/;
   const combined = title + ' ' + channelName;
   if (nepali.test(combined)) return 'Nepali';
   const hints = combined.toLowerCase();
@@ -63,46 +50,59 @@ const guessLanguage = (title, channelName) => {
   if (hints.includes('nepali') || hints.includes('nepal')) return 'Nepali';
   if (hints.includes('maithili')) return 'Maithili';
   if (hints.includes('newari') || hints.includes('newa')) return 'Newari';
-  return 'Nepali'; // default for this app
+  return 'Nepali';
 };
 
 const LANGUAGES = ['Nepali', 'English', 'Hindi', 'Maithili', 'Newari', 'Bhojpuri', 'Tamang', 'Other'];
+const STATUS_OPTIONS = ['approved', 'pending', 'rejected'];
+const STATUS_TYPE_OPTIONS = ['coming_soon', 'full', 'partial'];
 
-const LYRICS_PLACEHOLDER = `Lyrics not available at the moment.
-
-You can submit the lyrics by using the form below, and contact us — we'll review and publish them as soon as possible.`;
+const LYRICS_PLACEHOLDER =
+  `Lyrics not available at the moment.\n\nYou can submit the lyrics by using the form below, and contact us — we'll review and publish them as soon as possible.`;
 
 // ════════════════════════════════════════════════════════════
 const SpeedMode = ({ onSuccess }) => {
-  const [url, setUrl]             = useState('');
-  const [meta, setMeta]           = useState(null);
-  const [title, setTitle]         = useState('');
-  const [artist, setArtist]       = useState('');
-  const [lyricist, setLyricist]   = useState('');
-  const [language, setLanguage]   = useState('Nepali');
-  const [year, setYear]           = useState(new Date().getFullYear().toString());
-  const [loading, setLoading]     = useState(false);
-  const [saving, setSaving]       = useState(false);
-  const [error, setError]         = useState('');
-  const [toast, setToast]         = useState(null);
-  const [step, setStep]           = useState(1); // 1=input, 2=review
+  const [url, setUrl]                     = useState('');
+  const [meta, setMeta]                   = useState(null);
+  const [loading, setLoading]             = useState(false);
+  const [saving, setSaving]               = useState(false);
+  const [error, setError]                 = useState('');
+  const [toast, setToast]                 = useState(null);
+  const [step, setStep]                   = useState(1);
+  const [showOptional, setShowOptional]   = useState(false);
   const urlRef = useRef(null);
 
+  // ── All DB fields as state ───────────────────────────────
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
+
+  const [title, setTitle]                 = useState('');
+  const [artist, setArtist]               = useState('');
+  const [lyricsWriter, setLyricsWriter]   = useState('');
+  const [language, setLanguage]           = useState('Nepali');
+  const [publishedDate, setPublishedDate] = useState(`${currentYear}-01-01`);
+  const [musicUrl, setMusicUrl]           = useState('');
+  const [thumbnailUrl, setThumbnailUrl]   = useState('');
+  const [slug, setSlug]                   = useState('');
+  const [status, setStatus]               = useState('approved');
+  const [statusType, setStatusType]       = useState('coming_soon');
+  const [lyrics, setLyrics]               = useState(LYRICS_PLACEHOLDER);
+  const [englishLyrics, setEnglishLyrics] = useState('');
+  const [description, setDescription]     = useState('');
+  const [addedBy, setAddedBy]             = useState('Admin (Speed Mode)');
+  const [submitterEmail, setSubmitterEmail] = useState('');
+  const [clickCount, setClickCount]       = useState(1);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 4500);
   };
 
-  // ── Step 1: Fetch from YouTube ───────────────────────────
+  // ── Fetch YouTube meta ───────────────────────────────────
   const handleFetch = async () => {
-    setError('');
-    setMeta(null);
+    setError(''); setMeta(null);
     const id = getYouTubeID(url);
     if (!id) { setError('Invalid YouTube URL or video ID'); return; }
-
     setLoading(true);
     try {
       const data = await fetchYouTubeMeta(`https://www.youtube.com/watch?v=${id}`);
@@ -110,51 +110,57 @@ const SpeedMode = ({ onSuccess }) => {
       const cleanedTitle = cleanTitle(parsed.title);
       const resolvedArtist = parsed.artist || data.author_name;
       const detectedLang = guessLanguage(data.title, data.author_name);
+      const yt = `https://www.youtube.com/watch?v=${id}`;
 
-      setMeta({
-        videoId:     id,
-        rawTitle:    data.title,
-        thumbnail:   data.thumbnail_url,
-        channelName: data.author_name,
-      });
+      setMeta({ videoId: id, rawTitle: data.title, thumbnail: data.thumbnail_url, channelName: data.author_name });
       setTitle(cleanedTitle);
       setArtist(resolvedArtist);
-      setLyricist(guessLyricist(cleanedTitle, resolvedArtist));
+      setLyricsWriter(resolvedArtist);
       setLanguage(detectedLang);
-      setYear(currentYear.toString());
+      setPublishedDate(`${currentYear}-01-01`);
+      setMusicUrl(yt);
+      setThumbnailUrl(data.thumbnail_url);
+      setSlug(generateSlug(cleanedTitle));
+      setDescription(`Lyrics coming soon for "${cleanedTitle}" by ${resolvedArtist}.`);
+      setLyrics(LYRICS_PLACEHOLDER);
       setStep(2);
-    } catch (e) {
+    } catch {
       setError('Could not load video info. Check the URL and try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ── Step 2: Save to DB ────────────────────────────────────
+  // ── Save to DB ───────────────────────────────────────────
   const handleSave = async () => {
     if (!meta) return;
     setSaving(true);
     try {
+      const payload = {
+        title,
+        slug: slug || generateSlug(title),
+        artist,
+        lyrics_writer: lyricsWriter || undefined,
+        lyrics,
+        english_lyrics: englishLyrics || undefined,
+        music_url: musicUrl,
+        thumbnail_url: thumbnailUrl,
+        status,
+        status_type: statusType,
+        language,
+        published_date: publishedDate,
+        click_count: Number(clickCount) || 1,
+        added_by: addedBy || 'Admin (Speed Mode)',
+        description: description || undefined,
+        submitter_email: submitterEmail || undefined,
+      };
+      // Remove undefined keys so Supabase doesn't complain
+      Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
       const res = await fetch('/api/admin/lyrics/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          slug:            generateSlug(title),
-          artist,
-          'lyrics-writer': lyricist,
-          lyrics:          LYRICS_PLACEHOLDER,
-          english_lyrics:  '',
-          music_url:       `https://www.youtube.com/watch?v=${meta.videoId}`,
-          thumbnail_url:   meta.thumbnail,
-          status:          'approved',
-          status_type:     'coming_soon',
-          language,
-          published_date:  `${year}-01-01`,
-          click_count:     1,
-          added_by:        'Admin (Speed Mode)',
-          description:     `Lyrics coming soon for "${title}" by ${artist}.`,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -173,17 +179,25 @@ const SpeedMode = ({ onSuccess }) => {
   };
 
   const reset = () => {
-    setUrl(''); setMeta(null); setTitle(''); setArtist('');
-    setLyricist(''); setError(''); setStep(1);
+    setUrl(''); setMeta(null); setTitle(''); setArtist(''); setLyricsWriter('');
+    setSlug(''); setError(''); setStep(1); setShowOptional(false);
+    setLyrics(LYRICS_PLACEHOLDER); setEnglishLyrics(''); setDescription('');
+    setSubmitterEmail(''); setClickCount(1); setStatus('approved'); setStatusType('coming_soon');
     setTimeout(() => urlRef.current?.focus(), 100);
   };
 
-  const isReady = title.trim() && artist.trim() && year;
+  // Auto-sync slug when title changes (only if not manually edited)
+  const handleTitleChange = (v) => {
+    setTitle(v);
+    setSlug(generateSlug(v));
+  };
+
+  const isReady = title.trim() && artist.trim() && publishedDate;
 
   return (
     <div className={styles.speedWrapper}>
 
-      {/* ── Toast ── */}
+      {/* Toast */}
       {toast && (
         <div className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
           {toast.type === 'success'
@@ -193,16 +207,12 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       )}
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div className={styles.speedHeader}>
-        <div className={styles.boltWrap}>
-          <FaBolt className={styles.boltIcon} />
-        </div>
+        <div className={styles.boltWrap}><FaBolt className={styles.boltIcon} /></div>
         <div className={styles.headerText}>
           <div className={styles.speedBadge}>SPEED MODE</div>
-          <p className={styles.speedSub}>
-            Paste a YouTube link → auto-fill everything → publish in one click
-          </p>
+          <p className={styles.speedSub}>Paste a YouTube link → auto-fill everything → publish in one click</p>
         </div>
         <div className={styles.stepIndicator}>
           <div className={`${styles.stepDot} ${step >= 1 ? styles.stepActive : ''}`}>1</div>
@@ -211,7 +221,7 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       </div>
 
-      {/* ── STEP 1: URL Input ── */}
+      {/* URL Input */}
       <div className={styles.inputSection}>
         <div className={styles.urlRow}>
           <div className={`${styles.urlInputWrap} ${error ? styles.urlInputError : ''}`}>
@@ -226,168 +236,198 @@ const SpeedMode = ({ onSuccess }) => {
               onKeyDown={(e) => e.key === 'Enter' && !loading && url.trim() && handleFetch()}
               disabled={loading}
             />
-            {url && (
-              <button className={styles.clearUrl} onClick={reset} title="Clear">
-                <FaTimes />
-              </button>
-            )}
+            {url && <button className={styles.clearUrl} onClick={reset}><FaTimes /></button>}
           </div>
-          <button
-            className={styles.fetchBtn}
-            onClick={handleFetch}
-            disabled={loading || !url.trim()}
-          >
-            {loading
-              ? <><FaSpinner className={styles.spin} /> Fetching...</>
-              : <><FaBolt /> Fetch Info</>}
+          <button className={styles.fetchBtn} onClick={handleFetch} disabled={loading || !url.trim()}>
+            {loading ? <><FaSpinner className={styles.spin} /> Fetching...</> : <><FaBolt /> Fetch Info</>}
           </button>
         </div>
-
-        {error && (
-          <p className={styles.error}>
-            <FaExclamationTriangle style={{ marginRight: 5 }} />{error}
-          </p>
-        )}
+        {error && <p className={styles.error}><FaExclamationTriangle style={{ marginRight: 5 }} />{error}</p>}
       </div>
 
-      {/* ── STEP 2: Preview + Edit ── */}
+      {/* Preview + Full Form */}
       {meta && (
         <div className={styles.previewCard}>
 
-          {/* Thumbnail + video info */}
+          {/* Thumbnail row */}
           <div className={styles.thumbSection}>
             <div className={styles.thumbWrap}>
               <img src={meta.thumbnail} alt={meta.rawTitle} className={styles.previewThumb} />
-              <div className={styles.thumbOverlay}>
-                <FaYoutube className={styles.thumbYt} />
-              </div>
+              <div className={styles.thumbOverlay}><FaYoutube className={styles.thumbYt} /></div>
             </div>
             <div className={styles.thumbMeta}>
-              <p className={styles.thumbChannel}>
-                <FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />
-                {meta.channelName}
-              </p>
+              <p className={styles.thumbChannel}><FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />{meta.channelName}</p>
               <p className={styles.thumbRaw} title={meta.rawTitle}>
-                {meta.rawTitle.length > 60 ? meta.rawTitle.slice(0, 60) + '…' : meta.rawTitle}
+                {meta.rawTitle.length > 65 ? meta.rawTitle.slice(0, 65) + '…' : meta.rawTitle}
               </p>
-              <a
-                className={styles.thumbLink}
-                href={`https://youtube.com/watch?v=${meta.videoId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a className={styles.thumbLink} href={`https://youtube.com/watch?v=${meta.videoId}`} target="_blank" rel="noopener noreferrer">
                 <FaEye style={{ marginRight: 4 }} /> View on YouTube
               </a>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className={styles.divider} />
+          {/* ── REQUIRED FIELDS ── */}
+          <div className={styles.sectionLabel}>
+            <span className={styles.sectionLabelText}>Required Fields</span>
+          </div>
 
-          {/* Fields grid */}
           <div className={styles.fieldsGrid}>
 
-            {/* Song Title */}
+            {/* Title */}
             <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
-              <label className={styles.fieldLabel}>
-                <FaMusic className={styles.fieldIcon} /> Song Title
-              </label>
-              <input
-                className={styles.fieldInput}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter song title"
-              />
+              <label className={styles.fieldLabel}><FaMusic className={styles.fieldIcon} /> Song Title <span className={styles.req}>*</span></label>
+              <input className={styles.fieldInput} value={title} onChange={(e) => handleTitleChange(e.target.value)} placeholder="Song title" />
+            </div>
+
+            {/* Slug — auto but editable */}
+            <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+              <label className={styles.fieldLabel}><FaTag className={styles.fieldIcon} /> Slug <span className={styles.autoTag}>auto</span></label>
+              <input className={`${styles.fieldInput} ${styles.fieldMono}`} value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="auto-generated-slug" />
             </div>
 
             {/* Artist */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>
-                <FaMicrophone className={styles.fieldIcon} /> Artist / Singer
-              </label>
-              <input
-                className={styles.fieldInput}
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
-                placeholder="Artist name"
-              />
+              <label className={styles.fieldLabel}><FaMicrophone className={styles.fieldIcon} /> Artist / Singer <span className={styles.req}>*</span></label>
+              <input className={styles.fieldInput} value={artist} onChange={(e) => setArtist(e.target.value)} placeholder="Artist name" />
             </div>
 
-            {/* Lyricist */}
+            {/* Lyrics Writer */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>
-                <FaPen className={styles.fieldIcon} /> Lyricist / Writer
-              </label>
-              <input
-                className={styles.fieldInput}
-                value={lyricist}
-                onChange={(e) => setLyricist(e.target.value)}
-                placeholder="Lyricist name"
-              />
+              <label className={styles.fieldLabel}><FaPen className={styles.fieldIcon} /> Lyrics Writer</label>
+              <input className={styles.fieldInput} value={lyricsWriter} onChange={(e) => setLyricsWriter(e.target.value)} placeholder="Lyricist name (optional)" />
             </div>
 
             {/* Language */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>
-                <FaGlobe className={styles.fieldIcon} /> Language
-              </label>
-              <select
-                className={styles.fieldInput}
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
+              <label className={styles.fieldLabel}><FaGlobe className={styles.fieldIcon} /> Language</label>
+              <select className={styles.fieldInput} value={language} onChange={(e) => setLanguage(e.target.value)}>
                 {LANGUAGES.map(l => <option key={l}>{l}</option>)}
               </select>
             </div>
 
-            {/* Published Year */}
+            {/* Published Date */}
             <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>
-                <FaCalendar className={styles.fieldIcon} /> Published Year
-              </label>
-              <select
-                className={styles.fieldInput}
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              >
-                {years.map(y => <option key={y}>{y}</option>)}
+              <label className={styles.fieldLabel}><FaCalendar className={styles.fieldIcon} /> Published Date <span className={styles.req}>*</span></label>
+              <input className={styles.fieldInput} type="date" value={publishedDate} onChange={(e) => setPublishedDate(e.target.value)} />
+            </div>
+
+            {/* Status */}
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}><FaCheckCircle className={styles.fieldIcon} /> Status</label>
+              <select className={styles.fieldInput} value={status} onChange={(e) => setStatus(e.target.value)}>
+                {STATUS_OPTIONS.map(s => <option key={s}>{s}</option>)}
+              </select>
+            </div>
+
+            {/* Status Type */}
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}><FaInfoCircle className={styles.fieldIcon} /> Status Type</label>
+              <select className={styles.fieldInput} value={statusType} onChange={(e) => setStatusType(e.target.value)}>
+                {STATUS_TYPE_OPTIONS.map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
 
           </div>
 
-          {/* Lyrics notice */}
+          {/* ── LYRICS NOTICE / EDITABLE ── */}
           <div className={styles.lyricsNotice}>
             <div className={styles.lyricsNoticeHeader}>
               <FaInfoCircle className={styles.lyricsNoticeIcon} />
-              <span>Lyrics Content Preview</span>
+              <span>Lyrics Column Content</span>
+              <div className={styles.comingSoonBadge}>
+                <span className={styles.csBadgeDot} /> Coming Soon
+              </div>
             </div>
             <div className={styles.lyricsNoticeBody}>
-              <div className={styles.comingSoonBadge}>
-                <span className={styles.csBadgeDot} />
-                Lyrics Coming Soon
-              </div>
-              <p className={styles.lyricsNoticeText}>
-                <strong>Lyrics not available at the moment.</strong> Visitors will see a message inviting them to submit lyrics using the form below, or contact us directly. Once submitted, you can review and approve from the lyrics editor.
-              </p>
-              <div className={styles.lyricsMeta}>
-                <span className={styles.lyricsMetaItem}><FaUser style={{marginRight:3}} /> click_count: <strong>1</strong></span>
-                <span className={styles.lyricsMetaItem}><FaCheckCircle style={{marginRight:3}} /> status: <strong>approved</strong></span>
-                <span className={styles.lyricsMetaItem}><FaMusic style={{marginRight:3}} /> status_type: <strong>coming_soon</strong></span>
-              </div>
+              <textarea
+                className={`${styles.fieldInput} ${styles.lyricsTextarea}`}
+                value={lyrics}
+                onChange={(e) => setLyrics(e.target.value)}
+                rows={4}
+                placeholder="Lyrics content (or coming soon message)"
+              />
+              <p className={styles.lyricsHint}>Visitors will see this text along with a submit form and contact link.</p>
             </div>
           </div>
+
+          {/* ── OPTIONAL FIELDS TOGGLE ── */}
+          <button className={styles.optionalToggle} onClick={() => setShowOptional(v => !v)}>
+            {showOptional ? <FaChevronUp /> : <FaChevronDown />}
+            {showOptional ? 'Hide' : 'Show'} optional fields
+            <span className={styles.optionalCount}>
+              music_url · thumbnail_url · english_lyrics · description · added_by · submitter_email · click_count
+            </span>
+          </button>
+
+          {showOptional && (
+            <div className={styles.optionalSection}>
+
+              <div className={styles.fieldsGrid}>
+
+                {/* Music URL */}
+                <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                  <label className={styles.fieldLabel}><FaYoutube className={styles.fieldIcon} /> Music URL <span className={styles.autoTag}>auto</span></label>
+                  <input className={`${styles.fieldInput} ${styles.fieldMono}`} value={musicUrl} onChange={(e) => setMusicUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+                </div>
+
+                {/* Thumbnail URL */}
+                <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                  <label className={styles.fieldLabel}><FaEye className={styles.fieldIcon} /> Thumbnail URL <span className={styles.autoTag}>auto</span></label>
+                  <input className={`${styles.fieldInput} ${styles.fieldMono}`} value={thumbnailUrl} onChange={(e) => setThumbnailUrl(e.target.value)} placeholder="https://..." />
+                </div>
+
+                {/* English Lyrics */}
+                <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                  <label className={styles.fieldLabel}><FaAlignLeft className={styles.fieldIcon} /> English Lyrics <span className={styles.optTag}>optional</span></label>
+                  <textarea
+                    className={`${styles.fieldInput} ${styles.lyricsTextarea}`}
+                    value={englishLyrics}
+                    onChange={(e) => setEnglishLyrics(e.target.value)}
+                    rows={3}
+                    placeholder="English translation of lyrics (optional)"
+                  />
+                </div>
+
+                {/* Description */}
+                <div className={`${styles.fieldGroup} ${styles.fieldFull}`}>
+                  <label className={styles.fieldLabel}><FaAlignLeft className={styles.fieldIcon} /> Description <span className={styles.autoTag}>auto</span></label>
+                  <textarea
+                    className={`${styles.fieldInput} ${styles.lyricsTextarea}`}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={2}
+                    placeholder="Short description for this song"
+                  />
+                </div>
+
+                {/* Added By */}
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}><FaUser className={styles.fieldIcon} /> Added By</label>
+                  <input className={styles.fieldInput} value={addedBy} onChange={(e) => setAddedBy(e.target.value)} placeholder="Admin name" />
+                </div>
+
+                {/* Submitter Email */}
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}><FaEnvelope className={styles.fieldIcon} /> Submitter Email <span className={styles.optTag}>optional</span></label>
+                  <input className={styles.fieldInput} type="email" value={submitterEmail} onChange={(e) => setSubmitterEmail(e.target.value)} placeholder="submitter@example.com" />
+                </div>
+
+                {/* Click Count */}
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel}><FaTag className={styles.fieldIcon} /> Click Count</label>
+                  <input className={`${styles.fieldInput} ${styles.fieldMono}`} type="number" min="0" value={clickCount} onChange={(e) => setClickCount(e.target.value)} />
+                </div>
+
+              </div>
+            </div>
+          )}
 
           {/* Action row */}
           <div className={styles.actionRow}>
             <button className={styles.resetBtn} onClick={reset} disabled={saving}>
               <FaTimes /> Start Over
             </button>
-            <button
-              className={styles.saveBtn}
-              onClick={handleSave}
-              disabled={saving || !isReady}
-            >
+            <button className={styles.saveBtn} onClick={handleSave} disabled={saving || !isReady}>
               {saving
                 ? <><FaSpinner className={styles.spin} /> Publishing...</>
                 : <><FaPaperPlane /> Publish as Coming Soon</>}
@@ -396,18 +436,18 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       )}
 
-      {/* ── How it works (only when idle) ── */}
+      {/* How it works idle state */}
       {!meta && !loading && (
         <div className={styles.howItWorks}>
-          <p className={styles.howTitle}>What gets auto-filled</p>
+          <p className={styles.howTitle}>What gets auto-filled from YouTube</p>
           <div className={styles.howGrid}>
             {[
-              { icon: <FaMusic />,       label: 'Song Title',       desc: 'Parsed & cleaned from YouTube title' },
-              { icon: <FaMicrophone />,  label: 'Artist Name',      desc: 'Extracted from title or channel name' },
-              { icon: <FaPen />,         label: 'Lyricist',         desc: 'Auto-guessed, editable before saving' },
-              { icon: <FaCalendar />,    label: 'Published Year',   desc: 'Defaults to current year, adjustable' },
-              { icon: <FaGlobe />,       label: 'Language',         desc: 'Detected from title / channel name' },
-              { icon: <FaYoutube />,     label: 'Thumbnail & URL',  desc: 'Pulled directly from YouTube oEmbed' },
+              { icon: <FaMusic />,      label: 'Song Title',      desc: 'Parsed & cleaned from YouTube title' },
+              { icon: <FaMicrophone />, label: 'Artist Name',     desc: 'Extracted from title or channel name' },
+              { icon: <FaPen />,        label: 'Lyrics Writer',   desc: 'Defaults to artist, fully editable' },
+              { icon: <FaCalendar />,   label: 'Published Date',  desc: 'Defaults to today, adjustable' },
+              { icon: <FaGlobe />,      label: 'Language',        desc: 'Detected from Devanagari / keywords' },
+              { icon: <FaYoutube />,    label: 'Thumbnail & URL', desc: 'Pulled directly from YouTube oEmbed' },
             ].map(({ icon, label, desc }) => (
               <div key={label} className={styles.howItem}>
                 <div className={styles.howItemIcon}>{icon}</div>

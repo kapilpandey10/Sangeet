@@ -17,6 +17,7 @@ import AddArtist      from './addArtist';
 import AddBlog        from './addBlog';
 import ManageBlog     from './manageblog';
 import ManageArtist   from './ManageArtist';
+import SpeedMode  from './SpeedMode';
 import styles         from './style/AdminDashboard.module.css';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29,6 +30,7 @@ const NAV_SECTIONS = [
       { id: 'approve',       icon: FaCheckCircle, label: 'Approve Lyrics', sub: 'Review queue' },
       { id: 'add-lyrics',    icon: FaPlus,        label: 'Add Lyrics',     sub: 'New entry'    },
       { id: 'manage',        icon: FaEdit,        label: 'Manage Lyrics',  sub: 'Library'      },
+      { id: 'speed-mode',    icon: FaBolt,        label: 'Speed Mode',     sub: 'Quick Publish' },
     ],
   },
   {
@@ -97,6 +99,7 @@ const AdminDashboard = () => {
       case 'messages':       return <Messages />;
       case 'add-lyrics':     return <AddLyrics />;
       case 'add-artist':     return <AddArtist />;
+      case 'speed-mode':     return <SpeedMode />;
       case 'blog':           return <AddBlog />;
       case 'manageblog':     return <ManageBlog />;
       case 'manage-artist':  return <ManageArtist />;

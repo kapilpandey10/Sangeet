@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaBolt, FaYoutube, FaCheck, FaTimes, FaSpinner, FaPaperPlane } from 'react-icons/fa';
-import styles from './style/SpeedMode.module.css';
+import styles from './style/Speedmode.module.css';
 
 // ─── Helpers ─────────────────────────────────────────────────
 const getYouTubeID = (url) => {

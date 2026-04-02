@@ -43,22 +43,36 @@ const ManageLyrics = () => {
 
   const extractYTId = (url) => url?.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+ const handleUpdate = async (e) => {
+  e.preventDefault();
+  setMessage('Saving...');
+
+  try {
     const res = await fetch('/api/admin/lyrics/update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editLyric),
     });
 
+    const data = await res.json();   // ← read the response body
+
     if (res.ok) {
       const updated = (arr) => arr.map(l => l.id === editLyric.id ? editLyric : l);
       setLyrics(updated(lyrics));
       setFilteredLyrics(updated(filteredLyrics));
-      setMessage(`Updated: ${editLyric.title}`);
-      setTimeout(() => setMessage(''), 3000);
+      setMessage(`✓ Updated: ${editLyric.title}`);
+    } else {
+      // Now you'll actually see what the API is returning
+      setMessage(`✗ Error: ${data?.error || data?.message || res.statusText}`);
+      console.error('Update failed:', data);
     }
-  };
+  } catch (err) {
+    setMessage(`✗ Network error: ${err.message}`);
+    console.error('Update error:', err);
+  }
+
+  setTimeout(() => setMessage(''), 4000);
+};
 
   const handleDelete = async () => {
     const res = await fetch('/api/admin/lyrics/delete', {

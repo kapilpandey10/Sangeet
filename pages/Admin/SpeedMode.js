@@ -4,15 +4,16 @@ import {
   FaMusic, FaPen, FaGlobe, FaCalendar, FaMicrophone,
   FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaEye,
   FaEnvelope, FaAlignLeft, FaToggleOn, FaUser, FaLink,
-  FaClock, FaTag, FaChartBar, FaCompactDisc,
+  FaClock, FaTag, FaChartBar, FaCompactDisc, FaWifi,
 } from 'react-icons/fa';
 import styles from './style/Speedmode.module.css';
 
 // ─── Helpers ──────────────────────────────────────────────────
 
 const getYouTubeID = (url) => {
-  const match = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
-  return match?.[1] || (url.trim().length === 11 ? url.trim() : null);
+  const trimmed = url.trim();
+  const match   = trimmed.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
+  return match?.[1] || (trimmed.length === 11 ? trimmed : null);
 };
 
 const generateSlug = (t) =>
@@ -26,10 +27,10 @@ const parseTitle = (raw) => {
   for (const sep of patterns) {
     const idx = raw.search(sep);
     if (idx !== -1) {
-      const match = raw.match(sep);
+      const m = raw.match(sep);
       return {
         artist: raw.slice(0, idx).trim(),
-        title:  raw.slice(idx + match[0].length).trim(),
+        title:  raw.slice(idx + m[0].length).trim(),
       };
     }
   }
@@ -44,13 +45,13 @@ const cleanTitle = (t) =>
 
 const guessLanguage = (title, channelName) => {
   const combined = (title + ' ' + channelName).toLowerCase();
-  if (/[\u0900-\u097F]/.test(combined))                               return 'Nepali';
-  if (combined.includes('hindi') || combined.includes('bollywood'))   return 'Hindi';
-  if (combined.includes('nepali') || combined.includes('nepal'))      return 'Nepali';
-  if (combined.includes('maithili'))                                  return 'Maithili';
-  if (combined.includes('newari') || combined.includes('newa'))       return 'Newari';
-  if (combined.includes('bhojpuri'))                                  return 'Bhojpuri';
-  if (combined.includes('tamang'))                                    return 'Tamang';
+  if (/[\u0900-\u097F]/.test(combined))                             return 'Nepali';
+  if (combined.includes('hindi') || combined.includes('bollywood')) return 'Hindi';
+  if (combined.includes('nepali') || combined.includes('nepal'))    return 'Nepali';
+  if (combined.includes('maithili'))                                return 'Maithili';
+  if (combined.includes('newari') || combined.includes('newa'))     return 'Newari';
+  if (combined.includes('bhojpuri'))                                return 'Bhojpuri';
+  if (combined.includes('tamang'))                                  return 'Tamang';
   return 'Nepali';
 };
 
@@ -73,6 +74,18 @@ const formatDate = (dateStr) => {
   }
 };
 
+// Trim YouTube description — remove hashtag spam at end
+const cleanDescription = (desc) => {
+  if (!desc) return '';
+  return desc
+    .split('\n')
+    .filter(line => !line.trim().startsWith('#') || line.trim().length > 20)
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .slice(0, 600)
+    .trim();
+};
+
 // ─── Constants ────────────────────────────────────────────────
 
 const LANGUAGES    = ['Nepali', 'English', 'Hindi', 'Maithili', 'Newari', 'Bhojpuri', 'Tamang', 'Other'];
@@ -86,12 +99,13 @@ const LYRICS_PLACEHOLDER =
 
 // ─── Field wrapper ────────────────────────────────────────────
 
-const Field = ({ icon, label, optional, full, children }) => (
+const Field = ({ icon, label, optional, full, hint, children }) => (
   <div className={`${styles.fieldGroup} ${full ? styles.fieldFull : ''}`}>
     <label className={styles.fieldLabel}>
       <span className={styles.fieldIcon}>{icon}</span>
       {label}
       {optional && <span className={styles.optionalTag}>optional</span>}
+      {hint && <span className={styles.hintTag}>{hint}</span>}
     </label>
     {children}
   </div>
@@ -110,6 +124,7 @@ const SpeedMode = ({ onSuccess }) => {
   const [toast, setToast]           = useState(null);
   const [step, setStep]             = useState(1);
   const [thumbError, setThumbError] = useState(false);
+  const [scrapeNote, setScrapeNote] = useState(''); // warn if page scrape failed
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
@@ -136,27 +151,32 @@ const SpeedMode = ({ onSuccess }) => {
     setTimeout(() => setToast(null), 4500);
   };
 
-  // ── Fetch via server-side scraper ────────────────────────────
+  // ── Fetch via API route ──────────────────────────────────────
   const handleFetch = async () => {
     setError('');
     setMeta(null);
     setThumbError(false);
+    setScrapeNote('');
 
     const id = getYouTubeID(url);
-    if (!id) { setError('Invalid YouTube URL or video ID'); return; }
+    if (!id) {
+      setError('Invalid YouTube URL or video ID');
+      return;
+    }
 
     setLoading(true);
     try {
       const res = await fetch(`/api/youtube-meta?videoId=${id}`);
-      if (!res.ok) throw new Error('Could not fetch video info');
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      if (!data.title) throw new Error('Video not found or private');
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Could not fetch video info');
+      }
 
       const parsed  = parseTitle(data.title);
       const cleaned = cleanTitle(parsed.title || data.title);
 
-      // music:musician (official music videos) > parsed artist > channel
+      // Priority: music:musician → parsed artist → channel name
       const resolvedArtist =
         data.musicArtist ||
         parsed.artist    ||
@@ -167,8 +187,11 @@ const SpeedMode = ({ onSuccess }) => {
         ? new Date(data.uploadDate).getFullYear().toString()
         : currentYear.toString();
 
-      const autoDesc = data.description
-        ? data.description.replace(/\n+/g, ' ').slice(0, 200).trim()
+      // Build description: use YouTube description if available,
+      // otherwise fall back to a generic placeholder
+      const ytDesc = cleanDescription(data.description);
+      const autoDesc = ytDesc
+        ? ytDesc
         : `Lyrics for "${cleaned}" by ${resolvedArtist}.`;
 
       setMeta({
@@ -183,6 +206,7 @@ const SpeedMode = ({ onSuccess }) => {
         genre:       data.genre,
         musicSong:   data.musicSong,
         musicAlbum:  data.musicAlbum,
+        hasExtras:   !!(data.duration || data.uploadDate || data.description),
       });
 
       setTitle(data.musicSong || cleaned);
@@ -192,6 +216,11 @@ const SpeedMode = ({ onSuccess }) => {
       setYear(uploadYear);
       setDescription(autoDesc);
       setStep(2);
+
+      // Inform user if page scrape got blocked (no extras available)
+      if (!data.duration && !data.uploadDate && !data.description) {
+        setScrapeNote('Basic info loaded via oEmbed. Extra details (duration, views, description) were unavailable — YouTube may have blocked the scrape.');
+      }
     } catch (e) {
       setError(e.message || 'Could not load video info. Check the URL and try again.');
     } finally {
@@ -261,13 +290,13 @@ const SpeedMode = ({ onSuccess }) => {
     setAddedBy('Admin (Speed Mode)');
     setError('');
     setThumbError(false);
+    setScrapeNote('');
     setStep(1);
     setTimeout(() => urlRef.current?.focus(), 100);
   };
 
   const isReady = title.trim() && artist.trim() && year;
 
-  // hqdefault fallback when maxresdefault 404s
   const thumbSrc = thumbError
     ? `https://img.youtube.com/vi/${meta?.videoId}/hqdefault.jpg`
     : meta?.thumbnail;
@@ -276,7 +305,7 @@ const SpeedMode = ({ onSuccess }) => {
   return (
     <div className={styles.speedWrapper}>
 
-      {/* ── Toast notification ── */}
+      {/* ── Toast ── */}
       {toast && (
         <div className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
           {toast.type === 'success'
@@ -341,17 +370,25 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
         {error && (
           <p className={styles.error}>
-            <FaExclamationTriangle style={{ marginRight: 5 }} />
+            <FaExclamationTriangle style={{ marginRight: 6 }} />
             {error}
           </p>
         )}
       </div>
 
-      {/* ── Preview card (shown after fetch) ── */}
+      {/* ── Preview card ── */}
       {meta && (
         <div className={styles.previewCard}>
 
-          {/* Thumbnail + enriched metadata */}
+          {/* Partial data notice (scrape was blocked but oEmbed worked) */}
+          {scrapeNote && (
+            <div className={styles.scrapeNotice}>
+              <FaWifi style={{ marginRight: 6, opacity: 0.7 }} />
+              {scrapeNote}
+            </div>
+          )}
+
+          {/* ── Thumbnail + quick meta ── */}
           <div className={styles.thumbSection}>
             <div className={styles.thumbWrap}>
               <img
@@ -372,7 +409,7 @@ const SpeedMode = ({ onSuccess }) => {
 
             <div className={styles.thumbMeta}>
 
-              {/* Channel name */}
+              {/* Channel */}
               <p className={styles.thumbChannel}>
                 <FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />
                 {meta.channelName}
@@ -385,7 +422,7 @@ const SpeedMode = ({ onSuccess }) => {
                   : meta.rawTitle}
               </p>
 
-              {/* Music-specific fields — only present on official music videos */}
+              {/* Music-specific fields */}
               {(meta.musicSong || meta.musicAlbum) && (
                 <div className={styles.musicMeta}>
                   {meta.musicSong && (
@@ -403,7 +440,7 @@ const SpeedMode = ({ onSuccess }) => {
                 </div>
               )}
 
-              {/* Stats chips — inlined to avoid JSX parser issues */}
+              {/* Stats chips */}
               <div className={styles.chipsRow}>
                 {meta.duration && (
                   <span className={styles.chip}>
@@ -440,7 +477,6 @@ const SpeedMode = ({ onSuccess }) => {
                 </div>
               )}
 
-              {/* YouTube link */}
               <a
                 className={styles.thumbLink}
                 href={`https://youtube.com/watch?v=${meta.videoId}`}
@@ -450,7 +486,6 @@ const SpeedMode = ({ onSuccess }) => {
                 <FaEye style={{ marginRight: 4 }} />
                 View on YouTube
               </a>
-
             </div>
           </div>
 
@@ -526,14 +561,35 @@ const SpeedMode = ({ onSuccess }) => {
                 placeholder="English translation (leave blank if not available)"
               />
             </Field>
-            <Field icon={<FaAlignLeft />} label="Description" optional full>
-              <textarea
-                className={`${styles.fieldInput} ${styles.textarea}`}
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                rows={2}
-                placeholder="Short description shown on public page / used for SEO"
-              />
+
+            {/* Description — highlighted as auto-filled from YouTube */}
+            <Field
+              icon={<FaAlignLeft />}
+              label="Description"
+              hint="auto-filled from YouTube"
+              full
+            >
+              <div className={styles.descWrapper}>
+                <textarea
+                  className={`${styles.fieldInput} ${styles.textarea} ${styles.descTextarea}`}
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  rows={4}
+                  placeholder="Description for SEO and public page — pulled from YouTube automatically"
+                />
+                {description && (
+                  <div className={styles.descFooter}>
+                    <span className={styles.descCount}>{description.length} / 600 chars</span>
+                    <button
+                      className={styles.descClear}
+                      onClick={() => setDescription('')}
+                      type="button"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </div>
             </Field>
           </div>
 
@@ -606,7 +662,7 @@ const SpeedMode = ({ onSuccess }) => {
             </div>
           </div>
 
-          {/* ── Action buttons ── */}
+          {/* ── Actions ── */}
           <div className={styles.actionRow}>
             <button className={styles.resetBtn} onClick={reset} disabled={saving}>
               <FaTimes /> Start Over
@@ -631,16 +687,16 @@ const SpeedMode = ({ onSuccess }) => {
           <p className={styles.howTitle}>What gets auto-filled</p>
           <div className={styles.howGrid}>
             {[
-              { icon: <FaMusic />,       label: 'Song Title',      desc: 'Parsed & cleaned from full YouTube title' },
-              { icon: <FaMicrophone />,  label: 'Artist Name',     desc: 'From music metadata, title parse, or channel' },
-              { icon: <FaCompactDisc />, label: 'Album & Genre',   desc: 'Detected from YouTube structured data' },
-              { icon: <FaCalendar />,    label: 'Upload Date',     desc: 'Exact date → auto-fills the year field' },
-              { icon: <FaChartBar />,    label: 'View Count',      desc: 'Pulled from JSON-LD structured data' },
-              { icon: <FaClock />,       label: 'Duration',        desc: 'Formatted from ISO 8601 (e.g. 3:45)' },
-              { icon: <FaTag />,         label: 'Tags & Keywords', desc: 'Up to 8 YouTube tags shown in preview' },
-              { icon: <FaGlobe />,       label: 'Language',        desc: 'Detected from title and channel name' },
-              { icon: <FaAlignLeft />,   label: 'Description',     desc: 'First 200 chars auto-filled from YouTube' },
-              { icon: <FaYoutube />,     label: 'Thumbnail & URL', desc: 'maxresdefault with hqdefault fallback' },
+              { icon: <FaMusic />,       label: 'Song Title',       desc: 'Parsed & cleaned from full YouTube title' },
+              { icon: <FaMicrophone />,  label: 'Artist Name',      desc: 'From music metadata, title parse, or channel' },
+              { icon: <FaCompactDisc />, label: 'Album & Genre',    desc: 'Detected from YouTube structured data' },
+              { icon: <FaCalendar />,    label: 'Upload Date',      desc: 'Exact date → auto-fills the year field' },
+              { icon: <FaChartBar />,    label: 'View Count',       desc: 'Pulled from JSON-LD structured data' },
+              { icon: <FaClock />,       label: 'Duration',         desc: 'Formatted from ISO 8601 (e.g. 3:45)' },
+              { icon: <FaTag />,         label: 'Tags & Keywords',  desc: 'Up to 8 YouTube tags shown in preview' },
+              { icon: <FaGlobe />,       label: 'Language',         desc: 'Detected from title and channel name' },
+              { icon: <FaAlignLeft />,   label: 'Description',      desc: 'Auto-filled from YouTube video description' },
+              { icon: <FaYoutube />,     label: 'Thumbnail & URL',  desc: 'maxresdefault with hqdefault fallback' },
             ].map(({ icon, label, desc }) => (
               <div key={label} className={styles.howItem}>
                 <div className={styles.howItemIcon}>{icon}</div>
@@ -658,4 +714,4 @@ const SpeedMode = ({ onSuccess }) => {
   );
 };
 
-export default SpeedMode;
+export default SpeedMode;``

@@ -1,133 +1,207 @@
 // pages/api/youtube-meta.js
-// Server-side YouTube page scraper — no API key needed.
-// Extracts JSON-LD structured data + og: meta tags from the YouTube page.
+// Strategy:
+//   1. oEmbed  → always works for public videos (title, channel, thumb)
+//   2. noembed → fallback oEmbed if YouTube oEmbed fails
+//   3. Page scrape → bonus metadata (description, duration, views, tags, etc.)
+//      Wrapped in try/catch — if blocked we still return oEmbed data cleanly.
 
 export default async function handler(req, res) {
   const { videoId } = req.query;
-  if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
-
-  const url = `https://www.youtube.com/watch?v=${videoId}`;
-
-  let html;
-  try {
-    const r = await fetch(url, {
-      headers: {
-        // Pretend to be a real browser — YouTube serves richer markup to known UAs
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-          '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      },
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    html = await r.text();
-  } catch (e) {
-    return res.status(502).json({ error: 'Could not fetch YouTube page', detail: e.message });
+  if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+    return res.status(400).json({ error: 'Invalid video ID' });
   }
 
-  // ── 1. JSON-LD structured data ────────────────────────────────
-  // YouTube embeds a VideoObject schema — the richest source of metadata
+  // ── Step 1: oEmbed (primary — never fails for public videos) ──────────────
+  let oEmbed = null;
+  try {
+    oEmbed = await fetchOEmbed(videoId);
+  } catch (_) {}
+
+  // ── Step 2: noembed fallback if YouTube oEmbed failed ─────────────────────
+  if (!oEmbed) {
+    try {
+      oEmbed = await fetchNoEmbed(videoId);
+    } catch (_) {}
+  }
+
+  // If both oEmbed sources fail → video is private, deleted, or invalid
+  if (!oEmbed || !oEmbed.title) {
+    return res.status(404).json({
+      error: 'Video not found. It may be private, deleted, or the ID is wrong.',
+    });
+  }
+
+  // ── Step 3: Page scrape for bonus metadata (silently fails if blocked) ─────
+  let extras = {};
+  try {
+    extras = await scrapeYoutubePage(videoId);
+  } catch (_) {
+    // Blocked by YouTube — that's fine, we still return oEmbed data
+  }
+
+  // ── Build final response ───────────────────────────────────────────────────
+  return res.status(200).json({
+    videoId,
+    title:       oEmbed.title,
+    channelName: oEmbed.author_name || extras.channelName || null,
+    thumbnail:   `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    thumbnailFallback: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+
+    // Extras from page scrape (null if scraping was blocked)
+    description: extras.description || null,
+    duration:    extras.duration    || null,
+    uploadDate:  extras.uploadDate  || null,
+    viewCount:   extras.viewCount   || null,
+    tags:        extras.tags        || [],
+    genre:       extras.genre       || null,
+    musicSong:   extras.musicSong   || null,
+    musicArtist: extras.musicArtist || null,
+    musicAlbum:  extras.musicAlbum  || null,
+  });
+}
+
+// ─── oEmbed via YouTube ───────────────────────────────────────────────────────
+async function fetchOEmbed(videoId) {
+  const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; bot/1.0)' },
+  });
+  if (!res.ok) throw new Error(`oEmbed HTTP ${res.status}`);
+  return res.json();
+}
+
+// ─── oEmbed via noembed.com (fallback) ───────────────────────────────────────
+async function fetchNoEmbed(videoId) {
+  const url = `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`noembed HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+
+// ─── Page scraper for bonus metadata ─────────────────────────────────────────
+async function scrapeYoutubePage(videoId) {
+  const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+  // Try multiple User-Agents — some are more likely to get through
+  const agents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Googlebot/2.1 (+http://www.google.com/bot.html)',
+  ];
+
+  let html = null;
+  for (const agent of agents) {
+    try {
+      const r = await fetch(url, {
+        headers: {
+          'User-Agent':      agent,
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Accept':          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Encoding': 'gzip, deflate, br',
+        },
+      });
+      if (!r.ok) continue;
+      const text = await r.text();
+      // Detect consent/bot-check pages — they won't have JSON-LD
+      if (text.includes('ytInitialData') || text.includes('application/ld+json')) {
+        html = text;
+        break;
+      }
+    } catch (_) {
+      continue;
+    }
+  }
+
+  if (!html) throw new Error('All scrape attempts failed');
+
+  // ── Extract JSON-LD (richest source) ──────────────────────────
   let jsonLd = null;
   try {
     const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
     if (match) jsonLd = JSON.parse(match[1]);
   } catch (_) {}
 
-  // ── 2. og: / twitter: meta tags ──────────────────────────────
+  // ── Meta tag extractor ─────────────────────────────────────────
   const meta = (prop) => {
     const m =
-      html.match(new RegExp(`<meta property="${prop}" content="([^"]+)"`)) ||
-      html.match(new RegExp(`<meta name="${prop}" content="([^"]+)"`));
-    return m ? decodeHtmlEntities(m[1]) : null;
+      html.match(new RegExp(`<meta\\s+property="${prop}"\\s+content="([^"]+)"`)) ||
+      html.match(new RegExp(`<meta\\s+name="${prop}"\\s+content="([^"]+)"`)) ||
+      html.match(new RegExp(`<meta\\s+content="([^"]+)"\\s+property="${prop}"`));
+    return m ? decode(m[1]) : null;
   };
 
-  // ── 3. ytInitialData micro-extraction ────────────────────────
-  // We pull ONLY the tiny bits we need — not the whole 3 MB blob
-  const ytKeyword = (key) => {
-    const m = html.match(new RegExp(`"${key}":"([^"]+)"`));
-    return m ? decodeHtmlEntities(m[1]) : null;
+  // ── ytInitialData micro-extraction (key:value pairs only) ─────
+  const ytVal = (key) => {
+    const m = html.match(new RegExp(`"${key}":\\s*"([^"]+)"`));
+    return m ? decode(m[1]) : null;
   };
 
-  // Duration: ISO 8601 from JSON-LD (PT3M45S)
+  // ── Duration ──────────────────────────────────────────────────
   const isoDuration = jsonLd?.duration || null;
   const duration    = isoDuration ? parseDuration(isoDuration) : null;
 
-  // Upload date
+  // ── Description (JSON-LD has the full one) ────────────────────
+  const rawDesc =
+    jsonLd?.description ||
+    meta('og:description') ||
+    ytVal('shortDescription') ||
+    '';
+  const description = rawDesc.slice(0, 1000).trim();
+
+  // ── Upload date ────────────────────────────────────────────────
   const uploadDate =
     jsonLd?.uploadDate ||
     jsonLd?.datePublished ||
-    meta('datePublished') ||
     null;
 
-  // View count (from JSON-LD interaction statistic)
+  // ── View count ────────────────────────────────────────────────
   const viewCount =
     jsonLd?.interactionStatistic?.interactionCount ||
     jsonLd?.interactionCount ||
     null;
 
-  // Full description (JSON-LD has the full one, og:description is truncated)
-  const description =
-    (jsonLd?.description || meta('og:description') || '').slice(0, 500);
-
-  // Keywords / tags
-  const keywordsRaw = meta('keywords') || ytKeyword('keywords') || '';
+  // ── Tags ──────────────────────────────────────────────────────
+  const keywordsRaw = meta('keywords') || '';
   const tags = keywordsRaw
     ? keywordsRaw.split(',').map(t => t.trim()).filter(Boolean).slice(0, 12)
     : [];
 
-  // Thumbnail — try maxresdefault first, fall back to hqdefault
-  const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-
-  // Channel / artist info
+  // ── Channel / Genre / Music meta ──────────────────────────────
   const channelName =
     jsonLd?.author?.name ||
-    jsonLd?.author ||
-    ytKeyword('ownerChannelName') ||
-    meta('og:video:director') ||
+    (typeof jsonLd?.author === 'string' ? jsonLd.author : null) ||
+    ytVal('ownerChannelName') ||
     null;
 
-  // Full title (og:title is the cleanest — no extra channel suffix)
-  const fullTitle = meta('og:title') || jsonLd?.name || null;
+  const genre      = jsonLd?.genre            || null;
+  const musicSong  = meta('music:song')       || null;
+  const musicArtist= meta('music:musician')   || null;
+  const musicAlbum = meta('music:album')      || null;
 
-  // Music-specific meta (only present on music videos)
-  const musicSong    = meta('music:song')          || null;
-  const musicArtist  = meta('music:musician')      || null;
-  const musicAlbum   = meta('music:album')         || null;
-
-  // Genre (JSON-LD)
-  const genre = jsonLd?.genre || null;
-
-  // Paid / family-friendly flags for context
-  const familyFriendly = jsonLd?.isFamilyFriendly ?? null;
-
-  return res.status(200).json({
-    videoId,
-    title:         fullTitle,
-    channelName,
+  return {
     description,
-    thumbnail,
-    duration,          // { seconds: 225, formatted: '3:45' }
-    uploadDate,        // '2024-03-15'
-    viewCount,         // '12345678'
+    duration,
+    uploadDate,
+    viewCount,
     tags,
     genre,
-    musicSong,         // null unless YouTube knows it's a music video
+    channelName,
+    musicSong,
     musicArtist,
     musicAlbum,
-    familyFriendly,
-  });
+  };
 }
 
-// ── Helpers ───────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function parseDuration(iso) {
-  // PT1H3M45S → { seconds: 3825, formatted: '1:03:45' }
   const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!m) return null;
-  const h = parseInt(m[1] || 0);
+  const h   = parseInt(m[1] || 0);
   const min = parseInt(m[2] || 0);
-  const s = parseInt(m[3] || 0);
+  const s   = parseInt(m[3] || 0);
   const total = h * 3600 + min * 60 + s;
   const parts = h > 0
     ? [h, String(min).padStart(2, '0'), String(s).padStart(2, '0')]
@@ -135,15 +209,16 @@ function parseDuration(iso) {
   return { seconds: total, formatted: parts.join(':') };
 }
 
-function decodeHtmlEntities(str) {
+function decode(str) {
   return str
-    .replace(/&amp;/g, '&')
+    .replace(/&amp;/g,  '&')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&#39;/g,  "'")
     .replace(/&#x27;/g, "'")
-    .replace(/\\u0026/g, '&')
-    .replace(/\\u003c/g, '<')
-    .replace(/\\u003e/g, '>');
+    .replace(/&lt;/g,   '<')
+    .replace(/&gt;/g,   '>')
+    .replace(/\\u0026/g,'&')
+    .replace(/\\u003c/g,'<')
+    .replace(/\\u003e/g,'>')
+    .replace(/\\n/g,    '\n');
 }

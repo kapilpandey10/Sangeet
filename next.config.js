@@ -9,12 +9,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'encrypted-tbn1.gstatic.com',
+        hostname: '**.gstatic.com',        // covers ALL tbn subdomains
       },
       {
         protocol: 'https',
         hostname: 'i.ytimg.com',
-      }, 
+      },
       {
         protocol: 'https',
         hostname: 'img.youtube.com',
@@ -23,7 +23,6 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'i.imghippo.com',
       },
-      
     ],
   },
 };

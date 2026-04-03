@@ -398,7 +398,7 @@ const ViewLyrics = ({ lyric, relatedLyrics = [], slug, error }) => {
                 {/* Show view count on the song page itself */}
                 {lyric.click_count > 0 && (
                   <p className={styles.viewCount}>
-                    {lyric.click_count.toLocaleString()} views
+                    👁 {lyric.click_count.toLocaleString()} views
                   </p>
                 )}
                 <div className={styles.actionRow}>

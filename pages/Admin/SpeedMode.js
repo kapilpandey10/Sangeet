@@ -3,9 +3,12 @@ import {
   FaBolt, FaYoutube, FaTimes, FaSpinner, FaPaperPlane,
   FaMusic, FaPen, FaGlobe, FaCalendar, FaMicrophone,
   FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaEye,
-  FaEnvelope, FaAlignLeft, FaToggleOn, FaUser, FaLink
+  FaEnvelope, FaAlignLeft, FaToggleOn, FaUser, FaLink,
+  FaClock, FaTag, FaChartBar, FaCompactDisc,
 } from 'react-icons/fa';
 import styles from './style/Speedmode.module.css';
+
+// ─── Helpers ──────────────────────────────────────────────────
 
 const getYouTubeID = (url) => {
   const match = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
@@ -13,15 +16,10 @@ const getYouTubeID = (url) => {
 };
 
 const generateSlug = (t) =>
-  t.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
-
-const fetchYouTubeMeta = async (url) => {
-  const res = await fetch(
-    `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`
-  );
-  if (!res.ok) throw new Error('Could not fetch video info');
-  return res.json();
-};
+  t.trim().toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 
 const parseTitle = (raw) => {
   const patterns = [/ - /, / – /, / \| /];
@@ -29,33 +27,64 @@ const parseTitle = (raw) => {
     const idx = raw.search(sep);
     if (idx !== -1) {
       const match = raw.match(sep);
-      return { artist: raw.slice(0, idx).trim(), title: raw.slice(idx + match[0].length).trim() };
+      return {
+        artist: raw.slice(0, idx).trim(),
+        title:  raw.slice(idx + match[0].length).trim(),
+      };
     }
   }
   return { artist: '', title: raw.trim() };
 };
 
 const cleanTitle = (t) =>
-  t.replace(/\s*[\(\[](official\s*(video|audio|lyric|mv|music video)|lyrics?|hd|4k|ft\..+?)[\)\]]/gi, '')
-   .replace(/\s*\|\s*.+$/, '').trim();
+  t.replace(
+    /\s*[\(\[](official\s*(video|audio|lyric|mv|music video)|lyrics?|hd|4k|ft\..+?)[\)\]]/gi,
+    ''
+  ).replace(/\s*\|\s*.+$/, '').trim();
 
 const guessLanguage = (title, channelName) => {
-  const combined = title + ' ' + channelName;
-  if (/[\u0900-\u097F]/.test(combined)) return 'Nepali';
-  const h = combined.toLowerCase();
-  if (h.includes('hindi') || h.includes('bollywood')) return 'Hindi';
-  if (h.includes('nepali') || h.includes('nepal'))    return 'Nepali';
-  if (h.includes('maithili'))                          return 'Maithili';
-  if (h.includes('newari') || h.includes('newa'))      return 'Newari';
+  const combined = (title + ' ' + channelName).toLowerCase();
+  if (/[\u0900-\u097F]/.test(combined))              return 'Nepali';
+  if (combined.includes('hindi') || combined.includes('bollywood')) return 'Hindi';
+  if (combined.includes('nepali') || combined.includes('nepal'))    return 'Nepali';
+  if (combined.includes('maithili'))                                return 'Maithili';
+  if (combined.includes('newari') || combined.includes('newa'))     return 'Newari';
+  if (combined.includes('bhojpuri'))                                return 'Bhojpuri';
+  if (combined.includes('tamang'))                                  return 'Tamang';
   return 'Nepali';
 };
+
+const formatViews = (n) => {
+  const num = Number(n);
+  if (!num) return null;
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
+  if (num >= 1_000)     return (num / 1_000).toFixed(1)     + 'K';
+  return num.toLocaleString();
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return null;
+  try {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric',
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+// ─── Constants ────────────────────────────────────────────────
 
 const LANGUAGES    = ['Nepali', 'English', 'Hindi', 'Maithili', 'Newari', 'Bhojpuri', 'Tamang', 'Other'];
 const STATUS_TYPES = ['coming_soon', 'published', 'draft', 'pending'];
 const STATUSES     = ['approved', 'pending', 'rejected'];
 
 const LYRICS_PLACEHOLDER =
-  "Lyrics not available at the moment.\n\nYou can submit the lyrics by using the form below, and contact us — we'll review and publish them as soon as possible.";
+  'Lyrics not available at the moment.\n\n' +
+  'You can submit the lyrics by using the form below, and contact us — ' +
+  'we\'ll review and publish them as soon as possible.';
+
+// ─── Sub-components ───────────────────────────────────────────
 
 const Field = ({ icon, label, optional, full, children }) => (
   <div className={`${styles.fieldGroup} ${full ? styles.fieldFull : ''}`}>
@@ -68,14 +97,27 @@ const Field = ({ icon, label, optional, full, children }) => (
   </div>
 );
 
+const Chip = ({ icon, label }) =>
+  label ? (
+    <span className={styles.chip}>
+      {icon && <span className={styles.chipIcon}>{icon}</span>}
+      {label}
+    </span>
+  ) : null;
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════
+
 const SpeedMode = ({ onSuccess }) => {
-  const [url, setUrl]                       = useState('');
-  const [meta, setMeta]                     = useState(null);
-  const [loading, setLoading]               = useState(false);
-  const [saving, setSaving]                 = useState(false);
-  const [error, setError]                   = useState('');
-  const [toast, setToast]                   = useState(null);
-  const [step, setStep]                     = useState(1);
+  const [url, setUrl]             = useState('');
+  const [meta, setMeta]           = useState(null);
+  const [loading, setLoading]     = useState(false);
+  const [saving, setSaving]       = useState(false);
+  const [error, setError]         = useState('');
+  const [toast, setToast]         = useState(null);
+  const [step, setStep]           = useState(1);
+  const [thumbError, setThumbError] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
@@ -96,41 +138,78 @@ const SpeedMode = ({ onSuccess }) => {
 
   const urlRef = useRef(null);
 
+  // ── Toast ────────────────────────────────────────────────────
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 4500);
   };
 
+  // ── Fetch (server-side scraper) ──────────────────────────────
   const handleFetch = async () => {
-    setError(''); setMeta(null);
+    setError('');
+    setMeta(null);
+    setThumbError(false);
+
     const id = getYouTubeID(url);
     if (!id) { setError('Invalid YouTube URL or video ID'); return; }
+
     setLoading(true);
     try {
-      const data = await fetchYouTubeMeta(`https://www.youtube.com/watch?v=${id}`);
-      const parsed = parseTitle(data.title);
-      const cleanedTitle = cleanTitle(parsed.title);
-      const resolvedArtist = parsed.artist || data.author_name;
-      const thumbUrl = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-      const ytUrl = `https://www.youtube.com/watch?v=${id}`;
-      setMeta({ videoId: id, rawTitle: data.title, thumbnail: thumbUrl, channelName: data.author_name });
-      setTitle(cleanedTitle);
+      const res = await fetch(`/api/youtube-meta?videoId=${id}`);
+      if (!res.ok) throw new Error('Could not fetch video info');
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      if (!data.title) throw new Error('Video not found or private');
+
+      const parsed  = parseTitle(data.title);
+      const cleaned = cleanTitle(parsed.title || data.title);
+
+      // music:musician (from music videos) > parsed artist > channel name
+      const resolvedArtist =
+        data.musicArtist ||
+        parsed.artist    ||
+        data.channelName ||
+        '';
+
+      // Use actual upload year if available
+      const uploadYear = data.uploadDate
+        ? new Date(data.uploadDate).getFullYear().toString()
+        : currentYear.toString();
+
+      // Auto-fill description from YouTube (first 200 chars)
+      const autoDesc = data.description
+        ? data.description.replace(/\n+/g, ' ').slice(0, 200).trim()
+        : `Lyrics for "${cleaned}" by ${resolvedArtist}.`;
+
+      setMeta({
+        videoId:     id,
+        rawTitle:    data.title,
+        thumbnail:   data.thumbnail,
+        channelName: data.channelName,
+        duration:    data.duration,
+        uploadDate:  data.uploadDate,
+        viewCount:   data.viewCount,
+        tags:        data.tags || [],
+        genre:       data.genre,
+        musicSong:   data.musicSong,
+        musicAlbum:  data.musicAlbum,
+      });
+
+      setTitle(data.musicSong || cleaned);
       setArtist(resolvedArtist);
       setLyricsWriter(resolvedArtist);
-      setLanguage(guessLanguage(data.title, data.author_name));
-      setYear(currentYear.toString());
-      setMusicUrl(ytUrl);
-      setThumbnailUrl(thumbUrl);
-      setSlug(generateSlug(cleanedTitle));
-      setDescription(`Lyrics coming soon for "${cleanedTitle}" by ${resolvedArtist}.`);
+      setLanguage(guessLanguage(data.title, data.channelName || ''));
+      setYear(uploadYear);
+      setDescription(autoDesc);
       setStep(2);
     } catch (e) {
-      setError('Could not load video info. Check the URL and try again.');
+      setError(e.message || 'Could not load video info. Check the URL and try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // ── Save ─────────────────────────────────────────────────────
   const handleSave = async () => {
     if (!meta) return;
     setSaving(true);
@@ -139,9 +218,9 @@ const SpeedMode = ({ onSuccess }) => {
         title,
         slug:            generateSlug(title),
         artist,
-        lyrics_writer:   lyricsWriter    || undefined,
+        lyrics_writer:   lyricsWriter   || undefined,
         lyrics,
-        english_lyrics:  englishLyrics   || undefined,
+        english_lyrics:  englishLyrics  || undefined,
         music_url:       `https://www.youtube.com/watch?v=${meta.videoId}`,
         thumbnail_url:   meta.thumbnail,
         status,
@@ -150,19 +229,22 @@ const SpeedMode = ({ onSuccess }) => {
         published_date:  `${year}-01-01`,
         click_count:     Number(clickCount) || 1,
         added_by:        addedBy           || undefined,
-        description:     description        || undefined,
-        submitter_email: submitterEmail     || undefined,
+        description:     description       || undefined,
+        submitter_email: submitterEmail    || undefined,
       };
+
       const res = await fetch('/api/admin/lyrics/add', {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body:    JSON.stringify(payload),
       });
+
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || 'Save failed');
       }
-      showToast(`"${title}" published as Coming Soon`, 'success');
+
+      showToast(`"${title}" published successfully!`, 'success');
       reset();
       onSuccess?.();
     } catch (e) {
@@ -172,19 +254,39 @@ const SpeedMode = ({ onSuccess }) => {
     }
   };
 
+  // ── Reset ────────────────────────────────────────────────────
   const reset = () => {
-    setUrl(''); setMeta(null); setTitle(''); setArtist(''); setLyricsWriter('');
-    setDescription(''); setSubmitterEmail(''); setEnglishLyrics('');
-    setLyrics(LYRICS_PLACEHOLDER); setStatus('approved'); setStatusType('coming_soon');
-    setClickCount(1); setAddedBy('Admin (Speed Mode)'); setError(''); setStep(1);
+    setUrl('');
+    setMeta(null);
+    setTitle('');
+    setArtist('');
+    setLyricsWriter('');
+    setDescription('');
+    setSubmitterEmail('');
+    setEnglishLyrics('');
+    setLyrics(LYRICS_PLACEHOLDER);
+    setStatus('approved');
+    setStatusType('coming_soon');
+    setClickCount(1);
+    setAddedBy('Admin (Speed Mode)');
+    setError('');
+    setThumbError(false);
+    setStep(1);
     setTimeout(() => urlRef.current?.focus(), 100);
   };
 
   const isReady = title.trim() && artist.trim() && year;
 
+  // ── Thumbnail with fallback ──────────────────────────────────
+  const thumbSrc = thumbError
+    ? `https://img.youtube.com/vi/${meta?.videoId}/hqdefault.jpg`
+    : meta?.thumbnail;
+
+  // ─────────────────────────────────────────────────────────────
   return (
     <div className={styles.speedWrapper}>
 
+      {/* Toast */}
       {toast && (
         <div className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
           {toast.type === 'success'
@@ -194,11 +296,16 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       )}
 
+      {/* Header */}
       <div className={styles.speedHeader}>
-        <div className={styles.boltWrap}><FaBolt className={styles.boltIcon} /></div>
+        <div className={styles.boltWrap}>
+          <FaBolt className={styles.boltIcon} />
+        </div>
         <div className={styles.headerText}>
           <div className={styles.speedBadge}>SPEED MODE</div>
-          <p className={styles.speedSub}>Paste a YouTube link → auto-fill everything → publish in one click</p>
+          <p className={styles.speedSub}>
+            Paste a YouTube link → auto-fill everything → publish in one click
+          </p>
         </div>
         <div className={styles.stepIndicator}>
           <div className={`${styles.stepDot} ${step >= 1 ? styles.stepActive : ''}`}>1</div>
@@ -207,6 +314,7 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       </div>
 
+      {/* URL input */}
       <div className={styles.inputSection}>
         <div className={styles.urlRow}>
           <div className={`${styles.urlInputWrap} ${error ? styles.urlInputError : ''}`}>
@@ -217,63 +325,171 @@ const SpeedMode = ({ onSuccess }) => {
               type="text"
               placeholder="https://youtube.com/watch?v=... or video ID"
               value={url}
-              onChange={(e) => { setUrl(e.target.value); setError(''); if (meta) setStep(1); }}
+              onChange={(e) => {
+                setUrl(e.target.value);
+                setError('');
+                if (meta) setStep(1);
+              }}
               onKeyDown={(e) => e.key === 'Enter' && !loading && url.trim() && handleFetch()}
               disabled={loading}
             />
-            {url && <button className={styles.clearUrl} onClick={reset} title="Clear"><FaTimes /></button>}
+            {url && (
+              <button className={styles.clearUrl} onClick={reset} title="Clear">
+                <FaTimes />
+              </button>
+            )}
           </div>
-          <button className={styles.fetchBtn} onClick={handleFetch} disabled={loading || !url.trim()}>
-            {loading ? <><FaSpinner className={styles.spin} /> Fetching...</> : <><FaBolt /> Fetch Info</>}
+          <button
+            className={styles.fetchBtn}
+            onClick={handleFetch}
+            disabled={loading || !url.trim()}
+          >
+            {loading
+              ? <><FaSpinner className={styles.spin} /> Fetching...</>
+              : <><FaBolt /> Fetch Info</>}
           </button>
         </div>
-        {error && <p className={styles.error}><FaExclamationTriangle style={{ marginRight: 5 }} />{error}</p>}
+        {error && (
+          <p className={styles.error}>
+            <FaExclamationTriangle style={{ marginRight: 5 }} />
+            {error}
+          </p>
+        )}
       </div>
 
+      {/* Preview card */}
       {meta && (
         <div className={styles.previewCard}>
 
+          {/* ── Thumbnail + enriched meta ── */}
           <div className={styles.thumbSection}>
             <div className={styles.thumbWrap}>
-              <img src={meta.thumbnail} alt={meta.rawTitle} className={styles.previewThumb} />
-              <div className={styles.thumbOverlay}><FaYoutube className={styles.thumbYt} /></div>
+              <img
+                src={thumbSrc}
+                alt={meta.rawTitle}
+                className={styles.previewThumb}
+                onError={() => setThumbError(true)}
+              />
+              <div className={styles.thumbOverlay}>
+                <FaYoutube className={styles.thumbYt} />
+                {meta.duration && (
+                  <span className={styles.durationBadge}>
+                    {meta.duration.formatted}
+                  </span>
+                )}
+              </div>
             </div>
+
             <div className={styles.thumbMeta}>
-              <p className={styles.thumbChannel}><FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />{meta.channelName}</p>
-              <p className={styles.thumbRaw} title={meta.rawTitle}>
-                {meta.rawTitle.length > 65 ? meta.rawTitle.slice(0, 65) + '…' : meta.rawTitle}
+              {/* Channel */}
+              <p className={styles.thumbChannel}>
+                <FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />
+                {meta.channelName}
               </p>
-              <a className={styles.thumbLink} href={`https://youtube.com/watch?v=${meta.videoId}`} target="_blank" rel="noopener noreferrer">
+
+              {/* Full raw title */}
+              <p className={styles.thumbRaw} title={meta.rawTitle}>
+                {meta.rawTitle.length > 80
+                  ? meta.rawTitle.slice(0, 80) + '…'
+                  : meta.rawTitle}
+              </p>
+
+              {/* Music-specific fields */}
+              {(meta.musicSong || meta.musicAlbum) && (
+                <div className={styles.musicMeta}>
+                  {meta.musicSong && (
+                    <span className={styles.musicField}>
+                      <FaMusic style={{ marginRight: 4, opacity: 0.6 }} />
+                      {meta.musicSong}
+                    </span>
+                  )}
+                  {meta.musicAlbum && (
+                    <span className={styles.musicField}>
+                      <FaCompactDisc style={{ marginRight: 4, opacity: 0.6 }} />
+                      {meta.musicAlbum}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Stats chips */}
+              <div className={styles.chipsRow}>
+                <Chip icon={<FaClock />}    label={meta.duration?.formatted} />
+                <Chip icon={<FaCalendar />} label={formatDate(meta.uploadDate)} />
+                <Chip icon={<FaChartBar />} label={meta.viewCount ? `${formatViews(meta.viewCount)} views` : null} />
+                <Chip icon={<FaTag />}      label={meta.genre} />
+              </div>
+
+              {/* Tags */}
+              {meta.tags?.length > 0 && (
+                <div className={styles.tagRow}>
+                  {meta.tags.slice(0, 8).map(tag => (
+                    <span key={tag} className={styles.tag}>{tag}</span>
+                  ))}
+                </div>
+              )}
+
+              
+                className={styles.thumbLink}
+                href={`https://youtube.com/watch?v=${meta.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FaEye style={{ marginRight: 4 }} /> View on YouTube
               </a>
             </div>
           </div>
 
+          {/* ── Core Information ── */}
           <div className={styles.sectionHeader}>
             <FaMusic className={styles.sectionIcon} /> Core Information
           </div>
           <div className={styles.fieldsGrid}>
             <Field icon={<FaMusic />} label="Song Title" full>
-              <input className={styles.fieldInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Song title" />
+              <input
+                className={styles.fieldInput}
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="Song title"
+              />
             </Field>
             <Field icon={<FaMicrophone />} label="Artist / Singer">
-              <input className={styles.fieldInput} value={artist} onChange={e => setArtist(e.target.value)} placeholder="Artist name" />
+              <input
+                className={styles.fieldInput}
+                value={artist}
+                onChange={e => setArtist(e.target.value)}
+                placeholder="Artist name"
+              />
             </Field>
             <Field icon={<FaPen />} label="Lyrics Writer" optional>
-              <input className={styles.fieldInput} value={lyricsWriter} onChange={e => setLyricsWriter(e.target.value)} placeholder="Who wrote the lyrics?" />
+              <input
+                className={styles.fieldInput}
+                value={lyricsWriter}
+                onChange={e => setLyricsWriter(e.target.value)}
+                placeholder="Who wrote the lyrics?"
+              />
             </Field>
             <Field icon={<FaGlobe />} label="Language">
-              <select className={styles.fieldInput} value={language} onChange={e => setLanguage(e.target.value)}>
+              <select
+                className={styles.fieldInput}
+                value={language}
+                onChange={e => setLanguage(e.target.value)}
+              >
                 {LANGUAGES.map(l => <option key={l}>{l}</option>)}
               </select>
             </Field>
             <Field icon={<FaCalendar />} label="Published Year">
-              <select className={styles.fieldInput} value={year} onChange={e => setYear(e.target.value)}>
+              <select
+                className={styles.fieldInput}
+                value={year}
+                onChange={e => setYear(e.target.value)}
+              >
                 {years.map(y => <option key={y}>{y}</option>)}
               </select>
             </Field>
           </div>
 
+          {/* ── Lyrics Content ── */}
           <div className={styles.sectionHeader}>
             <FaAlignLeft className={styles.sectionIcon} /> Lyrics Content
           </div>
@@ -307,17 +523,26 @@ const SpeedMode = ({ onSuccess }) => {
             </Field>
           </div>
 
+          {/* ── Publishing & Meta ── */}
           <div className={styles.sectionHeader}>
             <FaToggleOn className={styles.sectionIcon} /> Publishing &amp; Meta
           </div>
           <div className={styles.fieldsGrid}>
             <Field icon={<FaToggleOn />} label="Status">
-              <select className={styles.fieldInput} value={status} onChange={e => setStatus(e.target.value)}>
+              <select
+                className={styles.fieldInput}
+                value={status}
+                onChange={e => setStatus(e.target.value)}
+              >
                 {STATUSES.map(s => <option key={s}>{s}</option>)}
               </select>
             </Field>
             <Field icon={<FaToggleOn />} label="Status Type">
-              <select className={styles.fieldInput} value={statusType} onChange={e => setStatusType(e.target.value)}>
+              <select
+                className={styles.fieldInput}
+                value={statusType}
+                onChange={e => setStatusType(e.target.value)}
+              >
                 {STATUS_TYPES.map(s => <option key={s}>{s}</option>)}
               </select>
             </Field>
@@ -331,7 +556,12 @@ const SpeedMode = ({ onSuccess }) => {
               />
             </Field>
             <Field icon={<FaUser />} label="Added By" optional>
-              <input className={styles.fieldInput} value={addedBy} onChange={e => setAddedBy(e.target.value)} placeholder="e.g. Admin (Speed Mode)" />
+              <input
+                className={styles.fieldInput}
+                value={addedBy}
+                onChange={e => setAddedBy(e.target.value)}
+                placeholder="e.g. Admin (Speed Mode)"
+              />
             </Field>
             <Field icon={<FaEnvelope />} label="Submitter Email" optional>
               <input
@@ -344,6 +574,7 @@ const SpeedMode = ({ onSuccess }) => {
             </Field>
           </div>
 
+          {/* ── Coming Soon notice ── */}
           <div className={styles.lyricsNotice}>
             <div className={styles.lyricsNoticeHeader}>
               <FaInfoCircle className={styles.lyricsNoticeIcon} />
@@ -354,16 +585,23 @@ const SpeedMode = ({ onSuccess }) => {
                 <span className={styles.csBadgeDot} /> Lyrics Coming Soon
               </div>
               <p className={styles.lyricsNoticeText}>
-                <strong>Lyrics not available at the moment.</strong> Visitors will be invited to submit lyrics using the form below, or contact us. You review &amp; approve from the lyrics editor.
+                <strong>Lyrics not available at the moment.</strong> Visitors will be
+                invited to submit lyrics using the form below, or contact us. You
+                review &amp; approve from the lyrics editor.
               </p>
             </div>
           </div>
 
+          {/* ── Actions ── */}
           <div className={styles.actionRow}>
             <button className={styles.resetBtn} onClick={reset} disabled={saving}>
               <FaTimes /> Start Over
             </button>
-            <button className={styles.saveBtn} onClick={handleSave} disabled={saving || !isReady}>
+            <button
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving || !isReady}
+            >
               {saving
                 ? <><FaSpinner className={styles.spin} /> Publishing...</>
                 : <><FaPaperPlane /> Publish as Coming Soon</>}
@@ -372,17 +610,22 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       )}
 
+      {/* How it works (empty state) */}
       {!meta && !loading && (
         <div className={styles.howItWorks}>
           <p className={styles.howTitle}>What gets auto-filled</p>
           <div className={styles.howGrid}>
             {[
-              { icon: <FaMusic />,      label: 'Song Title',     desc: 'Parsed & cleaned from YouTube title' },
-              { icon: <FaMicrophone />, label: 'Artist Name',    desc: 'Extracted from title or channel name' },
-              { icon: <FaPen />,        label: 'Lyrics Writer',  desc: 'Auto-guessed, editable before saving' },
-              { icon: <FaCalendar />,   label: 'Published Year', desc: 'Defaults to current year, adjustable' },
-              { icon: <FaGlobe />,      label: 'Language',       desc: 'Detected from title / channel name' },
-              { icon: <FaYoutube />,    label: 'Thumbnail & URL',desc: 'Pulled directly from YouTube oEmbed' },
+              { icon: <FaMusic />,        label: 'Song Title',      desc: 'Parsed & cleaned from full YouTube title' },
+              { icon: <FaMicrophone />,   label: 'Artist Name',     desc: 'From music metadata, title parse, or channel' },
+              { icon: <FaCompactDisc />,  label: 'Album & Genre',   desc: 'Detected from YouTube structured data' },
+              { icon: <FaCalendar />,     label: 'Upload Date',     desc: 'Exact date → auto-fills the year field' },
+              { icon: <FaChartBar />,     label: 'View Count',      desc: 'Pulled from JSON-LD structured data' },
+              { icon: <FaClock />,        label: 'Duration',        desc: 'Formatted from ISO 8601 (e.g. 3:45)' },
+              { icon: <FaTag />,          label: 'Tags & Keywords', desc: 'Up to 8 YouTube tags shown in preview' },
+              { icon: <FaGlobe />,        label: 'Language',        desc: 'Detected from title and channel name' },
+              { icon: <FaAlignLeft />,    label: 'Description',     desc: 'First 200 chars auto-filled from YouTube' },
+              { icon: <FaYoutube />,      label: 'Thumbnail & URL', desc: 'maxresdefault with hqdefault fallback' },
             ].map(({ icon, label, desc }) => (
               <div key={label} className={styles.howItem}>
                 <div className={styles.howItemIcon}>{icon}</div>

@@ -44,13 +44,13 @@ const cleanTitle = (t) =>
 
 const guessLanguage = (title, channelName) => {
   const combined = (title + ' ' + channelName).toLowerCase();
-  if (/[\u0900-\u097F]/.test(combined))              return 'Nepali';
-  if (combined.includes('hindi') || combined.includes('bollywood')) return 'Hindi';
-  if (combined.includes('nepali') || combined.includes('nepal'))    return 'Nepali';
-  if (combined.includes('maithili'))                                return 'Maithili';
-  if (combined.includes('newari') || combined.includes('newa'))     return 'Newari';
-  if (combined.includes('bhojpuri'))                                return 'Bhojpuri';
-  if (combined.includes('tamang'))                                  return 'Tamang';
+  if (/[\u0900-\u097F]/.test(combined))                               return 'Nepali';
+  if (combined.includes('hindi') || combined.includes('bollywood'))   return 'Hindi';
+  if (combined.includes('nepali') || combined.includes('nepal'))      return 'Nepali';
+  if (combined.includes('maithili'))                                  return 'Maithili';
+  if (combined.includes('newari') || combined.includes('newa'))       return 'Newari';
+  if (combined.includes('bhojpuri'))                                  return 'Bhojpuri';
+  if (combined.includes('tamang'))                                    return 'Tamang';
   return 'Nepali';
 };
 
@@ -58,7 +58,7 @@ const formatViews = (n) => {
   const num = Number(n);
   if (!num) return null;
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
-  if (num >= 1_000)     return (num / 1_000).toFixed(1)     + 'K';
+  if (num >= 1_000)     return (num / 1_000).toFixed(1) + 'K';
   return num.toLocaleString();
 };
 
@@ -81,10 +81,10 @@ const STATUSES     = ['approved', 'pending', 'rejected'];
 
 const LYRICS_PLACEHOLDER =
   'Lyrics not available at the moment.\n\n' +
-  'You can submit the lyrics by using the form below, and contact us — ' +
-  'we\'ll review and publish them as soon as possible.';
+  "You can submit the lyrics by using the form below, and contact us — " +
+  "we'll review and publish them as soon as possible.";
 
-// ─── Sub-components ───────────────────────────────────────────
+// ─── Field wrapper ────────────────────────────────────────────
 
 const Field = ({ icon, label, optional, full, children }) => (
   <div className={`${styles.fieldGroup} ${full ? styles.fieldFull : ''}`}>
@@ -97,26 +97,18 @@ const Field = ({ icon, label, optional, full, children }) => (
   </div>
 );
 
-const Chip = ({ icon, label }) =>
-  label ? (
-    <span className={styles.chip}>
-      {icon && <span className={styles.chipIcon}>{icon}</span>}
-      {label}
-    </span>
-  ) : null;
-
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
 const SpeedMode = ({ onSuccess }) => {
-  const [url, setUrl]             = useState('');
-  const [meta, setMeta]           = useState(null);
-  const [loading, setLoading]     = useState(false);
-  const [saving, setSaving]       = useState(false);
-  const [error, setError]         = useState('');
-  const [toast, setToast]         = useState(null);
-  const [step, setStep]           = useState(1);
+  const [url, setUrl]               = useState('');
+  const [meta, setMeta]             = useState(null);
+  const [loading, setLoading]       = useState(false);
+  const [saving, setSaving]         = useState(false);
+  const [error, setError]           = useState('');
+  const [toast, setToast]           = useState(null);
+  const [step, setStep]             = useState(1);
   const [thumbError, setThumbError] = useState(false);
 
   const currentYear = new Date().getFullYear();
@@ -144,7 +136,7 @@ const SpeedMode = ({ onSuccess }) => {
     setTimeout(() => setToast(null), 4500);
   };
 
-  // ── Fetch (server-side scraper) ──────────────────────────────
+  // ── Fetch via server-side scraper ────────────────────────────
   const handleFetch = async () => {
     setError('');
     setMeta(null);
@@ -164,19 +156,17 @@ const SpeedMode = ({ onSuccess }) => {
       const parsed  = parseTitle(data.title);
       const cleaned = cleanTitle(parsed.title || data.title);
 
-      // music:musician (from music videos) > parsed artist > channel name
+      // music:musician (official music videos) > parsed artist > channel
       const resolvedArtist =
         data.musicArtist ||
         parsed.artist    ||
         data.channelName ||
         '';
 
-      // Use actual upload year if available
       const uploadYear = data.uploadDate
         ? new Date(data.uploadDate).getFullYear().toString()
         : currentYear.toString();
 
-      // Auto-fill description from YouTube (first 200 chars)
       const autoDesc = data.description
         ? data.description.replace(/\n+/g, ' ').slice(0, 200).trim()
         : `Lyrics for "${cleaned}" by ${resolvedArtist}.`;
@@ -218,9 +208,9 @@ const SpeedMode = ({ onSuccess }) => {
         title,
         slug:            generateSlug(title),
         artist,
-        lyrics_writer:   lyricsWriter   || undefined,
+        lyrics_writer:   lyricsWriter  || undefined,
         lyrics,
-        english_lyrics:  englishLyrics  || undefined,
+        english_lyrics:  englishLyrics || undefined,
         music_url:       `https://www.youtube.com/watch?v=${meta.videoId}`,
         thumbnail_url:   meta.thumbnail,
         status,
@@ -277,7 +267,7 @@ const SpeedMode = ({ onSuccess }) => {
 
   const isReady = title.trim() && artist.trim() && year;
 
-  // ── Thumbnail with fallback ──────────────────────────────────
+  // hqdefault fallback when maxresdefault 404s
   const thumbSrc = thumbError
     ? `https://img.youtube.com/vi/${meta?.videoId}/hqdefault.jpg`
     : meta?.thumbnail;
@@ -286,7 +276,7 @@ const SpeedMode = ({ onSuccess }) => {
   return (
     <div className={styles.speedWrapper}>
 
-      {/* Toast */}
+      {/* ── Toast notification ── */}
       {toast && (
         <div className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
           {toast.type === 'success'
@@ -296,7 +286,7 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       )}
 
-      {/* Header */}
+      {/* ── Header ── */}
       <div className={styles.speedHeader}>
         <div className={styles.boltWrap}>
           <FaBolt className={styles.boltIcon} />
@@ -314,7 +304,7 @@ const SpeedMode = ({ onSuccess }) => {
         </div>
       </div>
 
-      {/* URL input */}
+      {/* ── URL Input ── */}
       <div className={styles.inputSection}>
         <div className={styles.urlRow}>
           <div className={`${styles.urlInputWrap} ${error ? styles.urlInputError : ''}`}>
@@ -357,11 +347,11 @@ const SpeedMode = ({ onSuccess }) => {
         )}
       </div>
 
-      {/* Preview card */}
+      {/* ── Preview card (shown after fetch) ── */}
       {meta && (
         <div className={styles.previewCard}>
 
-          {/* ── Thumbnail + enriched meta ── */}
+          {/* Thumbnail + enriched metadata */}
           <div className={styles.thumbSection}>
             <div className={styles.thumbWrap}>
               <img
@@ -381,7 +371,8 @@ const SpeedMode = ({ onSuccess }) => {
             </div>
 
             <div className={styles.thumbMeta}>
-              {/* Channel */}
+
+              {/* Channel name */}
               <p className={styles.thumbChannel}>
                 <FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />
                 {meta.channelName}
@@ -394,7 +385,7 @@ const SpeedMode = ({ onSuccess }) => {
                   : meta.rawTitle}
               </p>
 
-              {/* Music-specific fields */}
+              {/* Music-specific fields — only present on official music videos */}
               {(meta.musicSong || meta.musicAlbum) && (
                 <div className={styles.musicMeta}>
                   {meta.musicSong && (
@@ -412,16 +403,36 @@ const SpeedMode = ({ onSuccess }) => {
                 </div>
               )}
 
-              {/* Stats chips */}
+              {/* Stats chips — inlined to avoid JSX parser issues */}
               <div className={styles.chipsRow}>
-                <Chip icon={<FaClock />}    label={meta.duration?.formatted} />
-                <Chip icon={<FaCalendar />} label={formatDate(meta.uploadDate)} />
-                <Chip icon={<FaChartBar />} label={meta.viewCount ? `${formatViews(meta.viewCount)} views` : null} />
-                <Chip icon={<FaTag />}      label={meta.genre} />
+                {meta.duration && (
+                  <span className={styles.chip}>
+                    <span className={styles.chipIcon}><FaClock /></span>
+                    {meta.duration.formatted}
+                  </span>
+                )}
+                {meta.uploadDate && (
+                  <span className={styles.chip}>
+                    <span className={styles.chipIcon}><FaCalendar /></span>
+                    {formatDate(meta.uploadDate)}
+                  </span>
+                )}
+                {meta.viewCount && (
+                  <span className={styles.chip}>
+                    <span className={styles.chipIcon}><FaChartBar /></span>
+                    {formatViews(meta.viewCount)} views
+                  </span>
+                )}
+                {meta.genre && (
+                  <span className={styles.chip}>
+                    <span className={styles.chipIcon}><FaTag /></span>
+                    {meta.genre}
+                  </span>
+                )}
               </div>
 
               {/* Tags */}
-              {meta.tags?.length > 0 && (
+              {meta.tags && meta.tags.length > 0 && (
                 <div className={styles.tagRow}>
                   {meta.tags.slice(0, 8).map(tag => (
                     <span key={tag} className={styles.tag}>{tag}</span>
@@ -429,14 +440,17 @@ const SpeedMode = ({ onSuccess }) => {
                 </div>
               )}
 
-              
+              {/* YouTube link */}
+              <a
                 className={styles.thumbLink}
                 href={`https://youtube.com/watch?v=${meta.videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <FaEye style={{ marginRight: 4 }} /> View on YouTube
+                <FaEye style={{ marginRight: 4 }} />
+                View on YouTube
               </a>
+
             </div>
           </div>
 
@@ -592,7 +606,7 @@ const SpeedMode = ({ onSuccess }) => {
             </div>
           </div>
 
-          {/* ── Actions ── */}
+          {/* ── Action buttons ── */}
           <div className={styles.actionRow}>
             <button className={styles.resetBtn} onClick={reset} disabled={saving}>
               <FaTimes /> Start Over
@@ -607,25 +621,26 @@ const SpeedMode = ({ onSuccess }) => {
                 : <><FaPaperPlane /> Publish as Coming Soon</>}
             </button>
           </div>
+
         </div>
       )}
 
-      {/* How it works (empty state) */}
+      {/* ── Empty state: how it works ── */}
       {!meta && !loading && (
         <div className={styles.howItWorks}>
           <p className={styles.howTitle}>What gets auto-filled</p>
           <div className={styles.howGrid}>
             {[
-              { icon: <FaMusic />,        label: 'Song Title',      desc: 'Parsed & cleaned from full YouTube title' },
-              { icon: <FaMicrophone />,   label: 'Artist Name',     desc: 'From music metadata, title parse, or channel' },
-              { icon: <FaCompactDisc />,  label: 'Album & Genre',   desc: 'Detected from YouTube structured data' },
-              { icon: <FaCalendar />,     label: 'Upload Date',     desc: 'Exact date → auto-fills the year field' },
-              { icon: <FaChartBar />,     label: 'View Count',      desc: 'Pulled from JSON-LD structured data' },
-              { icon: <FaClock />,        label: 'Duration',        desc: 'Formatted from ISO 8601 (e.g. 3:45)' },
-              { icon: <FaTag />,          label: 'Tags & Keywords', desc: 'Up to 8 YouTube tags shown in preview' },
-              { icon: <FaGlobe />,        label: 'Language',        desc: 'Detected from title and channel name' },
-              { icon: <FaAlignLeft />,    label: 'Description',     desc: 'First 200 chars auto-filled from YouTube' },
-              { icon: <FaYoutube />,      label: 'Thumbnail & URL', desc: 'maxresdefault with hqdefault fallback' },
+              { icon: <FaMusic />,       label: 'Song Title',      desc: 'Parsed & cleaned from full YouTube title' },
+              { icon: <FaMicrophone />,  label: 'Artist Name',     desc: 'From music metadata, title parse, or channel' },
+              { icon: <FaCompactDisc />, label: 'Album & Genre',   desc: 'Detected from YouTube structured data' },
+              { icon: <FaCalendar />,    label: 'Upload Date',     desc: 'Exact date → auto-fills the year field' },
+              { icon: <FaChartBar />,    label: 'View Count',      desc: 'Pulled from JSON-LD structured data' },
+              { icon: <FaClock />,       label: 'Duration',        desc: 'Formatted from ISO 8601 (e.g. 3:45)' },
+              { icon: <FaTag />,         label: 'Tags & Keywords', desc: 'Up to 8 YouTube tags shown in preview' },
+              { icon: <FaGlobe />,       label: 'Language',        desc: 'Detected from title and channel name' },
+              { icon: <FaAlignLeft />,   label: 'Description',     desc: 'First 200 chars auto-filled from YouTube' },
+              { icon: <FaYoutube />,     label: 'Thumbnail & URL', desc: 'maxresdefault with hqdefault fallback' },
             ].map(({ icon, label, desc }) => (
               <div key={label} className={styles.howItem}>
                 <div className={styles.howItemIcon}>{icon}</div>
@@ -638,6 +653,7 @@ const SpeedMode = ({ onSuccess }) => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

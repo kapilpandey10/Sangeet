@@ -5,15 +5,54 @@ import {
   FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaEye,
   FaEnvelope, FaAlignLeft, FaToggleOn, FaUser, FaLink,
   FaClock, FaTag, FaChartBar, FaCompactDisc, FaWifi,
+  FaCopy, FaChevronDown, FaChevronUp, FaMagic,
 } from 'react-icons/fa';
 import styles from './style/Speedmode.module.css';
 
 // ─── Helpers ──────────────────────────────────────────────────
 
+/**
+ * Robustly extract YouTube video ID from any YouTube URL format.
+ * Handles: youtu.be/ID, youtube.com/watch?v=ID, ?list= params, etc.
+ */
 const getYouTubeID = (url) => {
   const trimmed = url.trim();
-  const match   = trimmed.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/);
-  return match?.[1] || (trimmed.length === 11 ? trimmed : null);
+  try {
+    // Try as a full URL first
+    const parsed = new URL(trimmed);
+    const hostname = parsed.hostname.replace('www.', '');
+
+    if (hostname === 'youtu.be') {
+      // https://youtu.be/VIDEO_ID?list=...
+      const id = parsed.pathname.slice(1).split('/')[0];
+      if (/^[a-zA-Z0-9_-]{11}$/.test(id)) return id;
+    }
+
+    if (hostname === 'youtube.com' || hostname === 'm.youtube.com') {
+      // https://youtube.com/watch?v=VIDEO_ID&list=...
+      const v = parsed.searchParams.get('v');
+      if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+
+      // https://youtube.com/embed/VIDEO_ID
+      const embedMatch = parsed.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+      if (embedMatch) return embedMatch[1];
+
+      // https://youtube.com/shorts/VIDEO_ID
+      const shortsMatch = parsed.pathname.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+      if (shortsMatch) return shortsMatch[1];
+    }
+  } catch (_) {
+    // Not a valid URL — try regex fallback
+  }
+
+  // Regex fallback: match 11-char ID anywhere
+  const match = trimmed.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+
+  // Bare 11-char ID
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+
+  return null;
 };
 
 const generateSlug = (t) =>
@@ -74,7 +113,6 @@ const formatDate = (dateStr) => {
   }
 };
 
-// Trim YouTube description — remove hashtag spam at end
 const cleanDescription = (desc) => {
   if (!desc) return '';
   return desc
@@ -82,8 +120,68 @@ const cleanDescription = (desc) => {
     .filter(line => !line.trim().startsWith('#') || line.trim().length > 20)
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
-    .slice(0, 600)
     .trim();
+};
+
+// ─── Smart Description Parser ─────────────────────────────────
+/**
+ * Scans the raw YouTube description for Singer and Lyrics Writer fields.
+ *
+ * Handles patterns like:
+ *   Singer: Prakash Saput, Shanti Shree Pariyar
+ *   Singer/Vocal: ...
+ *   Lyrics Writer: ...
+ *   Lyrics / Written by: ...
+ *   Lyricist: ...
+ *   Vocalist: ...
+ *   etc.
+ *
+ * Returns { singers: string[], lyricsWriters: string[] }
+ */
+const parseDescriptionForCredits = (description) => {
+  if (!description) return { singers: [], lyricsWriters: [] };
+
+  const lines = description.split('\n');
+
+  // Keyword groups
+  const singerKeywords    = /^(singer|vocal|vocalist|performed\s*by|voice|sung\s*by|playback|artist)s?/i;
+  const lyricsKeywords    = /^(lyric|lyrics|lyricist|written\s*by|words\s*by|poem|poetry|lyrics\s*writer|lyrics\s*by|words)s?(\s*\/\s*music)?(\s*writer)?/i;
+
+  const extract = (line) => {
+    // Remove the key part before the colon
+    const after = line.replace(/^[^:]+:\s*/, '').trim();
+    if (!after) return [];
+    // Split by comma or slash (but not slashes in "Lyrics/Music: ...")
+    return after
+      .split(/[,\/]/)
+      .map(s => s.trim())
+      .filter(s => s.length > 1 && s.length < 60 && !/^(http|www|#)/.test(s));
+  };
+
+  const singers      = [];
+  const lyricsWriters = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.includes(':')) continue;
+
+    const key = trimmed.split(':')[0].trim();
+
+    if (singerKeywords.test(key)) {
+      const names = extract(trimmed);
+      singers.push(...names);
+    } else if (lyricsKeywords.test(key)) {
+      const names = extract(trimmed);
+      lyricsWriters.push(...names);
+    }
+  }
+
+  // Deduplicate
+  const unique = (arr) => [...new Set(arr.map(s => s.trim()).filter(Boolean))];
+  return {
+    singers:       unique(singers),
+    lyricsWriters: unique(lyricsWriters),
+  };
 };
 
 // ─── Constants ────────────────────────────────────────────────
@@ -111,6 +209,110 @@ const Field = ({ icon, label, optional, full, hint, children }) => (
   </div>
 );
 
+// ─── Description Viewer ───────────────────────────────────────
+
+const DescriptionViewer = ({ rawDescription, onApplySinger, onApplyLyricsWriter, parsedCredits }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(rawDescription);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (_) {}
+  };
+
+  if (!rawDescription) return null;
+
+  return (
+    <div className={styles.descViewerWrap}>
+      <div className={styles.descViewerHeader}>
+        <div className={styles.descViewerTitle}>
+          <FaAlignLeft style={{ marginRight: 6, opacity: 0.6 }} />
+          <span>Full YouTube Description</span>
+          {parsedCredits && (parsedCredits.singers.length > 0 || parsedCredits.lyricsWriters.length > 0) && (
+            <span className={styles.creditsFoundBadge}>
+              <FaMagic style={{ marginRight: 4 }} />
+              Credits detected
+            </span>
+          )}
+        </div>
+        <div className={styles.descViewerActions}>
+          <button className={styles.descCopyBtn} onClick={handleCopy} type="button">
+            <FaCopy style={{ marginRight: 4 }} />
+            {copied ? 'Copied!' : 'Copy All'}
+          </button>
+          <button
+            className={styles.descToggleBtn}
+            onClick={() => setExpanded(e => !e)}
+            type="button"
+          >
+            {expanded ? <><FaChevronUp style={{ marginRight: 4 }} />Collapse</> : <><FaChevronDown style={{ marginRight: 4 }} />Expand</>}
+          </button>
+        </div>
+      </div>
+
+      {/* Auto-detected credits strip */}
+      {parsedCredits && (parsedCredits.singers.length > 0 || parsedCredits.lyricsWriters.length > 0) && (
+        <div className={styles.creditsStrip}>
+          {parsedCredits.singers.length > 0 && (
+            <div className={styles.creditRow}>
+              <span className={styles.creditKey}>
+                <FaMicrophone style={{ marginRight: 5, opacity: 0.7 }} />
+                Singer(s):
+              </span>
+              <span className={styles.creditValue}>{parsedCredits.singers.join(', ')}</span>
+              <button
+                className={styles.creditApplyBtn}
+                onClick={() => onApplySinger(parsedCredits.singers.join(', '))}
+                type="button"
+                title="Apply to Artist field"
+              >
+                Apply to Artist
+              </button>
+            </div>
+          )}
+          {parsedCredits.lyricsWriters.length > 0 && (
+            <div className={styles.creditRow}>
+              <span className={styles.creditKey}>
+                <FaPen style={{ marginRight: 5, opacity: 0.7 }} />
+                Lyricist(s):
+              </span>
+              <span className={styles.creditValue}>{parsedCredits.lyricsWriters.join(', ')}</span>
+              <button
+                className={styles.creditApplyBtn}
+                onClick={() => onApplyLyricsWriter(parsedCredits.lyricsWriters.join(', '))}
+                type="button"
+                title="Apply to Lyrics Writer field"
+              >
+                Apply to Writer
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Scrollable description body */}
+      <div
+        className={`${styles.descViewerBody} ${expanded ? styles.descViewerExpanded : styles.descViewerCollapsed}`}
+      >
+        <pre className={styles.descViewerPre}>{rawDescription}</pre>
+      </div>
+
+      {!expanded && (
+        <button
+          className={styles.descShowMore}
+          onClick={() => setExpanded(true)}
+          type="button"
+        >
+          Show full description <FaChevronDown style={{ marginLeft: 4 }} />
+        </button>
+      )}
+    </div>
+  );
+};
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
@@ -124,7 +326,9 @@ const SpeedMode = ({ onSuccess }) => {
   const [toast, setToast]           = useState(null);
   const [step, setStep]             = useState(1);
   const [thumbError, setThumbError] = useState(false);
-  const [scrapeNote, setScrapeNote] = useState(''); // warn if page scrape failed
+  const [scrapeNote, setScrapeNote] = useState('');
+  const [rawDescription, setRawDescription] = useState(''); // full untruncated description
+  const [parsedCredits, setParsedCredits]   = useState(null);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
@@ -157,6 +361,8 @@ const SpeedMode = ({ onSuccess }) => {
     setMeta(null);
     setThumbError(false);
     setScrapeNote('');
+    setRawDescription('');
+    setParsedCredits(null);
 
     const id = getYouTubeID(url);
     if (!id) {
@@ -176,7 +382,7 @@ const SpeedMode = ({ onSuccess }) => {
       const parsed  = parseTitle(data.title);
       const cleaned = cleanTitle(parsed.title || data.title);
 
-      // Priority: music:musician → parsed artist → channel name
+      // Resolve artist: music:musician → parsed title → channel name
       const resolvedArtist =
         data.musicArtist ||
         parsed.artist    ||
@@ -187,12 +393,30 @@ const SpeedMode = ({ onSuccess }) => {
         ? new Date(data.uploadDate).getFullYear().toString()
         : currentYear.toString();
 
-      // Build description: use YouTube description if available,
-      // otherwise fall back to a generic placeholder
-      const ytDesc = cleanDescription(data.description);
-      const autoDesc = ytDesc
-        ? ytDesc
-        : `Lyrics for "${cleaned}" by ${resolvedArtist}.`;
+      // Keep full raw description for the viewer panel
+      const fullDesc = data.description || '';
+      setRawDescription(fullDesc);
+
+      // Parse credits from description
+      const credits = parseDescriptionForCredits(fullDesc);
+      setParsedCredits(credits);
+
+      // Auto-apply singer if found and no music:musician meta
+      const finalArtist = data.musicArtist
+        ? data.musicArtist
+        : credits.singers.length > 0
+          ? credits.singers.join(', ')
+          : resolvedArtist;
+
+      const finalLyricsWriter = credits.lyricsWriters.length > 0
+        ? credits.lyricsWriters.join(', ')
+        : finalArtist;
+
+      // Build SEO description (trimmed, without hashtag spam)
+      const ytDescClean = cleanDescription(fullDesc);
+      const autoDesc = ytDescClean
+        ? ytDescClean.slice(0, 600)
+        : `Lyrics for "${cleaned}" by ${finalArtist}.`;
 
       setMeta({
         videoId:     id,
@@ -210,14 +434,13 @@ const SpeedMode = ({ onSuccess }) => {
       });
 
       setTitle(data.musicSong || cleaned);
-      setArtist(resolvedArtist);
-      setLyricsWriter(resolvedArtist);
+      setArtist(finalArtist);
+      setLyricsWriter(finalLyricsWriter);
       setLanguage(guessLanguage(data.title, data.channelName || ''));
       setYear(uploadYear);
       setDescription(autoDesc);
       setStep(2);
 
-      // Inform user if page scrape got blocked (no extras available)
       if (!data.duration && !data.uploadDate && !data.description) {
         setScrapeNote('Basic info loaded via oEmbed. Extra details (duration, views, description) were unavailable — YouTube may have blocked the scrape.');
       }
@@ -291,6 +514,8 @@ const SpeedMode = ({ onSuccess }) => {
     setError('');
     setThumbError(false);
     setScrapeNote('');
+    setRawDescription('');
+    setParsedCredits(null);
     setStep(1);
     setTimeout(() => urlRef.current?.focus(), 100);
   };
@@ -342,7 +567,7 @@ const SpeedMode = ({ onSuccess }) => {
               ref={urlRef}
               className={styles.urlInput}
               type="text"
-              placeholder="https://youtube.com/watch?v=... or video ID"
+              placeholder="https://youtu.be/... or youtube.com/watch?v=... or video ID"
               value={url}
               onChange={(e) => {
                 setUrl(e.target.value);
@@ -380,7 +605,7 @@ const SpeedMode = ({ onSuccess }) => {
       {meta && (
         <div className={styles.previewCard}>
 
-          {/* Partial data notice (scrape was blocked but oEmbed worked) */}
+          {/* Partial data notice */}
           {scrapeNote && (
             <div className={styles.scrapeNotice}>
               <FaWifi style={{ marginRight: 6, opacity: 0.7 }} />
@@ -408,21 +633,16 @@ const SpeedMode = ({ onSuccess }) => {
             </div>
 
             <div className={styles.thumbMeta}>
-
-              {/* Channel */}
               <p className={styles.thumbChannel}>
                 <FaMicrophone style={{ marginRight: 5, opacity: 0.6 }} />
                 {meta.channelName}
               </p>
-
-              {/* Full raw title */}
               <p className={styles.thumbRaw} title={meta.rawTitle}>
                 {meta.rawTitle.length > 80
                   ? meta.rawTitle.slice(0, 80) + '…'
                   : meta.rawTitle}
               </p>
 
-              {/* Music-specific fields */}
               {(meta.musicSong || meta.musicAlbum) && (
                 <div className={styles.musicMeta}>
                   {meta.musicSong && (
@@ -440,7 +660,6 @@ const SpeedMode = ({ onSuccess }) => {
                 </div>
               )}
 
-              {/* Stats chips */}
               <div className={styles.chipsRow}>
                 {meta.duration && (
                   <span className={styles.chip}>
@@ -468,7 +687,6 @@ const SpeedMode = ({ onSuccess }) => {
                 )}
               </div>
 
-              {/* Tags */}
               {meta.tags && meta.tags.length > 0 && (
                 <div className={styles.tagRow}>
                   {meta.tags.slice(0, 8).map(tag => (
@@ -488,6 +706,21 @@ const SpeedMode = ({ onSuccess }) => {
               </a>
             </div>
           </div>
+
+          {/* ── Full Description Viewer (NEW) ── */}
+          {rawDescription && (
+            <>
+              <div className={styles.sectionHeader}>
+                <FaAlignLeft className={styles.sectionIcon} /> YouTube Description
+              </div>
+              <DescriptionViewer
+                rawDescription={rawDescription}
+                parsedCredits={parsedCredits}
+                onApplySinger={(val) => setArtist(val)}
+                onApplyLyricsWriter={(val) => setLyricsWriter(val)}
+              />
+            </>
+          )}
 
           {/* ── Core Information ── */}
           <div className={styles.sectionHeader}>
@@ -562,7 +795,6 @@ const SpeedMode = ({ onSuccess }) => {
               />
             </Field>
 
-            {/* Description — highlighted as auto-filled from YouTube */}
             <Field
               icon={<FaAlignLeft />}
               label="Description"
@@ -689,13 +921,14 @@ const SpeedMode = ({ onSuccess }) => {
             {[
               { icon: <FaMusic />,       label: 'Song Title',       desc: 'Parsed & cleaned from full YouTube title' },
               { icon: <FaMicrophone />,  label: 'Artist Name',      desc: 'From music metadata, title parse, or channel' },
+              { icon: <FaMagic />,       label: 'Singer / Lyricist', desc: 'Auto-detected from video description credits' },
               { icon: <FaCompactDisc />, label: 'Album & Genre',    desc: 'Detected from YouTube structured data' },
               { icon: <FaCalendar />,    label: 'Upload Date',      desc: 'Exact date → auto-fills the year field' },
               { icon: <FaChartBar />,    label: 'View Count',       desc: 'Pulled from JSON-LD structured data' },
               { icon: <FaClock />,       label: 'Duration',         desc: 'Formatted from ISO 8601 (e.g. 3:45)' },
               { icon: <FaTag />,         label: 'Tags & Keywords',  desc: 'Up to 8 YouTube tags shown in preview' },
               { icon: <FaGlobe />,       label: 'Language',         desc: 'Detected from title and channel name' },
-              { icon: <FaAlignLeft />,   label: 'Description',      desc: 'Auto-filled from YouTube video description' },
+              { icon: <FaAlignLeft />,   label: 'Description',      desc: 'Scrollable full description — copy lyrics from it' },
               { icon: <FaYoutube />,     label: 'Thumbnail & URL',  desc: 'maxresdefault with hqdefault fallback' },
             ].map(({ icon, label, desc }) => (
               <div key={label} className={styles.howItem}>
@@ -714,4 +947,4 @@ const SpeedMode = ({ onSuccess }) => {
   );
 };
 
-export default SpeedMode;``
+export default SpeedMode;

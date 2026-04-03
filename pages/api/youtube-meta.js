@@ -6,7 +6,14 @@
 //      Wrapped in try/catch — if blocked we still return oEmbed data cleanly.
 
 export default async function handler(req, res) {
-  const { videoId } = req.query;
+  let { videoId } = req.query;
+
+  // ── Support full URLs passed directly to the API ──────────────────────────
+  // e.g. /api/youtube-meta?videoId=https://youtu.be/abc123?list=XYZ
+  if (videoId && videoId.length > 11) {
+    videoId = extractVideoId(videoId);
+  }
+
   if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
     return res.status(400).json({ error: 'Invalid video ID' });
   }
@@ -47,8 +54,10 @@ export default async function handler(req, res) {
     thumbnail:   `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
     thumbnailFallback: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
 
-    // Extras from page scrape (null if scraping was blocked)
+    // Return FULL description — let the client truncate for display
     description: extras.description || null,
+
+    // Extras from page scrape (null if scraping was blocked)
     duration:    extras.duration    || null,
     uploadDate:  extras.uploadDate  || null,
     viewCount:   extras.viewCount   || null,
@@ -58,6 +67,40 @@ export default async function handler(req, res) {
     musicArtist: extras.musicArtist || null,
     musicAlbum:  extras.musicAlbum  || null,
   });
+}
+
+// ─── Extract video ID from any YouTube URL ────────────────────────────────────
+function extractVideoId(input) {
+  if (!input) return null;
+  const trimmed = input.trim();
+
+  // Already a bare 11-char ID
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+
+  try {
+    const url = new URL(trimmed);
+    const host = url.hostname.replace('www.', '');
+
+    if (host === 'youtu.be') {
+      const id = url.pathname.slice(1).split('/')[0];
+      if (/^[a-zA-Z0-9_-]{11}$/.test(id)) return id;
+    }
+
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      const v = url.searchParams.get('v');
+      if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
+
+      const embedMatch = url.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+      if (embedMatch) return embedMatch[1];
+
+      const shortsMatch = url.pathname.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+      if (shortsMatch) return shortsMatch[1];
+    }
+  } catch (_) {}
+
+  // Regex fallback
+  const match = trimmed.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
 }
 
 // ─── oEmbed via YouTube ───────────────────────────────────────────────────────
@@ -84,7 +127,6 @@ async function fetchNoEmbed(videoId) {
 async function scrapeYoutubePage(videoId) {
   const url = `https://www.youtube.com/watch?v=${videoId}`;
 
-  // Try multiple User-Agents — some are more likely to get through
   const agents = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -104,7 +146,6 @@ async function scrapeYoutubePage(videoId) {
       });
       if (!r.ok) continue;
       const text = await r.text();
-      // Detect consent/bot-check pages — they won't have JSON-LD
       if (text.includes('ytInitialData') || text.includes('application/ld+json')) {
         html = text;
         break;
@@ -116,7 +157,7 @@ async function scrapeYoutubePage(videoId) {
 
   if (!html) throw new Error('All scrape attempts failed');
 
-  // ── Extract JSON-LD (richest source) ──────────────────────────
+  // ── Extract JSON-LD ────────────────────────────────────────────
   let jsonLd = null;
   try {
     const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
@@ -132,7 +173,7 @@ async function scrapeYoutubePage(videoId) {
     return m ? decode(m[1]) : null;
   };
 
-  // ── ytInitialData micro-extraction (key:value pairs only) ─────
+  // ── ytInitialData micro-extraction ────────────────────────────
   const ytVal = (key) => {
     const m = html.match(new RegExp(`"${key}":\\s*"([^"]+)"`));
     return m ? decode(m[1]) : null;
@@ -142,13 +183,14 @@ async function scrapeYoutubePage(videoId) {
   const isoDuration = jsonLd?.duration || null;
   const duration    = isoDuration ? parseDuration(isoDuration) : null;
 
-  // ── Description (JSON-LD has the full one) ────────────────────
+  // ── Description — return FULL text, no truncation ─────────────
   const rawDesc =
     jsonLd?.description ||
     meta('og:description') ||
     ytVal('shortDescription') ||
     '';
-  const description = rawDesc.slice(0, 1000).trim();
+  // Decode escape sequences but don't slice — let the client handle display
+  const description = rawDesc.trim();
 
   // ── Upload date ────────────────────────────────────────────────
   const uploadDate =
@@ -175,10 +217,10 @@ async function scrapeYoutubePage(videoId) {
     ytVal('ownerChannelName') ||
     null;
 
-  const genre      = jsonLd?.genre            || null;
-  const musicSong  = meta('music:song')       || null;
-  const musicArtist= meta('music:musician')   || null;
-  const musicAlbum = meta('music:album')      || null;
+  const genre       = jsonLd?.genre            || null;
+  const musicSong   = meta('music:song')       || null;
+  const musicArtist = meta('music:musician')   || null;
+  const musicAlbum  = meta('music:album')      || null;
 
   return {
     description,
